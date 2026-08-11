@@ -10,6 +10,18 @@ Given a string, find the longest run of characters-in-a-row that has no characte
 repeated. "Substring" means contiguous — `pwke` inside `pwwkew` doesn't count
 because those letters aren't adjacent; `wke` does.
 
+## Why this matters
+
+The real question is **the longest contiguous run over a stream that keeps a "no duplicates" invariant** — and, crucially, when the invariant breaks, jumping the window's start straight past the offending earlier copy instead of crawling. The fundamental operation is maintaining a live window with a "last position I saw this" lookup so you never rescan.
+
+That shape is common in stream processing and text work:
+
+- **Deduplication over a sliding time window** — accepting events only if the same key hasn't appeared recently; the last-seen index is the dedup memory.
+- **Session and rate windows** — tracking the longest activity stretch with no repeated action, or resetting a window when a conflict appears.
+- **Tokenizers, autocomplete, and log scanners** — finding the longest clean span in a single left-to-right pass over data you can't rewind.
+
+What we're solving for is **a single pass at O(1) amortized work per character**: brute force restarts and re-walks characters (`O(n^2)`), while remembering *where* the conflict was lets the left edge leap ahead once, giving `O(n)` time — essential when the input is a long stream you only get to read once.
+
 ## Start from the obvious
 
 For each starting position, extend to the right, collecting characters into a set.

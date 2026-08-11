@@ -10,6 +10,25 @@ You get two trees. Are they exactly the same? "Same" means two things at once:
 they have the same shape (a node exists in one exactly where it exists in the
 other) **and** the values line up at every matching spot.
 
+## Why this matters
+
+The deeper problem is **structural equality**: deciding whether two recursively
+defined things are identical in both shape and content, by walking them in
+lockstep and short-circuiting the moment they disagree. The fundamental operation
+is a synchronized traversal of two structures.
+
+This shows up constantly. Diff tools and `git` compare tree-shaped data (file
+trees, ASTs) to decide what changed. React and other UI frameworks reconcile a
+new virtual DOM tree against the old one — "same node here?" is the core question
+that decides whether to reuse or repaint. Test frameworks' deep-equal assertions,
+JSON/config comparison, and schema-migration checks all reduce to this lockstep
+walk.
+
+What you're solving for is **one linear pass that stops early**: you never build
+intermediate copies or serialize both sides to compare strings, and a mismatch
+near the root ends the work immediately instead of touching every node. It's the
+minimal, allocation-free way to answer "are these two the same?".
+
 ## Start from the obvious
 
 Compare them position by position, walking both at the same time. Stand on a

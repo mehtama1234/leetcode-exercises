@@ -10,6 +10,14 @@ You have a list of numbers that is already sorted in increasing order, with no
 duplicates. Given a target, tell me the index where it lives, or `-1` if it isn't
 there.
 
+## Why this matters
+
+This is the purest form of a question that appears everywhere: *given an ordered collection, can I locate something — or rule out half of everything — with one comparison?* The fundamental operation is halving a search space by asking a single yes/no question whose answer eliminates half the remaining candidates.
+
+Concretely, it's the backbone of real systems. Database indexes (B-trees) are binary search generalized to disk, letting a lookup touch a handful of pages instead of a whole table. `git bisect` finds the commit that introduced a bug in `log n` steps instead of checking every commit. Autocomplete and dictionaries binary-search sorted term lists. And "binary search on the answer" solves optimization problems — finding the minimum capacity, speed, or threshold that satisfies a monotone condition — from scheduling to capacity planning.
+
+What you're buying is time: `O(log n)` instead of `O(n)`. Twenty comparisons find a target in a million sorted elements. When lookups happen millions of times a second, or the data sits on slow disk where each read is expensive, that gap decides whether the system keeps up.
+
 ## Start from the obvious
 
 The definition hands you an algorithm: to find something in a list, walk the list

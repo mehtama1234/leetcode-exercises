@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>39. Combination Sum</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details open><summary>9. Backtracking</summary><ul><li class="active"><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">9. Backtracking</a> / <span>39</span></nav><article class="notes"><h1>39. Combination Sum</h1>
+<p><strong>Pattern:</strong> Backtracking (build a choice, undo it, try the next) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/combination-sum/</p>
+<h2>The problem in plain words</h2>
+<p>You have a handful of distinct positive numbers and a target. Find every group of numbers that adds up exactly to the target. You can use the same number as many times as you like. <code>[2,2,3]</code> and <code>[3,2,2]</code> count as the *same* group, so we want each group once, not once per ordering.</p>
+<h2>Why this matters</h2>
+<p>Underneath the puzzle is a classic problem: enumerate every way to combine parts (with repetition) that hits an exact total, while counting each combination once regardless of order. The fundamental operation is a systematic search that builds a choice, undoes it, and moves on — never revisiting the same combination twice.</p>
+<p>This is exactly how real systems solve &quot;make change&quot; style problems. Cash registers and vending machines pick coin/bill combinations that sum to an amount. Cutting-stock and bin-packing tools choose piece lengths that add up to a target without waste. Resource allocators and billing systems assemble line items or credits that hit an exact budget. Any &quot;which items sum to N, reuse allowed&quot; question — from crafting recipes to nutrition planners hitting a calorie target — is this shape.</p>
+<p>What you&#x27;re solving for is avoiding an explosion of wasted work: the <code>start</code>-index trick keeps the search from re-exploring the same group in every possible order, and the sorted <code>break</code> prunes hopeless branches early. Since the space is exponential, that pruning is what keeps it tractable at all.</p>
+<h2>Start from the obvious</h2>
+<p>At each step you&#x27;re really just asking: &quot;what number do I add next?&quot; The obvious move is to try every candidate at every step:</p>
+<pre><code>def build(remaining, path):
+    if remaining == 0: record(path); return
+    if remaining &lt; 0:  return
+    for c in candidates:          # pick ANY candidate
+        build(remaining - c, path + [c])</code></pre>
+<p>This finds all the sums — but it also finds <code>[2,3]</code> and <code>[3,2]</code> as different answers, because it&#x27;s free to pick numbers in any order. It generates a mountain of duplicates.</p>
+<h2>Find the waste</h2>
+<p>The duplicates come from one thing: allowing every order of the same multiset. If we could force a single canonical order, each group would be produced exactly once and all that duplicate work disappears.</p>
+<p>The canonical order is easy: <strong>never pick a candidate that comes before the one you just picked.</strong> Pass a <code>start</code> index into the recursion and only loop from <code>start</code> onward. Because reuse is allowed, when we pick candidate <code>i</code> the next call still starts at <code>i</code> (we may take it again) — it&#x27;s <code>start = i</code>, not <code>i + 1</code>.</p>
+<h2>The insight</h2>
+<p>Sort the candidates first and carry <code>remaining = target − sum(path)</code>:</p>
+<ol><li><code>remaining == 0</code> → record a copy of the current path.</li><li>Loop <code>i</code> from <code>start</code> upward. If <code>candidates[i] &gt; remaining</code>, <strong>break</strong> — the list is sorted, so every later candidate is even bigger and hopeless.</li><li>Otherwise choose it, recurse with <code>start = i</code> and <code>remaining − candidates[i]</code>, then pop it back off. That pop is the backtrack: it restores the path so the next <code>i</code> starts from a clean slate.</li></ol>
+<p>The <code>start</code> rule kills duplicate orderings; the sorted <code>break</code> prunes dead branches early.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> Hard to bound tightly. The search tree has depth up to <code>target / min(candidates)</code> and branches up to <code>len(candidates)</code> wide, so it&#x27;s exponential in the worst case — roughly <code>O(k^(target/min))</code> explored nodes. That&#x27;s inherent: the number of valid combinations can itself be exponential.</li><li><strong>Space:</strong> <code>O(target / min(candidates))</code> for the recursion depth and the current <code>path</code>, plus the output list which holds all found combinations.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li>Recursing with <code>start = i + 1</code> instead of <code>i</code> — that forbids reuse and turns this into a subset problem (see Combination Sum II).</li><li>Appending <code>path</code> instead of <code>path.copy()</code> — you&#x27;d store a reference to a list that later mutations empty out; every recorded answer ends up identical.</li><li>Forgetting to sort, then trying to <code>break</code> on the size check — without sorting a small candidate can appear after a big one, so <code>break</code> would miss answers (you&#x27;d have to <code>continue</code> instead, losing the pruning).</li></ul>
+<h2>Transfer</h2>
+<p>The &quot;pass a <code>start</code> index so combinations are non-decreasing&quot; trick is the core of every *pick-a-subset* backtracking problem: <a href="../0040-combination-sum-ii/">Combination Sum II / 40</a> (each number used once, skip duplicates), <a href="../0078-subsets/">Subsets / 78</a>, <a href="../0077-combinations/">Combinations / 77</a>. Whenever you must enumerate groups and order-within-a-group doesn&#x27;t matter, enforce an order with a <code>start</code> cursor.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/09-backtracking/0039-combination-sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;39. Combination Sum — https://leetcode.com/problems/combination-sum/
+
+Given distinct positive numbers `candidates` and a `target`, return every unique
+combination whose numbers sum to `target`. Each candidate may be reused any
+number of times. Two combinations are the same if they use the same multiset of
+numbers, so order inside a combination does not matter.
+&quot;&quot;&quot;
+from typing import List
+
+
+def combination_sum(candidates: List[int], target: int) -&gt; List[List[int]]:
+    &quot;&quot;&quot;Backtracking over a non-decreasing &quot;start index&quot; so combinations are unique.
+
+    The whole problem is: build a running list, and at every step decide &quot;which
+    number do I add next?&quot;. If we let ourselves pick freely from all candidates
+    at every step, we&#x27;d generate the same multiset in many orders — [2,3] and
+    [3,2] — and count them as different.
+
+    The fix is an ordering rule: once we commit to starting our next pick at
+    index `start`, we never look back before `start`. That forces every
+    combination we emit to be non-decreasing by index, which makes each multiset
+    appear exactly once. Because reuse is allowed, the recursive call keeps the
+    SAME `start` (we may pick the current number again), not `start + 1`.
+
+    We also carry `remaining = target - chosen so far`. When it hits 0 we found a
+    combination; if it drops below the current candidate we can stop early once
+    candidates are sorted, because everything further is only larger.
+    &quot;&quot;&quot;
+    candidates.sort()  # lets us prune: once a candidate exceeds `remaining`, stop
+    result: List[List[int]] = []
+    path: List[int] = []
+
+    def backtrack(start: int, remaining: int) -&gt; None:
+        if remaining == 0:
+            result.append(path.copy())  # copy: path is mutated after this returns
+            return
+        for i in range(start, len(candidates)):
+            c = candidates[i]
+            if c &gt; remaining:
+                break  # sorted, so every later candidate is too big as well
+            path.append(c)
+            backtrack(i, remaining - c)  # i, not i+1 → candidate i may repeat
+            path.pop()  # undo the choice before trying the next candidate
+
+    backtrack(0, target)
+    return result
+
+
+def _normalize(combos: List[List[int]]) -&gt; set:
+    &quot;&quot;&quot;Order-independent view of the answer for stable comparison in tests.&quot;&quot;&quot;
+    return {tuple(sorted(c)) for c in combos}
+
+
+def _test() -&gt; None:
+    cases = [
+        (([2, 3, 6, 7], 7), [[2, 2, 3], [7]]),
+        (([2, 3, 5], 8), [[2, 2, 2, 2], [2, 3, 3], [3, 5]]),
+        (([2], 1), []),          # nothing sums to 1
+        (([2], 4), [[2, 2]]),    # single candidate reused
+        (([7, 3, 2], 18), None), # unsorted input must still work; check count below
+    ]
+    for (candidates, target), expected in cases:
+        got = combination_sum(candidates, target)
+        # every combination must actually sum to target
+        for combo in got:
+            assert sum(combo) == target, (candidates, target, combo)
+        # no duplicate multisets
+        assert len(_normalize(got)) == len(got), (candidates, target, got)
+        if expected is not None:
+            assert _normalize(got) == _normalize(expected), (candidates, target, got)
+    print(&quot;combination_sum: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">← 297 · Serialize and Deserialize Binary Tree</a><a class="pn next" href="../09-backtracking/0079-word-search.html">79 · Word Search →</a></nav></main>
+</div>
+</body>
+</html>

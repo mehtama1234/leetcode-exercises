@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>48. Rotate Image</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details open><summary>16. Matrix</summary><ul><li class="active"><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">16. Matrix</a> / <span>48</span></nav><article class="notes"><h1>48. Rotate Image</h1>
+<p><strong>Pattern:</strong> In-place matrix transform (transpose + reverse) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/rotate-image/</p>
+<h2>The problem in plain words</h2>
+<p>You have a square grid of numbers. Turn the whole picture 90 degrees clockwise — the top row becomes the right-hand column, the left column becomes the top row. The catch: you must change the <strong>same grid</strong>, not build a new one.</p>
+<h2>Why this matters</h2>
+<p>The real problem is <strong>applying a coordinate permutation to a 2D array in place</strong> — expressing a hard whole-grid remapping as a short sequence of easy pairwise swaps (here: transpose, then reverse each row).</p>
+<p>Image and graphics code does this constantly. Rotating a photo or a scanned page 90° is exactly this, and libraries implement it as transpose + flip to avoid a second buffer. Cameras and phones auto-rotate frames to match orientation. Matrix transpose itself is a hot primitive in numerical/linear-algebra kernels and in reshaping data for cache-friendly access. Tile-based games and CAD tools rotate sprites and selections the same way.</p>
+<p>What you&#x27;re solving for is <strong>memory</strong>: the naive version allocates a second <code>n×n</code> grid, doubling footprint. On a large image (millions of pixels) or a memory-constrained device, that extra buffer is the cost that matters. Decomposing the rotation into in-place swaps does it with <code>O(1)</code> extra space while still touching each cell a constant number of times.</p>
+<h2>Start from the obvious</h2>
+<p>Where does each cell go? Rotating clockwise, the cell at <code>(row, col)</code> lands at <code>(col, n-1-row)</code>. If you&#x27;re allowed scratch space, just write every cell to its destination in a fresh grid and copy it back.</p>
+<pre><code>result = new n x n grid
+for r in range(n):
+    for c in range(n):
+        result[c][n-1-r] = matrix[r][c]
+matrix = result</code></pre>
+<p>Correct, and it makes the target mapping explicit — which is exactly what you need before doing it in place. But it allocates a second grid, and the problem bans that. So the second grid is the waste to remove.</p>
+<h2>Find the waste</h2>
+<p>The extra grid exists only because a direct 90-degree rotation moves cells in a 4-way cycle (top→right→bottom→left→top), and juggling a 4-cell cycle in place is fiddly. The trick is to notice that the same end state is reachable by two <strong>pairwise swaps</strong> that are each easy to do in place.</p>
+<h2>The insight</h2>
+<p>A 90-degree clockwise rotation equals <strong>transpose, then reverse each row</strong>.</p>
+<ol><li><strong>Transpose</strong> — swap <code>matrix[r][c]</code> with <code>matrix[c][r]</code>. This mirrors the grid over its main diagonal, so what were rows become columns.</li><li><strong>Reverse each row</strong> — flip every row left-to-right.</li></ol>
+<pre><code>1 2 3     transpose     1 4 7     reverse rows     7 4 1
+4 5 6    -----------&gt;    2 5 8    -------------&gt;    8 5 2
+7 8 9                    3 6 9                      9 6 3</code></pre>
+<p>Both steps only swap cells that already exist, so no extra grid is needed. When transposing, only swap for <code>c &gt; r</code> — otherwise you swap each pair twice and undo your own work.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n^2)</code> — you touch each of the <code>n^2</code> cells a constant number of times (once in the transpose, once in the row reversal).</li><li><strong>Space:</strong> <code>O(1)</code> — everything is done with in-place swaps; no grid allocated.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>Transposing the whole grid</strong> (all <code>r, c</code>) instead of just <code>c &gt; r</code> — you swap each pair back to where it started and nothing changes.</li><li>Forgetting the reverse step, or reversing <strong>columns</strong> instead of rows (that gives you a counter-clockwise rotation).</li><li>Reassigning <code>matrix = result</code> at the end — that rebinds a local name and does <strong>not</strong> mutate the caller&#x27;s grid. Copy row contents back with <code>matrix[r][:] = ...</code>.</li></ul>
+<h2>Transfer</h2>
+<p>The move &quot;a hard permutation = a sequence of simple in-place swaps&quot; carries over to other grid transforms: transpose alone, horizontal/vertical flips, and counter-clockwise rotation (reverse rows first, then transpose — or transpose then reverse columns). It&#x27;s the same toolkit used in <a href="../0054-spiral-matrix/">Spiral Matrix / 54</a> and <a href="../0073-set-matrix-zeroes/">Set Matrix Zeroes / 73</a>, where the win is doing the work inside the grid you were handed.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/16-matrix/0048-rotate-image/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;48. Rotate Image — https://leetcode.com/problems/rotate-image/
+
+Rotate an n x n matrix 90 degrees clockwise, **in place**. You may not allocate
+another matrix — the input grid itself must end up rotated.
+
+Two implementations are kept side by side. The first shows the honest &quot;where does
+each cell go?&quot; reasoning using an extra matrix, so the target mapping is explicit.
+The second collapses that mapping into two in-place passes (transpose, then
+reverse each row) — which is what &quot;no extra matrix&quot; forces you to discover.
+&quot;&quot;&quot;
+from typing import List
+import copy
+
+
+def rotate_with_copy(matrix: List[List[int]]) -&gt; None:
+    &quot;&quot;&quot;Compute the rotation into a fresh grid, then copy it back. O(n^2) space.
+
+    This is the honest first thought. Rotating 90 degrees clockwise sends the cell
+    at (row, col) to (col, n-1-row): the top row becomes the right column, and so
+    on. If we&#x27;re allowed scratch space we just write every source cell to its
+    destination and copy the result back. It works, but the extra n x n grid is the
+    waste — the problem explicitly bans it, so we look for a mapping we can apply
+    in place next.
+    &quot;&quot;&quot;
+    n = len(matrix)
+    result = [[0] * n for _ in range(n)]
+    for r in range(n):
+        for c in range(n):
+            result[c][n - 1 - r] = matrix[r][c]
+    for r in range(n):
+        matrix[r][:] = result[r]  # copy back so the mutation is in place
+
+
+def rotate(matrix: List[List[int]]) -&gt; None:
+    &quot;&quot;&quot;Transpose, then reverse each row. In place, O(1) extra space.
+
+    Key insight: a 90-degree clockwise rotation is exactly two simpler moves that
+    each swap cells within the grid.
+
+      1. Transpose — swap matrix[r][c] with matrix[c][r]. This flips the grid over
+         its main diagonal, turning rows into columns.
+      2. Reverse each row left-to-right.
+
+    Do the transpose only for c &gt; r so each pair is swapped once (not swapped back).
+    Neither step needs scratch storage, so the whole rotation happens in place.
+    &quot;&quot;&quot;
+    n = len(matrix)
+    # 1. transpose across the main diagonal
+    for r in range(n):
+        for c in range(r + 1, n):
+            matrix[r][c], matrix[c][r] = matrix[c][r], matrix[r][c]
+    # 2. reverse each row
+    for row in matrix:
+        row.reverse()
+
+
+def _test() -&gt; None:
+    cases = [
+        (
+            [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+            [[7, 4, 1], [8, 5, 2], [9, 6, 3]],
+        ),
+        (
+            [[5, 1, 9, 11], [2, 4, 8, 10], [13, 3, 6, 7], [15, 14, 12, 16]],
+            [[15, 13, 2, 5], [14, 3, 4, 1], [12, 6, 8, 9], [16, 7, 10, 11]],
+        ),
+        # edge: 1x1 grid is unchanged
+        ([[42]], [[42]]),
+        # edge: 2x2 grid
+        ([[1, 2], [3, 4]], [[3, 1], [4, 2]]),
+    ]
+    for grid, expected in cases:
+        a = copy.deepcopy(grid)
+        rotate(a)
+        assert a == expected, (grid, a)
+        # the copy-based version must agree, and both mutate in place
+        b = copy.deepcopy(grid)
+        rotate_with_copy(b)
+        assert b == expected, (grid, b)
+    print(&quot;rotate_image: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../15-intervals/0253-meeting-rooms-ii.html">← 253 · Meeting Rooms II</a><a class="pn next" href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix →</a></nav></main>
+</div>
+</body>
+</html>

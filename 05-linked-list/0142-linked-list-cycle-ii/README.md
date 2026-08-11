@@ -10,6 +10,25 @@ Same list-with-a-loop setup as [141](../0141-linked-list-cycle/), but now don't
 just answer "is there a cycle?" — return the *node where the loop starts* (the
 first node that gets revisited). No cycle → return `None`.
 
+## Why this matters
+
+This goes past "is there a loop?" to "*where* does the loop begin?" — pinpointing
+the exact entry point of a cycle. The fundamental operation is still constant-space
+cycle detection, but with the extra math (reset one pointer to the head, then step
+both one at a time) that locates the join node instead of merely proving it exists.
+
+Knowing the entry point matters when a cycle is a problem you have to *fix*, not
+just flag. A build or dependency graph with a circular import needs to report the
+specific edge that closes the loop so a human can cut it. Sequence generators
+(pseudo-random streams, hashing chains, state machines) that eventually repeat
+have a "tail" leading into a repeating cycle, and finding where the repetition
+starts tells you the period. Debuggers and leak analyzers tracing self-referential
+pointer structures want the offending node, not a yes/no.
+
+What you're solving for is getting that precise location in one pass with O(1)
+memory — no hash set of every visited node — which is what makes it usable on
+large graphs and inside tight runtimes.
+
 ## Start from the obvious
 
 The cycle's start is the first node you'd encounter twice. So remember each node

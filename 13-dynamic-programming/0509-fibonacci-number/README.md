@@ -12,6 +12,18 @@ two before it: `0, 1, 1, 2, 3, 5, 8, ...`. Given `n`, return `F(n)`.
 This problem is the "hello world" of dynamic programming — it's the smallest
 place where you can watch the whole DP idea appear.
 
+## Why this matters
+
+Fibonacci itself is a toy, but the operation it teaches is the whole of dynamic programming: **find the repeated subproblem, solve it once, reuse the answer.** The recurrence "each value depends on a fixed number of earlier values" is the smallest possible instance of memoization and of look-back rolling state.
+
+Where the *method* (and this exact look-back-a-few-steps shape) really shows up:
+
+- **Any DP-solved system** — build tools memoizing recomputed results, incremental compilers, spreadsheet recalculation, and query planners all rest on "cache the subproblem."
+- **Linear recurrences** — population/growth models, signal filters (IIR), and amortization schedules that reference the last few states.
+- **Counting problems** — tilings and constrained-string counts share Fibonacci's recurrence exactly.
+
+The good solution buys the canonical DP win: **exponential recomputation → `O(n)` time** by solving each subproblem once, and then the rolling-two-variables squeeze buys **`O(1)` memory** because the recurrence never reaches back more than two steps. Learn it here and you carry it to every harder DP.
+
 ## Start from the obvious
 
 The definition *is* an algorithm. Turn it straight into recursion:

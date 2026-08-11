@@ -11,6 +11,14 @@ can spell it by starting at some cell and repeatedly stepping to an
 up/down/left/right neighbor, never stepping on the same cell twice. Return all
 the words from the list that are on the board.
 
+## Why this matters
+
+The deeper problem is searching for *many patterns at once* over a shared space, instead of running one search per pattern. The fundamental operation is driving a single traversal with a trie of all the targets, so overlapping patterns are explored together and a dead end kills the search for every pattern that shares it.
+
+This "match many strings in one pass" idea is a real workhorse. Multi-keyword scanners — intrusion detection, spam and malware filters, content moderation — check text against thousands of patterns simultaneously (Aho-Corasick is the classic trie-driven version). Search engines and DNA/sequence tools screen for many motifs at once. Log analyzers and DLP systems flag any of a large ruleset in a single scan. Boggle-style word-game solvers are this exact grid version.
+
+What you're solving for is collapsing an `O(patterns × search_cost)` problem into one guided search, and using "fell off the trie" as instant pruning — a single unmatched letter eliminates all the words that would have needed it. That's what makes screening against huge pattern sets fast enough to run in real time.
+
 ## Start from the obvious
 
 We already know how to check whether *one* word is on the board — that's

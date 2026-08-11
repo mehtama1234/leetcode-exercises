@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>268. Missing Number</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details open><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li class="active"><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">17. Binary: Bit Manipulation</a> / <span>268</span></nav><article class="notes"><h1>268. Missing Number</h1>
+<p><strong>Pattern:</strong> Bit manipulation (XOR cancellation) / arithmetic invariant <strong>Difficulty:</strong> Easy <strong>Link:</strong> https://leetcode.com/problems/missing-number/</p>
+<h2>The problem in plain words</h2>
+<p>You have an array of <code>n</code> distinct numbers, and they&#x27;re supposed to be the whole range <code>0, 1, 2, ..., n</code> — that&#x27;s <code>n + 1</code> slots — but one number is missing. Find the one that isn&#x27;t there.</p>
+<p>Example: <code>[3, 0, 1]</code>. The full range is <code>0, 1, 2, 3</code>. The array has <code>0, 1, 3</code>, so <code>2</code> is missing.</p>
+<h2>Why this matters</h2>
+<p>The deeper idea is <strong>XOR cancellation</strong>: pairs that appear an even number of times vanish, so the one unpaired element survives — you find a missing (or lone) item without storing what you&#x27;ve already seen. The equivalent &quot;sum invariant&quot; version uses a known total and subtracts what&#x27;s present. Both replace a lookup structure with a single accumulating register.</p>
+<p>Where the pattern is genuinely used: RAID and error-detection compute a parity block as the XOR of the others, so a lost disk is reconstructed by XOR — exactly &quot;recover the missing element.&quot; Checksums and simple integrity checks fold data with XOR. Reconciliation and data-integrity tasks compare &quot;what should be present&quot; against &quot;what is&quot; via a sum or XOR digest to spot the one dropped record. Deduplication problems (&quot;find the single unpaired value&quot;) collapse to the same <code>x ^ x == 0</code> trick.</p>
+<p>What we buy is <code>O(n)</code> time with <code>O(1)</code> space and no overflow risk — one pass, one integer, no hash set — which matters when the dataset is huge or the check runs on a memory-starved or streaming path.</p>
+<h2>Start from the obvious</h2>
+<p>Put the array in a set and walk <code>0..n</code> asking &quot;is this one here?&quot;:</p>
+<pre><code>seen = set(nums)
+for v in range(len(nums) + 1):
+    if v not in seen:
+        return v</code></pre>
+<p>That&#x27;s <code>O(n)</code> time but <code>O(n)</code> extra space. It works, and it makes the structure clear: we&#x27;re comparing &quot;the range that should be there&quot; against &quot;what actually is there.&quot; The question is whether we can do that comparison without a whole extra set.</p>
+<h2>Find the waste</h2>
+<p>The set stores every present number just to detect the one absent one. That&#x27;s a lot of bookkeeping for a single answer. Two cheaper ways to capture &quot;what&#x27;s present vs. what should be present&quot;:</p>
+<p><strong>Sum.</strong> The numbers <code>0..n</code> add up to a fixed total <code>n(n+1)/2</code>. The actual array falls short of that total by exactly the missing value:</p>
+<pre><code>missing = n(n+1)/2 - sum(nums)</code></pre>
+<p><strong>XOR.</strong> Even better, because it never grows large numbers or overflows.</p>
+<h2>The insight</h2>
+<p>XOR has two properties that make missing-element problems collapse:</p>
+<ul><li><code>x ^ x == 0</code> — any value XOR&#x27;d with itself vanishes.</li><li><code>x ^ 0 == x</code> — XOR with zero changes nothing.</li></ul>
+<p>And XOR doesn&#x27;t care about order. So XOR together <strong>all the indices <code>0..n</code></strong> and <strong>all the values in the array</strong>. Every number that shows up in both lists pairs off and cancels to <code>0</code>. The missing number appears as an index but has no matching value, so it&#x27;s the lone survivor.</p>
+<p>Concretely for <code>nums = [3, 0, 1]</code> (n = 3, missing 2). Seed with <code>n = 3</code>, then fold in each <code>i ^ nums[i]</code>:</p>
+<pre><code>acc = 3                          (seed with n, the top of the value range)
+i=0: acc ^= 0 ^ 3  -&gt;  3^0^3 = 0
+i=1: acc ^= 1 ^ 0  -&gt;  0^1^0 = 1
+i=2: acc ^= 2 ^ 1  -&gt;  1^2^1 = 2   &lt;- survivor = missing number</code></pre>
+<p>We seed <code>acc</code> with <code>n</code> because the indices only reach <code>0..n-1</code>, but the values range over <code>0..n</code>. Seeding folds that top value <code>n</code> in.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n)</code> — a single pass, one XOR per element.</li><li><strong>Space:</strong> <code>O(1)</code> — just the running accumulator; no set, no sorted copy.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li>Forgetting the range is <code>0..n</code> (n+1 values), not <code>0..n-1</code>. That&#x27;s why you must fold in <code>n</code> separately (as the seed, or with an extra XOR).</li><li>Using the sum formula in a fixed-width language: <code>n(n+1)/2</code> can overflow for large <code>n</code>. XOR never does — it stays within the same bit width.</li><li>Assuming the input is sorted. It isn&#x27;t, and XOR doesn&#x27;t need it to be.</li></ul>
+<h2>Transfer</h2>
+<p>XOR-cancellation is the go-to when elements pair up and you want the odd one out: <a href="../">Single Number / 136</a> (every number appears twice except one — pure XOR of the whole array). The general move is &quot;encode presence as XOR and let duplicates annihilate.&quot; The sum-invariant idea also transfers to &quot;find the duplicate/missing when one value is off.&quot;</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/17-bit-manipulation/0268-missing-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;268. Missing Number — https://leetcode.com/problems/missing-number/
+
+You&#x27;re given an array containing `n` distinct numbers taken from the range
+`0..n` (that&#x27;s n+1 possible values). Exactly one value in that range is missing.
+Return it.
+
+Two implementations: the sum formula (the clean arithmetic idea) and XOR (the
+bit trick that needs no addition and can&#x27;t overflow).
+&quot;&quot;&quot;
+from typing import List
+
+
+def missing_number_sum(nums: List[int]) -&gt; int:
+    &quot;&quot;&quot;Compare the ideal sum to the actual sum. O(n) time, O(1) space.
+
+    The numbers 0..n add up to a known total, n*(n+1)/2. If one value is missing,
+    the actual sum falls short by exactly that value. So:
+
+        missing = expected_sum - actual_sum
+
+    Simple and correct; the only worry (in fixed-width languages) is that the
+    sums can overflow. Python integers don&#x27;t overflow, but XOR sidesteps it
+    entirely.
+    &quot;&quot;&quot;
+    n = len(nums)
+    expected = n * (n + 1) // 2
+    return expected - sum(nums)
+
+
+def missing_number(nums: List[int]) -&gt; int:
+    &quot;&quot;&quot;XOR every index and every value together. O(n) time, O(1) space.
+
+    Two facts about XOR make this work:
+      - x ^ x == 0  (a value cancels itself)
+      - x ^ 0 == x  (0 is the identity)
+
+    XOR is also order-independent. So if we XOR together all the indices 0..n AND
+    all the values in the array, every number that appears in *both* lists cancels
+    to 0, and only the missing one — which appears as an index but not as a value
+    — survives.
+
+    Example nums = [3, 0, 1] (n = 3, missing 2). Fold in i then nums[i]:
+
+        acc = 3                       (start with n = 3)
+        i=0: acc ^= 0 ^ 3 = 3^0^3 = 0
+        i=1: acc ^= 1 ^ 0 = 0^1^0 = 1
+        i=2: acc ^= 2 ^ 1 = 1^2^1 = 2   &lt;- the missing value
+
+    We seed `acc` with n because indices only run 0..n-1, but the value range is
+    0..n, so n itself is a value we must fold in from somewhere.
+    &quot;&quot;&quot;
+    acc = len(nums)  # this is n; folds in the top of the value range
+    for i, x in enumerate(nums):
+        acc ^= i ^ x
+    return acc
+
+
+def _test() -&gt; None:
+    cases = [
+        ([3, 0, 1], 2),
+        ([0, 1], 2),
+        ([9, 6, 4, 2, 3, 5, 7, 0, 1], 8),
+        ([0], 1),   # single element, top of range missing
+        ([1], 0),   # single element, bottom of range missing
+    ]
+    for nums, expected in cases:
+        assert missing_number(nums) == expected, nums
+        assert missing_number_sum(nums) == expected, nums
+    print(&quot;missing_number: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../17-bit-manipulation/0338-counting-bits.html">← 338 · Counting Bits</a><a class="pn next" href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits →</a></nav></main>
+</div>
+</body>
+</html>

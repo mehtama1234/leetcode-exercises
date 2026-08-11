@@ -9,6 +9,25 @@
 You have a singly linked list. Return the node in the middle. If the list has an
 even number of nodes there are two "middles" — return the second one.
 
+## Why this matters
+
+The deeper problem is finding a *fractional position* in a sequence whose length
+you don't know up front and can't cheaply measure. The fundamental trick is the
+slow/fast pointer: advance one pointer twice as fast, and when it hits the end the
+slow one is at the middle — the length falls out for free, in a single pass.
+
+That "two cursors moving at different rates" idea is a reusable primitive. It's how
+you split a list in half for merge sort or the reorder problem, how streaming
+algorithms sample or bisect data whose size isn't known in advance, and the same
+family of tricks underlies reservoir sampling and single-pass median-ish estimates
+over a feed you can't rewind. Cycle detection (problems 141/142) is the same two-
+speed idea aimed at a different goal.
+
+What you're solving for is one pass and O(1) memory: no counting the length first
+and walking back, and no buffering nodes to index the middle. When the sequence is
+huge or arrives as a stream you get to read only once, "reach the middle by the
+time the fast pointer reaches the end" is what makes it cheap.
+
 ## Start from the obvious
 
 You can only find the middle *index* if you know the length. So count first,

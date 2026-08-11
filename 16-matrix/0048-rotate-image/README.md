@@ -10,6 +10,14 @@ You have a square grid of numbers. Turn the whole picture 90 degrees clockwise �
 the top row becomes the right-hand column, the left column becomes the top row.
 The catch: you must change the **same grid**, not build a new one.
 
+## Why this matters
+
+The real problem is **applying a coordinate permutation to a 2D array in place** — expressing a hard whole-grid remapping as a short sequence of easy pairwise swaps (here: transpose, then reverse each row).
+
+Image and graphics code does this constantly. Rotating a photo or a scanned page 90° is exactly this, and libraries implement it as transpose + flip to avoid a second buffer. Cameras and phones auto-rotate frames to match orientation. Matrix transpose itself is a hot primitive in numerical/linear-algebra kernels and in reshaping data for cache-friendly access. Tile-based games and CAD tools rotate sprites and selections the same way.
+
+What you're solving for is **memory**: the naive version allocates a second `n×n` grid, doubling footprint. On a large image (millions of pixels) or a memory-constrained device, that extra buffer is the cost that matters. Decomposing the rotation into in-place swaps does it with `O(1)` extra space while still touching each cell a constant number of times.
+
 ## Start from the obvious
 
 Where does each cell go? Rotating clockwise, the cell at `(row, col)` lands at

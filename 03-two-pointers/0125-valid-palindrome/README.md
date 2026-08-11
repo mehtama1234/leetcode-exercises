@@ -11,6 +11,18 @@ as the same, and ask: does what's left read the same forwards and backwards?
 So `"A man, a plan, a canal: Panama"` becomes `"amanaplanacanalpanama"`, which is
 a palindrome. Return true/false.
 
+## Why this matters
+
+Stripped of the wordplay, this is **verifying a mirror-symmetry property by comparing paired positions from both ends inward**, while *ignoring* elements that don't count — and doing it without building a cleaned-up copy first. The fundamental operation is a filtered two-ended scan that can bail the instant a pair disagrees.
+
+The same "compare from both ends, skip the noise" shape shows up in real validation and parsing work:
+
+- **Input sanitization and format checks** — validating that a token, serial number, or ISBN-style code reads consistently after discarding separators like dashes and spaces.
+- **DNA/sequence bioinformatics** — detecting palindromic (reverse-complement) regions, which mark restriction sites.
+- **Diff and equality checks** — confirming two ends of a buffer agree without allocating a reversed clone.
+
+What we're solving for is **memory and early exit**: the naive "clean it, reverse it, compare" is also linear time but allocates two throwaway strings; the two-pointer version drops to `O(1)` extra space and stops on the first mismatch instead of always processing the whole input.
+
 ## Start from the obvious
 
 The word "palindrome" literally means "equals its reverse", so turn that straight

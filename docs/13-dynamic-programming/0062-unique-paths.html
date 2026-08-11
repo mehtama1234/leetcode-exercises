@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>62. Unique Paths</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details open><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li class="active"><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">13. Dynamic Programming: Memoization / Tabulation</a> / <span>62</span></nav><article class="notes"><h1>62. Unique Paths</h1>
+<p><strong>Pattern:</strong> Dynamic programming (grid, sum of two neighbors) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/unique-paths/</p>
+<h2>The problem in plain words</h2>
+<p>A robot starts in the top-left cell of an <code>m × n</code> grid and wants to reach the bottom-right cell. It can only ever step <strong>right</strong> or <strong>down</strong>. How many different paths get it there?</p>
+<h2>Why this matters</h2>
+<p>The real operation here is <strong>counting the number of ways to reach a state by summing the ways to reach the states that lead into it</strong> — the additive core of dynamic programming. You&#x27;re not walking paths one by one; you&#x27;re building the count into each cell from its predecessors and reusing it.</p>
+<p>Where &quot;count/aggregate over paths through a grid or DAG&quot; genuinely appears:</p>
+<ul><li><strong>Probability and reliability</strong> — summing weighted paths through a lattice is exactly how you compute reaching probabilities in Markov chains or grid random walks.</li><li><strong>Sequence alignment</strong> — the same &quot;come from up/left/diagonal&quot; grid underlies edit-distance and DNA alignment scoring.</li><li><strong>Routing and layout</strong> — counting monotone routes on a chip or map grid, and cost-minimizing variants (swap <code>+</code> for <code>min</code>) for cheapest-path planning.</li></ul>
+<p>What the good solution buys is a jump from <strong>exponential recomputation to <code>O(m·n)</code> time</strong>, and the rolling-row trick trades the full grid for <strong><code>O(n)</code> memory</strong> — the resource that matters when the grid is large or you only need the final count.</p>
+<h2>Start from the obvious</h2>
+<p>The honest first idea is to just walk every possibility: from each cell, try going right and try going down, and count the times you land on the goal.</p>
+<pre><code>def count(i, j):
+    if i == m-1 and j == n-1: return 1   # arrived
+    if i &gt;= m or j &gt;= n:       return 0   # walked off the grid
+    return count(i+1, j) + count(i, j+1)  # try down, try right</code></pre>
+<p>Correct — but it explores a branching tree of moves, and the same cell gets recounted from countless different partial paths. That&#x27;s exponential.</p>
+<h2>Find the waste</h2>
+<p>The recursion keeps asking &quot;how many paths from cell <code>(i, j)</code> to the end?&quot; for the *same* <code>(i, j)</code> over and over. There are only <code>m × n</code> cells, so there are only <code>m × n</code> distinct subproblems. Solve each once.</p>
+<p>Let&#x27;s flip it to count paths *into* a cell instead of out of it. Define:</p>
+<blockquote><code>dp[i][j]</code> = number of distinct paths from the start to cell <code>(i, j)</code>.</blockquote>
+<p>How can the robot arrive at <code>(i, j)</code>? Its last move was either a step <strong>down</strong> from <code>(i-1, j)</code> or a step <strong>right</strong> from <code>(i, j-1)</code>. Those are the only two doors in, and no path uses both as its final step, so the counts simply add:</p>
+<pre><code>dp[i][j] = dp[i-1][j] + dp[i][j-1]</code></pre>
+<p>The edges are the base cases: the entire top row and left column are <code>1</code>. There&#x27;s exactly one way to reach any top-edge cell (keep going right the whole time) and one way to reach any left-edge cell (keep going down). Fill the grid top-to-bottom, left-to-right, and the answer is the bottom-right cell.</p>
+<h2>The space optimization</h2>
+<p><code>dp[i][j]</code> only reads the cell <strong>above</strong> it and the cell <strong>to its left</strong> — never anything two rows back. So the whole grid is overkill; one row is enough.</p>
+<p>Keep a single array <code>row</code>, start it as all <code>1</code>s (the top row). Then sweep it left-to-right, <code>m-1</code> times. At the instant you update column <code>j</code>:</p>
+<ul><li><code>row[j]</code> still holds its value from the previous pass = the cell <strong>above</strong>, and</li><li><code>row[j-1]</code> was already updated this pass = the cell <strong>to the left</strong>.</li></ul>
+<p>So <code>row[j] += row[j-1]</code> quietly computes <code>dp[i-1][j] + dp[i][j-1]</code> in place. After all passes, <code>row[n-1]</code> is the answer. Space drops from <code>O(m·n)</code> to <code>O(n)</code>.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Brute-force recursion:</strong> <code>O(2^(m+n))</code> time.</li><li><strong>2-D DP:</strong> <code>O(m·n)</code> time, <code>O(m·n)</code> space.</li><li><strong>Rolling row:</strong> <code>O(m·n)</code> time, <code>O(n)</code> space.</li></ul>
+<p>(There&#x27;s also a pure-math answer: the robot makes <code>m-1</code> downs and <code>n-1</code> rights in some order, so the count is the binomial <code>C(m+n-2, m-1)</code>. The DP is the more transferable lesson.)</p>
+<h2>Pitfalls</h2>
+<ul><li>Getting the base cases wrong: the top row and left column are <code>1</code>, not <code>0</code>. If they were <code>0</code>, every cell would stay <code>0</code>.</li><li>Grid dimensions: <code>m</code> is rows, <code>n</code> is columns; the answer is <code>dp[m-1][n-1]</code>.</li><li>In the rolling version, sweeping the row <strong>left to right</strong> is essential — that order is what guarantees <code>row[j-1]</code> is already the new value while <code>row[j]</code> is still the old one.</li></ul>
+<h2>Transfer</h2>
+<p>The &quot;sum the ways in from the neighbors you&#x27;re allowed to come from&quot; idea extends directly to <a href="https://leetcode.com/problems/unique-paths-ii/">Unique Paths II / 63</a> (set blocked cells to <code>0</code>) and <a href="https://leetcode.com/problems/minimum-path-sum/">Minimum Path Sum / 64</a> (swap the <code>+</code> for a <code>min</code> over the same two neighbors, plus the cell&#x27;s cost). Any grid where you move in a fixed set of directions and combine sub-results from adjacent cells is this same pattern.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0062-unique-paths/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;62. Unique Paths — https://leetcode.com/problems/unique-paths/
+
+A robot sits in the top-left cell of an m x n grid and wants to reach the
+bottom-right cell. It can only move right or down. Return how many distinct
+paths there are.
+
+The full 2-D table makes the recurrence obvious; a 1-row rolling version follows
+because each row only depends on the row above it.
+&quot;&quot;&quot;
+from typing import List
+
+
+def unique_paths_2d(m: int, n: int) -&gt; int:
+    &quot;&quot;&quot;Bottom-up 2-D table. O(m*n) time, O(m*n) space.
+
+    Define dp[i][j] = number of distinct paths from the top-left corner to cell
+    (i, j). To arrive at (i, j) the robot&#x27;s last move was either a step DOWN from
+    (i-1, j) or a step RIGHT from (i, j-1) — those are the only two ways in, and
+    they lead to disjoint sets of paths. So:
+
+        dp[i][j] = dp[i-1][j] + dp[i][j-1]
+
+    The top row and left column are all 1: there&#x27;s exactly one way to reach any
+    cell on the top edge (keep going right) or left edge (keep going down).
+    &quot;&quot;&quot;
+    dp: List[List[int]] = [[1] * n for _ in range(m)]
+    for i in range(1, m):
+        for j in range(1, n):
+            dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
+    return dp[m - 1][n - 1]
+
+
+def unique_paths(m: int, n: int) -&gt; int:
+    &quot;&quot;&quot;Same recurrence, one rolling row. O(m*n) time, O(n) space.
+
+    dp[i][j] = dp[i-1][j] + dp[i][j-1] only reads the cell directly above and the
+    cell directly to the left. If we keep a single row and update it left to
+    right, then at the moment we compute column j:
+      - row[j] still holds the OLD value = dp[i-1][j] (the cell above), and
+      - row[j-1] already holds the NEW value = dp[i][j-1] (the cell to the left).
+    So `row[j] += row[j-1]` folds both terms in place. Start the row as all 1s
+    (the top row), and each pass turns it into the next row down.
+    &quot;&quot;&quot;
+    row = [1] * n
+    for _ in range(1, m):
+        for j in range(1, n):
+            row[j] += row[j - 1]
+    return row[n - 1]
+
+
+def _test() -&gt; None:
+    cases = [
+        ((3, 7), 28),   # official example 1
+        ((3, 2), 3),    # official example 2
+        ((1, 1), 1),    # single cell — one (empty) path
+        ((1, 10), 1),   # single row — only one way (all right)
+        ((10, 1), 1),   # single column — only one way (all down)
+        ((3, 3), 6),
+    ]
+    for (m, n), expected in cases:
+        assert unique_paths(m, n) == expected, (m, n)
+        assert unique_paths_2d(m, n) == expected, (m, n)
+    print(&quot;unique_paths: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../13-dynamic-programming/1143-longest-common-subsequence.html">← 1143 · Longest Common Subsequence</a><a class="pn next" href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People →</a></nav></main>
+</div>
+</body>
+</html>

@@ -11,6 +11,26 @@ has both of them somewhere below it. "Below it" includes itself — a node count
 as its own ancestor. That deepest shared ancestor is the point where the paths
 down to the two nodes split apart.
 
+## Why this matters
+
+The deeper problem is **finding where two paths through a hierarchy diverge** —
+the deepest point that still contains both targets. In a BST the ordering gives
+you a shortcut: the split point is the first node that sits *between* the two
+values. The fundamental operation is a single guided descent driven by
+comparisons, not a search of the whole tree.
+
+This "lowest common ancestor" question is genuinely useful. Version-control
+systems find the merge base of two branches — the LCA in the commit tree — to do
+a three-way merge. Taxonomies and category trees compute the most specific shared
+parent of two items. Access-control and org hierarchies ask "what's the narrowest
+scope containing both of these?" Routing over tree topologies uses the meeting
+point of two root paths.
+
+What you're solving for is **O(h) time and O(1) space**: because the BST's order
+tells you which way to turn at each node, you never store paths or explore
+branches that can't contain the answer. It's the payoff for data that keeps
+itself sorted — the structure answers the query by being walked once.
+
 ## Start from the obvious
 
 In a general binary tree you'd have to search both subtrees and bubble the answer

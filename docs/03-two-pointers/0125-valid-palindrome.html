@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>125. Valid Palindrome</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details open><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li class="active"><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">3. Arrays &amp; Strings: Two Pointers</a> / <span>125</span></nav><article class="notes"><h1>125. Valid Palindrome</h1>
+<p><strong>Pattern:</strong> Two pointers (converging from both ends) <strong>Difficulty:</strong> Easy <strong>Link:</strong> https://leetcode.com/problems/valid-palindrome/</p>
+<h2>The problem in plain words</h2>
+<p>Throw away everything that isn&#x27;t a letter or a digit, treat upper- and lowercase as the same, and ask: does what&#x27;s left read the same forwards and backwards? So <code>&quot;A man, a plan, a canal: Panama&quot;</code> becomes <code>&quot;amanaplanacanalpanama&quot;</code>, which is a palindrome. Return true/false.</p>
+<h2>Why this matters</h2>
+<p>Stripped of the wordplay, this is <strong>verifying a mirror-symmetry property by comparing paired positions from both ends inward</strong>, while *ignoring* elements that don&#x27;t count — and doing it without building a cleaned-up copy first. The fundamental operation is a filtered two-ended scan that can bail the instant a pair disagrees.</p>
+<p>The same &quot;compare from both ends, skip the noise&quot; shape shows up in real validation and parsing work:</p>
+<ul><li><strong>Input sanitization and format checks</strong> — validating that a token, serial number, or ISBN-style code reads consistently after discarding separators like dashes and spaces.</li><li><strong>DNA/sequence bioinformatics</strong> — detecting palindromic (reverse-complement) regions, which mark restriction sites.</li><li><strong>Diff and equality checks</strong> — confirming two ends of a buffer agree without allocating a reversed clone.</li></ul>
+<p>What we&#x27;re solving for is <strong>memory and early exit</strong>: the naive &quot;clean it, reverse it, compare&quot; is also linear time but allocates two throwaway strings; the two-pointer version drops to <code>O(1)</code> extra space and stops on the first mismatch instead of always processing the whole input.</p>
+<h2>Start from the obvious</h2>
+<p>The word &quot;palindrome&quot; literally means &quot;equals its reverse&quot;, so turn that straight into code: clean the string, then compare it to its own reverse.</p>
+<pre><code>kept = [c.lower() for c in s if c.isalnum()]
+return kept == kept[::-1]</code></pre>
+<p>That&#x27;s correct and easy to read. It&#x27;s <code>O(n)</code> time — but look at what it *builds*: a filtered copy of the string, and then a second reversed copy of that. We create two new sequences just to answer a single yes/no question.</p>
+<h2>Find the waste</h2>
+<p>We never actually need the reversed string as a *thing*. Being a palindrome is a statement about pairs: character 0 must match the last character, character 1 must match the second-to-last, and so on toward the middle. That&#x27;s a claim about the two ends, checked repeatedly as you move inward.</p>
+<p>So instead of materializing a reversed copy and comparing, compare the ends directly. That&#x27;s the two-pointer move: one index at the far left, one at the far right, stepping toward each other.</p>
+<h2>The insight</h2>
+<p>Keep a <code>left</code> index at the start and a <code>right</code> index at the end. Each round:</p>
+<ol><li>Slide <code>left</code> rightward past any non-alphanumeric character.</li><li>Slide <code>right</code> leftward past any non-alphanumeric character.</li><li>Compare the two lowercased characters they land on. If they differ, return false immediately.</li><li>Step both inward and repeat until they meet.</li></ol>
+<p>The skipping happens in place — we filter *while* we compare instead of building a filtered string first. Nothing is allocated, so the extra space drops to <code>O(1)</code>.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n)</code> — each pointer moves inward only, so together they touch each character at most once.</li><li><strong>Space:</strong> <code>O(1)</code> — just two integer indices; no copies of the string.</li></ul>
+<p>The naive version is also <code>O(n)</code> time, but this trades its <code>O(n)</code> scratch space for constant space, and it can bail out early on the first mismatched pair.</p>
+<h2>Pitfalls</h2>
+<ul><li>Forgetting to skip non-alphanumeric characters on <strong>both</strong> sides — a comma on the left will never match a letter on the right.</li><li>Guarding the inner skip loops with <code>left &lt; right</code> so the pointers don&#x27;t cross past each other when the string is all punctuation.</li><li>The <code>&quot;0P&quot;</code> trap: after lowercasing, <code>&#x27;0&#x27;</code> (digit) and <code>&#x27;p&#x27;</code> (letter) are still different — case-folding does not merge digits with letters.</li><li>Treating characters like <code>_</code> as &quot;part of a word&quot;: <code>isalnum()</code> correctly rejects underscores; a hand-rolled &quot;is letter or digit&quot; check often gets this wrong.</li></ul>
+<h2>Transfer</h2>
+<p>Converging two pointers from both ends is the core trick for <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a> and <a href="../0011-container-with-most-water/">Container With Most Water / 11</a>, and the &quot;walk inward comparing mirrored positions, skipping what doesn&#x27;t count&quot; shape shows up in palindrome variants like *Valid Palindrome II* (allow one deletion). Reach for it whenever a question is really about the relationship between the two ends of a sequence.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/03-two-pointers/0125-valid-palindrome/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;125. Valid Palindrome — https://leetcode.com/problems/valid-palindrome/
+
+Given a string, decide whether it reads the same forwards and backwards once you
+keep only letters and digits (ignoring case and everything else).
+&quot;&quot;&quot;
+from typing import List
+
+
+def is_palindrome_clean(s: str) -&gt; bool:
+    &quot;&quot;&quot;Filter into a clean string, then compare it to its reverse. O(n) time, O(n) space.
+
+    This is the honest first thought: &quot;palindrome&quot; means &quot;equals its reverse&quot;, so
+    strip the junk, lowercase, and test `t == t[::-1]`. It&#x27;s correct and readable,
+    but it allocates two whole new strings (the filtered copy and its reversed
+    copy) just to answer a yes/no question — that&#x27;s the waste we remove next.
+    &quot;&quot;&quot;
+    kept = [c.lower() for c in s if c.isalnum()]
+    return kept == kept[::-1]
+
+
+def is_palindrome(s: str) -&gt; bool:
+    &quot;&quot;&quot;Two pointers walking inward. O(n) time, O(1) extra space.
+
+    Key insight: a palindrome is defined by a mirror relationship — the first
+    kept character must equal the last, the second must equal the second-to-last,
+    and so on. We don&#x27;t need to build anything to check that; we can compare the
+    two ends directly and step inward. A left pointer moves right, a right pointer
+    moves left, each skipping non-alphanumeric characters, and we compare the
+    lowercased characters where they land. If any mirrored pair disagrees, it&#x27;s
+    not a palindrome.
+    &quot;&quot;&quot;
+    left, right = 0, len(s) - 1
+    while left &lt; right:
+        # Skip anything that isn&#x27;t a letter or digit.
+        while left &lt; right and not s[left].isalnum():
+            left += 1
+        while left &lt; right and not s[right].isalnum():
+            right -= 1
+        if s[left].lower() != s[right].lower():
+            return False
+        left += 1
+        right -= 1
+    return True
+
+
+def _test() -&gt; None:
+    cases = [
+        (&quot;A man, a plan, a canal: Panama&quot;, True),
+        (&quot;race a car&quot;, False),
+        (&quot; &quot;, True),            # only spaces -&gt; empty after filtering -&gt; palindrome
+        (&quot;0P&quot;, False),          # &#x27;0&#x27; vs &#x27;P&#x27;: digit != letter (case-fold trap)
+        (&quot;ab_a&quot;, True),         # underscore is skipped, not a letter/digit
+    ]
+    for s, expected in cases:
+        assert is_palindrome(s) == expected, s
+        # the simple filtered version must agree on every case
+        assert is_palindrome_clean(s) == expected, s
+    print(&quot;is_palindrome: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../02-arrays-hashing/0238-product-of-array-except-self.html">← 238 · Product of Array Except Self</a><a class="pn next" href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted →</a></nav></main>
+</div>
+</body>
+</html>

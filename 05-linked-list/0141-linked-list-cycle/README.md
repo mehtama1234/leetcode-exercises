@@ -10,6 +10,25 @@ Walk a linked list. Does it ever loop back on itself — some node's `next`
 pointing to an earlier node — so that walking forever never reaches `None`?
 Return true/false.
 
+## Why this matters
+
+The real question is: does following a chain of "next" references terminate, or
+does it loop forever? The fundamental operation is *cycle detection* in a
+sequence you generate one step at a time — and Floyd's slow/fast pointer answers
+it using O(1) memory instead of remembering every node you've visited.
+
+This shows up wherever you follow references and a loop would be a bug or a hang.
+Dependency resolvers (package managers, build systems, spreadsheet formula
+engines) must detect circular dependencies before they recurse forever. Garbage
+collectors and serializers walk object graphs that can point back at themselves.
+Deadlock detection looks for cycles in a "who waits on whom" graph. Even pointer
+chasing that follows corrupted or attacker-crafted `next` links needs a loop guard.
+
+What you're solving for is catching the loop without a growing set of "seen"
+nodes. On a huge or streaming structure — or inside a memory-constrained runtime
+like a GC — you often can't afford O(n) bookkeeping, so the two-pointer trick that
+uses constant space is the one that actually ships.
+
 ## Start from the obvious
 
 A cycle means "I returned to a node I've already stood on". So remember every

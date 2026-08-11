@@ -12,6 +12,18 @@ and `"ace"`, `"ace"` appears in both in order, so the answer is `3`.
 
 You only need the length, not the actual string.
 
+## Why this matters
+
+The abstract operation is **measuring how much order-preserving structure two sequences share** by comparing them prefix-by-prefix and reusing every prefix-pair result exactly once. The "compare the last characters of two prefixes; match → take-and-shrink-both, mismatch → drop one and keep the better" recurrence is the template for a whole family of two-sequence comparisons.
+
+Where this genuinely powers real systems:
+
+- **`diff` and version control** — line-level LCS is literally how `git diff` and merge tools find the common backbone between two file versions.
+- **Bioinformatics** — DNA/protein sequence alignment (edit distance, a close cousin) scores similarity between genomes.
+- **Spellcheck, autocorrect, and search** — edit-distance ranking of near-matches uses the same 2-D prefix grid.
+
+The good solution buys **time**: brute force enumerates `2^m` subsequences, while the prefix table solves each `(i, j)` pair once for `O(m·n)`. The rolling-rows optimization then buys **memory**, dropping `O(m·n)` storage to `O(min(m, n))` by keeping only the two rows the recurrence ever reads.
+
 ## Start from the obvious
 
 A subsequence is "keep or drop each character", so brute force is: generate every

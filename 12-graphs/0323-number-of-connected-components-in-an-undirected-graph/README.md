@@ -10,6 +10,14 @@ You have `n` nodes and a list of undirected edges. Count how many separate
 "islands" of nodes there are — groups where you can walk from any node to any
 other in the group, but not across to a different group.
 
+## Why this matters
+
+The deeper problem is **incrementally merging things into groups while answering "are these two already in the same group?"** as edges arrive. The fundamental data structure is Union-Find (disjoint-set union), and its two operations — `union` and `find` — run in near-constant time.
+
+This is the tool of choice when relationships stream in and you keep fusing sets. Kruskal's algorithm builds a minimum spanning tree by adding the cheapest edge whose endpoints aren't already connected — used in network/cable layout. Deduplication and entity resolution merge records that refer to the same person or account (merge emails that share a contact). Image segmentation and percolation/clustering group adjacent similar regions. Even friend-suggestion and "are these in the same social circle?" queries lean on it.
+
+What you're solving for is **answering connectivity queries online, without re-running a full graph search after every edge**. Path compression + union-by-rank keep both operations effectively `O(α(n))` — practically constant — so processing all edges is essentially linear.
+
 ## Start from the obvious
 
 The straightforward approach: build an adjacency list, then DFS/BFS. Every time

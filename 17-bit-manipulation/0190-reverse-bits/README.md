@@ -13,6 +13,26 @@ that spelling produces.
 
 Using a small 4-bit example so the bits are visible: `1011` reversed is `1101`.
 
+## Why this matters
+
+The fundamental operation is **reordering bits within a fixed-width word using
+only shifts and masks** — reading from one end while writing to the other, with
+no memory beyond a couple of registers. It's a stand-in for byte/bit-order
+manipulation that hardware and low-level code do constantly.
+
+Where it actually shows up: endianness conversion (byte-reversing integers when
+data crosses between big-endian network order and little-endian CPUs) is the same
+shift-and-place mechanic. FFT implementations reorder inputs by *bit-reversed*
+index, which is exactly this operation. Digital signal processing and some
+cryptographic and hashing primitives permute bits inside a word. Communications
+protocols transmit certain fields least-significant-bit-first and must reverse
+them on receipt. Graphics and compression code pack and unpack bitfields the same
+way.
+
+What we buy is `O(1)` time and `O(1)` space — a fixed 32 iterations, no string
+allocation, no heap — which is why it maps cleanly onto a single CPU instruction
+or a tiny loop in a hot path where allocation isn't allowed.
+
 ## Start from the obvious
 
 You could turn it into a string, reverse the string, and parse it back:

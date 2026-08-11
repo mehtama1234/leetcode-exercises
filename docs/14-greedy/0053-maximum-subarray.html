@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>53. Maximum Subarray</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details open><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li class="active"><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">14. Greedy</a> / <span>53</span></nav><article class="notes"><h1>53. Maximum Subarray</h1>
+<p><strong>Pattern:</strong> Greedy (Kadane&#x27;s algorithm — best-ending-here) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/maximum-subarray/</p>
+<h2>The problem in plain words</h2>
+<p>You have a row of numbers, some positive, some negative. Pick a <strong>contiguous</strong> run of them (you can&#x27;t skip around) — at least one number — so that the run&#x27;s sum is as large as possible. Return that largest sum.</p>
+<h2>Why this matters</h2>
+<p>Underneath the puzzle is a fundamental operation: sweeping a stream of values once and keeping a <strong>running best that only ever needs the current item plus one carried number</strong>. You never store or rescan history — you answer &quot;best run ending here?&quot; incrementally. That&#x27;s the core of *online* processing, where data arrives and you can&#x27;t afford to look back.</p>
+<p>This shows up in real systems. Financial and trading code uses the same best-window idea to find the most profitable buy/sell stretch or the worst drawdown. Signal and sensor pipelines detect the strongest burst of activity in a noisy stream. Genomics scans DNA for the highest-scoring contiguous segment. Image processing extends it to the 2D &quot;maximum sum rectangle.&quot; Anywhere you monitor a live metric and want the peak sustained interval, this is the shape.</p>
+<p>What we buy is decisive: one linear pass, constant memory, and no need to rewind a stream you may not be able to replay — instead of the quadratic cost of re-summing every possible window.</p>
+<h2>Start from the obvious</h2>
+<p>A &quot;contiguous run&quot; is defined by where it starts and where it ends. So just try all of them:</p>
+<pre><code>best = nums[0]
+for each start i:
+    running = 0
+    for each end j &gt;= i:
+        running += nums[j]
+        best = max(best, running)</code></pre>
+<p>That&#x27;s <code>O(n^2)</code>. It&#x27;s correct and it&#x27;s the right first move — but notice what it keeps doing.</p>
+<h2>Find the waste</h2>
+<p>For start <code>i</code> we add up <code>nums[i..j]</code>. Then for start <code>i+1</code> we add up <code>nums[i+1..j]</code> from scratch — re-touching almost the same elements. We recompute overlapping sums again and again. The fix is to stop thinking &quot;for each start, scan forward&quot; and instead sweep left to right <strong>once</strong>, keeping a single fact up to date.</p>
+<h2>The insight</h2>
+<p>Ask a smaller question at each position: *what is the best subarray that ends exactly here?* Call it <code>cur</code>. Standing on element <code>x</code>, a subarray ending at <code>x</code> is either:</p>
+<ul><li>just <code>x</code> by itself, or</li><li><code>x</code> tacked onto the best subarray that ended at the <strong>previous</strong> element.</li></ul>
+<p>So:</p>
+<pre><code>cur = max(x, cur + x)</code></pre>
+<p>Then the answer to the whole problem is just the largest <code>cur</code> over all positions (<code>best = max(best, cur)</code>), because the globally best subarray has to end *somewhere*, and we check every &quot;somewhere&quot;.</p>
+<p><strong>Why is the greedy choice safe?</strong> The only decision is: when I reach <code>x</code>, do I extend the previous run or start a new one at <code>x</code>? Extend only if the previous run&#x27;s sum (<code>cur</code>) is positive — because then it *adds* to <code>x</code>. If <code>cur</code> is negative, carrying it forward would only shrink every future sum, so dropping it and restarting at <code>x</code> is never worse. That&#x27;s exactly what <code>max(x, cur + x)</code> encodes: when <code>cur &lt; 0</code>, <code>x</code> wins; when <code>cur &gt;= 0</code>, extending wins. There&#x27;s no scenario where hauling a negative prefix along helps, so the greedy discard loses nothing.</p>
+<p>If we *didn&#x27;t* reset — if we naively kept accumulating — a single bad stretch early on would poison every later subarray sum, and we&#x27;d report a total smaller than the real best. Resetting at the right moment is the whole trick.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n)</code> — one pass, constant work per element.</li><li><strong>Space:</strong> <code>O(1)</code> — two running numbers (<code>cur</code>, <code>best</code>), nothing that grows.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>Initializing <code>best</code> to 0.</strong> If every number is negative (e.g. <code>[-3, -1, -2]</code>), the answer is <code>-1</code>, not <code>0</code> — you must pick at least one element. Seed both <code>cur</code> and <code>best</code> from <code>nums[0]</code>, not from <code>0</code>.</li><li><strong>Confusing <code>cur</code> and <code>best</code>.</strong> <code>cur</code> is &quot;best ending here&quot; and can dip; <code>best</code> is the high-water mark and never decreases. You need both.</li><li><strong>Allowing an empty subarray.</strong> The problem requires length <code>&gt;= 1</code>. Starting the loop at <code>nums[1:]</code> with the seed above guarantees at least one element is used.</li><li><strong>Reaching for divide-and-conquer.</strong> There&#x27;s a clever <code>O(n log n)</code> split solution, but Kadane is simpler and strictly faster; don&#x27;t over-engineer.</li></ul>
+<h2>Transfer</h2>
+<p>The reusable idea is <strong>&quot;best-ending-here&quot;: carry one rolling quantity that answers a per-position subproblem, and discard it the moment it turns into deadweight.</strong> This is greedy and DP at the same time. Siblings: <a href="https://leetcode.com/problems/maximum-product-subarray/">Maximum Product Subarray / 152</a> (same shape, but track best *and* worst because a negative flips them), <a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">Best Time to Buy and Sell Stock / 121</a> (track the running minimum instead of a running sum), <a href="https://leetcode.com/problems/maximum-sum-circular-subarray/">Maximum Circular Subarray / 918</a>. Whenever an answer is &quot;best contiguous window&quot;, ask &quot;what&#x27;s the best one ending right here?&quot; first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/14-greedy/0053-maximum-subarray/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;53. Maximum Subarray — https://leetcode.com/problems/maximum-subarray/
+
+Given an integer array, find the contiguous subarray (at least one element) with
+the largest sum, and return that sum.
+&quot;&quot;&quot;
+from typing import List
+
+
+def max_sub_array_brute(nums: List[int]) -&gt; int:
+    &quot;&quot;&quot;Try every contiguous subarray. O(n^2) time, O(1) space.
+
+    The definition turned into code: for each start i, extend the end j and track
+    the running sum, keeping the best seen. It&#x27;s correct and it&#x27;s the honest first
+    attempt — but for every start it re-adds the same tail elements over and over.
+    That repeated summing is the waste we remove.
+    &quot;&quot;&quot;
+    n = len(nums)
+    best = nums[0]
+    for i in range(n):
+        running = 0
+        for j in range(i, n):
+            running += nums[j]
+            if running &gt; best:
+                best = running
+    return best
+
+
+def max_sub_array(nums: List[int]) -&gt; int:
+    &quot;&quot;&quot;Kadane&#x27;s algorithm — one greedy pass. O(n) time, O(1) space.
+
+    Greedy choice at each element x: the best subarray ENDING at x is either
+    - x on its own, or
+    - x glued onto the best subarray ending at the previous element.
+
+    So `cur = max(x, cur + x)`. The subtle part is *why* it&#x27;s safe to throw away
+    the running sum whenever it goes negative: a negative prefix can only drag
+    down anything that follows it, so starting fresh at x is never worse than
+    carrying that deadweight forward. We keep a separate `best` because the
+    globally-best subarray ends at *some* position, and by checking `cur` at every
+    position we&#x27;re guaranteed to see it.
+    &quot;&quot;&quot;
+    cur = nums[0]   # best subarray sum ending exactly at the current index
+    best = nums[0]  # best subarray sum seen ending anywhere so far
+    for x in nums[1:]:
+        cur = max(x, cur + x)   # extend, or start over at x
+        best = max(best, cur)
+    return best
+
+
+def _test() -&gt; None:
+    cases = [
+        ([-2, 1, -3, 4, -1, 2, 1, -5, 4], 6),   # [4, -1, 2, 1]
+        ([1], 1),
+        ([5, 4, -1, 7, 8], 23),                  # whole array
+        # all negative: must still pick one element (the least negative)
+        ([-3, -1, -2], -1),
+        # single negative
+        ([-5], -5),
+        # a dip worth crossing vs. one not worth crossing
+        ([1, -2, 3], 3),
+    ]
+    for nums, expected in cases:
+        assert max_sub_array(nums) == expected, nums
+        # Kadane must agree with the honest brute force on every case
+        assert max_sub_array_brute(nums) == expected, nums
+    print(&quot;max_sub_array: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../14-greedy/0881-boats-to-save-people.html">← 881 · Boats to Save People</a><a class="pn next" href="../14-greedy/0055-jump-game.html">55 · Jump Game →</a></nav></main>
+</div>
+</body>
+</html>

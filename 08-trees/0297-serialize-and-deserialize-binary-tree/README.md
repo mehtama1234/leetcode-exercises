@@ -11,6 +11,26 @@ into a string, and `deserialize` turns that string back into the identical tree.
 The format is your choice — the only requirement is that going one way and back
 gives you exactly what you started with.
 
+## Why this matters
+
+This is the real, everyday problem of **serialization**: flattening a structure
+into a linear form you can store or send, and reconstructing it exactly on the
+other side. The crux — and the reusable lesson — is that you must encode the
+*shape*, not just the contents; recording explicit null markers is what makes the
+flattening reversible. The fundamental operation is a lossless round-trip.
+
+This is precisely what real systems do all the time. Saving an object graph to
+disk or sending it over a network (JSON, Protocol Buffers, `pickle`, Java
+serialization) is exactly this. Databases persist B-tree pages and restore them;
+message queues ship structured payloads; caches store and rehydrate nested
+objects; save-game files snapshot a scene graph. Every one needs "shape survives
+the trip."
+
+What you're solving for is a **compact, unambiguous O(n) encoding with an O(n)
+rebuild** — no guessing at structure, no exponential blowup, and a format where
+serialize and deserialize are true inverses. The honest cost is the extra bytes
+for the null sentinels, which is the price of never losing the shape.
+
 ## Start from the obvious
 
 Just list the values in some traversal order, right?

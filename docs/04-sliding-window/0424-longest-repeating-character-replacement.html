@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>424. Longest Repeating Character Replacement</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details open><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li class="active"><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">4. Arrays &amp; Strings: Sliding Window</a> / <span>424</span></nav><article class="notes"><h1>424. Longest Repeating Character Replacement</h1>
+<p><strong>Pattern:</strong> Sliding window (variable size, &quot;keep the window valid&quot;) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/longest-repeating-character-replacement/</p>
+<h2>The problem in plain words</h2>
+<p>You have a string and a budget <code>k</code>. You may rewrite up to <code>k</code> characters, each to any letter you like. Afterwards, what&#x27;s the longest stretch of the *same* letter you can end up with?</p>
+<p>The key reframe: pick a stretch and decide to make it all one letter. The smartest choice is to keep whichever letter already appears most in that stretch, and rewrite the rest. So a stretch is achievable exactly when <strong>the number of letters that aren&#x27;t the most common one is at most <code>k</code>.</strong></p>
+<h2>Why this matters</h2>
+<p>The real problem is the <strong>longest contiguous window you can make valid with a limited budget of fixes</strong> — here, &quot;at most <code>k</code> elements differ from the dominant one.&quot; The fundamental operation is growing a window greedily and shrinking it just enough to restore a validity condition, tracking the dominant count incrementally so the check stays O(1).</p>
+<p>This &quot;longest run within an error/change budget&quot; pattern is honestly practical:</p>
+<ul><li><strong>Quality and tolerance windows</strong> — the longest stretch of a signal or manufacturing run where at most <code>k</code> samples are out of spec.</li><li><strong>Bioinformatics</strong> — the longest genomic segment matching a reference allowing up to <code>k</code> mismatches (approximate matching).</li><li><strong>Networking/streaming</strong> — the longest span tolerable with at most <code>k</code> dropped or corrupted packets before quality breaks.</li></ul>
+<p>What we&#x27;re solving for is <strong>replacing an <code>O(n^2)</code> recount with <code>O(n)</code></strong>: because the window only ever needs to shrink one step per over-budget move and the dominant-frequency count updates as characters enter, you sweep the input once at constant space — turning &quot;check every substring&quot; into a single forward slide.</p>
+<h2>Start from the obvious</h2>
+<p>Check every substring. For <code>s[i..j]</code>, count the letters, find the most common one, and ask: are the leftovers <code>&lt;= k</code>?</p>
+<pre><code>best = 0
+for each start i:
+    for each end j &gt;= i:
+        count letters in s[i..j]
+        need = (length of s[i..j]) - (max letter count)
+        if need &lt;= k: best = max(best, length)
+return best</code></pre>
+<p>That&#x27;s <code>O(n^2)</code> substrings, each costing up to <code>O(n)</code> (or <code>O(26)</code>) to count. It&#x27;s correct — and it re-counts overlapping substrings constantly. That&#x27;s the waste.</p>
+<h2>Find the waste</h2>
+<p>Two facts about the &quot;need&quot; number, <code>length - max_freq</code>:</p>
+<ul><li>As you <strong>grow</strong> a substring by one character, you only add to one letter&#x27;s count — you never have to recount everything.</li><li>If a substring is *unfixable* (<code>need &gt; k</code>), making it even longer never helps, and every substring *inside* a fixable one is also fixable.</li></ul>
+<p>So there&#x27;s no reason to restart the count for every pair. Slide a single window across the string, adjusting counts incrementally.</p>
+<h2>The insight</h2>
+<p>Grow the window on the right. Keep letter counts and <code>max_freq</code> (the highest single-letter count seen in the window). The window is valid while:</p>
+<pre><code>window_length - max_freq &lt;= k</code></pre>
+<p>When adding a character breaks that, the window is one-too-big, so nudge <code>left</code> forward by exactly one — that keeps it the largest valid size — and continue. Record the best length reached.</p>
+<pre><code>counts = {}, left = 0, max_freq = 0, best = 0
+for right, ch in s:
+    counts[ch] += 1
+    max_freq = max(max_freq, counts[ch])
+    if (right - left + 1) - max_freq &gt; k:   # can&#x27;t fix this window
+        counts[s[left]] -= 1
+        left += 1
+    best = max(best, right - left + 1)
+return best</code></pre>
+<p><strong>Why we don&#x27;t recompute <code>max_freq</code> when shrinking:</strong> the answer can only improve when some letter&#x27;s count sets a *new* record. A <code>max_freq</code> that&#x27;s momentarily &quot;too high&quot; only makes the window look more fixable than it is, but it can never produce a window longer than one we already legitimately achieved. So the best value stays correct, and we save the recount.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n)</code> — <code>right</code> and <code>left</code> each advance across the string once.</li><li><strong>Space:</strong> <code>O(1)</code> — the count map holds at most 26 uppercase letters.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li>Trying to keep <code>max_freq</code> perfectly accurate on shrink (recomputing it) — it&#x27;s unnecessary and turns the loop into <code>O(26n)</code> for no benefit.</li><li>Moving <code>left</code> in a <code>while</code> loop that shrinks more than one step — this window only needs to drop *one* character per over-budget step, so an <code>if</code> is right.</li><li>Forgetting the empty string returns <code>0</code>.</li><li>Thinking you must actually decide *which* letter to keep — you never fix a letter; you just track the max frequency and let the arithmetic decide.</li></ul>
+<h2>Transfer</h2>
+<p>This is the &quot;longest window that stays valid&quot; template: grow greedily, shrink just enough to restore a validity condition, track the best length. The same skeleton solves <a href="../0003-longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters / 3</a>, [Max Consecutive Ones III / 1004], and &quot;longest subarray with at most k of something&quot;. The only thing that changes per problem is the validity test.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/04-sliding-window/0424-longest-repeating-character-replacement/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;424. Longest Repeating Character Replacement — https://leetcode.com/problems/longest-repeating-character-replacement/
+
+Given a string `s` and a budget `k`, you may change up to `k` characters to any
+letters. Return the length of the longest run of the *same* letter you can make.
+
+Two implementations are kept side by side so the reason the fast one exists is
+visible: the brute force checks every substring, and the sliding window is what
+you get by asking &quot;when is a window still fixable, and how do I avoid re-counting
+letters from scratch?&quot;.
+&quot;&quot;&quot;
+from typing import Dict, List
+
+
+def character_replacement_brute(s: str, k: int) -&gt; int:
+    &quot;&quot;&quot;Check every substring for fixability. O(n^2 * 26) time, O(1) space.
+
+    For each start i and end j, count the letters in s[i..j]. The substring is
+    achievable if the number of characters that are NOT the most common one is at
+    most k — those are the ones we&#x27;d have to change. It&#x27;s correct, but it re-scans
+    and re-counts overlapping substrings endlessly; that&#x27;s the waste we remove.
+    &quot;&quot;&quot;
+    n = len(s)
+    best = 0
+    for i in range(n):
+        counts: Dict[str, int] = {}
+        max_freq = 0
+        for j in range(i, n):
+            counts[s[j]] = counts.get(s[j], 0) + 1
+            max_freq = max(max_freq, counts[s[j]])
+            window_len = j - i + 1
+            if window_len - max_freq &lt;= k:   # changes needed fit the budget
+                best = max(best, window_len)
+    return best
+
+
+def character_replacement(s: str, k: int) -&gt; int:
+    &quot;&quot;&quot;Grow a window; shrink only when it can&#x27;t be fixed. O(n) time, O(1) space.
+
+    Key insight: a window of length L can be turned into all-one-letter iff the
+    letters we must change — everything except the most common letter — number at
+    most k. That count is `L - max_freq`, where `max_freq` is the highest single
+    letter count in the window. So:
+
+      - extend `right`, updating counts and `max_freq`;
+      - if `(window_len - max_freq) &gt; k` the window is unfixable, so slide `left`
+        forward by one (never more) to keep it valid.
+
+    Because `left` only ever moves forward, both pointers cross the string once —
+    O(n). We keep the best length ever reached. (We don&#x27;t bother lowering
+    `max_freq` when shrinking: the answer can only grow when `max_freq` grows, so
+    a stale-but-not-too-high value never inflates the result.)
+    &quot;&quot;&quot;
+    counts: Dict[str, int] = {}
+    left = 0
+    max_freq = 0
+    best = 0
+    for right, ch in enumerate(s):
+        counts[ch] = counts.get(ch, 0) + 1
+        max_freq = max(max_freq, counts[ch])
+        window_len = right - left + 1
+        if window_len - max_freq &gt; k:        # too many changes needed: shrink
+            counts[s[left]] -= 1
+            left += 1
+            window_len -= 1
+        best = max(best, window_len)
+    return best
+
+
+def _test() -&gt; None:
+    cases = [
+        ((&quot;ABAB&quot;, 2), 4),        # change both B&#x27;s (or both A&#x27;s) -&gt; AAAA
+        ((&quot;AABABBA&quot;, 1), 4),     # e.g. AABA A BBA -&gt; window &quot;ABBA&quot;/&quot;BBBB&quot;
+        ((&quot;AAAA&quot;, 0), 4),        # already all same, no changes needed
+        ((&quot;ABCDE&quot;, 1), 2),       # best is any adjacent pair + 1 change
+        ((&quot;A&quot;, 0), 1),           # single char
+        ((&quot;&quot;, 2), 0),            # empty string
+        ((&quot;BAAAB&quot;, 2), 5),       # change both B&#x27;s -&gt; AAAAA
+    ]
+    for (s, k), expected in cases:
+        assert character_replacement(s, k) == expected, (s, k)
+        # brute force must agree with the fast version on every case
+        assert character_replacement_brute(s, k) == expected, (s, k)
+    print(&quot;character_replacement: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">← 121 · Best Time to Buy and Sell Stock</a><a class="pn next" href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters →</a></nav></main>
+</div>
+</body>
+</html>

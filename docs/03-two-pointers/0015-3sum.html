@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>15. 3Sum</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details open><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li class="active"><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">3. Arrays &amp; Strings: Two Pointers</a> / <span>15</span></nav><article class="notes"><h1>15. 3Sum</h1>
+<p><strong>Pattern:</strong> Sort + two pointers (fix one, converge the rest) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/3sum/</p>
+<h2>The problem in plain words</h2>
+<p>Find every group of three numbers in the array that add up to zero. Return the triplets themselves (their values, not indices), and don&#x27;t list the same triplet twice even if the array has repeated numbers.</p>
+<h2>Why this matters</h2>
+<p>The real problem is <strong>finding combinations that satisfy a numeric relationship without checking every combination</strong> — and doing it while suppressing duplicate answers. The core operation is reducing a k-way search to a (k-1)-way search plus a single linear sweep, using sorted order to both guide the sweep and make dedup fall out for free (equal values sit adjacent).</p>
+<p>This &quot;match up entries that sum or balance to a target&quot; pattern is everywhere money and quantities move:</p>
+<ul><li><strong>Finance/accounting reconciliation</strong> — finding sets of transactions that net to a given balance, or offsetting entries that cancel.</li><li><strong>Analytics and reporting</strong> — grouping records whose measures combine to hit a threshold, deduplicating equivalent groups.</li><li><strong>Computational geometry / collision</strong> — triples of points meeting a coplanar or distance condition after sorting by coordinate.</li></ul>
+<p>What we&#x27;re solving for is <strong>avoiding the combinatorial blowup</strong>: brute force is <code>O(n^3)</code>, and sorting once turns it into <code>O(n^2)</code> with <code>O(1)</code> extra space — no hash set, because sorted adjacency handles the duplicates that would otherwise corrupt the output.</p>
+<h2>Start from the obvious</h2>
+<p>&quot;Three numbers that sum to zero&quot; turns straight into three nested loops:</p>
+<pre><code>for i:
+  for j after i:
+    for k after j:
+      if nums[i] + nums[j] + nums[k] == 0: record it</code></pre>
+<p>Correct, but <code>O(n^3)</code>, and it has a second problem: duplicates. <code>[0,0,0,0]</code> would report <code>[0,0,0]</code> many times, so you need to dedupe (sort each triplet, drop it in a set). It&#x27;s a fine first draft — and staring at it shows the fix.</p>
+<h2>Find the waste</h2>
+<p>Rewrite the inner two loops as a question: *given a fixed first number <code>nums[i]</code>, find two numbers in the rest that sum to <code>-nums[i]</code>.* That is literally <strong>Two Sum</strong>.</p>
+<p>And we already know sorted Two Sum doesn&#x27;t need a nested loop — two converging pointers solve it in one linear pass (see <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>). So the waste in the brute force is re-scanning the tail with a full inner loop when a sorted array lets a single sweep do it.</p>
+<h2>The insight</h2>
+<p><strong>Sort the array first.</strong> Then for each index <code>i</code>:</p>
+<ul><li>Set <code>left = i+1</code>, <code>right = n-1</code>.</li><li>Look at <code>nums[i] + nums[left] + nums[right]</code>. Too small? move <code>left</code> right for a bigger number. Too big? move <code>right</code> left for a smaller one. Exactly zero? record the triplet and step both inward.</li></ul>
+<p>Sorting pays off twice. It powers the two-pointer sweep, <strong>and</strong> it makes deduping trivial — equal values are adjacent, so:</p>
+<ul><li>skip <code>nums[i]</code> if it equals the previous anchor,</li><li>after recording a hit, skip past any repeated <code>left</code> and <code>right</code> values.</li></ul>
+<p>One more freebie: once <code>nums[i] &gt; 0</code>, every remaining number is positive, so no triplet can sum to zero — stop early.</p>
+<pre><code>nums.sort()
+for i in range(n):
+    if nums[i] &gt; 0: break
+    if i &gt; 0 and nums[i] == nums[i-1]: continue
+    left, right = i+1, n-1
+    while left &lt; right:
+        s = nums[i] + nums[left] + nums[right]
+        if s &lt; 0: left += 1
+        elif s &gt; 0: right -= 1
+        else:
+            record [nums[i], nums[left], nums[right]]
+            left += 1; right -= 1
+            skip duplicate lefts and rights</code></pre>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n^2)</code> — sorting is <code>O(n log n)</code>, then for each of <code>n</code> anchors the two pointers sweep the tail in <code>O(n)</code>. The <code>n^2</code> term dominates.</li><li><strong>Space:</strong> <code>O(1)</code> beyond the output (ignoring sort&#x27;s temporary space). No hash set for deduping — sorted adjacency handles it.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>Duplicate triplets</strong> are the whole difficulty. You must skip repeats in three places: the anchor <code>i</code>, and the <code>left</code>/<code>right</code> values after a successful match.</li><li>Skipping the anchor with <code>i &gt; 0 and nums[i] == nums[i-1]</code> — compare to the *previous*, not the next, so you keep the first occurrence and drop later copies.</li><li>Forgetting to move <strong>both</strong> pointers after recording a hit — leaving one put will just re-find the same or an invalid triplet.</li><li>Not sorting first: every step of the method depends on sorted order.</li></ul>
+<h2>Transfer</h2>
+<p>This is the template for the whole &quot;k-Sum&quot; family: fix outer values and two-pointer the innermost pair. It extends directly to <a href="https://leetcode.com/problems/4sum/">4Sum / 18</a> (two fixed loops, then two pointers) and *3Sum Closest*. The reusable move — <strong>sort, then reduce a k-sum to a (k-1)-sum with two converging pointers</strong> — builds straight on <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/03-two-pointers/0015-3sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;15. 3Sum — https://leetcode.com/problems/3sum/
+
+Given an integer array, return all unique triplets [a, b, c] that sum to zero.
+The result must not contain duplicate triplets.
+&quot;&quot;&quot;
+from typing import List
+
+
+def three_sum_brute(nums: List[int]) -&gt; List[List[int]]:
+    &quot;&quot;&quot;Check every triple, dedupe with a set. O(n^3) time.
+
+    The definition made literal: try all three-element combinations and keep the
+    ones that sum to zero. To avoid reporting the same triplet twice (the array
+    can have repeats), we sort each found triplet and stash it in a set. It&#x27;s
+    correct but cubic — every element re-scans two nested tails. That repeated
+    scanning is what the sorted two-pointer version erases.
+    &quot;&quot;&quot;
+    n = len(nums)
+    found: set[tuple[int, int, int]] = set()
+    for i in range(n):
+        for j in range(i + 1, n):
+            for k in range(j + 1, n):
+                if nums[i] + nums[j] + nums[k] == 0:
+                    found.add(tuple(sorted((nums[i], nums[j], nums[k]))))
+    return [list(t) for t in sorted(found)]
+
+
+def three_sum(nums: List[int]) -&gt; List[List[int]]:
+    &quot;&quot;&quot;Sort, then fix one number and two-pointer the rest. O(n^2) time, O(1) extra.
+
+    Key insight: 3Sum is Two Sum done n times. Sort the array first. Then for each
+    index `i`, the partners we need are two numbers in the tail that sum to `-nums[i]`
+    — that is exactly Two Sum on a *sorted* array, which the converging two-pointer
+    trick solves in one linear pass instead of a nested loop.
+
+    Sorting also makes deduping easy: equal numbers sit next to each other, so we
+    skip a value whenever it repeats the previous one — both for the fixed `i` and
+    for the two pointers after a match. A small early exit: once `nums[i] &gt; 0`, the
+    smallest possible triplet sum is already positive, so no zero triplet remains.
+    &quot;&quot;&quot;
+    nums = sorted(nums)
+    n = len(nums)
+    result: List[List[int]] = []
+
+    for i in range(n):
+        if nums[i] &gt; 0:  # sorted: everything from here on is positive
+            break
+        if i &gt; 0 and nums[i] == nums[i - 1]:  # skip duplicate anchors
+            continue
+
+        left, right = i + 1, n - 1
+        while left &lt; right:
+            s = nums[i] + nums[left] + nums[right]
+            if s &lt; 0:
+                left += 1
+            elif s &gt; 0:
+                right -= 1
+            else:
+                result.append([nums[i], nums[left], nums[right]])
+                left += 1
+                right -= 1
+                # skip duplicate seconds / thirds
+                while left &lt; right and nums[left] == nums[left - 1]:
+                    left += 1
+                while left &lt; right and nums[right] == nums[right + 1]:
+                    right -= 1
+    return result
+
+
+def _norm(triplets: List[List[int]]) -&gt; List[List[int]]:
+    &quot;&quot;&quot;Sort triplets and the overall list so results compare regardless of order.&quot;&quot;&quot;
+    return sorted([sorted(t) for t in triplets])
+
+
+def _test() -&gt; None:
+    cases = [
+        ([-1, 0, 1, 2, -1, -4], [[-1, -1, 2], [-1, 0, 1]]),
+        ([0, 1, 1], []),                 # no triplet sums to zero
+        ([0, 0, 0], [[0, 0, 0]]),        # all zeros -&gt; exactly one triplet
+        ([0, 0, 0, 0], [[0, 0, 0]]),     # duplicates must not repeat the triplet
+        ([-2, 0, 1, 1, 2], [[-2, 0, 2], [-2, 1, 1]]),
+    ]
+    for nums, expected in cases:
+        got = _norm(three_sum(nums))
+        assert got == _norm(expected), (nums, got)
+        # brute force must agree with the fast version on every case
+        assert _norm(three_sum_brute(nums)) == _norm(expected), (nums,)
+    print(&quot;three_sum: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">← 167 · Two Sum II - Input Array Is Sorted</a><a class="pn next" href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water →</a></nav></main>
+</div>
+</body>
+</html>

@@ -11,6 +11,14 @@ neighbor is **not higher** (water goes downhill or stays level). The Pacific lap
 the top and left edges of the grid; the Atlantic laps the bottom and right edges.
 Find every cell whose water can reach **both** oceans.
 
+## Why this matters
+
+The core idea here is **reachability, computed backward from the destinations instead of forward from every source** — plus intersecting two reachable sets. The fundamental operation is multi-source flood fill seeded from a whole boundary at once.
+
+The "search from the goal, not from every start" reversal is a real optimization pattern. Terrain and hydrology tools compute watersheds and drainage basins exactly this way — which cells drain to which outlet. Multi-source BFS from many seeds at once powers "nearest facility" maps (distance from every cell to the closest exit/hospital/tower), fire- or infection-spread simulations, and shortest-path-to-any-target queries. Reversing an all-pairs question into one sweep from the targets is the same trick behind computing reachability from sinks in dataflow analysis.
+
+What you're solving for is **killing redundant recomputation**: asking "can each cell reach the ocean?" independently re-explores shared downhill paths, giving `O((rows·cols)²)`. Flooding inward from each ocean once, then intersecting, drops it to a single linear pass per ocean.
+
 ## Start from the obvious
 
 Ask the question literally: for each cell, can water starting there reach the

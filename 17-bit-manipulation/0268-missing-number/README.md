@@ -13,6 +13,26 @@ the one that isn't there.
 Example: `[3, 0, 1]`. The full range is `0, 1, 2, 3`. The array has `0, 1, 3`,
 so `2` is missing.
 
+## Why this matters
+
+The deeper idea is **XOR cancellation**: pairs that appear an even number of times
+vanish, so the one unpaired element survives — you find a missing (or lone) item
+without storing what you've already seen. The equivalent "sum invariant" version
+uses a known total and subtracts what's present. Both replace a lookup structure
+with a single accumulating register.
+
+Where the pattern is genuinely used: RAID and error-detection compute a parity
+block as the XOR of the others, so a lost disk is reconstructed by XOR — exactly
+"recover the missing element." Checksums and simple integrity checks fold data
+with XOR. Reconciliation and data-integrity tasks compare "what should be present"
+against "what is" via a sum or XOR digest to spot the one dropped record.
+Deduplication problems ("find the single unpaired value") collapse to the same
+`x ^ x == 0` trick.
+
+What we buy is `O(n)` time with `O(1)` space and no overflow risk — one pass, one
+integer, no hash set — which matters when the dataset is huge or the check runs on
+a memory-starved or streaming path.
+
 ## Start from the obvious
 
 Put the array in a set and walk `0..n` asking "is this one here?":

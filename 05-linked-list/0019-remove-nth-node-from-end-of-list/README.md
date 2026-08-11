@@ -10,6 +10,26 @@ Delete the node that is `n`th from the *end* of the list (n=1 is the last node)
 and return the head. A singly linked list only lets you walk forward, so "from
 the end" is the awkward part.
 
+## Why this matters
+
+The real problem is answering a question about a *forward-only* stream when the
+thing you care about is measured from the end you haven't reached yet. The
+fundamental move — a second pointer held `n` steps behind a lead pointer — lets
+you locate "n from the end" in one pass, without first measuring the length and
+walking back over it.
+
+That two-pointer "trailing window" shows up wherever you process a sequence you
+can't cheaply rewind: keeping the last N lines of a log file (`tail`), holding a
+sliding window over a network packet or sensor stream, trimming the oldest entry
+from a bounded buffer, or streaming a large file where seeking backward is
+expensive. Databases and log processors lean on exactly this so they never buffer
+the whole input.
+
+What you're buying is a single pass and constant extra memory. Instead of two
+traversals (measure, then delete) or storing every node to index from the back,
+one walk with a fixed-gap pair does the job — the difference that matters when the
+stream is huge or arrives live.
+
 ## Start from the obvious
 
 "nth from the end" is just "(length − n)th from the front". You can count first,

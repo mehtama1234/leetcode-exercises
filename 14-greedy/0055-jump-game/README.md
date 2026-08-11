@@ -10,6 +10,25 @@ You stand at index 0 of an array. The number at each index says the **most** ste
 you may jump forward from there (you can also jump fewer). Can you get to the last
 index? Return true or false.
 
+## Why this matters
+
+The real question hiding here is **reachability**: given a set of local moves,
+can you get from a start to a goal — and can you decide it by tracking just one
+number, the farthest frontier reached so far, instead of enumerating routes. The
+fundamental operation is maintaining a *reachable boundary* as you scan.
+
+That pattern is everywhere movement or dependency is constrained. Networking asks
+"is this host reachable?" and routers push a frontier outward hop by hop. Build
+systems and package managers ask whether a target is reachable through its
+dependency edges. Game AI and robotics test whether a goal tile is reachable
+under a movement budget. Garbage collectors mark which objects are still
+reachable from live roots. Streaming or greedy schedulers ask "can I still make
+the deadline from here?" using a running slack.
+
+What we buy is a single linear pass and constant memory: because reachability
+here is downward-closed (reach index `i`, reach everything before it), we skip the
+exponential search over jump sequences entirely and just carry the frontier.
+
 ## Start from the obvious
 
 The literal reading is a search: from where you stand, you may jump 1, 2, … up to

@@ -11,6 +11,24 @@ is "properly matched": every opening bracket is later closed by the *same kind* 
 bracket, and they never cross. `{[]}` is fine; `([)]` is not, because the `(` and
 `[` overlap instead of nesting.
 
+## Why this matters
+
+The fundamental operation is *tracking nested, last-opened-first-closed structure
+with a stack* — the newest unfinished thing must finish before the older ones.
+Once you see "properly nested," you're really asking whether a sequence of
+open/close events is balanced.
+
+This is the beating heart of parsing. Every compiler and interpreter uses a stack
+to match braces, parentheses, and block scopes; a mismatched bracket is literally
+this check failing. HTML/XML/JSON parsers verify tags and objects nest correctly
+the same way. The call stack itself is this pattern — a function must return
+before its caller does. Undo/redo, expression evaluation, and "unwind to the last
+open context" in editors all lean on last-in-first-out order.
+
+What you're solving for is a single O(n) pass instead of the O(n^2) repeated
+collapse-and-rescan, by *remembering* the most recent unmatched opener rather than
+re-searching for it each time. The stack makes "what must close next?" O(1).
+
 ## Start from the obvious
 
 The naive idea is to keep collapsing matched pairs until nothing changes: scan for

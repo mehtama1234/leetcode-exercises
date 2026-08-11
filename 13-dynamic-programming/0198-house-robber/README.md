@@ -10,6 +10,18 @@ Houses stand in a row, each with some money inside. You want to grab as much as
 possible, but there's an alarm rule: **you can't rob two houses that are next to
 each other.** Return the largest total you can safely take.
 
+## Why this matters
+
+Underneath the heist story is **maximizing a total under a "no two adjacent picks" constraint**. The fundamental operation is a per-item binary choice (take-and-skip-the-neighbor vs. skip) resolved by carrying two rolling states: best-if-I-take-here and best-if-I-don't.
+
+Where non-adjacent selection genuinely appears:
+
+- **Scheduling** — picking the most valuable set of non-overlapping jobs or time slots (weighted interval scheduling reduces to this shape once sorted).
+- **Resource placement** — spacing out cell towers, sensors, or ads/promos so neighbors don't conflict, while maximizing coverage or revenue.
+- **Sequence labeling** — choosing a highest-scoring set of items with a "no two in a row" rule.
+
+The good solution buys **time** — an exponential rob-or-skip tree collapses to a single `O(n)` sweep because only `n` distinct suffixes exist — and the two-variable form buys **`O(1)` memory** since the recurrence never reaches back more than one step. The honest caveat it teaches: greedy "every other house" is wrong; values decide the pattern.
+
 ## Start from the obvious
 
 The only real decision at each house is binary: rob it or don't. So think about

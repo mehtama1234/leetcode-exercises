@@ -11,6 +11,14 @@ order**. You're handed a list of their words that are already sorted by *their*
 rules. Figure out an order of the letters that's consistent with that sorting. If
 no order can explain the list, return `""`.
 
+## Why this matters
+
+Underneath the aliens, this is **recovering one global order from many local pairwise comparisons** — and detecting when those comparisons contradict each other. The fundamental operation is: turn each "X before Y" fact into a directed edge, then topologically sort.
+
+This shows up wherever a total order has to be reconstructed from partial evidence. Version and dependency resolvers infer a consistent install order from many "A must come before B" constraints and report a conflict when they form a cycle. Ranking systems (sports standings, tournament seeding, preference aggregation / "rank choice" merges) build a global order from head-to-head results. Build systems derive compile order from per-file `#include`/import edges. Even schema migration tools order migrations from their stated dependencies.
+
+What you're solving for is **a consistent order plus a clean "impossible" signal**, in time linear in the input. The subtle payoff is honesty: a cycle means the constraints genuinely contradict (`x<z` and `z<x`), and the prefix rule (`"abc"` before `"ab"`) catches evidence that no order could ever explain.
+
 ## Start from the obvious
 
 You can't look at a single word and learn much. The information is *between*

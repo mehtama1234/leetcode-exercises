@@ -13,6 +13,14 @@ lower one). Find the largest amount of water any pair can hold.
 
 For two walls `i` and `j`, area is `(j - i) * min(height[i], height[j])`.
 
+## Why this matters
+
+Underneath the water imagery this is an **optimization over a two-ended range** where the value depends on the *weaker* of two boundaries and a *width* between them. The fundamental move is: start at the widest configuration and, at each step, retire the boundary that provably can't improve the answer — so you never re-examine a dominated pair.
+
+That "shorter side caps the result, so shrink from the weaker end" logic shows up in real capacity and bottleneck problems. Network throughput along a path is set by the slowest link (the weak wall), so tuning walks the ends of a range looking for a wider-yet-still-strong span. Load balancers and resource packing reason the same way: the tightest constraint limits the whole allocation. Time-series and geometry queries — finding the widest interval whose min height clears a threshold — reduce to this shape.
+
+What the good solution buys is **linear time and constant memory**: one inward sweep instead of testing all `O(n^2)` pairs, which is the difference between a query that finishes and one that stalls on large inputs.
+
 ## Start from the obvious
 
 Try every pair and keep the best:

@@ -11,6 +11,25 @@ then left subtree, then right subtree) and its **inorder** sequence (left
 subtree, then root, then right subtree). Rebuild the actual tree. There's exactly
 one tree that produces both.
 
+## Why this matters
+
+The deeper problem is **reconstructing a structure from two different linear
+serializations of it** — neither readout alone pins down the shape, but together
+they do. The fundamental operation is: use one stream to find the root/pivot, use
+the other to split the remaining data into independent sub-problems, then recurse.
+It's divide-and-conquer driven by ordering information.
+
+This is a real, recurring engineering shape. Deserializers rebuild an object graph
+from a flat byte or token stream. Parsers turn a linear sequence of tokens back
+into a syntax tree, and disassemblers reconstruct control-flow structure from a
+straight-line instruction listing. Anywhere you've flattened a hierarchy to store
+or transmit it, something has to invert that — this is the inversion.
+
+What you're solving for is **doing it in one efficient pass** rather than
+re-scanning: the naive version re-searches `inorder` at every node for O(n²); a
+value→index hash map makes each split O(1), giving O(n) total. The lesson is that
+picking the right auxiliary index turns a quadratic rebuild into a linear one.
+
 ## Start from the obvious
 
 What does each traversal tell you on its own?

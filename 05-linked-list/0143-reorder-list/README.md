@@ -11,6 +11,25 @@ node, then last, then second, then second-to-last, and so on — zig-zagging fro
 the outside in. Do it in place (rewire nodes, don't just copy values into a new
 list, and don't return anything).
 
+## Why this matters
+
+This puzzle is really three classic list operations composed in place: find the
+middle, reverse the back half, then interleave two lists. The fundamental skill is
+*restructuring a sequence by rewiring pointers* rather than allocating a new copy —
+splitting, flipping, and zipping without extra storage.
+
+That "transform data in place by relinking, not rebuilding" pattern is everywhere
+memory or copying is the constraint. In-place array/buffer rearrangement powers
+things like double-buffering and zero-copy pipelines. Interleaving two halves is
+the shape of a perfect shuffle (audio channel weaving, some data-layout tricks).
+And the sub-steps themselves — find-middle and reverse — are reusable primitives
+you'll compose again and again once you can do them cleanly.
+
+What you're solving for is doing a non-trivial reshuffle with O(1) extra space and
+a linear number of pointer swaps, instead of dumping everything into an array,
+reindexing, and rebuilding. When the structure is large or you're on a tight
+memory budget, composing in-place primitives is what keeps it cheap.
+
 ## Start from the obvious
 
 Read the target pattern literally: alternate "next from the front" and "next

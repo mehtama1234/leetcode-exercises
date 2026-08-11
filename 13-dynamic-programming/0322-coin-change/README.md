@@ -10,6 +10,18 @@ You have coins of a few fixed sizes, and an unlimited pile of each. Given a
 target amount, what is the **smallest number of coins** that adds up to exactly
 that amount? If you can't hit it at all, return `-1`.
 
+## Why this matters
+
+This is the **unbounded knapsack**: reach a target using reusable items while optimizing a count or value. The fundamental operation is "guess the last item, recurse on the remaining amount, and cache the answer keyed on that remainder." It's the canonical optimize-over-a-target DP.
+
+Where making-a-target-from-reusable-units shows up for real:
+
+- **Money and change** — cash registers and ATMs dispensing the fewest bills/coins.
+- **Resource packing** — hitting an exact quota (bandwidth, memory pages, container fills) using unlimited unit sizes with minimal count, or cutting stock to length with least waste.
+- **Reachability with steps** — the same skeleton as reaching the end of a string with reusable dictionary words, or combination-sum problems.
+
+The good solution buys **time**: naive recursion re-explores the same amount along exponentially many paths, while caching by remainder leaves only `amount + 1` real subproblems for `O(amount × coins)`. The problem also teaches an honest trap — **greedy fails** (coins `[1,3,4]`, amount `6`), so you genuinely need the DP, not a "grab the biggest" shortcut.
+
 ## Start from the obvious
 
 Ask: "what is the fewest coins to make amount `A`?" You don't know which coin

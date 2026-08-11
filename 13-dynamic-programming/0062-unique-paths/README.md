@@ -10,6 +10,18 @@ A robot starts in the top-left cell of an `m × n` grid and wants to reach the
 bottom-right cell. It can only ever step **right** or **down**. How many different
 paths get it there?
 
+## Why this matters
+
+The real operation here is **counting the number of ways to reach a state by summing the ways to reach the states that lead into it** — the additive core of dynamic programming. You're not walking paths one by one; you're building the count into each cell from its predecessors and reusing it.
+
+Where "count/aggregate over paths through a grid or DAG" genuinely appears:
+
+- **Probability and reliability** — summing weighted paths through a lattice is exactly how you compute reaching probabilities in Markov chains or grid random walks.
+- **Sequence alignment** — the same "come from up/left/diagonal" grid underlies edit-distance and DNA alignment scoring.
+- **Routing and layout** — counting monotone routes on a chip or map grid, and cost-minimizing variants (swap `+` for `min`) for cheapest-path planning.
+
+What the good solution buys is a jump from **exponential recomputation to `O(m·n)` time**, and the rolling-row trick trades the full grid for **`O(n)` memory** — the resource that matters when the grid is large or you only need the final count.
+
 ## Start from the obvious
 
 The honest first idea is to just walk every possibility: from each cell, try going

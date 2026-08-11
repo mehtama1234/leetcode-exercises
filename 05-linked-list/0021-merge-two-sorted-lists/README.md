@@ -10,6 +10,26 @@ You have two linked lists that are each already sorted ascending. Interleave the
 into one sorted list and return its head. Reuse the existing nodes — don't build
 a fresh list from copied values.
 
+## Why this matters
+
+Underneath, this is the *merge* step: given two already-sorted sequences, produce
+one sorted sequence by repeatedly taking the smaller front element. The
+fundamental operation is comparing two heads and advancing the one you consumed —
+nothing more.
+
+This is the workhorse of external merge sort, the algorithm databases and tools
+like Unix `sort` use to sort data far bigger than RAM: split into sorted chunks,
+then merge them back. It's also how `git merge` walks two sorted commit
+histories, how search engines merge sorted posting lists to answer a multi-term
+query, and how time-series systems combine already-ordered event streams into one
+timeline. Anywhere you keep data sorted and need to fold two ordered feeds
+together, this is the core.
+
+What you're solving for is doing it in one linear pass with no re-sorting and no
+extra copy — you splice existing nodes, so memory stays flat and you never pay to
+sort data that already arrived in order. That "cheap because both sides are
+already sorted" property is exactly why merge-based designs scale.
+
 ## Start from the obvious
 
 The insight is baked into the word "sorted". The smallest unused value across

@@ -10,6 +10,14 @@ Scan the grid. Wherever you find a 0, that 0's whole row and whole column must
 become all zeros. Do it to the **same grid**, and ideally without allocating extra
 storage that grows with the grid's size.
 
+## Why this matters
+
+The deeper idea is **storing your bookkeeping inside the data structure you were already handed, to hit `O(1)` extra space** — plus the discipline of separating a "record what's true" pass from an "act on it" pass so in-progress writes don't corrupt the reads.
+
+The "reuse the input as scratch" trick is a real memory technique. In-place array algorithms encode a seen-set into the array's own indices or sign bits (as in First Missing Positive) to avoid an auxiliary structure — valuable on embedded and memory-tight systems, and in tight numerical kernels where an extra allocation blows the cache. The two-phase "mark, then mutate" split is the same hazard management behind double-buffering and applying diffs: read the old state fully before overwriting, or you feed your own edits back into the computation.
+
+What you're solving for is **the `O(m+n)` marker storage the naive fix spends** — repurposing row 0 and column 0 as the marker arrays removes it entirely, keeping the work to a constant number of linear passes with `O(1)` extra memory.
+
 ## Start from the obvious
 
 The first trap is to zero a row the instant you see a 0. Don't — the zeros you

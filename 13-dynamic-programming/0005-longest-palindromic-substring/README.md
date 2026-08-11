@@ -10,6 +10,18 @@ Find the longest contiguous slice of `s` that reads the same both ways. In
 `"babad"` the answer is `"bab"` (or `"aba"` — ties are fine). In `"cbbd"` it's
 `"bb"`.
 
+## Why this matters
+
+Underneath the puzzle is a core string operation: **find the largest region with a mirror symmetry**, reusing sub-results so you never re-verify the same interior twice. The recurrence "a span is symmetric iff its ends match and the inside already is" is the reusable idea.
+
+Where symmetry-detection-with-reuse actually shows up:
+
+- **Bioinformatics** — DNA hairpins and inverted repeats are reverse-complement palindromes; finding the longest one flags secondary structure in RNA/DNA.
+- **Text and log analysis** — detecting mirrored or repeated patterns, and the same expand-from-center idea drives fuzzy substring matching.
+- **Compression and diffing** — spotting the longest reusable structure inside data.
+
+What the good solution buys is **time and memory**: brute force is `O(n^3)` because it re-checks overlapping interiors; the DP recurrence (and the expand-around-center form) reuses those already-decided interiors to drop to `O(n^2)` time and `O(1)` space — the difference between "hangs on a long genome read" and "returns instantly."
+
 ## Start from the obvious
 
 Every substring, checked for being a palindrome, keep the longest:

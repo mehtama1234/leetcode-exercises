@@ -11,6 +11,25 @@ count has a name: the *Hamming weight*.
 
 Example: `11` in binary is `1011`, which has three `1`s, so the answer is `3`.
 
+## Why this matters
+
+Counting set bits — the **population count** or *popcount* — is one of the most
+used primitives in low-level computing, and the `n & (n-1)` trick makes it cost
+one step per set bit rather than per bit position. The fundamental operation is
+"how many things are switched on in this bitmask?"
+
+It's everywhere bitsets are used. Databases and search engines store row-sets and
+posting lists as bitmaps and popcount them to size AND/OR results and estimate
+cardinality. Hamming distance (the popcount of an XOR) drives error-correcting
+codes, similarity search, and perceptual image hashing. Chess and board-game
+engines keep positions as 64-bit boards and popcount to count pieces or mobility.
+Memory allocators and schedulers count free slots in a bitmask. Networking counts
+set bits in subnet masks.
+
+What we buy is speed: fewer iterations, no branching per bit, and on real
+hardware this collapses to a single `POPCNT` instruction. In hot paths that run
+billions of times, that difference is the whole point.
+
 ## Start from the obvious
 
 Look at the bottom bit, count it, then slide everything down one position so the

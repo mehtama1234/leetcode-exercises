@@ -9,6 +9,26 @@
 Take a singly linked list `1 -> 2 -> 3` and turn it into `3 -> 2 -> 1`. Return
 the new head. Do it by re-wiring the existing nodes, not by copying values.
 
+## Why this matters
+
+The core operation is flipping the direction of a chain of links — turning a
+forward-only sequence into its reverse by redirecting each pointer, one at a time,
+carrying just three references (prev, current, next). It's the smallest complete
+example of "mutate a structure safely while you're still walking it."
+
+Reversal is a constant background chore in real systems. Undo/redo stacks and
+back-button histories present events in reverse order. Reversing a "next-hop"
+chain gives you the return path in networking and the parent-chain walk in
+tree/graph code. It's the building block inside bigger list problems (reorder,
+palindrome checks, reverse-in-groups), and the same three-pointer discipline shows
+up when you splice or reroute nodes anywhere.
+
+What you're solving for is doing it in place: O(1) extra memory and a single pass,
+versus copying every value into an array to reverse it. On large lists or in
+memory-tight environments that in-place rewiring is the whole point — and learning
+to juggle prev/next without losing the rest of the list is a skill you'll reuse
+constantly.
+
 ## Start from the obvious
 
 You *could* dump all the values into an array, reverse the array, and rebuild a

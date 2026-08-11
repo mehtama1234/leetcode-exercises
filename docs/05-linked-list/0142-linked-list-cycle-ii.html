@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>142. Linked List Cycle II</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details open><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li class="active"><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">5. Linked List: Fast &amp; Slow Pointers</a> / <span>142</span></nav><article class="notes"><h1>142. Linked List Cycle II</h1>
+<p><strong>Pattern:</strong> Fast/slow pointers (Floyd&#x27;s cycle detection, two phases) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/linked-list-cycle-ii/</p>
+<h2>The problem in plain words</h2>
+<p>Same list-with-a-loop setup as <a href="../0141-linked-list-cycle/">141</a>, but now don&#x27;t just answer &quot;is there a cycle?&quot; — return the *node where the loop starts* (the first node that gets revisited). No cycle → return <code>None</code>.</p>
+<h2>Why this matters</h2>
+<p>This goes past &quot;is there a loop?&quot; to &quot;*where* does the loop begin?&quot; — pinpointing the exact entry point of a cycle. The fundamental operation is still constant-space cycle detection, but with the extra math (reset one pointer to the head, then step both one at a time) that locates the join node instead of merely proving it exists.</p>
+<p>Knowing the entry point matters when a cycle is a problem you have to *fix*, not just flag. A build or dependency graph with a circular import needs to report the specific edge that closes the loop so a human can cut it. Sequence generators (pseudo-random streams, hashing chains, state machines) that eventually repeat have a &quot;tail&quot; leading into a repeating cycle, and finding where the repetition starts tells you the period. Debuggers and leak analyzers tracing self-referential pointer structures want the offending node, not a yes/no.</p>
+<p>What you&#x27;re solving for is getting that precise location in one pass with O(1) memory — no hash set of every visited node — which is what makes it usable on large graphs and inside tight runtimes.</p>
+<h2>Start from the obvious</h2>
+<p>The cycle&#x27;s start is the first node you&#x27;d encounter twice. So remember each node as you go; the first one already in your memory is the entrance:</p>
+<pre><code>seen = set()
+node = head
+while node:
+    if node in seen: return node   # first repeat = loop entrance
+    seen.add(node)
+    node = node.next
+return None</code></pre>
+<p><code>O(n)</code> time and <code>O(n)</code> space. Correct and easy to trust.</p>
+<h2>Find the waste</h2>
+<p>The set exists only to recognise the entrance. Floyd&#x27;s algorithm already detects *that* a cycle exists in <code>O(1)</code> space (from problem 141) — the question is whether the meeting point can also reveal *where* the cycle begins, without any memory.</p>
+<h2>The insight</h2>
+<p>It can, and it falls out of a little distance arithmetic. Let:</p>
+<ul><li><code>L</code> = distance from head to the cycle start,</li><li><code>C</code> = length of the cycle,</li><li>when slow and fast first meet, slow has walked <code>L + k</code> steps into the loop.</li></ul>
+<p>Fast moved twice as far, so <code>2(L + k) = L + k + (some whole number of laps)</code>. Simplifying, <code>L</code> is congruent to &quot;the distance from the meeting point back around to the start&quot;. In plain terms:</p>
+<blockquote>The distance from <strong>head</strong> to the cycle start equals the distance from the <strong>meeting point</strong> to the cycle start.</blockquote>
+<p>So do two phases:</p>
+<pre><code># Phase 1: find a meeting point inside the loop (or return None).
+slow = fast = head
+while fast and fast.next:
+    slow = slow.next; fast = fast.next.next
+    if slow is fast: break
+else:
+    return None            # fast ran off -&gt; no cycle
+
+# Phase 2: reset one pointer to head, step both by ONE.
+ptr = head
+while ptr is not slow:
+    ptr = ptr.next; slow = slow.next
+return ptr                 # they meet at the cycle entrance</code></pre>
+<p>Both pointers now move one step at a time and are guaranteed to collide exactly at the entrance.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n)</code> — phase 1 meets within a lap, phase 2 walks at most <code>L + C</code>.</li><li><strong>Space:</strong> <code>O(1)</code> — three pointers, no memory of visited nodes.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li>Phase 2 pointers each move <strong>one</strong> step. Reusing the 2× speed here breaks the proof and misses the entrance.</li><li>Handle &quot;no cycle&quot; first: if fast reaches <code>None</code>, return <code>None</code> before starting phase 2.</li><li>Compare by identity (<code>is</code>), never by <code>.val</code>.</li><li>A self-loop (<code>[1]</code>, pos 0) must return that single node — the code handles it because head *is* the meeting point.</li></ul>
+<h2>Transfer</h2>
+<p>The two-phase idea — &quot;detect with fast/slow, then re-walk from the start to locate the entrance&quot; — is the exact structure of Find the Duplicate Number / 287 (treat array values as <code>next</code> pointers). The core detection reuses <a href="../0141-linked-list-cycle/">141</a>; this problem is what you build on top of it.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0142-linked-list-cycle-ii/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;142. Linked List Cycle II — https://leetcode.com/problems/linked-list-cycle-ii/
+
+Given the head of a linked list, return the node where the cycle begins. If
+there is no cycle, return None.
+
+Two implementations: the honest &quot;remember every node&quot; set, and Floyd&#x27;s two-phase
+fast/slow trick that finds the entry point in O(1) space.
+&quot;&quot;&quot;
+from typing import List, Optional, Set
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: &quot;Optional[ListNode]&quot; = None):
+        self.val = val
+        self.next = next
+
+
+def build_cyclic(values: List[int], pos: int) -&gt; Optional[ListNode]:
+    &quot;&quot;&quot;Build a list and wire the tail&#x27;s next to node at index `pos`.
+
+    `pos == -1` means no cycle. Returns the head. Test helper only.
+    &quot;&quot;&quot;
+    nodes = [ListNode(v) for v in values]
+    for i in range(len(nodes) - 1):
+        nodes[i].next = nodes[i + 1]
+    if pos != -1 and nodes:
+        nodes[-1].next = nodes[pos]
+    return nodes[0] if nodes else None
+
+
+def index_of(head: Optional[ListNode], node: Optional[ListNode]) -&gt; int:
+    &quot;&quot;&quot;Return the index of `node` walking from head (for asserts). -1 if None.&quot;&quot;&quot;
+    if node is None:
+        return -1
+    i = 0
+    cur = head
+    while cur is not None:
+        if cur is node:
+            return i
+        i += 1
+        cur = cur.next
+    return -1
+
+
+def detect_cycle_seen(head: Optional[ListNode]) -&gt; Optional[ListNode]:
+    &quot;&quot;&quot;First node seen twice is the cycle&#x27;s start. O(n) time, O(n) space.
+
+    The honest idea: walk and remember each node. The very first node you meet
+    that&#x27;s already in your memory is, by definition, the point where the path
+    loops back — the cycle entrance. Simple, but pays O(n) memory.
+    &quot;&quot;&quot;
+    seen: Set[int] = set()
+    node = head
+    while node:
+        if id(node) in seen:
+            return node
+        seen.add(id(node))
+        node = node.next
+    return None
+
+
+def detect_cycle(head: Optional[ListNode]) -&gt; Optional[ListNode]:
+    &quot;&quot;&quot;Floyd&#x27;s two-phase pointers. O(n) time, O(1) space.
+
+    Phase 1: run slow (1 step) and fast (2 steps) until they meet inside the
+    loop (or fast hits None -&gt; no cycle).
+
+    Phase 2 (the clever part): the math of the meeting point says the distance
+    from the *head* to the cycle start equals the distance from the *meeting
+    point* to the cycle start (going around). So reset one pointer to head and
+    advance both one step at a time; they meet exactly at the cycle entrance.
+    &quot;&quot;&quot;
+    slow = head
+    fast = head
+    while fast and fast.next:
+        slow = slow.next  # type: ignore[union-attr]
+        fast = fast.next.next
+        if slow is fast:
+            # Phase 2: walk head and meeting point in lockstep.
+            ptr = head
+            while ptr is not slow:
+                ptr = ptr.next  # type: ignore[union-attr]
+                slow = slow.next  # type: ignore[union-attr]
+            return ptr
+    return None
+
+
+def _test() -&gt; None:
+    # LeetCode examples: (values, pos, expected_index)  pos == expected start
+    cases = [
+        ([3, 2, 0, -4], 1, 1),
+        ([1, 2], 0, 0),
+        ([1], -1, -1),
+        ([], -1, -1),
+        ([1, 2, 3, 4], -1, -1),  # no cycle
+        ([1], 0, 0),             # self-loop
+        ([1, 2, 3, 4, 5], 4, 4),  # cycle at the tail
+    ]
+    for vals, pos, expected in cases:
+        head = build_cyclic(vals, pos)
+        assert index_of(head, detect_cycle(head)) == expected, (vals, pos)
+        assert index_of(head, detect_cycle_seen(head)) == expected, (vals, pos)
+    print(&quot;linked_list_cycle_ii: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../05-linked-list/0141-linked-list-cycle.html">← 141 · Linked List Cycle</a><a class="pn next" href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List →</a></nav></main>
+</div>
+</body>
+</html>

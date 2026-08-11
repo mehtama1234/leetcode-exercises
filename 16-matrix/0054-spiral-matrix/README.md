@@ -10,6 +10,14 @@ Read out every number in the grid, but not row by row — follow a spiral. Go ri
 across the top, down the right side, left across the bottom, up the left side, then
 tighten inward one layer and do it again, until nothing is left.
 
+## Why this matters
+
+The deeper move is **traversing a 2D region in a controlled non-row order by tracking only its shrinking boundaries** — describing "what's left to visit" with four integers instead of a full per-cell visited map.
+
+Layer-by-layer / boundary-shrinking traversal is a genuine pattern. Image codecs and texture tools sometimes walk pixels in ring or space-filling orders for locality or progressive display. Matrix algorithms process a grid in concentric layers or peel borders (image border trimming, cellular-automaton edge handling). The boundary-pointer bookkeeping itself — walls closing inward — is the same discipline behind processing a matrix ring by ring in numerical code, and behind any "spiral fill" (Spiral Matrix II).
+
+What you're solving for is **avoiding the whole `visited` grid and the per-step turn check**. Because the spiral always peels the outermost ring, the visited region is never ragged, so four boundary integers capture it exactly — dropping extra space from `O(m·n)` to `O(1)` while still emitting each cell once.
+
 ## Start from the obvious
 
 The honest first thought is to literally simulate a walker. Keep a `(row, col)`

@@ -10,6 +10,25 @@
 left, read in order, spells `s`. Crossing out never lets you rearrange — order is
 fixed. So: can you find every letter of `s` inside `t`, in the same order?
 
+## Why this matters
+
+The fundamental operation is *matching one ordered sequence against another in a
+single forward pass, because order is fixed and there's nothing to gain from
+looking back.* A greedy two-pointer walk suffices — no backtracking, no DP.
+
+This in-order matching is real work. Diff tools and version control compare two
+file versions by finding common subsequences of lines. Streaming pattern and
+event-sequence detection — "did these steps happen in this order?" in log
+analysis, funnel analytics, or intrusion detection — is exactly this scan. Merge
+steps in merge sort and in merging sorted database indexes use the same
+two-pointer advance.
+
+What you're solving for is a single O(|t|) pass over an input you consume once,
+with O(1) memory, instead of the branching recursion the problem seems to invite.
+And the greedy insight scales: when you must test many `s` strings against one
+fixed `t`, you preprocess `t` once so each query is cheap — the pattern behind
+serving many queries against a static corpus.
+
 ## Start from the obvious
 
 You might reach for recursion or DP: at each character of `t`, either use it to

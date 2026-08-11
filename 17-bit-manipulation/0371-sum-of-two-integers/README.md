@@ -10,6 +10,27 @@ Compute `a + b`, but you're not allowed to use `+` or `-`. So you have to
 rebuild addition out of bitwise operations — the same way a CPU's adder actually
 does it in silicon. Inputs may be negative, treated as 32-bit signed integers.
 
+## Why this matters
+
+This rebuilds addition from **XOR (add without carry) and AND-shift (where the
+carries go)** — literally simulating a hardware adder. The fundamental insight is
+that arithmetic *is* a fixed sequence of bit operations; the puzzle just makes
+that machinery visible instead of hiding it behind the `+` sign.
+
+Where this genuinely matters: it's how CPUs and FPGAs actually add — ripple-carry
+and carry-lookahead adders are these same XOR/AND relationships in silicon, so
+this is the mental model behind digital-logic design. Software emulators and
+virtual machines that model a target CPU implement arithmetic exactly this way.
+Big-integer and cryptographic libraries build wide addition out of word-level
+carry propagation. Understanding carry chains also explains real behaviors
+programmers hit: integer overflow, two's-complement negatives, and why signed
+wraparound looks the way it does.
+
+What we buy here isn't speed — it's *understanding the primitive*. Knowing
+addition is XOR-plus-carry demystifies overflow, bit tricks, and hardware
+timing, and it's the foundation for building any operation when only bitwise ones
+are available.
+
 ## Start from the obvious
 
 We can't use `+`, so recall how you add two binary numbers by hand, column by

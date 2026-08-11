@@ -10,6 +10,18 @@ Same goal as classic Two Sum — find the two numbers that add up to `target` an
 return where they are — but with two twists: the array is **already sorted**, and
 the answer must be **1-indexed** (the first element is position 1, not 0).
 
+## Why this matters
+
+The deeper problem is **exploiting sorted order to find a pair hitting a target sum without extra memory**. The fundamental operation is using the sum of the two current ends as a signal that tells you, unambiguously, which end to discard next — so each comparison eliminates a whole candidate and you converge in one pass.
+
+This "the data is already ordered, so let direction guide the search" idea is exactly how real systems avoid brute force:
+
+- **Databases** exploit sorted indexes and merge-join two ordered streams by advancing whichever side is behind — the same converge-by-comparison move.
+- **Range and threshold queries** over sorted time-series or price ladders (find two points whose combined value meets a bound) use the two-pointer shrink.
+- **Merging sorted data** in external sort, log merging, and stream joins is this pattern generalized.
+
+What we're solving for is **space and the value of structure**: a hash-map Two Sum is `O(n)` time but spends `O(n)` memory to reconstruct an ordering the input already gave us. Two pointers get `O(n)` time at `O(1)` space — when sortedness is handed to you, refusing to use it is the real waste.
+
 ## Start from the obvious
 
 Ignore the sorting and just test every pair, exactly like brute-force Two Sum:

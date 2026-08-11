@@ -11,6 +11,27 @@ one as a **subtree** — meaning: is there some node in the big tree such that t
 entire tree hanging off that node is identical (shape and values) to the small
 tree? A subtree must go all the way to its leaves; you can't stop partway.
 
+## Why this matters
+
+The deeper problem is **pattern matching inside a structure**: scanning every
+position of a big recursive object for an exact structural copy of a smaller one.
+It composes two primitives — *search* (visit each candidate node) and
+*exact-match* (structural equality, problem 100) — which is why "search × match"
+recurs across so many tasks.
+
+Concretely: compilers and refactoring/lint tools hunt an AST for a code pattern
+to flag or rewrite it (find every `x + 0`, detect duplicated subexpressions).
+Diff and plagiarism tools locate a subtree of one document inside another. HTML/DOM
+queries and CSS-like selectors match structural sub-patterns in a page. Chemistry
+and bioinformatics do subgraph/substructure search on molecule and phylogenetic
+trees.
+
+What you're solving for is **an honest O(n·m) worst case** from the naive
+match-at-every-node approach — and the awareness that you can do better: hashing
+each subtree (Merkle-style) or serializing both trees and running string search
+brings it near O(n+m). That trade — pay some preprocessing to turn repeated
+structural comparisons into cheap equality checks — is the transferable idea.
+
 ## Start from the obvious
 
 Two things have to happen. First, find a candidate spot in the big tree. Second,

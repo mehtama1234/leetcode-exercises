@@ -10,6 +10,24 @@ Build a new array where each slot holds the product of *all the other* numbers �
 everything except the one sitting at that slot. Two hard rules: no division, and
 it must run in `O(n)`.
 
+## Why this matters
+
+The fundamental move is *precompute running results from each side so every
+position's answer combines "everything before" with "everything after" in O(1),
+instead of recomputing overlapping work.* That's prefix/suffix accumulation.
+
+It's a workhorse in real systems. Databases and analytics engines keep prefix
+sums (cumulative totals) so a range query — revenue from March to June, rows
+between two offsets — is one subtraction instead of a re-scan. Summed-area tables
+(integral images) do the 2D version and power fast box blur and feature detection
+in computer vision. Cumulative distribution functions in statistics and
+weighted random sampling are the same precomputed running totals.
+
+What you're solving for is turning a per-query O(n) recompute into O(1) by paying
+once up front, and here also dodging division — which matters because division
+breaks on zeros and loses precision. Two linear passes and O(1) extra space
+replace the O(n^2) brute force.
+
 ## Start from the obvious
 
 Definition straight to code: for each position `i`, multiply together every

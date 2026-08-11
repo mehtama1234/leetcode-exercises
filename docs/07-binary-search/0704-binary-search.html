@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>704. Binary Search</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details open><summary>7. Binary Search</summary><ul><li class="active"><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">7. Binary Search</a> / <span>704</span></nav><article class="notes"><h1>704. Binary Search</h1>
+<p><strong>Pattern:</strong> Binary search (halve the search space each step) <strong>Difficulty:</strong> Easy <strong>Link:</strong> https://leetcode.com/problems/binary-search/</p>
+<h2>The problem in plain words</h2>
+<p>You have a list of numbers that is already sorted in increasing order, with no duplicates. Given a target, tell me the index where it lives, or <code>-1</code> if it isn&#x27;t there.</p>
+<h2>Why this matters</h2>
+<p>This is the purest form of a question that appears everywhere: *given an ordered collection, can I locate something — or rule out half of everything — with one comparison?* The fundamental operation is halving a search space by asking a single yes/no question whose answer eliminates half the remaining candidates.</p>
+<p>Concretely, it&#x27;s the backbone of real systems. Database indexes (B-trees) are binary search generalized to disk, letting a lookup touch a handful of pages instead of a whole table. <code>git bisect</code> finds the commit that introduced a bug in <code>log n</code> steps instead of checking every commit. Autocomplete and dictionaries binary-search sorted term lists. And &quot;binary search on the answer&quot; solves optimization problems — finding the minimum capacity, speed, or threshold that satisfies a monotone condition — from scheduling to capacity planning.</p>
+<p>What you&#x27;re buying is time: <code>O(log n)</code> instead of <code>O(n)</code>. Twenty comparisons find a target in a million sorted elements. When lookups happen millions of times a second, or the data sits on slow disk where each read is expensive, that gap decides whether the system keeps up.</p>
+<h2>Start from the obvious</h2>
+<p>The definition hands you an algorithm: to find something in a list, walk the list and check each element.</p>
+<pre><code>for i, x in enumerate(nums):
+    if x == target: return i
+return -1</code></pre>
+<p>That&#x27;s <code>O(n)</code>, and it&#x27;s correct. But notice what it *doesn&#x27;t* use: the array is <strong>sorted</strong>, and this scan treats it exactly like a shuffled pile. When your algorithm ignores a fact you were given, that&#x27;s usually where the speedup hides.</p>
+<h2>Find the waste</h2>
+<p>Suppose you&#x27;re looking for <code>9</code> in <code>[-1, 0, 3, 5, 9, 12]</code> and you peek at the middle value, <code>5</code>. Because the array is sorted, <code>5 &lt; 9</code> tells you something huge: <strong>everything to the left of <code>5</code> is also less than <code>9</code></strong>. The entire left half is disqualified in a single comparison. The linear scan throws that leverage away — it steps past <code>-1</code>, <code>0</code>, <code>3</code> one at a time to learn what one look at the middle already told you.</p>
+<h2>The insight</h2>
+<p>Keep a window <code>[lo, hi]</code> of the indices that could still contain the target. Look at the middle:</p>
+<ol><li>If <code>nums[mid] == target</code>, you found it.</li><li>If <code>nums[mid] &lt; target</code>, the target must be to the right — move <code>lo</code> to <code>mid + 1</code> and discard the whole left half (including <code>mid</code>).</li><li>If <code>nums[mid] &gt; target</code>, the target must be to the left — move <code>hi</code> to <code>mid - 1</code>.</li></ol>
+<p>Every step throws away half of what remains. <code>n</code> elements survive at most <code>log2(n)</code> halvings before the window is empty, so the search finishes in about <code>log n</code> comparisons — 20-ish steps for a million elements.</p>
+<pre><code>lo, hi = 0, len(nums) - 1
+while lo &lt;= hi:
+    mid = lo + (hi - lo) // 2
+    if nums[mid] == target: return mid
+    elif nums[mid] &lt; target: lo = mid + 1
+    else:                    hi = mid - 1</code></pre>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(log n)</code> — each iteration deletes half the remaining range, so the number of iterations is the number of times you can halve <code>n</code> down to 1.</li><li><strong>Space:</strong> <code>O(1)</code> — just two index variables; nothing grows with <code>n</code>.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>The loop condition.</strong> With a *closed* window <code>[lo, hi]</code>, use <code>while lo &lt;= hi</code>. The window <code>[lo, lo]</code> (one element) is still a real candidate you must check; <code>lo &lt; hi</code> would skip it.</li><li><strong>Moving past mid.</strong> Set <code>lo = mid + 1</code> / <code>hi = mid - 1</code>, not <code>lo = mid</code> / <code>hi = mid</code>. Since you already compared <code>mid</code> and it wasn&#x27;t the target, leaving it in the window can loop forever when <code>lo</code>, <code>hi</code>, and <code>mid</code> collapse together.</li><li><strong>Overflow.</strong> <code>mid = lo + (hi - lo) // 2</code> instead of <code>(lo + hi) // 2</code>. Python ints never overflow, but this is the safe form the pattern is famous for.</li><li><strong>Empty array.</strong> <code>hi = -1</code> makes <code>lo &lt;= hi</code> false immediately, so you correctly return <code>-1</code> without touching <code>nums</code>.</li></ul>
+<h2>Transfer</h2>
+<p>The core move — *one comparison against the middle discards half the space* — powers every binary-search variant: <a href="../0153-find-minimum-in-rotated-sorted-array/">Find Minimum in Rotated Sorted Array / 153</a>, <a href="../0033-search-in-rotated-sorted-array/">Search in Rotated Sorted Array / 33</a>. More broadly, whenever you can ask a yes/no question whose answer rules out half the remaining possibilities (searching, or &quot;binary search on the answer&quot; for optimization problems), reach for this template.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/07-binary-search/0704-binary-search/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;704. Binary Search — https://leetcode.com/problems/binary-search/
+
+Given a sorted array `nums` (ascending, all distinct) and a `target`, return the
+index of `target` if it is present, otherwise -1.
+
+Two implementations sit side by side so the *reason* binary search exists is
+visible: the linear scan is the honest starting point, and binary search is what
+you get by asking &quot;the array is sorted — what am I ignoring?&quot;.
+&quot;&quot;&quot;
+from typing import List
+
+
+def search_linear(nums: List[int], target: int) -&gt; int:
+    &quot;&quot;&quot;Look at every element left to right. O(n) time, O(1) space.
+
+    This is the definition turned into code: &quot;is target in the list, and where?&quot;
+    It never uses the fact that the array is sorted — it treats a sorted array
+    exactly like a shuffled one. That ignored structure is the waste we remove.
+    &quot;&quot;&quot;
+    for i, x in enumerate(nums):
+        if x == target:
+            return i
+    return -1
+
+
+def search(nums: List[int], target: int) -&gt; int:
+    &quot;&quot;&quot;Binary search. O(log n) time, O(1) space.
+
+    Key insight: because the array is sorted, one comparison against the middle
+    element tells us which *half* the target must be in — the other half can be
+    thrown away entirely. Each step deletes half of what&#x27;s left, so we reach the
+    answer in about log2(n) steps instead of n.
+
+    We keep a closed window [lo, hi] of indices that could still hold target and
+    shrink it until it&#x27;s empty. `mid = lo + (hi - lo) // 2` avoids overflow in
+    languages with fixed-width ints (a good habit even though Python is immune).
+    &quot;&quot;&quot;
+    lo, hi = 0, len(nums) - 1
+    while lo &lt;= hi:  # window is non-empty while lo &lt;= hi
+        mid = lo + (hi - lo) // 2
+        if nums[mid] == target:
+            return mid
+        if nums[mid] &lt; target:
+            lo = mid + 1  # target is strictly to the right
+        else:
+            hi = mid - 1  # target is strictly to the left
+    return -1
+
+
+def _test() -&gt; None:
+    cases = [
+        (([-1, 0, 3, 5, 9, 12], 9), 4),
+        (([-1, 0, 3, 5, 9, 12], 2), -1),
+        (([5], 5), 0),
+        (([5], -5), -1),
+        (([], 1), -1),            # empty array
+        (([1, 2, 3, 4, 5], 1), 0),  # target at the very start
+        (([1, 2, 3, 4, 5], 5), 4),  # target at the very end
+    ]
+    for (nums, target), expected in cases:
+        assert search(nums, target) == expected, (nums, target)
+        # linear scan must agree with binary search on every case
+        assert search_linear(nums, target) == expected, (nums, target)
+    print(&quot;binary_search: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../06-stack/0739-daily-temperatures.html">← 739 · Daily Temperatures</a><a class="pn next" href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array →</a></nav></main>
+</div>
+</body>
+</html>

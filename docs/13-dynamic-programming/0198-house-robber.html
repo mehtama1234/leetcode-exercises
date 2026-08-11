@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>198. House Robber</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details open><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li class="active"><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">13. Dynamic Programming: Memoization / Tabulation</a> / <span>198</span></nav><article class="notes"><h1>198. House Robber</h1>
+<p><strong>Pattern:</strong> Dynamic programming (1-D, rob-or-skip choice) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/house-robber/</p>
+<h2>The problem in plain words</h2>
+<p>Houses stand in a row, each with some money inside. You want to grab as much as possible, but there&#x27;s an alarm rule: <strong>you can&#x27;t rob two houses that are next to each other.</strong> Return the largest total you can safely take.</p>
+<h2>Why this matters</h2>
+<p>Underneath the heist story is <strong>maximizing a total under a &quot;no two adjacent picks&quot; constraint</strong>. The fundamental operation is a per-item binary choice (take-and-skip-the-neighbor vs. skip) resolved by carrying two rolling states: best-if-I-take-here and best-if-I-don&#x27;t.</p>
+<p>Where non-adjacent selection genuinely appears:</p>
+<ul><li><strong>Scheduling</strong> — picking the most valuable set of non-overlapping jobs or time slots (weighted interval scheduling reduces to this shape once sorted).</li><li><strong>Resource placement</strong> — spacing out cell towers, sensors, or ads/promos so neighbors don&#x27;t conflict, while maximizing coverage or revenue.</li><li><strong>Sequence labeling</strong> — choosing a highest-scoring set of items with a &quot;no two in a row&quot; rule.</li></ul>
+<p>The good solution buys <strong>time</strong> — an exponential rob-or-skip tree collapses to a single <code>O(n)</code> sweep because only <code>n</code> distinct suffixes exist — and the two-variable form buys <strong><code>O(1)</code> memory</strong> since the recurrence never reaches back more than one step. The honest caveat it teaches: greedy &quot;every other house&quot; is wrong; values decide the pattern.</p>
+<h2>Start from the obvious</h2>
+<p>The only real decision at each house is binary: rob it or don&#x27;t. So think about the last house, <code>n-1</code>:</p>
+<ul><li>If you <strong>rob</strong> it, you take its money but you&#x27;re forbidden from house <code>n-2</code>, so the rest of your loot comes from houses <code>0..n-3</code>.</li><li>If you <strong>skip</strong> it, your loot is just the best you could do on houses <code>0..n-2</code>.</li></ul>
+<p>You take whichever is larger. Writing this as a recursion from the front:</p>
+<pre><code>best(i) = max( nums[i] + best(i+2),   # rob house i, jump past i+1
+               best(i+1) )            # skip house i
+best(i) = 0   when i is past the end</code></pre>
+<p>That&#x27;s a correct, honest recursion. But it branches, and it re-solves the same suffixes over and over.</p>
+<h2>Find the waste</h2>
+<p>Draw the calls. <code>best(0)</code> needs <code>best(1)</code> and <code>best(2)</code>. <code>best(1)</code> also needs <code>best(2)</code> and <code>best(3)</code>. So <code>best(2)</code> gets computed from two different places, and this doubling cascades — exponential calls for a problem that only has <code>n</code> distinct subproblems (<code>best(0)</code> … <code>best(n)</code>). <strong>We keep recomputing the answer for the same starting house.</strong></p>
+<h2>The insight</h2>
+<p>Solve each suffix once. Top-down that&#x27;s memoization: cache <code>best(i)</code> the first time you hit it. Bottom-up, flip direction and sweep left to right carrying just two numbers:</p>
+<ul><li><code>take</code> — the best total if we&#x27;re *allowed* to rob the house we&#x27;re now looking at (i.e. we did not rob the previous one),</li><li><code>skip</code> — the best total we&#x27;ve already locked in without robbing the current house.</li></ul>
+<p>At each house holding <code>money</code>:</p>
+<pre><code>new_take = skip + money          # rob here: add to whatever didn&#x27;t include the neighbor
+new_skip = max(take, skip)       # don&#x27;t rob here: carry the best so far
+take, skip = new_take, new_skip</code></pre>
+<p>The answer is <code>max(take, skip)</code>. Only the previous two states ever matter, so there&#x27;s no table to keep — <code>O(1)</code> space.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Naive recursion:</strong> exponential time, <code>O(n)</code> stack.</li><li><strong>Memoized:</strong> <code>O(n)</code> time (n subproblems solved once), <code>O(n)</code> space.</li><li><strong>Rolling loop:</strong> <code>O(n)</code> time, <code>O(1)</code> space — the natural endpoint.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li>Forgetting the empty list (<code>[]</code> → <code>0</code>) and the single house (<code>[x]</code> → <code>x</code>).</li><li>Assuming the best plan is &quot;every other house&quot;. Values matter: for <code>[2,1,1,2]</code> the answer robs the two ends (<code>2 + 2 = 4</code>), skipping *two* houses in the middle.</li><li>In the update, both new values are computed from the *old* pair — do the assignment simultaneously (or with temps) so one doesn&#x27;t clobber the other.</li></ul>
+<h2>Transfer</h2>
+<p>The &quot;at each item, take-it-and-jump vs skip-it, keep two rolling states&quot; pattern is the backbone of many linear DPs. Its direct sequels: <a href="../0213-house-robber-ii/">House Robber II / 213</a> (houses in a circle — solve two linear passes), and it rhymes with <a href="https://leetcode.com/problems/delete-and-earn/">Delete and Earn / 740</a>, which reduces to this exact recurrence after bucketing values.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0198-house-robber/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;198. House Robber — https://leetcode.com/problems/house-robber/
+
+Houses in a row each hold some money. You cannot rob two adjacent houses. Return
+the maximum total you can rob.
+
+Two versions show the DP progression: memoized recursion (top-down) expressing the
+rob/skip choice directly, and a rolling two-variable loop (bottom-up, O(1) space).
+&quot;&quot;&quot;
+from typing import Dict, List
+
+
+def rob_memo(nums: List[int]) -&gt; int:
+    &quot;&quot;&quot;Top-down: from each house, choose to rob it or skip it. O(n) time/space.
+
+    Standing at house i, you either:
+      - rob it: take nums[i], then you must jump to i+2, or
+      - skip it: move to i+1 and decide there.
+    best(i) = max(nums[i] + best(i+2), best(i+1)).
+    The naive form recomputes best(i) in many branches, so cache each once.
+    &quot;&quot;&quot;
+    cache: Dict[int, int] = {}
+
+    def best(i: int) -&gt; int:
+        if i &gt;= len(nums):
+            return 0
+        if i in cache:
+            return cache[i]
+        cache[i] = max(nums[i] + best(i + 2), best(i + 1))
+        return cache[i]
+
+    return best(0)
+
+
+def rob(nums: List[int]) -&gt; int:
+    &quot;&quot;&quot;Bottom-up, two rolling variables. O(n) time, O(1) space.
+
+    Walk left to right tracking two running totals:
+      - `take`: best if we are free to rob the current house,
+      - `skip`: best total already locked in from houses before it.
+    At each house the new best-including-this = skip + money, and the new
+    carry-forward = max(old take, old skip). Only the last two states matter, so
+    no full table is needed.
+    &quot;&quot;&quot;
+    take, skip = 0, 0  # take = best if we rob current house; skip = best if we don&#x27;t
+    for money in nums:
+        take, skip = skip + money, max(take, skip)
+    return max(take, skip)
+
+
+def _test() -&gt; None:
+    cases = [
+        ([1, 2, 3, 1], 4),        # rob houses 0 and 2 -&gt; 1 + 3
+        ([2, 7, 9, 3, 1], 12),    # rob houses 0, 2, 4 -&gt; 2 + 9 + 1
+        ([2, 1, 1, 2], 4),        # rob houses 0 and 3 -&gt; 2 + 2
+        ([5], 5),                 # single house
+        ([], 0),                  # no houses
+    ]
+    for nums, expected in cases:
+        assert rob(nums) == expected, nums
+        assert rob_memo(nums) == expected, nums
+    print(&quot;rob: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../13-dynamic-programming/0070-climbing-stairs.html">← 70 · Climbing Stairs</a><a class="pn next" href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II →</a></nav></main>
+</div>
+</body>
+</html>

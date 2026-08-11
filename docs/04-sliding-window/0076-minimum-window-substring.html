@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>76. Minimum Window Substring</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details open><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li class="active"><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">4. Arrays &amp; Strings: Sliding Window</a> / <span>76</span></nav><article class="notes"><h1>76. Minimum Window Substring</h1>
+<p><strong>Pattern:</strong> Sliding window (variable size, &quot;grow to satisfy, shrink to minimize&quot;) <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/minimum-window-substring/</p>
+<h2>The problem in plain words</h2>
+<p>You have a big string <code>s</code> and a small string <code>t</code>. Find the *shortest* piece of <code>s</code> (a contiguous chunk) that contains everything in <code>t</code> — and duplicates count. If <code>t</code> is <code>&quot;AABC&quot;</code>, your window must contain at least two <code>A</code>s, one <code>B</code>, one <code>C</code>. If no chunk works, return <code>&quot;&quot;</code>.</p>
+<h2>Why this matters</h2>
+<p>The deeper problem is finding the <strong>shortest span of a stream that satisfies a coverage requirement</strong> — &quot;contains at least this much of everything I need&quot; — with the counts mattering. The fundamental operation is *expand until valid, then contract while still valid*, tracking closeness-to-satisfied as a single integer so you never recount a window from scratch.</p>
+<p>This &quot;smallest window that covers a requirement&quot; pattern is genuinely useful:</p>
+<ul><li><strong>Log and monitoring queries</strong> — the shortest time span containing at least one of every event type you care about (e.g., a full request→response→ack sequence).</li><li><strong>Search-result snippet generation</strong> — the tightest passage of a document that contains all the query terms, which is how highlighted snippets are chosen.</li><li><strong>Bioinformatics and signal search</strong> — the minimal segment containing a required set of markers.</li></ul>
+<p>What we&#x27;re solving for is <strong>turning an <code>O(n^2)</code>-or-worse recount into <code>O(n)</code></strong>: the <code>formed</code>/<code>required</code> counter makes &quot;is this window valid?&quot; an O(1) check updated incrementally as characters enter and leave, so both edges only move forward and each character is touched a constant number of times.</p>
+<h2>Start from the obvious</h2>
+<p>Try every substring of <code>s</code> and test whether it covers <code>t</code>.</p>
+<pre><code>best = &quot;&quot;
+for each start i:
+    for each end j &gt; i:
+        if s[i..j] contains all of t (with counts):
+            keep it if it&#x27;s the shortest so far
+            break   # first cover from i is the shortest starting at i
+return best</code></pre>
+<p>That&#x27;s <code>O(n^2)</code> substrings, and each coverage check re-counts characters — roughly <code>O(n^2 * (n + m))</code>. It&#x27;s correct and it pins down exactly what &quot;covers&quot; means. Now find the waste.</p>
+<h2>Find the waste</h2>
+<p>Two expensive things happen:</p>
+<ol><li><strong>Coverage is recomputed from scratch</strong> for every substring, even though neighboring windows differ by one character.</li><li>Once a window covers <code>t</code>, making it *longer* can never help — so all that extra scanning to the right is pointless. What we actually want, once covered, is to pull the <strong>left</strong> edge in and see how small we can get while staying covered.</li></ol>
+<p>That&#x27;s the two-move rhythm of a variable sliding window: <strong>expand until valid, then contract while valid.</strong></p>
+<h2>The insight</h2>
+<p>Keep target counts <code>need</code> (from <code>t</code>) and live counts <code>window</code> (for the current chunk). The trick that makes coverage O(1) to check: a counter <code>formed</code> = how many *distinct* required characters have currently hit their full required count. When <code>formed</code> equals the number of distinct characters in <code>t</code>, the window covers <code>t</code>.</p>
+<pre><code>expand right, adding s[right] to window
+    if that character just reached its needed count: formed += 1
+while formed == required:              # window is valid — try to shrink
+    record it if it&#x27;s the smallest so far
+    remove s[left] from window
+    if that drops a character below its need: formed -= 1
+    left += 1</code></pre>
+<ul><li><strong>Expanding</strong> finds coverage.</li><li><strong>Shrinking</strong> (the inner <code>while</code>) squeezes each valid window to its minimum, and stops the moment removing one more character would break coverage.</li></ul>
+<p><code>formed</code> turns &quot;is the window valid?&quot; from a full recount into a single integer comparison, updated as characters enter and leave. Both <code>left</code> and <code>right</code> only move forward.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n + m)</code> — building <code>need</code> is <code>O(m)</code>; then each character of <code>s</code> is added by <code>right</code> once and removed by <code>left</code> at most once.</li><li><strong>Space:</strong> <code>O(m)</code> — the <code>need</code> and <code>window</code> maps hold at most the distinct characters of <code>t</code> (window may briefly hold more, bounded by the alphabet).</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>Counting duplicates wrong.</strong> <code>t = &quot;AA&quot;</code> needs *two* A&#x27;s; a set-based &quot;have I seen A?&quot; check silently accepts one. Track counts, and only bump <code>formed</code> when a character reaches *exactly* its needed count (using <code>==</code>, not <code>&gt;=</code>, so it fires once).</li><li><strong>Shrinking too far or not enough.</strong> Decrement <code>formed</code> only when a removed character drops *below* its requirement — an over-supplied character leaving keeps the window valid.</li><li>Forgetting to record the best window *before* you shrink past validity — capture it at the top of the <code>while</code>.</li><li>Edge cases: empty <code>s</code> or <code>t</code>, or <code>t</code> longer than what <code>s</code> can supply → return <code>&quot;&quot;</code>. Guard <code>best_len == infinity</code> at the end.</li><li>Returning the length instead of the actual substring — save <code>best_start</code> too.</li></ul>
+<h2>Transfer</h2>
+<p>This is the canonical &quot;grow to satisfy a constraint, then shrink to optimize&quot; window, and the <code>formed</code>/<code>required</code> counter trick — tracking *how close to valid* you are as an O(1) number — reappears widely: <a href="../0003-longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters / 3</a>, <a href="../0424-longest-repeating-character-replacement/">Longest Repeating Character Replacement / 424</a>, &quot;smallest subarray with sum ≥ target&quot;, and &quot;permutation in string&quot;. Whenever you need the *shortest* window meeting a coverage condition, reach for expand-then- contract with a satisfaction counter.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/04-sliding-window/0076-minimum-window-substring/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;76. Minimum Window Substring — https://leetcode.com/problems/minimum-window-substring/
+
+Given strings `s` and `t`, return the shortest substring of `s` that contains
+every character of `t` (counting duplicates). If no such window exists, return &quot;&quot;.
+
+Two implementations are kept side by side so the reason the fast one exists is
+visible: the brute force checks every substring, and the sliding window is what
+you get by asking &quot;instead of re-checking coverage from scratch, can I grow until
+covered and then shrink while still covered?&quot;.
+&quot;&quot;&quot;
+from typing import Dict
+
+
+def min_window_brute(s: str, t: str) -&gt; str:
+    &quot;&quot;&quot;Check every substring for coverage. O(n^2 * (n + m)) time, O(m) space.
+
+    For each start i and end j, count s[i..j] and test whether it contains every
+    character of t with the required multiplicity. Correct, but it re-counts
+    overlapping substrings over and over — that redundancy is the waste we remove.
+    &quot;&quot;&quot;
+    if not t or not s:
+        return &quot;&quot;
+    need: Dict[str, int] = {}
+    for ch in t:
+        need[ch] = need.get(ch, 0) + 1
+
+    def covers(sub: str) -&gt; bool:
+        have: Dict[str, int] = {}
+        for ch in sub:
+            have[ch] = have.get(ch, 0) + 1
+        return all(have.get(ch, 0) &gt;= cnt for ch, cnt in need.items())
+
+    n = len(s)
+    best = &quot;&quot;
+    for i in range(n):
+        for j in range(i + 1, n + 1):
+            if covers(s[i:j]):
+                if best == &quot;&quot; or (j - i) &lt; len(best):
+                    best = s[i:j]
+                break   # shortest window starting at i found; longer j only grows
+    return best
+
+
+def min_window(s: str, t: str) -&gt; str:
+    &quot;&quot;&quot;Grow to cover, then shrink while still covered. O(n + m) time, O(m) space.
+
+    Key insight: run a window with two moves.
+
+      - Expand `right`, pulling characters in. Track how many of t&#x27;s *required*
+        character slots are currently satisfied via a single counter `formed`.
+      - The moment every requirement is met (`formed == required`), the window is
+        valid — now shrink from the left as far as possible while it stays valid,
+        recording the smallest valid window seen.
+
+    `need` holds the target counts; `window` holds current counts. `formed` counts
+    how many distinct characters have reached their required count, so we know
+    &quot;fully covered?&quot; in O(1) instead of re-scanning. Both pointers move forward
+    only, so the scan is O(n + m).
+    &quot;&quot;&quot;
+    if not s or not t:
+        return &quot;&quot;
+
+    need: Dict[str, int] = {}
+    for ch in t:
+        need[ch] = need.get(ch, 0) + 1
+    required = len(need)          # number of distinct chars we must satisfy
+
+    window: Dict[str, int] = {}
+    formed = 0                    # how many distinct chars are fully satisfied
+    left = 0
+    best_len = float(&quot;inf&quot;)
+    best_start = 0
+
+    for right, ch in enumerate(s):
+        window[ch] = window.get(ch, 0) + 1
+        if ch in need and window[ch] == need[ch]:
+            formed += 1
+
+        # window is valid: shrink from the left as much as still-valid allows
+        while formed == required:
+            if right - left + 1 &lt; best_len:
+                best_len = right - left + 1
+                best_start = left
+            left_ch = s[left]
+            window[left_ch] -= 1
+            if left_ch in need and window[left_ch] &lt; need[left_ch]:
+                formed -= 1       # dropping this char broke coverage; stop shrinking
+            left += 1
+
+    return &quot;&quot; if best_len == float(&quot;inf&quot;) else s[best_start:best_start + best_len]
+
+
+def _test() -&gt; None:
+    cases = [
+        ((&quot;ADOBECODEBANC&quot;, &quot;ABC&quot;), &quot;BANC&quot;),
+        ((&quot;a&quot;, &quot;a&quot;), &quot;a&quot;),
+        ((&quot;a&quot;, &quot;aa&quot;), &quot;&quot;),            # need two a&#x27;s, only one available
+        ((&quot;&quot;, &quot;a&quot;), &quot;&quot;),              # empty source
+        ((&quot;a&quot;, &quot;&quot;), &quot;&quot;),              # empty target
+        ((&quot;aa&quot;, &quot;aa&quot;), &quot;aa&quot;),         # duplicates required
+        ((&quot;bba&quot;, &quot;ab&quot;), &quot;ba&quot;),        # shortest is at the end
+        ((&quot;ADOBECODEBANC&quot;, &quot;ABCD&quot;), &quot;ADOBEC&quot;),
+    ]
+    for (s, t), expected in cases:
+        assert min_window(s, t) == expected, (s, t)
+        # brute force must agree with the fast version on every case
+        assert min_window_brute(s, t) == expected, (s, t)
+    print(&quot;min_window: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">← 3 · Longest Substring Without Repeating Characters</a><a class="pn next" href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List →</a></nav></main>
+</div>
+</body>
+</html>

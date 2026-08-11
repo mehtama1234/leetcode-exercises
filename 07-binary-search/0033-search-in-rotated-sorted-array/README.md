@@ -11,6 +11,14 @@ Take a sorted array of distinct numbers and rotate it at some unknown point:
 target, return the index where it sits, or `-1` if it's not there. It must run in
 `O(log n)`, so scanning is not allowed.
 
+## Why this matters
+
+Underneath the rotation, this is a search over data that is *mostly* ordered but has one seam where the ordering wraps — and the fundamental operation is deciding, from a single probe, which side of the seam your answer is on without ever looking at the rest.
+
+That situation is common. Circular buffers and ring queues store data that wraps at an arbitrary offset; log files and time-series that roll over at midnight or a sequence-number reset are sorted-then-wrapped in exactly this way. Databases and version-control systems bisect commit histories or index pages that may have been rotated or partitioned. Anything using a consistent-hashing ring locates a key by searching a sorted ring of hash values.
+
+What you're buying is time and a latency budget: `O(log n)` instead of `O(n)`. For a million entries that's roughly 20 comparisons versus a million — the difference between a query that answers instantly and one that stalls. The trick is that you don't need to un-rotate or re-sort the data first; you exploit the structure that's already there.
+
 ## Start from the obvious
 
 Look at every element until you find the target.

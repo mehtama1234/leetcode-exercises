@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>212. Word Search II</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details open><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li class="active"><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">10. Tries</a> / <span>212</span></nav><article class="notes"><h1>212. Word Search II</h1>
+<p><strong>Pattern:</strong> Trie + grid DFS (backtracking with pruning) <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/word-search-ii/</p>
+<h2>The problem in plain words</h2>
+<p>You have a grid of letters and a list of words. A word is &quot;on the board&quot; if you can spell it by starting at some cell and repeatedly stepping to an up/down/left/right neighbor, never stepping on the same cell twice. Return all the words from the list that are on the board.</p>
+<h2>Why this matters</h2>
+<p>The deeper problem is searching for *many patterns at once* over a shared space, instead of running one search per pattern. The fundamental operation is driving a single traversal with a trie of all the targets, so overlapping patterns are explored together and a dead end kills the search for every pattern that shares it.</p>
+<p>This &quot;match many strings in one pass&quot; idea is a real workhorse. Multi-keyword scanners — intrusion detection, spam and malware filters, content moderation — check text against thousands of patterns simultaneously (Aho-Corasick is the classic trie-driven version). Search engines and DNA/sequence tools screen for many motifs at once. Log analyzers and DLP systems flag any of a large ruleset in a single scan. Boggle-style word-game solvers are this exact grid version.</p>
+<p>What you&#x27;re solving for is collapsing an <code>O(patterns × search_cost)</code> problem into one guided search, and using &quot;fell off the trie&quot; as instant pruning — a single unmatched letter eliminates all the words that would have needed it. That&#x27;s what makes screening against huge pattern sets fast enough to run in real time.</p>
+<h2>Start from the obvious</h2>
+<p>We already know how to check whether *one* word is on the board — that&#x27;s <a href="../../11-backtracking/0079-word-search/">Word Search / 79</a>: a DFS from every cell, marking cells visited so a path can&#x27;t reuse them. So just do that for each word:</p>
+<pre><code>for w in words:
+    if board_contains(w):   # a full DFS over the whole board
+        answer.append(w)</code></pre>
+<p>Correct. But look at what it repeats.</p>
+<h2>Find the waste</h2>
+<p>Suppose the list has &quot;oath&quot;, &quot;oat&quot;, and &quot;oatmeal&quot;. The brute force runs three separate board searches, and all three begin by hunting for the same path <code>o → a → t</code> from every cell. The shared prefix &quot;oat&quot; is re-walked once per word, from scratch. The search is organized around *words*, so it can&#x27;t see that many words share a beginning.</p>
+<p>We fixed this exact &quot;shared prefixes re-derived over and over&quot; waste before — with a <strong>trie</strong> (see <a href="../0208-implement-trie-prefix-tree/">208</a>).</p>
+<h2>The insight</h2>
+<p>Flip the loop. Instead of &quot;for each word, search the board,&quot; do <strong>one</strong> DFS over the board that is *guided by a trie of all the words at once*.</p>
+<p>Put every word into a trie. Then DFS from each cell while simultaneously descending the trie:</p>
+<ul><li>At grid cell with letter <code>ch</code> and trie node <code>node</code>, look up <code>node.children[ch]</code>.</li><li>If there&#x27;s no such child, <strong>this letter cannot extend any remaining word — prune the whole branch immediately.</strong> This is the payoff: one dead letter kills the search for *all* words at once.</li><li>If the child exists, keep walking the grid&#x27;s neighbors from that child.</li><li>If the child node marks the end of a word, record that word.</li></ul>
+<p>All words sharing a prefix travel that prefix together, exactly once, and the trie prunes any grid path that doesn&#x27;t spell some word&#x27;s prefix.</p>
+<p>Two implementation tricks make it clean:</p>
+<ol><li><strong>Store the whole word on its end node</strong> (<code>node.word = word</code>). When the DFS lands on an end node, the answer is right there — no need to reconstruct the path.</li><li><strong>De-duplicate by clearing <code>node.word = None</code></strong> after collecting it, so the same word found via two grid paths is reported only once.</li></ol>
+<pre><code>words: oath, oat        trie:  o─a─t*(oat)
+                                     └h*(oath)
+grid path o→a→t hits t*  -&gt; collect &quot;oat&quot;
+continue    →h  hits h*  -&gt; collect &quot;oath&quot;</code></pre>
+<p>Visited-cell handling is the same backtracking as Word Search 79: mark the cell (<code>board[r][c] = &quot;#&quot;</code>) before recursing, restore it after, so each path uses a cell at most once but other starting paths can still use it.</p>
+<h2>Complexity</h2>
+<p>Let the board be <code>m × n</code> and let <code>L</code> be the length of the longest word.</p>
+<ul><li><strong>Time:</strong> <code>O(m · n · 4^L)</code> in the worst case — a DFS from every cell, branching up to 4 directions, depth capped at <code>L</code> because the trie has no path longer than the longest word. In practice the trie pruning cuts this enormously: most branches die at the first letter that isn&#x27;t a valid prefix.</li><li><strong>Space:</strong> <code>O(total characters in all words)</code> for the trie, plus <code>O(L)</code> recursion depth.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li>Not marking cells visited (or forgetting to restore them) — you&#x27;d let a path reuse a cell, so &quot;abcb&quot; on a board with a single <code>b</code> would wrongly match.</li><li>Reporting the same word multiple times when several grid paths spell it. Clear the end marker after collecting.</li><li>Reconstructing the found word from the path instead of storing it on the end node — easy to get subtly wrong; the stored word is exact.</li><li>Building the trie inside the per-cell loop instead of once up front.</li><li>A common extra optimization is pruning dead trie leaves as words are found; it&#x27;s not required for correctness, so this solution keeps it simple.</li></ul>
+<h2>Transfer</h2>
+<p>The reusable idea is <strong>use a trie to search for many strings simultaneously, and let &quot;fell off the trie&quot; be your pruning signal.</strong> This turns an <code>O(number_of_words × search_cost)</code> problem into a single guided search. The same board-DFS backtracking is <a href="../../11-backtracking/0079-word-search/">Word Search / 79</a>; the trie half is <a href="../0208-implement-trie-prefix-tree/">208</a> and <a href="../0211-design-add-and-search-words-data-structure/">211</a>. Any time you&#x27;re about to loop &quot;for each pattern, search the whole space,&quot; ask whether a trie lets you search for all patterns in one pass.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/10-tries/0212-word-search-ii/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;212. Word Search II — https://leetcode.com/problems/word-search-ii/
+
+Given a grid of letters and a list of words, return every word that can be spelled
+by walking to adjacent (up/down/left/right) cells without reusing a cell.
+&quot;&quot;&quot;
+from typing import Dict, List, Optional
+
+
+class TrieNode:
+    &quot;&quot;&quot;A character position in the trie of target words.
+
+    `word` holds the full string at the node where a word ends (and doubles as
+    the end-of-word marker). Storing the whole word here means that when the DFS
+    reaches an end node it can collect the answer directly, with no path tracking.
+    &quot;&quot;&quot;
+
+    def __init__(self) -&gt; None:
+        self.children: Dict[str, &quot;TrieNode&quot;] = {}
+        self.word: Optional[str] = None  # the complete word, only at end nodes
+
+
+def find_words_brute(board: List[List[str]], words: List[str]) -&gt; List[str]:
+    &quot;&quot;&quot;For each word, DFS the whole board looking for it. The honest baseline.
+
+    Straightforward but wasteful: two words like &quot;oath&quot; and &quot;oat&quot; each launch
+    their own full board search, re-treading the shared &quot;oat&quot; prefix from every
+    starting cell. With `w` words this is `w` independent searches.
+    &quot;&quot;&quot;
+    rows, cols = len(board), len(board[0])
+
+    def exists(word: str) -&gt; bool:
+        def dfs(r: int, c: int, i: int) -&gt; bool:
+            if i == len(word):
+                return True
+            if r &lt; 0 or r &gt;= rows or c &lt; 0 or c &gt;= cols or board[r][c] != word[i]:
+                return False
+            saved, board[r][c] = board[r][c], &quot;#&quot;  # mark visited
+            found = (
+                dfs(r + 1, c, i + 1)
+                or dfs(r - 1, c, i + 1)
+                or dfs(r, c + 1, i + 1)
+                or dfs(r, c - 1, i + 1)
+            )
+            board[r][c] = saved
+            return found
+
+        return any(dfs(r, c, 0) for r in range(rows) for c in range(cols))
+
+    return [w for w in words if exists(w)]
+
+
+class Solution:
+    &quot;&quot;&quot;Optimal: one board DFS guided by a trie of *all* the words at once.
+
+    The brute force restarts for every word and re-walks shared prefixes. Put
+    the words into a trie and walk the *board* instead: from each cell, descend
+    the trie as long as the current letter is a valid next character. All words
+    sharing a prefix are explored together in a single pass, and the instant the
+    grid path leaves the trie we prune. When a trie node carries a full word,
+    we&#x27;ve found it.
+    &quot;&quot;&quot;
+
+    def findWords(self, board: List[List[str]], words: List[str]) -&gt; List[str]:
+        root = self._build_trie(words)
+        rows, cols = len(board), len(board[0])
+        found: List[str] = []
+
+        def dfs(r: int, c: int, node: TrieNode) -&gt; None:
+            ch = board[r][c]
+            nxt = node.children.get(ch)
+            if nxt is None:
+                return  # this grid letter can&#x27;t extend any remaining word -&gt; prune
+
+            if nxt.word is not None:
+                found.append(nxt.word)
+                nxt.word = None  # de-duplicate: collect each word only once
+
+            board[r][c] = &quot;#&quot;  # mark visited so this path can&#x27;t reuse the cell
+            for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nr, nc = r + dr, c + dc
+                if 0 &lt;= nr &lt; rows and 0 &lt;= nc &lt; cols and board[nr][nc] != &quot;#&quot;:
+                    dfs(nr, nc, nxt)
+            board[r][c] = ch  # restore for other starting paths
+
+        for r in range(rows):
+            for c in range(cols):
+                dfs(r, c, root)
+        return found
+
+    @staticmethod
+    def _build_trie(words: List[str]) -&gt; TrieNode:
+        root = TrieNode()
+        for word in words:
+            node = root
+            for ch in word:
+                if ch not in node.children:
+                    node.children[ch] = TrieNode()
+                node = node.children[ch]
+            node.word = word
+        return root
+
+
+def _test() -&gt; None:
+    sol = Solution()
+
+    # Official LeetCode example 1
+    board1 = [
+        [&quot;o&quot;, &quot;a&quot;, &quot;a&quot;, &quot;n&quot;],
+        [&quot;e&quot;, &quot;t&quot;, &quot;a&quot;, &quot;e&quot;],
+        [&quot;i&quot;, &quot;h&quot;, &quot;k&quot;, &quot;r&quot;],
+        [&quot;i&quot;, &quot;f&quot;, &quot;l&quot;, &quot;v&quot;],
+    ]
+    words1 = [&quot;oath&quot;, &quot;pea&quot;, &quot;eat&quot;, &quot;rain&quot;]
+    assert sorted(sol.findWords(board1, words1)) == [&quot;eat&quot;, &quot;oath&quot;]
+
+    # Official LeetCode example 2
+    board2 = [[&quot;a&quot;, &quot;b&quot;], [&quot;c&quot;, &quot;d&quot;]]
+    words2 = [&quot;abcb&quot;]
+    assert sol.findWords(board2, words2) == []  # would need to reuse &#x27;b&#x27;
+
+    # Edge cases
+    board3 = [[&quot;a&quot;]]
+    assert sorted(sol.findWords(board3, [&quot;a&quot;])) == [&quot;a&quot;]      # single cell word
+    assert sol.findWords(board3, [&quot;b&quot;]) == []                  # letter not present
+
+    # Overlapping-prefix words are all found in one pass, each once
+    board4 = [
+        [&quot;o&quot;, &quot;a&quot;, &quot;t&quot;],
+        [&quot;x&quot;, &quot;x&quot;, &quot;h&quot;],
+        [&quot;x&quot;, &quot;x&quot;, &quot;x&quot;],
+    ]
+    got = sorted(sol.findWords(board4, [&quot;oat&quot;, &quot;oath&quot;, &quot;oat&quot;]))
+    assert got == [&quot;oat&quot;, &quot;oath&quot;], got  # duplicate &quot;oat&quot; collected only once
+
+    # Optimal must agree with the brute force on the main example
+    assert sorted(sol.findWords(board1, words1)) == sorted(
+        find_words_brute(board1, words1)
+    )
+
+    print(&quot;word_search_ii: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../10-tries/0211-design-add-and-search-words-data-structure.html">← 211 · Design Add and Search Words Data Structure</a><a class="pn next" href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream →</a></nav></main>
+</div>
+</body>
+</html>

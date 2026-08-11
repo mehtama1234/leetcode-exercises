@@ -10,6 +10,14 @@ You have a grid of letters. Can you spell a given word by starting on some cell
 and stepping to a neighbor (up, down, left, right) for each next letter? You may
 not step on the same cell twice within one spelling.
 
+## Why this matters
+
+Stripped of the letters, this is: *does a path exist through a graph that matches a required sequence and never reuses a node?* The fundamental operation is a depth-first search that tries a step, marks where it's been so the current path can't loop, and un-marks on the way back so other paths stay free.
+
+That "explore, mark, backtrack" loop is everywhere something searches a space of paths or configurations. Maze and route solvers walk a grid this way. Compilers and constraint solvers backtrack through partial assignments, undoing a choice when it leads to a dead end. Game engines search move sequences (and prune the ones that can't win). Circuit routers and puzzle solvers (Sudoku, crosswords) place a value, recurse, and retract it if it fails.
+
+What you're solving for is memory and cleanliness: the in-place mark-and-restore means you carry only the current path, not a separate visited copy per branch, and the board is left untouched for the next search. You avoid re-scanning the whole space and you never pay for state you'd have to reset by hand.
+
 ## Start from the obvious
 
 Spelling the word is walking a path where cell 0 is `word[0]`, cell 1 is a

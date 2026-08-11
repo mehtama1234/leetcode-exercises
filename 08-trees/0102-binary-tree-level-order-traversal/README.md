@@ -10,6 +10,25 @@ Read the tree row by row, top to bottom. The root is the first row; its children
 are the second row; their children the third; and so on. Return each row as its
 own list, left to right.
 
+## Why this matters
+
+The real problem is **exploring a structure in order of distance from a start
+point, in distinct waves** — processing everything one hop away before anything
+two hops away, while keeping the layers separate. The fundamental operation is
+breadth-first expansion with a queue, snapshotting each frontier before it grows.
+
+This is the backbone of a lot of real work. Shortest-path and "fewest steps"
+searches (unweighted maps, puzzle solvers, network hop counts) are BFS. Web
+crawlers and dependency resolvers fan out level by level. Garbage collectors
+sweep reachable objects in waves; social features compute "friends, then
+friends-of-friends" as distinct rings. Any UI that renders a tree depth-by-depth
+uses this grouping.
+
+What you're solving for is **visiting each node exactly once, O(n) time, while
+preserving layer boundaries** — the per-level snapshot is what lets you answer
+"how far?" and "what's on this ring?" without re-walking the tree. Memory is
+bounded by the widest level, the honest cost of going breadth-first.
+
 ## Start from the obvious
 
 To visit a tree "by rows", you naturally want a queue: process the root, then its

@@ -9,6 +9,24 @@
 You're given a pile of words. Sort them into groups where every word in a group
 is an anagram of the others — same letters rearranged. Return the groups.
 
+## Why this matters
+
+The real problem is: *reduce each item to a canonical signature so that "the same
+under the rules I care about" becomes "equal key," then let a hash map bucket
+them for free.* The fundamental operation is grouping by a derived key, not
+comparing every pair.
+
+This shows up constantly. Deduplication systems fingerprint files (a content
+hash) so identical files collapse regardless of name. Search and dedupe pipelines
+normalize records — lowercase, strip punctuation, sort fields — before hashing so
+"same customer entered twice" merges. Compilers hash-cons expressions to a
+canonical form so `a+b` and `b+a` share one node. Image and near-duplicate
+detection maps content to a signature and groups by it.
+
+What you're solving for is time and simplicity: instead of O(n^2) pairwise
+comparisons plus messy merge bookkeeping, you compute one key per item and get
+O(n) grouping, with the hash map doing the clustering.
+
 ## Start from the obvious
 
 The naive read is "compare every word against every other word to see if they're

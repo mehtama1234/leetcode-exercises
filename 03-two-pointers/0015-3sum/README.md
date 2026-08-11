@@ -10,6 +10,18 @@ Find every group of three numbers in the array that add up to zero. Return the
 triplets themselves (their values, not indices), and don't list the same triplet
 twice even if the array has repeated numbers.
 
+## Why this matters
+
+The real problem is **finding combinations that satisfy a numeric relationship without checking every combination** — and doing it while suppressing duplicate answers. The core operation is reducing a k-way search to a (k-1)-way search plus a single linear sweep, using sorted order to both guide the sweep and make dedup fall out for free (equal values sit adjacent).
+
+This "match up entries that sum or balance to a target" pattern is everywhere money and quantities move:
+
+- **Finance/accounting reconciliation** — finding sets of transactions that net to a given balance, or offsetting entries that cancel.
+- **Analytics and reporting** — grouping records whose measures combine to hit a threshold, deduplicating equivalent groups.
+- **Computational geometry / collision** — triples of points meeting a coplanar or distance condition after sorting by coordinate.
+
+What we're solving for is **avoiding the combinatorial blowup**: brute force is `O(n^3)`, and sorting once turns it into `O(n^2)` with `O(1)` extra space — no hash set, because sorted adjacency handles the duplicates that would otherwise corrupt the output.
+
 ## Start from the obvious
 
 "Three numbers that sum to zero" turns straight into three nested loops:

@@ -11,6 +11,25 @@ in time need separate rooms. What's the fewest rooms that can hold all of them?
 
 Standard signature: `min_meeting_rooms(intervals) -> int`.
 
+## Why this matters
+
+The fundamental operation is **peak concurrency**: over a timeline of things that
+start and end, what's the maximum number active at once. You compute it by
+turning intervals into +1/−1 events and tracking a running count — a *sweep
+line*. The answer sizes the resource you must provision.
+
+This is a real capacity-planning question. Cloud and connection-pool sizing asks
+"what's the most simultaneous requests?" to decide how many servers or DB
+connections to hold. Telephony and call centers use exactly this (Erlang-style
+peak concurrent calls) to staff lines. Video streaming and CDNs size for peak
+concurrent viewers. Thread pools and rate limiters cap on max in-flight work.
+Scheduling any pooled resource — rooms, machines, GPUs, licenses — comes down to
+this peak count.
+
+What we buy is `O(n log n)` and constant extra state via the +1/−1 sweep, instead
+of re-counting live intervals at every time point. And the number it returns is
+directly actionable: it's the minimum resources that guarantee no one waits.
+
 ## The reframing that unlocks it
 
 The answer is **the largest number of meetings happening at the same moment.**

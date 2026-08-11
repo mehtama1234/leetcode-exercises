@@ -11,6 +11,18 @@ money, no robbing two neighbors — with one twist: the houses form a **circle**
 That means the first house and the last house are neighbors too, so you can't rob
 both of them. Return the most money you can safely take.
 
+## Why this matters
+
+The real lesson here is a general move: **when a constraint couples the two ends of a sequence, don't tangle it into the recurrence — fix one boundary decision and solve the rest as an ordinary line, once per choice, then combine.** The fundamental operation is *case-splitting on a wrap-around* to reduce a circular problem to linear ones you already know how to solve.
+
+Where "break the wrap-around by fixing an endpoint" shows up:
+
+- **Circular scheduling** — round-robin shifts, ring buffers, or a rotating on-call rota where the first and last slots are adjacent.
+- **Layout on a loop** — placing items around a ring (fixtures on a circular track, seating at a round table) under a no-adjacent rule.
+- **Any circular-array DP** — max circular subarray sums and similar problems all use this fix-a-boundary trick.
+
+The good solution buys **simplicity and correctness at the same cost**: two linear `O(n)` sweeps and `O(1)` state, instead of a fiddly, bug-prone recurrence that tries to remember whether the first house was robbed.
+
 ## Start from the obvious
 
 Your instinct is to reuse the linear solution. But the wrap-around breaks it: the

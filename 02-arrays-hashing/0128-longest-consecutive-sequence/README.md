@@ -10,6 +10,24 @@ You have a jumbled bag of integers. Ignoring their positions, what's the longest
 chain of numbers that step up by exactly one — like `3,4,5,6` — that you can pull
 out? Return the chain's length. The catch: it must run in `O(n)`.
 
+## Why this matters
+
+Two fundamental operations hide here. First, O(1) presence testing — "is `x+1`
+also in my collection?" — without paying to sort everything. Second, *anchoring
+work at the true start of a structure so each connected piece is measured exactly
+once*, instead of re-walking overlapping runs.
+
+Both recur in real work. Finding maximal contiguous ranges shows up in storage
+and networking: coalescing free disk blocks or memory pages into the largest
+runs, merging adjacent IP ranges or version numbers, collapsing timestamps into
+unbroken intervals. The "process each connected component once from its boundary"
+idea is exactly how flood-fill and region labeling work in image processing and
+grid/maze code — visit a cell only if it begins a new region.
+
+What you're solving for is staying linear when sorting would drag you to
+O(n log n). By trading a hash set (O(n) memory) for order, and only starting a
+count where nothing extends downward, total work stays proportional to the data.
+
 ## Start from the obvious
 
 Sort the numbers and consecutive integers line up as neighbors; then one walk

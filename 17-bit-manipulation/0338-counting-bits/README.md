@@ -21,6 +21,25 @@ counts for `0, 1, 2, 3, 4, 5`:
 
 Answer: `[0, 1, 1, 2, 1, 2]`.
 
+## Why this matters
+
+The fundamental move is **reusing a smaller already-computed answer** — dynamic
+programming over bits. Every number's popcount is one more than the popcount of a
+strictly smaller number (drop its lowest set bit), so filling a whole table costs
+`O(1)` per entry instead of recounting each number from scratch.
+
+Two things generalize here. First, *precomputing a lookup table* of popcounts: a
+common real trick is to compute counts for all 8- or 16-bit values once, then
+popcount any word by table lookups — used in database bitmap engines, compression,
+and older CPUs without a `POPCNT` instruction. Second, the DP habit of *building
+big answers from overlapping small ones* underpins everything from parsing to
+edit-distance to route tables — this is a clean, minimal example of it.
+
+What we buy is time: `O(n)` to fill the whole array instead of `O(n log n)`, by
+never redoing work the loop has already done. When you need popcounts for a dense
+range of values (histograms, bitmap stats), precomputing them this way turns a
+per-item cost into a single cheap table read.
+
 ## Start from the obvious
 
 Count each number on its own. To count the 1-bits of a single number, keep

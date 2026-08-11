@@ -10,6 +10,25 @@ You have a list of daily temperatures. For each day, answer: how many days do yo
 wait until it gets warmer than today? If it never gets warmer, the answer is `0`.
 So `[73, 74, 75, 71, 69, 72, 76, 73]` gives `[1, 1, 4, 2, 1, 1, 0, 0]`.
 
+## Why this matters
+
+The fundamental operation is the *next-greater-element* query: for each item, find
+the next one that beats it, in one pass, using a monotonic stack that holds only
+the still-unresolved items in sorted order. You flip "each element searches
+forward" into "each new element resolves the earlier ones it dominates."
+
+This pattern is a workhorse in real analysis. Stock and time-series work asks "how
+long until the next higher price/peak?" — the span problem — with exactly this
+stack. Layout and rendering engines use the monotonic-stack cousin (largest
+rectangle under a skyline) for histogram and box packing. Trapping-rain-water and
+terrain/visibility calculations use the same "nearest taller thing on each side"
+idea.
+
+What you're solving for is collapsing an O(n^2) repeated forward scan into O(n):
+each index is pushed and popped at most once, so a stretch that the brute force
+re-walks over and over is touched a constant number of times total. You spend
+O(n) stack space to erase all that repeated scanning.
+
 ## Start from the obvious
 
 For each day, just walk forward until you hit a hotter day and count the steps.

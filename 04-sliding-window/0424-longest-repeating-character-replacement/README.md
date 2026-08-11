@@ -15,6 +15,18 @@ smartest choice is to keep whichever letter already appears most in that stretch
 and rewrite the rest. So a stretch is achievable exactly when **the number of
 letters that aren't the most common one is at most `k`.**
 
+## Why this matters
+
+The real problem is the **longest contiguous window you can make valid with a limited budget of fixes** — here, "at most `k` elements differ from the dominant one." The fundamental operation is growing a window greedily and shrinking it just enough to restore a validity condition, tracking the dominant count incrementally so the check stays O(1).
+
+This "longest run within an error/change budget" pattern is honestly practical:
+
+- **Quality and tolerance windows** — the longest stretch of a signal or manufacturing run where at most `k` samples are out of spec.
+- **Bioinformatics** — the longest genomic segment matching a reference allowing up to `k` mismatches (approximate matching).
+- **Networking/streaming** — the longest span tolerable with at most `k` dropped or corrupted packets before quality breaks.
+
+What we're solving for is **replacing an `O(n^2)` recount with `O(n)`**: because the window only ever needs to shrink one step per over-budget move and the dominant-frequency count updates as characters enter, you sweep the input once at constant space — turning "check every substring" into a single forward slide.
+
 ## Start from the obvious
 
 Check every substring. For `s[i..j]`, count the letters, find the most common

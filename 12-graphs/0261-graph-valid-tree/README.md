@@ -10,6 +10,14 @@ You have `n` nodes (labeled `0..n-1`) and a list of undirected edges. Is this a
 **tree**? A tree means two things at once: everything is connected into a single
 piece, and there are **no cycles** (no loops).
 
+## Why this matters
+
+The deeper question is **"is this set of connections a clean hierarchy — one piece, no redundancy, no loop?"** The fundamental operation is checking two structural invariants at once: full connectivity and acyclicity, which for `n` nodes collapses to the crisp test "connected AND exactly `n-1` edges."
+
+That invariant is load-bearing in real systems. A spanning tree is exactly the minimal set of links that connects a network with no loops — which is why network switches run spanning-tree protocol (STP) to disable redundant links that would otherwise create broadcast storms. File systems and org charts are trees; validating that a proposed parent-child link set has no cycle keeps them from corrupting into loops. Dependency graphs and reference structures are checked the same way to guarantee there is no circular reference.
+
+What you're solving for is **a single cheap verdict instead of two separate walks**: the `n-1` edge-count screen lets you skip an explicit cycle search, leaving just one connectivity pass — linear time, no wasted second traversal.
+
 ## Start from the obvious
 
 Translate the definition literally: check "connected" and check "no cycle"

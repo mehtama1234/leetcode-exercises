@@ -11,6 +11,25 @@ sit through all of them? They can iff no two meetings overlap in time.
 
 Standard signature: `can_attend_all(intervals) -> bool`.
 
+## Why this matters
+
+The fundamental operation is a **conflict / double-booking check**: given a set of
+reservations on a single shared resource, can they all coexist without any two
+overlapping. Sorting by start reduces "compare every pair" to "compare each item
+to its neighbor," because in sorted order any overlap forces an adjacent overlap.
+
+This is the yes/no gate behind a lot of real scheduling. Booking systems check
+whether one room, one doctor, or one rental car can honor a set of reservations.
+Operating systems and real-time schedulers verify that tasks assigned to one core
+don't overlap. Databases detect conflicting locks or transaction time-ranges on
+the same row. Network and radio systems check that transmissions on one channel
+don't collide. Any "is this single resource over-committed?" question is this
+check.
+
+What we buy is `O(n log n)`: a sort plus one neighbor-only pass, and an early
+exit the moment a conflict appears — instead of the quadratic cost of comparing
+every pair of bookings.
+
 ## Start from the obvious
 
 Overlap is a pairwise thing, so the honest brute force checks every pair:

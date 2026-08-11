@@ -10,6 +10,18 @@ You're given a string like `"applepenapple"` and a set of allowed words like
 `["apple", "pen"]`. Can you chop the string into a sequence of those words, back
 to back, using each word as many times as you like? Return true or false.
 
+## Why this matters
+
+The abstract problem is **can this sequence be segmented into legal pieces from a vocabulary** — a reachability question where the fundamental operation is "from position `i`, does some legal chunk take me to a position from which the rest is also solvable?" You cache the answer per position instead of re-deriving it down every path.
+
+Where segmentation-against-a-dictionary genuinely lives:
+
+- **Word segmentation** — splitting space-free text (Chinese/Japanese/Thai NLP, or breaking up run-together identifiers and hashtags like `#thisisawesome`).
+- **Tokenizing and parsing** — a lexer deciding whether an input stream splits into valid tokens; URL/path routers matching against known segments.
+- **Spellcheck and search** — recognizing whether a compound is composed of known words.
+
+The good solution buys **time**: naive recursion re-solves the same suffix once per path that reaches it (exponential), while keying the subproblem on the start index leaves only `n + 1` real subproblems for `O(n²·L)` total, with a set lookup keeping each membership test `O(1)`.
+
 ## Start from the obvious
 
 Where does the *first* word end? You don't know, so try every possibility. If

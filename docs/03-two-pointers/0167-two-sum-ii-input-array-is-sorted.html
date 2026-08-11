@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>167. Two Sum II - Input Array Is Sorted</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details open><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li class="active"><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">3. Arrays &amp; Strings: Two Pointers</a> / <span>167</span></nav><article class="notes"><h1>167. Two Sum II - Input Array Is Sorted</h1>
+<p><strong>Pattern:</strong> Two pointers (converging on a sorted array) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/</p>
+<h2>The problem in plain words</h2>
+<p>Same goal as classic Two Sum — find the two numbers that add up to <code>target</code> and return where they are — but with two twists: the array is <strong>already sorted</strong>, and the answer must be <strong>1-indexed</strong> (the first element is position 1, not 0).</p>
+<h2>Why this matters</h2>
+<p>The deeper problem is <strong>exploiting sorted order to find a pair hitting a target sum without extra memory</strong>. The fundamental operation is using the sum of the two current ends as a signal that tells you, unambiguously, which end to discard next — so each comparison eliminates a whole candidate and you converge in one pass.</p>
+<p>This &quot;the data is already ordered, so let direction guide the search&quot; idea is exactly how real systems avoid brute force:</p>
+<ul><li><strong>Databases</strong> exploit sorted indexes and merge-join two ordered streams by advancing whichever side is behind — the same converge-by-comparison move.</li><li><strong>Range and threshold queries</strong> over sorted time-series or price ladders (find two points whose combined value meets a bound) use the two-pointer shrink.</li><li><strong>Merging sorted data</strong> in external sort, log merging, and stream joins is this pattern generalized.</li></ul>
+<p>What we&#x27;re solving for is <strong>space and the value of structure</strong>: a hash-map Two Sum is <code>O(n)</code> time but spends <code>O(n)</code> memory to reconstruct an ordering the input already gave us. Two pointers get <code>O(n)</code> time at <code>O(1)</code> space — when sortedness is handed to you, refusing to use it is the real waste.</p>
+<h2>Start from the obvious</h2>
+<p>Ignore the sorting and just test every pair, exactly like brute-force Two Sum:</p>
+<pre><code>for each i:
+    for each j after i:
+        if numbers[i] + numbers[j] == target: return [i+1, j+1]</code></pre>
+<p><code>O(n^2)</code>, correct, and it works. But notice what it wastes: the problem went out of its way to tell us the array is sorted, and this solution never uses that fact at all. When a problem hands you a special structure, refusing to use it is the waste.</p>
+<h2>Find the waste</h2>
+<p>You could bring in a hash map like the original Two Sum and get <code>O(n)</code> time — but that spends <code>O(n)</code> memory to rediscover partners the *sorting already orders for us*. Sorted order gives something a hash map can&#x27;t: <strong>direction</strong>. If you look at the smallest and largest values together, their sum tells you which way to go.</p>
+<p>Put <code>left</code> on the smallest number and <code>right</code> on the largest:</p>
+<ul><li>Sum <strong>too big</strong>? Every pairing that uses the current <code>right</code> is at least this big (since <code>left</code> is already the smallest partner available), so <code>right</code> can&#x27;t be in any answer. Move <code>right</code> left.</li><li>Sum <strong>too small</strong>? By the mirror argument, the current <code>left</code> is too small to reach the target with any partner. Move <code>left</code> right.</li><li>Sum <strong>equal</strong>? Found it.</li></ul>
+<h2>The insight</h2>
+<p>Each comparison lets us throw away one whole end value as impossible, so the two pointers march toward each other and meet after at most <code>n</code> steps — one linear pass, no extra memory.</p>
+<pre><code>left, right = 0, len(numbers) - 1
+while left &lt; right:
+    s = numbers[left] + numbers[right]
+    if s == target: return [left+1, right+1]
+    elif s &lt; target: left += 1
+    else: right -= 1</code></pre>
+<p>The reasoning (&quot;this end can&#x27;t possibly be part of the answer, discard it&quot;) only holds *because* the array is sorted. That&#x27;s the whole point of the problem.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n)</code> — the two pointers only ever move inward, so combined they take at most <code>n</code> steps.</li><li><strong>Space:</strong> <code>O(1)</code> — two indices, nothing allocated. This beats the hash-map Two Sum, which needs <code>O(n)</code> space.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>Off-by-one on indexing:</strong> the answer is 1-based. Return <code>[left+1, right+1]</code>, not <code>[left, right]</code>.</li><li>Trying to reuse the exact hash-map Two Sum code — it works but misses the point and wastes memory the sorted structure makes unnecessary.</li><li>Moving the wrong pointer (swapping the <code>&lt;</code> and <code>&gt;</code> branches) — remember: too big shrink from the right, too small grow from the left.</li><li>Duplicates and negatives are fine here; the direction argument doesn&#x27;t care.</li></ul>
+<h2>Transfer</h2>
+<p>The &quot;converge two pointers from both ends of a sorted array, using the sum to decide which side to shrink&quot; move is the backbone of <a href="../0015-3sum/">3Sum / 15</a> (fix one number, two-pointer the rest) and <a href="../0011-container-with-most-water/">Container With Most Water / 11</a>. Any time the input is sorted and you&#x27;re hunting for a pair (or a bounded sum), reach for two converging pointers before a hash map.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/03-two-pointers/0167-two-sum-ii-input-array-is-sorted/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;167. Two Sum II - Input Array Is Sorted — https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/
+
+Given a 1-indexed array that is already sorted in non-decreasing order, return
+the 1-based indices of the two numbers that add up to `target`.
+&quot;&quot;&quot;
+from typing import List
+
+
+def two_sum_brute(numbers: List[int], target: int) -&gt; List[int]:
+    &quot;&quot;&quot;Check every pair. O(n^2) time, O(1) space.
+
+    The definition turned straight into code: for each i, test every later j.
+    It completely ignores that the array is *sorted*, which is the one fact this
+    problem hands us for free — and throwing that fact away is the waste we fix.
+    &quot;&quot;&quot;
+    n = len(numbers)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if numbers[i] + numbers[j] == target:
+                return [i + 1, j + 1]  # answer is 1-indexed
+    return []
+
+
+def two_sum(numbers: List[int], target: int) -&gt; List[int]:
+    &quot;&quot;&quot;Two pointers from both ends. O(n) time, O(1) space.
+
+    Key insight: because the array is sorted, the sum at the two ends tells us
+    which way to move. Start with `left` at the smallest value and `right` at the
+    largest.
+
+      - If numbers[left] + numbers[right] is too big, the only way to shrink the
+        sum is to move `right` left to a smaller number.
+      - If it&#x27;s too small, the only way to grow it is to move `left` right to a
+        bigger number.
+      - If it&#x27;s exactly the target, we&#x27;re done.
+
+    Each step provably discards a value that cannot be part of any answer, so the
+    two pointers sweep toward each other and the whole thing is one linear pass —
+    no hash map and no extra memory needed.
+    &quot;&quot;&quot;
+    left, right = 0, len(numbers) - 1
+    while left &lt; right:
+        s = numbers[left] + numbers[right]
+        if s == target:
+            return [left + 1, right + 1]  # answer is 1-indexed
+        if s &lt; target:
+            left += 1
+        else:
+            right -= 1
+    return []
+
+
+def _test() -&gt; None:
+    cases = [
+        (([2, 7, 11, 15], 9), [1, 2]),
+        (([2, 3, 4], 6), [1, 3]),
+        (([-1, 0], -1), [1, 2]),
+        (([1, 2, 3, 4, 4, 9, 56, 90], 8), [4, 5]),  # duplicates, answer in the middle
+        (([0, 0, 3, 4], 0), [1, 2]),                # the two zeros
+    ]
+    for (numbers, target), expected in cases:
+        assert two_sum(numbers, target) == expected, (numbers, target)
+        # brute force must agree with the fast version on every case
+        assert two_sum_brute(numbers, target) == expected, (numbers, target)
+    print(&quot;two_sum_ii: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../03-two-pointers/0125-valid-palindrome.html">← 125 · Valid Palindrome</a><a class="pn next" href="../03-two-pointers/0015-3sum.html">15 · 3Sum →</a></nav></main>
+</div>
+</body>
+</html>

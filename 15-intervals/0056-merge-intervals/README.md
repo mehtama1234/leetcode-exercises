@@ -10,6 +10,25 @@ You have a bunch of ranges like `[1, 3]` and `[2, 6]`. Some of them overlap or
 touch. Squash every overlapping group into one range and return what's left. So
 `[1, 3]` and `[2, 6]` become the single range `[1, 6]`.
 
+## Why this matters
+
+The fundamental operation is **coalescing overlapping ranges into their union** —
+collapsing a messy set of segments on a number line (or time line) into the
+minimal set of disjoint spans. Sorting by start turns "search everywhere for an
+overlap" into "just look at the neighbor," which is the reusable trick.
+
+This is bread-and-butter in real systems. Calendars merge busy blocks to show
+free/busy at a glance. Databases and query planners merge index ranges or
+partition scans so they don't read the same rows twice. Memory allocators
+coalesce adjacent freed blocks back into larger regions to fight fragmentation.
+Genomics merges overlapping read alignments into coverage intervals. Network and
+firewall tooling collapses overlapping IP ranges or port ranges into compact
+rules. Log and monitoring systems merge overlapping time windows of activity.
+
+What we buy is `O(n log n)`: one sort plus a single linear sweep, and a smaller,
+non-overlapping output that every downstream step can process without
+re-checking for hidden overlaps.
+
 ## Start from the obvious
 
 Overlap is a relationship between *pairs*, so the honest first thought is: check

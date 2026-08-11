@@ -13,6 +13,18 @@ don't trade, and the answer is `0`.
 The "buy before you sell" rule is the whole game: it means for any sell day, the
 buy day has to come from the days *before* it.
 
+## Why this matters
+
+Underneath the trading story this is the **best-gap-where-one-point-must-precede-the-other** problem, solved by carrying a **running minimum of the prefix**. The fundamental operation is: compress everything you've seen so far into one summary number (the cheapest price yet), and answer each new position against it in constant time — no re-scanning the past.
+
+This running-extremum-over-a-stream move is everywhere in real monitoring and analytics:
+
+- **Metrics and alerting** — largest drawdown or peak-to-trough drop, computed online as data arrives.
+- **Streaming aggregates** — running min/max/best-so-far over sensor, price, or latency feeds where you can't store or re-read history.
+- **Signal processing** — maximum rise between a valley and a later peak in a time series.
+
+What we're solving for is **one pass and constant memory over data you may only see once**: brute force re-searches the whole prefix for the cheapest earlier point (`O(n^2)`), while a single carried minimum collapses that history to `O(1)` state and `O(n)` time — the right shape for a live stream, not just an array.
+
 ## Start from the obvious
 
 Try every valid pair — every buy day with every later sell day — and keep the

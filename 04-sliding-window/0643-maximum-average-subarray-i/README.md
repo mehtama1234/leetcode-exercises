@@ -13,6 +13,18 @@ One thing to notice up front: because every block has the *same* length `k`,
 dividing by `k` never changes which block wins. So "biggest average" is exactly
 "biggest sum" — we only ever have to compare sums, and divide once at the end.
 
+## Why this matters
+
+This is the **fixed-width sliding aggregate**: compute a summary (here a sum) over every consecutive block of size `k`, without recomputing the whole block each step. The fundamental operation is the *add-one / drop-one* update — as the window slides, one element enters on the right and one leaves on the left, so each step is constant work.
+
+This is exactly how real systems compute windowed statistics over streams:
+
+- **Moving averages** — the canonical smoothing tool for stock prices, sensor readings, and dashboards, computed with a rolling sum rather than re-summing.
+- **Rolling metrics and rate limiting** — requests-per-last-`k`-seconds, or a moving sum of errors, maintained incrementally as events tick by.
+- **Signal and audio processing** — box filters and running energy over a fixed window applied across a whole sample stream.
+
+What we're solving for is **cutting per-window cost from `O(k)` to `O(1)`**, turning an `O(n·k)` scan into `O(n)` at constant memory. For long streams or large windows that's the difference between a cheap real-time computation and one that can't keep up.
+
 ## Start from the obvious
 
 The definition itself hands you an algorithm: for each starting spot, add up the

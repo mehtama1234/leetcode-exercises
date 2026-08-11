@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>56. Merge Intervals</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details open><summary>15. Merge Intervals</summary><ul><li class="active"><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">15. Merge Intervals</a> / <span>56</span></nav><article class="notes"><h1>56. Merge Intervals</h1>
+<p><strong>Pattern:</strong> Intervals (sort by start, then sweep) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/merge-intervals/</p>
+<h2>The problem in plain words</h2>
+<p>You have a bunch of ranges like <code>[1, 3]</code> and <code>[2, 6]</code>. Some of them overlap or touch. Squash every overlapping group into one range and return what&#x27;s left. So <code>[1, 3]</code> and <code>[2, 6]</code> become the single range <code>[1, 6]</code>.</p>
+<h2>Why this matters</h2>
+<p>The fundamental operation is <strong>coalescing overlapping ranges into their union</strong> — collapsing a messy set of segments on a number line (or time line) into the minimal set of disjoint spans. Sorting by start turns &quot;search everywhere for an overlap&quot; into &quot;just look at the neighbor,&quot; which is the reusable trick.</p>
+<p>This is bread-and-butter in real systems. Calendars merge busy blocks to show free/busy at a glance. Databases and query planners merge index ranges or partition scans so they don&#x27;t read the same rows twice. Memory allocators coalesce adjacent freed blocks back into larger regions to fight fragmentation. Genomics merges overlapping read alignments into coverage intervals. Network and firewall tooling collapses overlapping IP ranges or port ranges into compact rules. Log and monitoring systems merge overlapping time windows of activity.</p>
+<p>What we buy is <code>O(n log n)</code>: one sort plus a single linear sweep, and a smaller, non-overlapping output that every downstream step can process without re-checking for hidden overlaps.</p>
+<h2>Start from the obvious</h2>
+<p>Overlap is a relationship between *pairs*, so the honest first thought is: check every pair, and whenever two overlap, merge them and start over.</p>
+<pre><code>repeat until nothing changes:
+    for each pair (a, b):
+        if they overlap: replace them with their merge</code></pre>
+<p>This works but it&#x27;s ugly — it&#x27;s <code>O(n^2)</code> per pass and can take several passes, because merging two intervals can create a new interval that now overlaps a third one you already looked at. The trouble is that overlaps can hide *anywhere* in the list.</p>
+<h2>Find the waste</h2>
+<p>The mess comes from intervals being in random order, so a partner might be far away. But notice what &quot;overlap&quot; actually means: interval B overlaps interval A when B starts before A ends. That&#x27;s a statement about <strong>starts and ends on a number line</strong>, and a number line is ordered.</p>
+<p>So sort by start. Now the intervals march left to right. The key consequence:</p>
+<blockquote>Once you&#x27;re building a merged interval, the only thing that can extend it is the <strong>next</strong> interval in sorted order. Everything earlier started earlier and is already accounted for.</blockquote>
+<p>That collapses the &quot;search everywhere for a partner&quot; into &quot;just look at the next one.&quot;</p>
+<h2>The insight</h2>
+<p>Sort by start, then walk once, keeping the interval you&#x27;re currently building:</p>
+<ol><li>If the next interval starts at or before your current end, they touch or overlap — push your end out to <code>max(current_end, next_end)</code>.</li><li>If it starts after your current end, there&#x27;s a gap — the current interval is finished, so emit it and begin a fresh one from the next interval.</li></ol>
+<p>The <code>max</code> matters: a later interval can sit fully *inside* the current one (<code>[1, 10]</code> then <code>[2, 3]</code>), and you must not shrink the end back to 3.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n log n)</code> — dominated by the sort. The sweep itself is one <code>O(n)</code> pass.</li><li><strong>Space:</strong> <code>O(n)</code> — for the output list (and the sort). We copy the first interval so the caller&#x27;s input isn&#x27;t mutated.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>Touching counts as overlapping</strong> if the problem says so: <code>[1, 4]</code> and <code>[4, 5]</code> merge into <code>[1, 5]</code>. Use <code>start &lt;= last_end</code>, not <code>&lt;</code>.</li><li><strong>Fully nested intervals</strong> — take <code>max(end, ...)</code>, never blindly overwrite the end with the newer interval&#x27;s end.</li><li><strong>Sorting by end instead of start</strong> breaks the &quot;only the next one matters&quot; guarantee.</li><li>Mutating the caller&#x27;s input in place (copy the seed interval).</li></ul>
+<h2>Transfer</h2>
+<p>&quot;Sort by one endpoint, then sweep and either extend or start-new&quot; is the spine of almost every interval problem: <a href="../0057-insert-interval/">Insert Interval / 57</a>, <a href="../0435-non-overlapping-intervals/">Non-overlapping Intervals / 435</a>, and <a href="../0252-meeting-rooms/">Meeting Rooms / 252</a>. Whenever ranges on a line need to be combined or checked for conflict, sort first — order turns a global search into a local decision.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/15-intervals/0056-merge-intervals/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;56. Merge Intervals — https://leetcode.com/problems/merge-intervals/
+
+Given a list of intervals `[start, end]`, merge every group that overlaps into a
+single interval, and return the merged list.
+
+The only real move is: overlap becomes obvious once the intervals are sorted by
+start, so a single sweep can decide &quot;extend the last one&quot; vs &quot;start a new one&quot;.
+&quot;&quot;&quot;
+from typing import List
+
+
+def merge(intervals: List[List[int]]) -&gt; List[List[int]]:
+    &quot;&quot;&quot;Sort by start, then sweep once. O(n log n) time, O(n) space.
+
+    Why sorting is the whole trick: two intervals overlap when one starts before
+    the other ends. If we sort by start, then when we walk left to right the only
+    thing that can overlap the interval we&#x27;re currently building is the *next*
+    one — anything earlier already started earlier and was handled. So we never
+    have to compare far-apart intervals.
+
+    For each interval in sorted order:
+      - if its start is &lt;= the end of the interval we&#x27;re building, they touch or
+        overlap, so absorb it by pushing our end out to max(end, its end);
+      - otherwise there&#x27;s a gap, so the current one is finished — emit it and
+        begin a new one from here.
+
+    We take max(end, ...) rather than just its end because a later interval can be
+    fully swallowed, e.g. [1, 10] then [2, 3]: the end must stay 10.
+    &quot;&quot;&quot;
+    if not intervals:
+        return []
+
+    ordered = sorted(intervals, key=lambda iv: iv[0])
+    merged: List[List[int]] = [ordered[0][:]]  # copy so we don&#x27;t mutate the input
+
+    for start, end in ordered[1:]:
+        last = merged[-1]
+        if start &lt;= last[1]:          # overlap or touch
+            last[1] = max(last[1], end)
+        else:                         # gap — the previous run is done
+            merged.append([start, end])
+
+    return merged
+
+
+def _test() -&gt; None:
+    cases = [
+        ([[1, 3], [2, 6], [8, 10], [15, 18]], [[1, 6], [8, 10], [15, 18]]),
+        ([[1, 4], [4, 5]], [[1, 5]]),                 # touching endpoints merge
+        ([[1, 4]], [[1, 4]]),                         # single interval
+        ([[1, 10], [2, 3], [4, 5]], [[1, 10]]),       # fully swallowed insiders
+        ([[1, 4], [0, 4]], [[0, 4]]),                 # unsorted input, same span
+        ([[1, 4], [2, 3]], [[1, 4]]),                 # nested
+    ]
+    for intervals, expected in cases:
+        assert merge(intervals) == expected, intervals
+    # input must not be mutated
+    original = [[1, 3], [2, 6]]
+    merge(original)
+    assert original == [[1, 3], [2, 6]]
+    print(&quot;merge_intervals: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../14-greedy/0055-jump-game.html">← 55 · Jump Game</a><a class="pn next" href="../15-intervals/0057-insert-interval.html">57 · Insert Interval →</a></nav></main>
+</div>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>323. Number of Connected Components In An Undirected Graph</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details open><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li class="active"><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">12. Graphs: DFS / BFS / Union Find</a> / <span>323</span></nav><article class="notes"><h1>323. Number of Connected Components in an Undirected Graph</h1>
+<p><strong>Pattern:</strong> Union-Find (disjoint set union) — count components <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/</p>
+<h2>The problem in plain words</h2>
+<p>You have <code>n</code> nodes and a list of undirected edges. Count how many separate &quot;islands&quot; of nodes there are — groups where you can walk from any node to any other in the group, but not across to a different group.</p>
+<h2>Why this matters</h2>
+<p>The deeper problem is <strong>incrementally merging things into groups while answering &quot;are these two already in the same group?&quot;</strong> as edges arrive. The fundamental data structure is Union-Find (disjoint-set union), and its two operations — <code>union</code> and <code>find</code> — run in near-constant time.</p>
+<p>This is the tool of choice when relationships stream in and you keep fusing sets. Kruskal&#x27;s algorithm builds a minimum spanning tree by adding the cheapest edge whose endpoints aren&#x27;t already connected — used in network/cable layout. Deduplication and entity resolution merge records that refer to the same person or account (merge emails that share a contact). Image segmentation and percolation/clustering group adjacent similar regions. Even friend-suggestion and &quot;are these in the same social circle?&quot; queries lean on it.</p>
+<p>What you&#x27;re solving for is <strong>answering connectivity queries online, without re-running a full graph search after every edge</strong>. Path compression + union-by-rank keep both operations effectively <code>O(α(n))</code> — practically constant — so processing all edges is essentially linear.</p>
+<h2>Start from the obvious</h2>
+<p>The straightforward approach: build an adjacency list, then DFS/BFS. Every time you start a fresh traversal from an unvisited node, that&#x27;s one new component; mark everything it reaches as visited so you don&#x27;t recount it.</p>
+<pre><code>count = 0
+for node in 0..n-1:
+    if node not visited:
+        count += 1
+        flood-fill from node (mark all reachable visited)</code></pre>
+<p>That&#x27;s a perfectly good <code>O(n + e)</code> answer (and it&#x27;s the same idea as <a href="../0200-number-of-islands/">Number of Islands</a>). But this problem is a great excuse to learn the tool that&#x27;s *built* for merging groups: <strong>Union-Find</strong>.</p>
+<h2>The insight</h2>
+<p>Flip your viewpoint. Start with every node in its <strong>own</strong> group, so there are <code>n</code> groups. Now process edges one at a time. Each edge says &quot;these two nodes belong together&quot;:</p>
+<ul><li>If they&#x27;re <strong>already</strong> in the same group, the edge tells you nothing new.</li><li>If they&#x27;re in <strong>different</strong> groups, this edge fuses those two groups into one — so the total number of groups drops by exactly 1.</li></ul>
+<p>Answer = <code>n</code> minus the number of merges that actually happened.</p>
+<p>The only hard part is answering &quot;are these two already in the same group?&quot; quickly. <strong>Union-Find</strong> does it: each group is a little tree with a root, <code>find(x)</code> climbs to <code>x</code>&#x27;s root, and two nodes are in the same group iff they share a root. Two optimizations keep it near-constant-time:</p>
+<ul><li><strong>Path compression</strong> — after <code>find</code>, repoint the nodes you climbed straight at the root, so next time the walk is flat.</li><li><strong>Union by rank</strong> — always hang the shorter tree under the taller one, so trees never get tall.</li></ul>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n + e · α(n))</code>, where <code>α</code> is the inverse-Ackermann function — so small it&#x27;s effectively constant. Practically linear.</li><li><strong>Space:</strong> <code>O(n)</code> for the <code>parent</code> and <code>rank</code> arrays.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>Counting merges, not edges.</strong> A redundant edge (both endpoints already united, e.g. the third edge of a triangle) must <strong>not</strong> decrement the count. That&#x27;s why <code>union</code> returns whether it actually merged.</li><li><strong>Forgetting an optimization.</strong> Without path compression *and* union by rank, <code>find</code> can degrade toward <code>O(n)</code> per call on adversarial inputs.</li><li><strong><code>n == 0</code>.</strong> No nodes means zero components — the loops handle it, but sanity check it.</li></ul>
+<h2>Transfer</h2>
+<p>Union-Find is the go-to whenever you&#x27;re incrementally merging groups and asking &quot;same group?&quot;: <a href="../0261-graph-valid-tree/">Graph Valid Tree / 261</a> (a tree is one component with <code>n-1</code> merges), <a href="https://leetcode.com/problems/redundant-connection/">Redundant Connection / 684</a> (the first edge whose <code>union</code> returns false is the cycle-closer), and <a href="https://leetcode.com/problems/accounts-merge/">Accounts Merge / 721</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/12-graphs/0323-number-of-connected-components-in-an-undirected-graph/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;323. Number of Connected Components in an Undirected Graph
+https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+
+Given n nodes labeled 0..n-1 and an undirected edge list, count how many separate
+connected pieces the graph has.
+
+Start with n lonely nodes = n components. Every edge that joins two nodes which
+were NOT already in the same piece merges two pieces into one, dropping the count
+by 1. Union-Find makes &quot;are these already together?&quot; an O(1)-ish question.
+&quot;&quot;&quot;
+from typing import List
+
+
+def count_components(n: int, edges: List[List[int]]) -&gt; int:
+    &quot;&quot;&quot;Union-Find (disjoint set union). Near O(n + e * α(n)) time, O(n) space.
+
+    Think of each node as its own club at the start, so there are n clubs. Walk
+    the edges. For an edge (a, b): if a and b are already in the same club, this
+    edge is redundant and changes nothing. If they&#x27;re in different clubs, the edge
+    fuses those two clubs into one — so the number of clubs drops by 1. The final
+    count is the answer.
+
+    `find` returns a node&#x27;s club representative and compresses the path so future
+    lookups are flat; `union` links one club&#x27;s root under the other&#x27;s rank so the
+    trees stay shallow. Together they give effectively constant-time operations.
+    &quot;&quot;&quot;
+    parent = list(range(n))     # parent[i] = i means i is its own root (a club)
+    rank = [0] * n              # rough tree height, to keep unions balanced
+    count = n                   # start with n isolated components
+
+    def find(x: int) -&gt; int:
+        # Path compression: point every node on the way directly at the root.
+        root = x
+        while parent[root] != root:
+            root = parent[root]
+        while parent[x] != root:
+            parent[x], x = root, parent[x]
+        return root
+
+    def union(a: int, b: int) -&gt; bool:
+        ra, rb = find(a), find(b)
+        if ra == rb:
+            return False  # already in the same component; edge adds nothing
+        # Attach the shorter tree under the taller one (union by rank).
+        if rank[ra] &lt; rank[rb]:
+            ra, rb = rb, ra
+        parent[rb] = ra
+        if rank[ra] == rank[rb]:
+            rank[ra] += 1
+        return True
+
+    for a, b in edges:
+        if union(a, b):
+            count -= 1  # two components just merged into one
+    return count
+
+
+def _test() -&gt; None:
+    # Official examples
+    assert count_components(5, [[0, 1], [1, 2], [3, 4]]) == 2
+    assert count_components(5, [[0, 1], [1, 2], [2, 3], [3, 4]]) == 1
+
+    # Edge cases
+    assert count_components(4, []) == 4              # no edges -&gt; all isolated
+    assert count_components(1, []) == 1             # single node
+    # Redundant edge inside one component doesn&#x27;t lower the count.
+    assert count_components(3, [[0, 1], [1, 2], [0, 2]]) == 1
+    assert count_components(0, []) == 0             # no nodes
+
+    print(&quot;count_components: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../12-graphs/0261-graph-valid-tree.html">← 261 · Graph Valid Tree</a><a class="pn next" href="../12-graphs/0207-course-schedule.html">207 · Course Schedule →</a></nav></main>
+</div>
+</body>
+</html>

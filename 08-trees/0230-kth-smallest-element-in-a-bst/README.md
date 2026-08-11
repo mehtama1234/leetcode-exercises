@@ -9,6 +9,26 @@
 You have a binary search tree and a number `k`. Return the `k`-th smallest value
 in it (counting from 1, so `k=1` is the minimum).
 
+## Why this matters
+
+The deeper problem is **exploiting order that's already stored** to answer a rank
+query without re-sorting, and to **stop as soon as you have the answer**. An
+in-order walk of a BST yields values in sorted order lazily, so the fundamental
+operation is "stream the sorted sequence and halt at the k-th element."
+
+This is exactly what ordered indexes do in real systems. A database B-tree index
+answers `ORDER BY ... LIMIT k` or `OFFSET/LIMIT` pagination by walking the index
+in key order and stopping early — it never sorts the table. "Top-k" and
+percentile/median queries over a sorted structure, leaderboard rank lookups, and
+range scans all lean on the same "structure already encodes order, just walk it"
+idea.
+
+What you're solving for is **avoiding the wasteful O(n log n) sort and the full
+traversal**: the good solution is O(h + k) — it touches only the nodes it must
+and quits. And if the tree gets many such queries or frequent updates, augmenting
+nodes with subtree counts turns each lookup into O(h), the classic
+space-for-repeated-speed trade.
+
 ## Start from the obvious
 
 The blunt approach: collect every value, sort it, take index `k-1`.

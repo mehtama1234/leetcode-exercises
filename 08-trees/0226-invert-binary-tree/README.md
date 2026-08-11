@@ -10,6 +10,26 @@ Take a binary tree and flip it into its mirror image. Every node keeps its
 value, but its two children trade places — and this happens at *every* level,
 all the way down.
 
+## Why this matters
+
+Underneath the meme-famous puzzle is a real pattern: **applying a transformation
+uniformly to every node of a recursive structure**, where the transform at each
+node (swap the children) plus recursion on the subtrees produces the whole result.
+The fundamental operation is a structural map/rewrite over a tree.
+
+That operation is everywhere real trees get manipulated. Compilers and linters
+rewrite abstract syntax trees — constant folding, desugaring, reordering
+commutative operands — by walking and transforming each node. DOM/UI code mirrors
+or reorders layout subtrees for right-to-left languages. Graphics and geometry
+code reflects hierarchical scene graphs. Any "normalize this nested structure"
+task is a tree rewrite of exactly this form.
+
+What you're solving for is a **single O(n) pass, O(height) stack**, mutating in
+place with no extra copy of the tree. The deeper lesson is recognizing that a
+transformation defined recursively ("the mirror of a tree is a tree whose swapped
+subtrees are themselves mirrored") maps straight onto code with no cleverness
+required — which is why it's a favorite warm-up.
+
 ## Start from the obvious
 
 What does "mirror" mean at a single node? Its left child should become its right

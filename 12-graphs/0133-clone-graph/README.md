@@ -10,6 +10,14 @@ You're handed one node of a connected, undirected graph. Build a **completely
 separate copy** of the whole graph: same values, same connections, but every node
 is a brand-new object. Editing the copy must never touch the original.
 
+## Why this matters
+
+Underneath, this is **deep-copying a pointer-linked structure that has sharing and cycles** — the fundamental operation is "traverse a graph while remembering, by identity, which nodes you've already rebuilt." The `original -> clone` map is doing two jobs at once: cycle guard and wiring table.
+
+That exact move is everywhere real systems copy or move object graphs. Language runtimes and libraries implement it as `deepcopy` / structured clone / snapshotting. Serializers (JSON, protobuf, ORM detach) walk an object graph and must handle shared references and back-pointers without looping. Garbage collectors and heap-copying collectors trace live objects the same way, marking each once. Version-control and undo systems snapshot linked state.
+
+What you're really solving for is **termination and correctness on a structure you can't safely re-walk**: without the seen-map you either loop forever on a cycle or silently duplicate shared nodes and corrupt the shape. The map buys `O(1)` "have I built this yet?" so the whole copy is one linear pass instead of an exponential re-explosion.
+
 ## Start from the obvious
 
 "Copy the graph" sounds like "walk the graph and make a new node for each node I

@@ -11,6 +11,14 @@ of numbers that adds up exactly to the target. You can use the same number as
 many times as you like. `[2,2,3]` and `[3,2,2]` count as the *same* group, so we
 want each group once, not once per ordering.
 
+## Why this matters
+
+Underneath the puzzle is a classic problem: enumerate every way to combine parts (with repetition) that hits an exact total, while counting each combination once regardless of order. The fundamental operation is a systematic search that builds a choice, undoes it, and moves on — never revisiting the same combination twice.
+
+This is exactly how real systems solve "make change" style problems. Cash registers and vending machines pick coin/bill combinations that sum to an amount. Cutting-stock and bin-packing tools choose piece lengths that add up to a target without waste. Resource allocators and billing systems assemble line items or credits that hit an exact budget. Any "which items sum to N, reuse allowed" question — from crafting recipes to nutrition planners hitting a calorie target — is this shape.
+
+What you're solving for is avoiding an explosion of wasted work: the `start`-index trick keeps the search from re-exploring the same group in every possible order, and the sorted `break` prunes hopeless branches early. Since the space is exponential, that pruning is what keeps it tractable at all.
+
 ## Start from the obvious
 
 At each step you're really just asking: "what number do I add next?" The obvious

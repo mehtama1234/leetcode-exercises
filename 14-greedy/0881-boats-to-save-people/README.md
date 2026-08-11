@@ -10,6 +10,25 @@ You have a crowd of people, each with a weight. Every boat holds **at most two
 people** and can carry at most `limit` total weight. Use as few boats as
 possible to get everyone across. Return that boat count.
 
+## Why this matters
+
+Stripped down, this is **bin packing with a capacity limit** — fit items into the
+fewest containers without exceeding a weight or size cap. The special case here
+(two items per boat) has a clean greedy answer, but the underlying operation is
+universal: sort by size and pair the largest with the largest thing that still
+fits, proven optimal by an exchange argument.
+
+This is real infrastructure work. Cloud schedulers pack VMs or containers onto
+the fewest physical hosts under CPU/RAM limits. Shipping and logistics load
+pallets into trucks or trailers to minimize trips. Memory allocators and disk
+tools pack allocations into fixed blocks. Ad servers and CDNs bundle payloads
+under a byte budget. Even cutting-stock problems (slicing pipe or fabric with
+minimal waste) are the same shape.
+
+What we buy is a fast, near-optimal answer: a sort plus a single two-pointer
+sweep — `O(n log n)` — instead of searching exponentially many pairings. In the
+scheduling world, packing tighter directly means fewer machines and lower cost.
+
 ## Start from the obvious
 
 The honest first thought is: try to pair people up. Each boat holds two, so if

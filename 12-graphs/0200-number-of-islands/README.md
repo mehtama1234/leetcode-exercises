@@ -10,6 +10,14 @@ You have a rectangle of `1`s (land) and `0`s (water). Land cells that touch
 side-by-side (up/down/left/right — never diagonally) form one island. Count how
 many separate islands there are.
 
+## Why this matters
+
+The real problem is **finding connected components in a grid** — the fundamental operation is flood fill: from a seed, reach everything transitively linked to it, mark it, and never touch it twice.
+
+This is a workhorse, not a toy. Image editing tools use it for the paint-bucket fill and the magic-wand selection (a region of similar pixels). Image processing and computer vision use connected-component labeling to count and measure blobs — cells under a microscope, defects on a manufacturing line, segmented objects in a photo. Games use flood fill to reveal the empty area in Minesweeper and to compute reachable territory or fog-of-war. Even `mkfs`/disk tools reason about connected free regions this way.
+
+What you're solving for is **doing it in one linear pass with no double-counting**. The key resource trick — "sink the land" by overwriting visited cells instead of keeping a separate `visited` set — buys you the visited-marker for free, keeping memory to the traversal stack. Every cell is entered once, so the whole scan is linear in the grid.
+
 ## Start from the obvious
 
 The honest first thought: "an island is a blob of connected land, so let me find

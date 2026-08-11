@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>133. Clone Graph</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details open><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li class="active"><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">12. Graphs: DFS / BFS / Union Find</a> / <span>133</span></nav><article class="notes"><h1>133. Clone Graph</h1>
+<p><strong>Pattern:</strong> Graph traversal (DFS/BFS) + a &quot;seen&quot; map for deep copy <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/clone-graph/</p>
+<h2>The problem in plain words</h2>
+<p>You&#x27;re handed one node of a connected, undirected graph. Build a <strong>completely separate copy</strong> of the whole graph: same values, same connections, but every node is a brand-new object. Editing the copy must never touch the original.</p>
+<h2>Why this matters</h2>
+<p>Underneath, this is <strong>deep-copying a pointer-linked structure that has sharing and cycles</strong> — the fundamental operation is &quot;traverse a graph while remembering, by identity, which nodes you&#x27;ve already rebuilt.&quot; The <code>original -&gt; clone</code> map is doing two jobs at once: cycle guard and wiring table.</p>
+<p>That exact move is everywhere real systems copy or move object graphs. Language runtimes and libraries implement it as <code>deepcopy</code> / structured clone / snapshotting. Serializers (JSON, protobuf, ORM detach) walk an object graph and must handle shared references and back-pointers without looping. Garbage collectors and heap-copying collectors trace live objects the same way, marking each once. Version-control and undo systems snapshot linked state.</p>
+<p>What you&#x27;re really solving for is <strong>termination and correctness on a structure you can&#x27;t safely re-walk</strong>: without the seen-map you either loop forever on a cycle or silently duplicate shared nodes and corrupt the shape. The map buys <code>O(1)</code> &quot;have I built this yet?&quot; so the whole copy is one linear pass instead of an exponential re-explosion.</p>
+<h2>Start from the obvious</h2>
+<p>&quot;Copy the graph&quot; sounds like &quot;walk the graph and make a new node for each node I see.&quot; So you reach for DFS:</p>
+<pre><code>def dfs(node):
+    copy = Node(node.val)
+    for nb in node.neighbors:
+        copy.neighbors.append(dfs(nb))   # &lt;-- trouble
+    return copy</code></pre>
+<p>This is broken in two ways. Because the graph has <strong>cycles</strong>, <code>dfs</code> recurses back into a node it&#x27;s already inside and loops forever. And even without cycles, two different nodes that both point at the same neighbor would each build their own copy of it — so the clone has duplicate nodes and the wrong shape.</p>
+<h2>The insight</h2>
+<p>Both bugs have the same fix: <strong>remember which originals you&#x27;ve already cloned.</strong> Keep a map <code>original node -&gt; its clone</code>.</p>
+<ol><li>When you enter a node, first check the map. If its clone already exists, return that clone immediately — don&#x27;t rebuild, don&#x27;t recurse.</li><li>Otherwise create the clone and <strong>put it in the map before</strong> recursing into neighbors.</li></ol>
+<p>That &quot;record before recursing&quot; ordering is the whole game. It means the second time you arrive at any node (which will happen — undirected edges and cycles guarantee it) the clone is already there, so the recursion bottoms out. The map is simultaneously your visited-set (stops infinite loops) and your wiring table (so every edge points at the *one* shared clone, not a fresh duplicate).</p>
+<h2>Find the waste</h2>
+<p>Without the map you re-clone shared neighbors over and over and never terminate on a cycle. The map turns &quot;have I built this node&#x27;s copy yet?&quot; into an <code>O(1)</code> lookup, so each node is created exactly once and each edge is followed exactly once.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(V + E)</code> — every node is cloned once (V) and every edge is walked once to wire up a neighbor (E, counted twice for undirected but still linear).</li><li><strong>Space:</strong> <code>O(V)</code> — the map holds one entry per node, plus the recursion stack which is at most <code>O(V)</code> deep.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>Forgetting the map</strong> → infinite recursion on any cycle, or duplicate nodes.</li><li><strong>Adding to the map too late</strong> (after recursing) → the cycle re-enters before the clone is registered, and you still loop forever. Register *first*.</li><li><strong><code>None</code> input.</strong> An empty graph must return <code>None</code>, not crash.</li><li><strong>Shallow copy.</strong> Copying the neighbor *list* but reusing the same Node objects isn&#x27;t a deep copy — the &quot;clone&quot; would share nodes with the original.</li></ul>
+<h2>Transfer</h2>
+<p>The &quot;traverse + memoize by identity&quot; move copies any linked structure with sharing or cycles: deep-copying a <a href="https://leetcode.com/problems/copy-list-with-random-pointer/">linked list with random pointers / 138</a>, serializing/deserializing a graph, or any DFS where you must not revisit a node — see <a href="../0200-number-of-islands/">Number of Islands / 200</a> for the visited-marker idea and <a href="../0207-course-schedule/">Course Schedule / 207</a> for cycle-aware DFS.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/12-graphs/0133-clone-graph/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;133. Clone Graph — https://leetcode.com/problems/clone-graph/
+
+Given a reference to a node in a connected, undirected graph, return a deep copy:
+a brand-new graph with the same shape but all-new node objects.
+
+The trick is not the traversal — it&#x27;s remembering the copies. If you just DFS and
+make a new node every time you see one, you&#x27;ll build duplicates and loop forever
+on cycles. A map from &quot;original node -&gt; its clone&quot; gives you both a done-list and
+the mirror wiring in one.
+&quot;&quot;&quot;
+from typing import Dict, List, Optional
+
+
+class Node:
+    &quot;&quot;&quot;The graph node LeetCode hands you. Value + a list of neighbor Nodes.&quot;&quot;&quot;
+
+    def __init__(self, val: int = 0, neighbors: Optional[List[&quot;Node&quot;]] = None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+
+def clone_graph(node: Optional[&quot;Node&quot;]) -&gt; Optional[&quot;Node&quot;]:
+    &quot;&quot;&quot;DFS with an original-&gt;clone map. O(V + E) time, O(V) space.
+
+    Two things must happen for every node: (1) create its clone exactly once, and
+    (2) copy its edges to point at the *clones* of its neighbors. The map does the
+    heavy lifting: before recursing into a neighbor we check the map, so a node is
+    cloned only the first time we reach it. That single check is also what makes
+    cycles safe — the second time we arrive at a node, its clone already exists,
+    so we return it instead of recursing forever.
+    &quot;&quot;&quot;
+    if node is None:
+        return None
+
+    clones: Dict[Node, Node] = {}  # original node -&gt; its freshly-made copy
+
+    def dfs(original: &quot;Node&quot;) -&gt; &quot;Node&quot;:
+        if original in clones:
+            return clones[original]  # already copied — hand back the same clone
+        copy = Node(original.val)
+        clones[original] = copy      # record BEFORE recursing, so cycles terminate
+        for nb in original.neighbors:
+            copy.neighbors.append(dfs(nb))
+        return copy
+
+    return dfs(node)
+
+
+# ---- helpers so the file runs standalone -----------------------------------
+
+def build_graph(adj: List[List[int]]) -&gt; Optional[&quot;Node&quot;]:
+    &quot;&quot;&quot;Build a graph from an adjacency list (LeetCode&#x27;s input format).
+
+    adj[i] lists the neighbors of the node whose val is i+1 (1-indexed vals).
+    Returns the node with val 1, or None for an empty graph.
+    &quot;&quot;&quot;
+    if not adj:
+        return None
+    nodes = {i: Node(i) for i in range(1, len(adj) + 1)}
+    for i, neighbors in enumerate(adj, start=1):
+        nodes[i].neighbors = [nodes[j] for j in neighbors]
+    return nodes[1]
+
+
+def to_adj(node: Optional[&quot;Node&quot;]) -&gt; List[List[int]]:
+    &quot;&quot;&quot;Serialize a graph back to an adjacency list keyed by val order.&quot;&quot;&quot;
+    if node is None:
+        return []
+    seen: Dict[int, List[int]] = {}
+    stack = [node]
+    visited = set()
+    while stack:
+        cur = stack.pop()
+        if cur.val in visited:
+            continue
+        visited.add(cur.val)
+        seen[cur.val] = [nb.val for nb in cur.neighbors]
+        for nb in cur.neighbors:
+            if nb.val not in visited:
+                stack.append(nb)
+    return [seen[v] for v in sorted(seen)]
+
+
+def _test() -&gt; None:
+    # Official example: 4-node graph, a square 1-2-3-4-1.
+    adj = [[2, 4], [1, 3], [2, 4], [1, 3]]
+    original = build_graph(adj)
+    clone = clone_graph(original)
+
+    # Same shape...
+    assert to_adj(clone) == adj
+
+    # ...but genuinely NEW objects (deep copy, not the same references).
+    assert clone is not original
+    assert clone.neighbors[0] is not original.neighbors[0]
+
+    # Edge cases
+    assert clone_graph(None) is None                 # empty graph
+    single = build_graph([[]])                        # one node, no neighbors
+    single_clone = clone_graph(single)
+    assert single_clone is not single
+    assert single_clone.val == 1 and single_clone.neighbors == []
+
+    # Two-node graph with a cycle back-edge must terminate and copy correctly.
+    assert to_adj(clone_graph(build_graph([[2], [1]]))) == [[2], [1]]
+
+    print(&quot;clone_graph: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../12-graphs/0200-number-of-islands.html">← 200 · Number of Islands</a><a class="pn next" href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow →</a></nav></main>
+</div>
+</body>
+</html>

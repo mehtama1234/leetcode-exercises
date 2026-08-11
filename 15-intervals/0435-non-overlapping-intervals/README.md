@@ -9,6 +9,26 @@
 You have a set of ranges, some of which overlap. Delete as few as possible so
 that none of the survivors overlap. Return *how many* you had to delete.
 
+## Why this matters
+
+This is **activity selection** — keep the largest set of non-overlapping
+intervals (removing the fewest is the mirror of keeping the most). The
+fundamental operation is a greedy scan sorted *by end time*: always keep the
+interval that finishes soonest, because it leaves the most room for the rest,
+and an exchange argument proves that's optimal.
+
+It's the core of maximizing throughput on a single resource. Schedulers pick the
+most jobs one machine or one CPU can run without conflict. Broadcast and
+advertising systems select the most non-conflicting slots to air. Meeting and
+room booking maximizes how many requests one room can honor. Compilers use the
+same idea in register allocation — fitting the most live ranges into limited
+registers. Bandwidth and reservation systems admit the most non-overlapping
+requests a channel can serve.
+
+What we buy is `O(n log n)`: one end-sorted pass replaces an exponential search
+over subsets, and the greedy is provably optimal, not just a heuristic — so we
+get the true best packing under a tight time budget.
+
 ## Start from the obvious
 
 "Delete the fewest" invites a brute force: try every subset of intervals, check

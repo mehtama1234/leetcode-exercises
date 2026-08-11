@@ -10,6 +10,18 @@ Among all contiguous subarrays, find the one whose numbers multiply to the large
 value, and return that product. The array may hold negatives and zeros. Example:
 `[2, 3, -2, 4]` → `6` (from `[2, 3]`).
 
+## Why this matters
+
+The deeper lesson is **single-pass running-state optimization when a future operation can rescue a currently-bad state**. The fundamental move: don't carry only the current best — carry every state that *could* become optimal later. Here a negative can flip the worst product into the best, so you carry both the running max and the running min.
+
+Where "track the extremes because the combine step can invert them" shows up:
+
+- **Finance and signal processing** — cumulative return or gain over a window where a later multiplier (or sign change) can reverse which streak is winning.
+- **Streaming analytics** — one-pass aggregates over a data stream you can't rewind, keeping bounded state instead of re-scanning.
+- **Optimization with sign/parity coupling** — any running product/interaction where the operator isn't monotone.
+
+The good solution buys a pass from `O(n²)` (re-multiplying overlapping prefixes) down to **`O(n)` time and `O(1)` space** — the key resource being a *single, un-rewindable pass* with only two carried numbers.
+
 ## Start from the obvious
 
 Try every subarray and multiply it out, keeping the best:

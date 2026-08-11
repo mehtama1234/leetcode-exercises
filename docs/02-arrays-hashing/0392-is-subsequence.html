@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>392. Is Subsequence</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details open><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li class="active"><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">2. Arrays &amp; Strings: Manipulation &amp; Hashing</a> / <span>392</span></nav><article class="notes"><h1>392. Is Subsequence</h1>
+<p><strong>Pattern:</strong> Two pointers (greedy scan) <strong>Difficulty:</strong> Easy <strong>Link:</strong> https://leetcode.com/problems/is-subsequence/</p>
+<h2>The problem in plain words</h2>
+<p><code>s</code> is a subsequence of <code>t</code> if you can cross out some letters of <code>t</code> and what&#x27;s left, read in order, spells <code>s</code>. Crossing out never lets you rearrange — order is fixed. So: can you find every letter of <code>s</code> inside <code>t</code>, in the same order?</p>
+<h2>Why this matters</h2>
+<p>The fundamental operation is *matching one ordered sequence against another in a single forward pass, because order is fixed and there&#x27;s nothing to gain from looking back.* A greedy two-pointer walk suffices — no backtracking, no DP.</p>
+<p>This in-order matching is real work. Diff tools and version control compare two file versions by finding common subsequences of lines. Streaming pattern and event-sequence detection — &quot;did these steps happen in this order?&quot; in log analysis, funnel analytics, or intrusion detection — is exactly this scan. Merge steps in merge sort and in merging sorted database indexes use the same two-pointer advance.</p>
+<p>What you&#x27;re solving for is a single O(|t|) pass over an input you consume once, with O(1) memory, instead of the branching recursion the problem seems to invite. And the greedy insight scales: when you must test many <code>s</code> strings against one fixed <code>t</code>, you preprocess <code>t</code> once so each query is cheap — the pattern behind serving many queries against a static corpus.</p>
+<h2>Start from the obvious</h2>
+<p>You might reach for recursion or DP: at each character of <code>t</code>, either use it to match the next letter of <code>s</code> or skip it, and see if any path consumes all of <code>s</code>. That explores a branching tree and is far more machinery than the structure of the problem needs.</p>
+<p>The key observation that collapses it: because deletion preserves order, you <strong>never need to reconsider a character of <code>t</code> once you pass it</strong>. There&#x27;s no backtracking to gain from — which means a single forward walk is enough.</p>
+<h2>The insight</h2>
+<p>Keep one pointer <code>i</code> into <code>s</code>, marking the next letter you still need to find. Sweep through <code>t</code> left to right. Every time <code>t</code>&#x27;s current character is exactly the letter <code>s[i]</code> you&#x27;re waiting for, advance <code>i</code>. Ignore everything else.</p>
+<pre><code>i = 0
+for ch in t:
+    if i &lt; len(s) and ch == s[i]:
+        i += 1
+return i == len(s)</code></pre>
+<p>If <code>i</code> walks off the end of <code>s</code>, you matched all of <code>s</code> in order — True. If <code>t</code> runs out first, it couldn&#x27;t supply them — False.</p>
+<p><strong>Why greedy is correct:</strong> when the letter you need appears, taking the *earliest* occurrence in <code>t</code> is never worse than waiting for a later one. Grabbing it early leaves the longest possible remaining tail of <code>t</code> for the rest of <code>s</code>. So there&#x27;s no case where &quot;skip this match, hope for a better one later&quot; helps.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(|t|)</code> — one pass over <code>t</code>; <code>s</code> is consumed along the way.</li><li><strong>Space:</strong> <code>O(1)</code> — just the two indices.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li>The empty <code>s</code> is a subsequence of *anything* (including empty <code>t</code>) — return True. The <code>i == len(s)</code> check handles this because <code>i</code> starts already at the end.</li><li>Guard <code>i &lt; len(s)</code> before reading <code>s[i]</code>, or you index out of bounds once <code>s</code> is fully matched.</li><li>Don&#x27;t test only that every letter of <code>s</code> *appears* in <code>t</code> — order matters. <code>&quot;axc&quot;</code> fails against <code>&quot;ahbgdc&quot;</code> even though a, x?, c all seem present.</li></ul>
+<h2>Transfer</h2>
+<p>The pattern is <strong>&quot;one greedy forward pass because order is preserved and there&#x27;s nothing to gain from looking back.&quot;</strong> It&#x27;s the same two-pointer merge motion used in <a href="../../03-two-pointers/">Merge Sorted Array</a> and in the follow-up to this very problem: when you must check *many* different <code>s</code> strings against one fixed <code>t</code>, you preprocess <code>t</code> (e.g. a map from letter → sorted list of positions and binary search) so each query is fast — a nice next step once this scan is second nature.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0392-is-subsequence/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;392. Is Subsequence — https://leetcode.com/problems/is-subsequence/
+
+Given strings `s` and `t`, return True if `s` is a subsequence of `t` — i.e. you
+can delete some (or no) characters of `t` and be left with exactly `s`, keeping
+the remaining characters in order.
+
+One clean two-pointer scan is the natural fit; deleting characters can&#x27;t reorder
+them, so a single left-to-right walk suffices.
+&quot;&quot;&quot;
+
+
+def is_subsequence(s: str, t: str) -&gt; bool:
+    &quot;&quot;&quot;Two pointers, one pass over t. O(n) time, O(1) space.
+
+    Key insight: a subsequence keeps order, so we never need to look backwards.
+    Walk t once with a pointer `i` into s. Each time t&#x27;s current character matches
+    the next character s is waiting for, advance i. If i reaches the end of s,
+    every character of s was found in order — success. If t runs out first, it
+    couldn&#x27;t supply them all.
+
+    Greedy is safe here: matching s[i] against the *earliest* available character
+    in t never hurts, because leaving that character unmatched can only shrink the
+    remaining tail of t we have to work with.
+    &quot;&quot;&quot;
+    i = 0  # index of the next character of s we still need to match
+    for ch in t:
+        if i &lt; len(s) and ch == s[i]:
+            i += 1
+    return i == len(s)
+
+
+def _test() -&gt; None:
+    cases = [
+        ((&quot;abc&quot;, &quot;ahbgdc&quot;), True),
+        ((&quot;axc&quot;, &quot;ahbgdc&quot;), False),
+        ((&quot;&quot;, &quot;ahbgdc&quot;), True),    # empty s is a subsequence of anything
+        ((&quot;&quot;, &quot;&quot;), True),
+        ((&quot;a&quot;, &quot;&quot;), False),        # non-empty s cannot fit in empty t
+        ((&quot;abc&quot;, &quot;abc&quot;), True),    # equal strings
+        ((&quot;aaaa&quot;, &quot;aa&quot;), False),   # need more of a letter than t has
+    ]
+    for (s, t), expected in cases:
+        assert is_subsequence(s, t) == expected, (s, t)
+    print(&quot;is_subsequence: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../02-arrays-hashing/0347-top-k-frequent-elements.html">← 347 · Top K Frequent Elements</a><a class="pn next" href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence →</a></nav></main>
+</div>
+</body>
+</html>

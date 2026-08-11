@@ -13,6 +13,18 @@ one you picked before. How long can you make that chain? Return only its length.
 The subsequence doesn't have to be contiguous — `[10, 9, 2, 5, 3, 7, 101, 18]`
 contains `[2, 3, 7, 101]`, so the answer is `4`.
 
+## Why this matters
+
+The abstract problem is **finding the longest chain of ordered picks in a sequence** — and the key modeling move, "pin the subproblem to the element it ends at," is a workhorse for any "best answer that can end anywhere" question. The patience-sorting refinement adds a second idea: to extend chains, all that matters about a chain of a given length is its *smallest possible tail*.
+
+Where longest-increasing-chain problems genuinely appear:
+
+- **Version and dependency ordering** — longest run of compatible/increasing versions, or box/envelope nesting (Russian-doll packing) after sorting.
+- **Bioinformatics** — chaining local alignments into the longest consistent order is an LIS at heart.
+- **Data trends** — longest strictly-improving streak in a time series.
+
+The good solution buys **time**: the natural DP is `O(n²)` from re-scanning predecessors; keeping one sorted array of best tails plus binary search cuts it to **`O(n log n)`** — the difference that matters on long inputs. Honest caveat: the tails array gives the correct *length* but is not itself a readable subsequence.
+
 ## Start from the obvious
 
 A subsequence is "pick or skip each element", so the honest brute force is: try

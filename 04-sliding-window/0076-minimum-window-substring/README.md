@@ -11,6 +11,18 @@ You have a big string `s` and a small string `t`. Find the *shortest* piece of
 If `t` is `"AABC"`, your window must contain at least two `A`s, one `B`, one `C`.
 If no chunk works, return `""`.
 
+## Why this matters
+
+The deeper problem is finding the **shortest span of a stream that satisfies a coverage requirement** — "contains at least this much of everything I need" — with the counts mattering. The fundamental operation is *expand until valid, then contract while still valid*, tracking closeness-to-satisfied as a single integer so you never recount a window from scratch.
+
+This "smallest window that covers a requirement" pattern is genuinely useful:
+
+- **Log and monitoring queries** — the shortest time span containing at least one of every event type you care about (e.g., a full request→response→ack sequence).
+- **Search-result snippet generation** — the tightest passage of a document that contains all the query terms, which is how highlighted snippets are chosen.
+- **Bioinformatics and signal search** — the minimal segment containing a required set of markers.
+
+What we're solving for is **turning an `O(n^2)`-or-worse recount into `O(n)`**: the `formed`/`required` counter makes "is this window valid?" an O(1) check updated incrementally as characters enter and leave, so both edges only move forward and each character is touched a constant number of times.
+
 ## Start from the obvious
 
 Try every substring of `s` and test whether it covers `t`.

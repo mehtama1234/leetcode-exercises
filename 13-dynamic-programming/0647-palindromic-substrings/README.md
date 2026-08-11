@@ -11,6 +11,18 @@ substring is any contiguous slice, and each different start/end pair counts on i
 own — so in `"aaa"` the three single `a`s are three separate palindromes, not one.
 `"aaa"` has 6 in total: `a`, `a`, `a`, `aa`, `aa`, `aaa`.
 
+## Why this matters
+
+The deeper operation is **counting all mirror-symmetric regions in a sequence while reusing already-decided interiors** — the recurrence "a span is a palindrome iff its ends match and the inside already is" lets each larger palindrome grow from a smaller one instead of being re-verified from scratch.
+
+Where counting/enumerating symmetric regions genuinely appears:
+
+- **Bioinformatics** — tallying inverted repeats and palindromic sites in DNA/RNA (restriction-enzyme recognition sites are palindromic), which signal structure and binding regions.
+- **Pattern and anomaly detection** — counting mirrored motifs in text, logs, or signals as a structural feature.
+- **String-processing features** — palindrome density feeding into ML text features or data-quality checks.
+
+The good solution buys **time**: brute force is `O(n³)` because each substring's check re-walks overlapping interiors, while the DP (or the expand-around-center form) reuses those interiors to reach `O(n²)` time — and expand-around-center does it in `O(1)` extra space by riding one growing window instead of storing the whole table.
+
 ## Start from the obvious
 
 There are about `n^2 / 2` substrings. Generate every one and check each for being

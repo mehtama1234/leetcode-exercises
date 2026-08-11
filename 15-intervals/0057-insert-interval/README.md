@@ -11,6 +11,26 @@ Someone hands you one more range and asks you to slot it in so the list stays
 tidy — still sorted, still non-overlapping. The new range might overlap several
 existing ones, which then all fuse together.
 
+## Why this matters
+
+The deeper lesson is **maintaining a sorted, disjoint set of ranges under
+incremental updates** — you already paid to keep the structure tidy, so a single
+new item should cost a linear splice, not a full rebuild. The fundamental
+operation is finding the affected run (before / overlapping / after) and fusing
+just that.
+
+This is exactly how live systems handle ranges. Calendars insert a new event into
+an existing free/busy structure without re-sorting the day. Databases and
+allocators keep sorted, non-overlapping extents and merge a newly freed or
+written block into place. Version-control and diff tools splice a changed line
+range into a set of existing hunks. Streaming interval trees and rate-limiter
+windows absorb a new active span into a maintained set. Bandwidth or reservation
+systems slot a new booking into an already-ordered schedule.
+
+What we buy is `O(n)` with no sort: because the input is already ordered and
+disjoint, we exploit that invariant instead of throwing it away — one pass to
+copy, merge, and copy, staying within a tight update budget.
+
 ## Start from the obvious
 
 The lazy correct answer: throw the new interval onto the list and re-run the full

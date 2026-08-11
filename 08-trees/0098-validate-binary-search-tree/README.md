@@ -10,6 +10,26 @@ Check whether a tree obeys the binary-search-tree rule: at every node, *all* the
 values in its left subtree are smaller, and *all* the values in its right subtree
 are larger. Not just the immediate children — the entire subtree on each side.
 
+## Why this matters
+
+Underneath, this is about verifying a **global ordering invariant from local
+structure**: every node has to respect bounds set by ancestors far above it, not
+just its neighbors. The fundamental operation is threading a shrinking
+`(low, high)` range down a recursive structure and checking membership at each
+step.
+
+This is exactly what real systems do. Database engines validate B-tree and
+B+-tree index pages this way — a corrupted index is caught by confirming each
+key sits inside the range its position implies. Compilers and type checkers carry
+an inherited *context* (scope, allowed types) down the syntax tree and reject a
+node that violates it. Config and schema validators do the same for nested
+documents.
+
+What the good solution buys is a **single O(n) pass with O(height) memory** and no
+sorting or extra structures: the tree already encodes the order, so you just have
+to confirm it holds rather than rebuild it. The subtle win is catching the
+*non-local* violation the naive neighbor-check misses.
+
 ## Start from the obvious
 
 The tempting first check is local: for each node, make sure `left.val < node.val

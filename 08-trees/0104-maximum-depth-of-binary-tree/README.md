@@ -10,6 +10,26 @@ Starting at the root, how many nodes do you pass through on the longest possible
 walk straight down to a leaf? That count is the maximum depth. A tree with just a
 root has depth 1; an empty tree has depth 0.
 
+## Why this matters
+
+The deeper idea is **aggregating a value up a recursive structure**: each node's
+answer is a simple combination (here, `1 + max` of children) of its subtrees'
+answers. Depth is the gentlest instance of the fold-up-the-tree pattern that
+powers most tree algorithms. The fundamental operation is post-order
+accumulation.
+
+Where it shows up: filesystem tools compute nesting depth and directory sizes the
+same recursive way (`du` sums subtree sizes). UI and layout engines measure how
+deeply nested a component tree is to budget rendering. Org charts and category
+hierarchies report their deepest branch. Crucially, tree *height* directly governs
+performance elsewhere — a balanced-tree/database-index implementation tracks
+height to guarantee its O(log n) lookups haven't degraded into a linear chain.
+
+What you're solving for is a **single O(n) pass** that answers a whole-tree
+question by only ever looking at a node and its immediate children — no repeated
+descents, no recomputation. The one real cost to respect is the O(height) call
+stack, which is why very deep trees push you toward an explicit iterative walk.
+
 ## Start from the obvious
 
 Depth is "how far down can I go". If I'm standing at a node, the deepest I can go

@@ -10,6 +10,25 @@ You're given `k` linked lists, each already sorted. Merge all of them into one
 sorted list and return its head. It's [problem 21](../0021-merge-two-sorted-lists/)
 scaled from two lists to many.
 
+## Why this matters
+
+The deeper problem is: given many sorted streams, repeatedly emit the global
+smallest front element. The fundamental operation is "find the minimum among k
+current heads" fast — which is exactly what a min-heap (priority queue) gives you
+in O(log k) per step.
+
+This is the k-way merge at the heart of real systems. LSM-tree storage engines —
+RocksDB, Cassandra, LevelDB — merge dozens of sorted on-disk files during
+compaction this way. Log aggregators (think merging many per-server log files
+into one time-ordered stream), MapReduce-style shuffle-and-merge, and streaming
+joins over several ordered inputs all use the same heap-driven merge. Search
+engines merging many sorted posting lists do too.
+
+What you're solving for is not paying O(k) to scan all heads every step, and not
+concatenating everything and re-sorting. The heap keeps each pick to O(log k), so
+the whole merge is O(N log k) in one streaming pass with only k pointers held in
+memory — the difference between feasible and not when k and N are large.
+
 ## Start from the obvious
 
 You already know how to merge *two* sorted lists. So just fold: merge list 0 with

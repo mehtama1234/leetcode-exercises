@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>139. Word Break</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details open><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li class="active"><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">13. Dynamic Programming: Memoization / Tabulation</a> / <span>139</span></nav><article class="notes"><h1>139. Word Break</h1>
+<p><strong>Pattern:</strong> Dynamic programming (1-D over string positions) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/word-break/</p>
+<h2>The problem in plain words</h2>
+<p>You&#x27;re given a string like <code>&quot;applepenapple&quot;</code> and a set of allowed words like <code>[&quot;apple&quot;, &quot;pen&quot;]</code>. Can you chop the string into a sequence of those words, back to back, using each word as many times as you like? Return true or false.</p>
+<h2>Why this matters</h2>
+<p>The abstract problem is <strong>can this sequence be segmented into legal pieces from a vocabulary</strong> — a reachability question where the fundamental operation is &quot;from position <code>i</code>, does some legal chunk take me to a position from which the rest is also solvable?&quot; You cache the answer per position instead of re-deriving it down every path.</p>
+<p>Where segmentation-against-a-dictionary genuinely lives:</p>
+<ul><li><strong>Word segmentation</strong> — splitting space-free text (Chinese/Japanese/Thai NLP, or breaking up run-together identifiers and hashtags like <code>#thisisawesome</code>).</li><li><strong>Tokenizing and parsing</strong> — a lexer deciding whether an input stream splits into valid tokens; URL/path routers matching against known segments.</li><li><strong>Spellcheck and search</strong> — recognizing whether a compound is composed of known words.</li></ul>
+<p>The good solution buys <strong>time</strong>: naive recursion re-solves the same suffix once per path that reaches it (exponential), while keying the subproblem on the start index leaves only <code>n + 1</code> real subproblems for <code>O(n²·L)</code> total, with a set lookup keeping each membership test <code>O(1)</code>.</p>
+<h2>Start from the obvious</h2>
+<p>Where does the *first* word end? You don&#x27;t know, so try every possibility. If some prefix <code>s[0:j]</code> is a dictionary word, then the whole string is breakable iff the <strong>rest</strong> of the string, <code>s[j:]</code>, is also breakable — the same question on a shorter string:</p>
+<pre><code>breakable(s) = any prefix that is a dict word, whose remainder is also breakable
+breakable(&quot;&quot;) = True</code></pre>
+<p>Recursively: pick a word off the front, recurse on what&#x27;s left. Correct, and the natural first thought.</p>
+<h2>Find the waste</h2>
+<p>Different prefix choices land you on the <strong>same suffix</strong>. Splitting <code>&quot;aaaa&quot;</code> as <code>a|aaa</code> and as <code>aa|aa</code> both leave you asking &quot;is <code>aaa</code> breakable?&quot; — and <code>a|a|aa</code>, <code>aa|a|a</code>, ... pile up even more repeats. The naive recursion re-solves each suffix once per path that reaches it, and the number of paths is exponential.</p>
+<p>But a suffix is fully described by <strong>one number</strong>: where it starts. There are only <code>n + 1</code> starting positions. So there are only <code>n + 1</code> real subproblems.</p>
+<h2>The insight</h2>
+<p>Let <code>dp[i]</code> mean &quot;<strong>can <code>s[i:]</code> be broken into dictionary words?</strong>&quot; There are only <code>n + 1</code> of these, so compute each once.</p>
+<p>Base case: <code>dp[n] = True</code> — the empty suffix is trivially &quot;broken&quot; (you&#x27;ve used up the string). Then, going from the end backward:</p>
+<pre><code>dp[i] = True  if for some j: s[i:j] is a dict word AND dp[j] is True</code></pre>
+<p>That is: some word starts at <code>i</code>, and after that word the rest is breakable. The answer is <code>dp[0]</code>.</p>
+<p>Top-down it&#x27;s the same thing with a cache keyed on the start index; bottom-up it&#x27;s this table filled right-to-left.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n^2 * L)</code> — <code>n</code> positions, each tries up to <code>n</code> end points, and each candidate substring costs <code>O(L)</code> to slice and hash (<code>L</code> = max word length). (Using a set of word lengths to only test real lengths trims the constant.)</li><li><strong>Space:</strong> <code>O(n)</code> for the table, plus <code>O(total dictionary length)</code> for the word set.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li>Forgetting the base case <code>dp[n] = True</code>; without it every path dead-ends and you always return false.</li><li>Testing membership against a <strong>list</strong> instead of a <strong>set</strong> — that turns each lookup into an <code>O(dict)</code> scan and blows up the time.</li><li>This asks *whether* a split exists. Counting all splits or returning them (Word Break II) is a different, heavier problem.</li><li>Words are <strong>reusable</strong>, so <code>&quot;applepenapple&quot;</code> legitimately uses <code>&quot;apple&quot;</code> twice.</li></ul>
+<h2>Transfer</h2>
+<p>The shape is &quot;walk a line of positions; <code>dp[i]</code> depends on jumping ahead by an allowed step.&quot; It&#x27;s the same skeleton as <a href="../0322-coin-change/">Coin Change / 322</a> (reach an amount using reusable coins), Jump Game, and Decode Ways (reach the end of a digit string). Whenever a brute force keeps re-asking &quot;is the rest solvable from here?&quot;, key the subproblem on *here* and cache it.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0139-word-break/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;139. Word Break — https://leetcode.com/problems/word-break/
+
+Given a string `s` and a dictionary of words, decide whether `s` can be split
+into a sequence of one or more dictionary words (each word reusable).
+
+Two implementations are kept side by side so the reason the fast one exists is
+visible: the memoized recursion is the honest top-down statement, and the
+bottom-up table is the same recurrence filled from the end of the string.
+&quot;&quot;&quot;
+from typing import List, Dict, Set
+
+
+def word_break_memo(s: str, wordDict: List[str]) -&gt; bool:
+    &quot;&quot;&quot;Top-down recursion with memoization. O(n^2 * L) time.
+
+    The recurrence: from position `i`, the rest `s[i:]` is breakable iff some
+    dictionary word matches starting at `i` and the remainder after it is also
+    breakable. That remainder is an identical subproblem keyed only by its start
+    index. Without a cache, the same suffix gets re-solved along many prefix
+    choices — that repetition is the waste. `cache[i]` remembers each suffix once.
+    &quot;&quot;&quot;
+    words: Set[str] = set(wordDict)
+    n = len(s)
+    cache: Dict[int, bool] = {}
+
+    def breakable(i: int) -&gt; bool:
+        if i == n:
+            return True  # consumed the whole string successfully
+        if i in cache:
+            return cache[i]
+        ok = False
+        for j in range(i + 1, n + 1):
+            if s[i:j] in words and breakable(j):
+                ok = True
+                break
+        cache[i] = ok
+        return ok
+
+    return breakable(0)
+
+
+def word_break(s: str, wordDict: List[str]) -&gt; bool:
+    &quot;&quot;&quot;Bottom-up table. O(n^2 * L) time, O(n) space.
+
+    Same recurrence, filled from the end so every suffix it needs is already
+    solved. dp[i] = &quot;can s[i:] be broken into dictionary words?&quot; Base case
+    dp[n] = True (the empty suffix is trivially broken). For each i going
+    backward, dp[i] is True if some word matches at i and dp after that word is
+    True. The answer is dp[0].
+    &quot;&quot;&quot;
+    words: Set[str] = set(wordDict)
+    n = len(s)
+    dp = [False] * (n + 1)
+    dp[n] = True  # empty suffix
+    for i in range(n - 1, -1, -1):
+        for j in range(i + 1, n + 1):
+            if s[i:j] in words and dp[j]:
+                dp[i] = True
+                break
+    return dp[0]
+
+
+def _test() -&gt; None:
+    cases = [
+        ((&quot;leetcode&quot;, [&quot;leet&quot;, &quot;code&quot;]), True),
+        ((&quot;applepenapple&quot;, [&quot;apple&quot;, &quot;pen&quot;]), True),   # reuse &quot;apple&quot;
+        ((&quot;catsandog&quot;, [&quot;cats&quot;, &quot;dog&quot;, &quot;sand&quot;, &quot;and&quot;, &quot;cat&quot;]), False),
+        ((&quot;a&quot;, [&quot;a&quot;]), True),                            # single char, present
+        ((&quot;a&quot;, [&quot;b&quot;]), False),                           # single char, absent
+        ((&quot;aaaaaaa&quot;, [&quot;aaaa&quot;, &quot;aaa&quot;]), True),            # 3 + 4
+    ]
+    for (s, wordDict), expected in cases:
+        assert word_break(s, wordDict) == expected, (s, wordDict)
+        # the top-down version must agree with the table on every case
+        assert word_break_memo(s, wordDict) == expected, (s, wordDict)
+    print(&quot;word_break: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../13-dynamic-programming/0091-decode-ways.html">← 91 · Decode Ways</a><a class="pn next" href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence →</a></nav></main>
+</div>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>295. Find Median from Data Stream</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details open><summary>11. Heap / Priority Queue</summary><ul><li class="active"><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">11. Heap / Priority Queue</a> / <span>295</span></nav><article class="notes"><h1>295. Find Median from Data Stream</h1>
+<p><strong>Pattern:</strong> Two heaps (keep the middle reachable, not the whole order) <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/find-median-from-data-stream/</p>
+<h2>The problem in plain words</h2>
+<p>Numbers arrive one at a time, forever. At any moment someone can ask &quot;what&#x27;s the median of everything so far?&quot; The median is the middle value once the numbers are sorted — and if there&#x27;s an even count, it&#x27;s the average of the two middle values.</p>
+<p>So you need two operations, both fast, and both can be called any number of times: <code>addNum(x)</code> to feed in a number, and <code>findMedian()</code> to answer.</p>
+<h2>Why this matters</h2>
+<p>The deeper problem is maintaining a *running order statistic* over an endless stream — a value at a moving position in the sorted order — without ever holding the whole thing in sorted form. The fundamental operation is keeping just the boundary reachable: split the data at the point you care about and store each side so its edge is instantly on top.</p>
+<p>This is exactly what real streaming systems need. Monitoring and observability tools report running medians and percentiles (p50/p95/p99) of latency as requests pour in, and can&#x27;t re-sort millions of samples per second. Databases and analytics engines maintain streaming order statistics for query planning and dashboards. Load balancers and autoscalers watch a moving-median signal to smooth out spikes; finance systems track rolling medians of prices or volume.</p>
+<p>What you&#x27;re solving for is time and a single-pass constraint: the stream never stops and you can&#x27;t rewind it, so each insert must be cheap. The two-heap trick drops per-add cost from <code>O(n)</code> (re-sorting) to <code>O(log n)</code>, and answers in <code>O(1)</code> — keeping only the middle ordered instead of everything, which is all the question ever reads.</p>
+<h2>Start from the obvious</h2>
+<p>The median is defined in terms of sorted order, so the honest first move is to just keep the numbers sorted:</p>
+<pre><code>addNum(x):     insert x into a sorted list   # find spot, then shift the tail
+findMedian():  return the middle element(s) by index</code></pre>
+<p><code>findMedian</code> is now trivial and O(1). The trouble is <code>addNum</code>: finding *where* x goes is a fast binary search, but actually making room shifts every element after it. That&#x27;s <code>O(n)</code> per insert, so a stream of <code>n</code> numbers costs <code>O(n^2)</code> overall.</p>
+<p>That&#x27;s correct — and staring at *what it does too much* points straight at the fix.</p>
+<h2>Find the waste</h2>
+<p>To answer <code>findMedian</code> we only ever touch the one or two values sitting at the <strong>center</strong>. Everything to the left of the middle and everything to the right is just... there. Keeping the entire stream in perfect sorted order is far more work than the question needs. We are paying <code>O(n)</code> per insert to maintain order we never read.</p>
+<p>So the real requirement is narrower:</p>
+<blockquote>Keep the value(s) <strong>at the middle</strong> reachable — nothing more.</blockquote>
+<h2>The insight</h2>
+<p>Split the numbers into two halves and store each half in a heap so its boundary value is instantly available:</p>
+<ul><li><strong><code>low</code></strong> — the smaller half, stored as a <strong>max-heap</strong> so its *largest* value (the top of the lower half) is at the top.</li><li><strong><code>high</code></strong> — the larger half, stored as a <strong>min-heap</strong> so its *smallest* value (the bottom of the upper half) is at the top.</li></ul>
+<p>Picture the sorted stream cut down the middle: <code>low</code>&#x27;s max and <code>high</code>&#x27;s min are exactly the two numbers straddling that cut — the ones the median is made of.</p>
+<p>Keep two invariants after every add:</p>
+<ol><li><strong>Everything in <code>low</code> &lt;= everything in <code>high</code>.</strong> The cut sits at the median.</li><li><strong>Sizes differ by at most 1</strong>, and when they differ <code>low</code> holds the extra one.</li></ol>
+<p>Then answering is O(1):</p>
+<pre><code>if low is bigger:  median = low.max                # odd count -&gt; the true middle
+else:              median = (low.max + high.min)/2  # even count -&gt; average the two</code></pre>
+<p>Adding is where the cleverness lives. A neat trick keeps invariant 1 automatic — push the new number onto <code>low</code>, immediately move <code>low</code>&#x27;s max over to <code>high</code>, then if <code>high</code> grew too big hand its min back:</p>
+<pre><code>addNum(x):
+    push x onto low
+    move low.max -&gt; high        # forces &quot;low &lt;= high&quot;
+    if high larger than low:
+        move high.min -&gt; low    # fix the sizes</code></pre>
+<p>The middle round-trip guarantees the value ending up in <code>high</code> is at least as big as everything left in <code>low</code>, so the two halves never overlap. (Python&#x27;s <code>heapq</code> is min-only, so <code>low</code> stores <strong>negated</strong> numbers — the smallest negation is the largest real value.)</p>
+<h2>Complexity</h2>
+<ul><li><strong><code>addNum</code>:</strong> <code>O(log n)</code> — a constant number of heap pushes/pops, each <code>O(log n)</code>.</li><li><strong><code>findMedian</code>:</strong> <code>O(1)</code> — just read the one or two heap tops.</li><li><strong>Space:</strong> <code>O(n)</code> — every number is held in one of the two heaps.</li></ul>
+<p>Compared to the sorted list&#x27;s <code>O(n)</code> insert, we traded &quot;keep everything ordered&quot; for &quot;keep only the boundary ordered&quot;, and the per-add cost drops from <code>O(n)</code> to <code>O(log n)</code>.</p>
+<h2>Pitfalls</h2>
+<ul><li><strong>Max-heap in a min-heap language.</strong> <code>heapq</code> only does min-heaps; negate on the way in and negate again on the way out for <code>low</code>. Forgetting one negation flips the whole split.</li><li><strong>Which heap holds the extra element.</strong> Pick a rule (here: <code>low</code> &gt;= <code>high</code> in size) and apply it *identically* in both <code>addNum</code>&#x27;s rebalance and <code>findMedian</code>, or the odd-count case reads the wrong heap.</li><li><strong>Even-count division.</strong> Return a float — <code>(a + b) / 2</code>, not integer <code>//</code> — or <code>[2, 3]</code> reports <code>2</code> instead of <code>2.5</code>.</li><li><strong>Skipping the cross-over push in <code>addNum</code>.</strong> Just pushing x onto whichever heap &quot;looks right&quot; by value can break invariant 1 on later inserts; routing every new number through <code>low -&gt; high</code> is what keeps the two halves cleanly separated.</li></ul>
+<h2>Transfer</h2>
+<p>The move is: **when you only need the extreme(s) of a set, don&#x27;t sort it — hold it in a heap; and when you need a value at a *moving boundary*, hold each side in its own heap so the boundary is always at a top.** This &quot;balanced two-heap&quot; idea shows up in <a href="https://leetcode.com/problems/sliding-window-median/">Sliding Window Median / 480</a> and <a href="https://leetcode.com/problems/ipo/">IPO / 502</a>, and the plain single-heap version powers <a href="https://leetcode.com/problems/kth-largest-element-in-a-stream/">Kth Largest Element in a Stream / 703</a> and <a href="https://leetcode.com/problems/last-stone-weight/">Last Stone Weight / 1046</a>. Whenever a brute force keeps re-sorting or re-scanning for &quot;the top / the middle&quot;, reach for a heap first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0295-find-median-from-data-stream/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;295. Find Median from Data Stream — https://leetcode.com/problems/find-median-from-data-stream/
+
+Design a structure that accepts numbers one at a time and can report the median
+of everything seen so far at any moment. The median is the middle value of the
+sorted numbers (the average of the two middles when the count is even).
+
+The naive class (keep a sorted list) is kept next to the optimal one (two heaps)
+so the reason the fast version exists is visible: the median only ever needs the
+one or two values sitting at the *middle*, so we should not pay to keep the whole
+stream sorted — only to keep those middle values reachable.
+&quot;&quot;&quot;
+from typing import List
+import heapq
+
+
+class MedianFinderSorted:
+    &quot;&quot;&quot;Naive: keep a fully sorted list, insert in order.
+
+    `addNum` finds the insertion point with binary search (O(log n)) but then
+    shifts every element after it to make room — that shift is O(n). `findMedian`
+    is then trivially O(1) by index. The whole stream stays sorted at all times,
+    which is far more order than the median actually needs, and the per-insert
+    shift is the waste we remove in the two-heap version below.
+    &quot;&quot;&quot;
+
+    def __init__(self) -&gt; None:
+        self._nums: List[int] = []
+
+    def addNum(self, num: int) -&gt; None:
+        # bisect.insort would do this in one call; written out to show the O(n) shift.
+        lo, hi = 0, len(self._nums)
+        while lo &lt; hi:
+            mid = (lo + hi) // 2
+            if self._nums[mid] &lt; num:
+                lo = mid + 1
+            else:
+                hi = mid
+        self._nums.insert(lo, num)  # O(n): shifts the tail right
+
+    def findMedian(self) -&gt; float:
+        n = len(self._nums)
+        mid = n // 2
+        if n % 2 == 1:
+            return float(self._nums[mid])
+        return (self._nums[mid - 1] + self._nums[mid]) / 2
+
+
+class MedianFinder:
+    &quot;&quot;&quot;Optimal: two heaps that split the stream at the middle. O(log n) per add.
+
+    Insight: to report the median we never need the whole sorted order — we only
+    need the value(s) at the center. So split the numbers into two halves:
+
+      - `low`  — the smaller half, kept as a MAX-heap so its *largest* value
+                 (the top of the lower half) is always reachable in O(1).
+      - `high` — the larger half, kept as a MIN-heap so its *smallest* value
+                 (the top of the upper half) is always reachable in O(1).
+
+    Python&#x27;s heapq is a MIN-heap only, so we simulate the max-heap `low` by
+    storing negated numbers: the smallest negation is the largest real value.
+
+    We keep two invariants after every add:
+      1. Every value in `low` &lt;= every value in `high` (the split is at the median).
+      2. The sizes differ by at most 1, and when they differ `low` holds the extra.
+
+    Then the median is either `low`&#x27;s top (odd count) or the average of the two
+    tops (even count) — both O(1). Each add is O(log n): one push, and at most a
+    couple of pushes/pops to rebalance.
+    &quot;&quot;&quot;
+
+    def __init__(self) -&gt; None:
+        self._low: List[int] = []   # max-heap via negation: smaller half
+        self._high: List[int] = []  # min-heap: larger half
+
+    def addNum(self, num: int) -&gt; None:
+        # Step 1: tentatively add to `low` (max-heap). Push num, then move its
+        # largest across to `high`. This guarantees invariant 1: whatever lands in
+        # `high` is &gt;= everything left in `low`.
+        heapq.heappush(self._low, -num)
+        heapq.heappush(self._high, -heapq.heappop(self._low))
+
+        # Step 2: rebalance sizes so `low` is equal to or one larger than `high`.
+        # After step 1 `high` may have grown one too big; hand its smallest back.
+        if len(self._high) &gt; len(self._low):
+            heapq.heappush(self._low, -heapq.heappop(self._high))
+
+    def findMedian(self) -&gt; float:
+        # `low` is never smaller than `high`, so it holds the middle when the
+        # count is odd, and shares the two middles with `high` when it&#x27;s even.
+        if len(self._low) &gt; len(self._high):
+            return float(-self._low[0])
+        return (-self._low[0] + self._high[0]) / 2
+
+
+def _test() -&gt; None:
+    # Official LeetCode example:
+    #   addNum(1); addNum(2); findMedian() -&gt; 1.5; addNum(3); findMedian() -&gt; 2.0
+    for cls in (MedianFinder, MedianFinderSorted):
+        mf = cls()
+        mf.addNum(1)
+        mf.addNum(2)
+        assert mf.findMedian() == 1.5, cls.__name__
+        mf.addNum(3)
+        assert mf.findMedian() == 2.0, cls.__name__
+
+        # Edge: a single number is its own median.
+        single = cls()
+        single.addNum(5)
+        assert single.findMedian() == 5.0, cls.__name__
+
+        # Edge: negatives, duplicates, and an even count crossing zero.
+        mixed = cls()
+        for x in [-3, -3, 4, 4]:
+            mixed.addNum(x)
+        assert mixed.findMedian() == 0.5, cls.__name__  # middles are -3 and 4
+
+        # Longer run checked against a brute recompute of the median each step.
+        import statistics
+        brute: List[int] = []
+        streamed = cls()
+        for x in [6, -1, 10, 10, -5, 3, 0, 8, 8, -2]:
+            brute.append(x)
+            streamed.addNum(x)
+            assert streamed.findMedian() == statistics.median(brute), (cls.__name__, x)
+
+    print(&quot;median_finder: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../10-tries/0212-word-search-ii.html">← 212 · Word Search II</a><a class="pn next" href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands →</a></nav></main>
+</div>
+</body>
+</html>

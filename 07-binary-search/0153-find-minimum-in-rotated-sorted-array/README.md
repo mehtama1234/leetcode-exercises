@@ -12,6 +12,14 @@ giving something like `[3, 4, 5, 1, 2]`. You're handed the rotated version and
 asked for the smallest element. The catch: you must do it in `O(log n)`, so
 scanning everything is off the table.
 
+## Why this matters
+
+The real task here isn't "find the smallest number" — it's **find the one discontinuity** in data that is otherwise monotonic. That's the fundamental operation: locate the single point where a smooth, increasing sequence breaks, using only `O(log n)` probes instead of reading everything.
+
+That pattern shows up wherever a sorted or monotonic sequence has exactly one turning point. Circular/ring buffers wrap at an unknown offset, and finding the oldest entry is finding this cliff. Time-series with a counter reset or a rollover (sequence numbers, timestamps that wrap) have one break you must find to reorder the data. Consistent-hashing rings and rotated index structures need the wrap-around point located to resolve a lookup. It's also the shape behind "binary search on the answer": a monotone yes/no function has one boundary, and you hunt it the same way.
+
+What you're solving for is time — turning an `O(n)` scan into `O(log n)` — which matters most when this runs inside a tight loop or under a strict latency budget, where reading every element repeatedly would dominate the cost.
+
 ## Start from the obvious
 
 The smallest element is just... the minimum.

@@ -10,6 +10,18 @@
 separators, so `"12"` could have been `AB` (1, 2) or `L` (12). Given the digit
 string, **count how many different original messages** could have produced it.
 
+## Why this matters
+
+The deeper problem is **counting the valid ways to segment an ambiguous sequence**, where each step has a small set of legal moves guarded by validity rules. The fundamental operation is a look-ahead sum with constraints — the same shape as Climbing Stairs, but with "is this chunk legal?" checks layered on.
+
+Where ambiguous segmentation actually bites:
+
+- **Tokenizers and lexers** — the same digit string can split many ways; compilers and NLP word-segmentation (notably for Chinese/Japanese text with no spaces) must count or choose among valid segmentations.
+- **Decoding and parsing** — variable-length codes, barcode/QR reading, and grammar parsing all ask "how many legal ways does this stream parse?"
+- **Speech and OCR** — resolving ambiguous character runs into legal sequences.
+
+The good solution buys **time**: brute force re-explores overlapping suffixes exponentially, while keying each subproblem on the single position number gives `O(n)` — and two rolling variables drop it to `O(1)` memory. The real difficulty (the zero rules, the `≤ 26` guard) is the honest version of "not every chunk is a legal token."
+
 ## Start from the obvious
 
 Read the string left to right. At each spot you have at most two moves:

@@ -13,6 +13,14 @@ sorted — and if there's an even count, it's the average of the two middle valu
 So you need two operations, both fast, and both can be called any number of times:
 `addNum(x)` to feed in a number, and `findMedian()` to answer.
 
+## Why this matters
+
+The deeper problem is maintaining a *running order statistic* over an endless stream — a value at a moving position in the sorted order — without ever holding the whole thing in sorted form. The fundamental operation is keeping just the boundary reachable: split the data at the point you care about and store each side so its edge is instantly on top.
+
+This is exactly what real streaming systems need. Monitoring and observability tools report running medians and percentiles (p50/p95/p99) of latency as requests pour in, and can't re-sort millions of samples per second. Databases and analytics engines maintain streaming order statistics for query planning and dashboards. Load balancers and autoscalers watch a moving-median signal to smooth out spikes; finance systems track rolling medians of prices or volume.
+
+What you're solving for is time and a single-pass constraint: the stream never stops and you can't rewind it, so each insert must be cheap. The two-heap trick drops per-add cost from `O(n)` (re-sorting) to `O(log n)`, and answers in `O(1)` — keeping only the middle ordered instead of everything, which is all the question ever reads.
+
 ## Start from the obvious
 
 The median is defined in terms of sorted order, so the honest first move is to

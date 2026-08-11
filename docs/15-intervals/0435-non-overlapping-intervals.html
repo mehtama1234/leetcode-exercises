@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>435. Non-overlapping Intervals</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details open><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li class="active"><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">15. Merge Intervals</a> / <span>435</span></nav><article class="notes"><h1>435. Non-overlapping Intervals</h1>
+<p><strong>Pattern:</strong> Greedy interval scheduling (sort by end time) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/non-overlapping-intervals/</p>
+<h2>The problem in plain words</h2>
+<p>You have a set of ranges, some of which overlap. Delete as few as possible so that none of the survivors overlap. Return *how many* you had to delete.</p>
+<h2>Why this matters</h2>
+<p>This is <strong>activity selection</strong> — keep the largest set of non-overlapping intervals (removing the fewest is the mirror of keeping the most). The fundamental operation is a greedy scan sorted *by end time*: always keep the interval that finishes soonest, because it leaves the most room for the rest, and an exchange argument proves that&#x27;s optimal.</p>
+<p>It&#x27;s the core of maximizing throughput on a single resource. Schedulers pick the most jobs one machine or one CPU can run without conflict. Broadcast and advertising systems select the most non-conflicting slots to air. Meeting and room booking maximizes how many requests one room can honor. Compilers use the same idea in register allocation — fitting the most live ranges into limited registers. Bandwidth and reservation systems admit the most non-overlapping requests a channel can serve.</p>
+<p>What we buy is <code>O(n log n)</code>: one end-sorted pass replaces an exponential search over subsets, and the greedy is provably optimal, not just a heuristic — so we get the true best packing under a tight time budget.</p>
+<h2>Start from the obvious</h2>
+<p>&quot;Delete the fewest&quot; invites a brute force: try every subset of intervals, check which subsets are overlap-free, and keep the biggest one. The answer is <code>total - biggest_overlap_free_subset</code>.</p>
+<pre><code>best = 0
+for each subset S of intervals:
+    if no two intervals in S overlap:
+        best = max(best, len(S))
+return len(intervals) - best</code></pre>
+<p>That&#x27;s <code>O(2^n)</code> — hopeless. But it names the real goal precisely: <strong>removing the fewest is the same as keeping the most non-overlapping intervals.</strong></p>
+<h2>Find the waste / The insight</h2>
+<p>That reframing — &quot;keep the most&quot; — is the classic *activity selection* problem, and it has a clean greedy answer. The trick is choosing which interval to keep when two clash.</p>
+<p>Sort the intervals <strong>by end time</strong>. Then repeatedly keep the interval that finishes earliest among those that still fit:</p>
+<blockquote>The interval that ends soonest is always safe to keep, because it leaves the most of the timeline free for everything after it.</blockquote>
+<p>Why is greedy *optimal* and not just a reasonable guess? Exchange argument: take any optimal set of kept intervals. Look at whichever of them ends earliest. If it&#x27;s not the globally-earliest-ending interval, you can swap that one in without creating any new overlap (it ends even sooner, so it can only free up room). So some optimal solution always includes the earliest-finishing interval — keep it, then recurse on what&#x27;s left. The greedy is following exactly that optimal choice at every step.</p>
+<p>Concretely: walk the end-sorted list tracking <code>kept_end</code>, the finish time of the last interval we kept. The next interval fits if <code>start &gt;= kept_end</code> — keep it and advance <code>kept_end</code>. Otherwise it overlaps something we&#x27;re keeping, so it&#x27;s a removal.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n log n)</code> — the sort dominates; the sweep is one <code>O(n)</code> pass.</li><li><strong>Space:</strong> <code>O(1)</code> beyond the sort (we only track a count and one boundary).</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>Touching is not overlapping.</strong> <code>[1, 2]</code> and <code>[2, 3]</code> share only the endpoint <code>2</code>; they can both stay. Use <code>start &gt;= kept_end</code>, so equality means &quot;fits.&quot;</li><li><strong>Sorting by start instead of end</strong> is the common wrong instinct. It can be made to work if, on a clash, you keep the interval that *ends* earlier (see <code>erase_overlap_intervals_brute</code> in the solution) — but sort-by-end is the cleaner, canonical form and makes the optimality argument obvious.</li><li>Returning the kept count instead of the removed count (<code>n - kept</code>).</li></ul>
+<h2>Transfer</h2>
+<p>Sort-by-end greedy is the template for scheduling the maximum number of non-conflicting tasks: meeting-room selection, the &quot;maximum number of events you can attend,&quot; and any &quot;pick the most compatible intervals&quot; problem. It&#x27;s the mirror image of <a href="../0253-meeting-rooms-ii/">Meeting Rooms II / 253</a> (which asks how many rooms you&#x27;d need if you *couldn&#x27;t* drop any). Contrast with <a href="../0056-merge-intervals/">Merge Intervals / 56</a>, where you sort by <strong>start</strong> because you&#x27;re fusing overlaps rather than choosing among them.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/15-intervals/0435-non-overlapping-intervals/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;435. Non-overlapping Intervals — https://leetcode.com/problems/non-overlapping-intervals/
+
+Given a set of intervals, return the minimum number you must remove so that none
+of the ones that remain overlap.
+
+&quot;Remove the fewest&quot; is the same as &quot;keep the most,&quot; which is the classic greedy
+activity-selection problem: sort by end time and always keep the interval that
+finishes earliest.
+&quot;&quot;&quot;
+from typing import List
+
+
+def erase_overlap_intervals_brute(intervals: List[List[int]]) -&gt; int:
+    &quot;&quot;&quot;Sort by start; on each clash, drop the one that ends later. O(n log n).
+
+    This is the intuitive greedy: walk the sorted list keeping a &quot;current end.&quot;
+    When the next interval starts before that end, they clash and one must go — so
+    keep whichever ends earlier (it leaves more room), and count the other as
+    removed. Correct, but it&#x27;s clearer to phrase the greedy the standard way
+    below, which makes *why it&#x27;s optimal* obvious.
+    &quot;&quot;&quot;
+    if not intervals:
+        return 0
+    ordered = sorted(intervals, key=lambda iv: iv[0])
+    removed = 0
+    prev_end = ordered[0][1]
+    for start, end in ordered[1:]:
+        if start &lt; prev_end:            # overlap — must delete one
+            removed += 1
+            prev_end = min(prev_end, end)   # keep the earlier-ending one
+        else:
+            prev_end = end
+    return removed
+
+
+def erase_overlap_intervals(intervals: List[List[int]]) -&gt; int:
+    &quot;&quot;&quot;Greedy: sort by END, keep each interval that doesn&#x27;t clash. O(n log n).
+
+    The problem &quot;remove the fewest to make them disjoint&quot; is exactly &quot;keep the
+    most non-overlapping intervals&quot; — the removals are just everything you didn&#x27;t
+    keep. That&#x27;s the interval-scheduling / activity-selection problem.
+
+    Why sort by end? When you&#x27;re choosing which intervals to keep, the one that
+    *finishes earliest* is always safe to take: it uses up the least of the
+    timeline, leaving the most room for the rest. Any optimal solution can swap in
+    the earliest-finishing interval without losing anything (an exchange
+    argument), so the greedy is provably optimal.
+
+    Walk the intervals by end time, tracking the end of the last one we kept. If
+    the next interval starts at or after that end, it fits — keep it and move the
+    boundary. If it starts earlier, it clashes with something we already kept, so
+    it&#x27;s a removal.
+    &quot;&quot;&quot;
+    if not intervals:
+        return 0
+
+    ordered = sorted(intervals, key=lambda iv: iv[1])
+    kept_end = ordered[0][1]
+    kept = 1                            # we always keep the first (earliest end)
+
+    for start, end in ordered[1:]:
+        if start &gt;= kept_end:           # fits after the last kept one
+            kept += 1
+            kept_end = end
+        # else: overlaps a kept interval -&gt; it will be removed
+
+    return len(intervals) - kept
+
+
+def _test() -&gt; None:
+    cases = [
+        ([[1, 2], [2, 3], [3, 4], [1, 3]], 1),
+        ([[1, 2], [1, 2], [1, 2]], 2),
+        ([[1, 2], [2, 3]], 0),                 # touching, not overlapping
+        ([], 0),
+        ([[1, 100], [11, 22], [1, 11], [2, 12]], 2),
+        ([[1, 2]], 0),                          # single interval
+    ]
+    for intervals, expected in cases:
+        assert erase_overlap_intervals(intervals) == expected, intervals
+        # the two greedies must agree
+        assert erase_overlap_intervals_brute([iv[:] for iv in intervals]) == expected, intervals
+    print(&quot;non_overlapping_intervals: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../15-intervals/0057-insert-interval.html">← 57 · Insert Interval</a><a class="pn next" href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms →</a></nav></main>
+</div>
+</body>
+</html>

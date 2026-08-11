@@ -15,6 +15,14 @@ Build a container for words that supports three operations:
 The catch is the third one. "Exact word here?" is easy. "Does anything start
 with `app`?" is the operation that shapes the whole design.
 
+## Why this matters
+
+The deeper problem is answering *prefix* questions — "does anything begin with these characters?" — in time that depends on the query, not on how much you've stored. The fundamental operation is sharing the common start of many strings on one path, so a prefix is looked up by walking characters rather than by scanning words.
+
+This is the structure behind autocomplete and search suggestions: every keystroke asks "which stored terms start with what I've typed?", and a trie answers in a few steps no matter how large the dictionary. IP routers do longest-prefix matching on address bits to pick a route. Spell-checkers, T9/predictive text, and command-line tab completion all lean on prefix trees. Some databases and search engines use trie-like index structures for prefix and range queries.
+
+What you're solving for is keeping prefix queries cheap and independent of dictionary size — `O(k)` per query instead of `O(n·L)` — and reusing shared prefixes so you don't store or re-derive the same beginnings over and over. Under a per-keystroke latency budget, that independence from `n` is the whole point.
+
 ## Start from the obvious
 
 Keep the words in a hash set.

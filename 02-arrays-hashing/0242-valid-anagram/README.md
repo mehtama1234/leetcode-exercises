@@ -10,6 +10,23 @@ Two strings are anagrams if you can rearrange one into the other — same letter
 same number of each, just shuffled. Given `s` and `t`, is `t` a rearrangement of
 `s`?
 
+## Why this matters
+
+The deeper problem is *comparing two multisets — "same elements, same counts,
+order irrelevant" — by counting instead of sorting.* The fundamental operation is
+building a frequency signature and checking two signatures agree.
+
+Frequency counting is one of the most reused primitives in data work. Word-count
+and term-frequency tables are the first step in search indexing and every
+bag-of-words ML feature pipeline. Comparing two documents or datasets for "same
+contents, different order" — reconciling two exports, checking a shuffled file
+transferred intact — is multiset equality. Histograms for anomaly detection
+(did today's traffic mix match yesterday's?) are the same tally.
+
+What you're solving for is avoiding the O(n log n) cost of sorting when you only
+need counts, not order. Counting is O(n) time and O(1) space for a fixed
+alphabet, and the tally can bail early the moment a count goes wrong.
+
 ## Start from the obvious
 
 If both strings hold the same letters, then sorting each one lines those letters

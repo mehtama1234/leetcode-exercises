@@ -11,6 +11,26 @@ and end anywhere, and it doesn't have to touch the root. Add up the values along
 a path — what's the biggest total you can get? Values can be negative, which is
 what makes this tricky.
 
+## Why this matters
+
+The deeper problem is **optimizing over an exponential number of paths with a
+single bottom-up pass**, by having each node return one thing to its parent (the
+best *extendable* downward arm) while separately tracking a global best (a bent
+path that peaks locally and can't be extended). Separating "what I contribute
+upward" from "what I might be the answer" is the reusable trick.
+
+This exact shape appears well beyond puzzles. Kadane's maximum-subarray algorithm
+is the 1-D version of the same "best chain ending here vs. best chain anywhere"
+split, and it drives things like peak-profit and signal-segment detection. Network
+and routing analyses find highest-value or lowest-cost paths through a topology.
+Phylogenetics and hierarchical scoring propagate a summarized score up a tree
+while recording the best local structure seen.
+
+What you're solving for is **O(n) instead of enumerating all paths**: by clamping
+negative arms to zero and folding results upward once, you avoid recomputing
+overlapping sub-paths. The core lesson — return a *composable* summary, track the
+*answer* on the side — recurs across dynamic programming on trees.
+
 ## Start from the obvious
 
 You might try: for every node, compute the best path that passes through it, and

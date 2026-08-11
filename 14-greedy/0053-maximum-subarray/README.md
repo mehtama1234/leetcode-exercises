@@ -10,6 +10,25 @@ You have a row of numbers, some positive, some negative. Pick a **contiguous**
 run of them (you can't skip around) — at least one number — so that the run's sum
 is as large as possible. Return that largest sum.
 
+## Why this matters
+
+Underneath the puzzle is a fundamental operation: sweeping a stream of values
+once and keeping a **running best that only ever needs the current item plus one
+carried number**. You never store or rescan history — you answer "best run
+ending here?" incrementally. That's the core of *online* processing, where data
+arrives and you can't afford to look back.
+
+This shows up in real systems. Financial and trading code uses the same
+best-window idea to find the most profitable buy/sell stretch or the worst
+drawdown. Signal and sensor pipelines detect the strongest burst of activity in a
+noisy stream. Genomics scans DNA for the highest-scoring contiguous segment.
+Image processing extends it to the 2D "maximum sum rectangle." Anywhere you
+monitor a live metric and want the peak sustained interval, this is the shape.
+
+What we buy is decisive: one linear pass, constant memory, and no need to
+rewind a stream you may not be able to replay — instead of the quadratic cost of
+re-summing every possible window.
+
 ## Start from the obvious
 
 A "contiguous run" is defined by where it starts and where it ends. So just try

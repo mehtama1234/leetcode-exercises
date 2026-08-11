@@ -13,6 +13,14 @@ Build a container that supports:
   that matches *any single* character. So `search(".ad")` matches "bad", "dad",
   or "mad".
 
+## Why this matters
+
+The deeper problem is matching a *pattern with holes* against a whole dictionary at once — not one fixed string, but a template where some positions can be anything. The fundamental operation is turning the trie walk into a search: follow one child for a fixed letter, but branch into all children at a wildcard, succeeding if any branch completes the match.
+
+That's the core of pattern matching in real tools. Spell-checkers and "did you mean" suggestions treat a suspect position as a wildcard to find near-matches. Crossword and word-game solvers query patterns like `.a.e`. Simple regex and glob engines (`?` for one character) do exactly this branch-at-wildcard walk. Search-with-typos and fuzzy autocomplete extend the same idea to allow a few flexible positions.
+
+What you're solving for is answering these queries without scanning every stored word — shared prefixes are still walked once, and the search prunes the instant a fixed letter has no matching child. You pay only for the branches a wildcard actually opens, keeping normal (wildcard-free) queries as fast as a plain trie lookup.
+
 ## Start from the obvious
 
 If there were no wildcard, this is exactly [Trie 208](../0208-implement-trie-prefix-tree/):

@@ -12,6 +12,18 @@ steps. How many different sequences of moves get you exactly to the top?
 For `n = 3` there are three ways: `1+1+1`, `1+2`, `2+1`. Notice the answer counts
 *orderings* of moves, not sets of moves.
 
+## Why this matters
+
+Stripped of the staircase story, this is **counting the sequences that reach a target when each state is reachable from a small fixed set of previous states**. The fundamental operation is a recurrence: the ways to reach `n` is the sum of the ways to reach the states one legal move away.
+
+Where "count the arrangements built from a fixed move set" shows up for real:
+
+- **Combinatorics and tiling** — the number of ways to tile a `2×n` strip with dominoes obeys this exact recurrence; so do many counting problems in probability.
+- **Communications coding** — counting valid bit strings under a constraint (e.g. no two adjacent 1s) is the same look-back sum.
+- **Version/state reachability** — counting distinct action sequences that land in a given state.
+
+The good solution buys **time** — collapsing an exponential call tree to a single `O(n)` pass — and the rolling-variable trick buys **`O(1)` memory** by keeping only the two states the recurrence actually reads. That is the whole DP lesson in its smallest honest form.
+
 ## Start from the obvious
 
 Think about the very last move that lands you on step `n`. There are only two

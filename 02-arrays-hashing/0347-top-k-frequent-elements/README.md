@@ -9,6 +9,24 @@
 Given a list of numbers, find the `k` values that show up the most. If `k` is 2
 and `1` appears three times while `2` appears twice, the answer is `[1, 2]`.
 
+## Why this matters
+
+The core problem is *finding the top-K items by a score without fully sorting
+everything* — and, when that score is a small bounded integer, placing items
+directly by score (counting sort) instead of comparing them. The fundamental
+operations are tally-then-rank.
+
+"Most frequent" queries are everywhere. Trending topics, top search queries, most
+viewed products, and "heavy hitters" in network traffic monitoring are all
+top-K-by-count. Analytics dashboards showing top referrers or top error messages
+run this. Word-frequency ranking feeds autocomplete and stopword lists. At large
+scale these become streaming/approximate versions (count-min sketch, top-K heaps),
+but the shape is identical.
+
+What you're solving for is not paying O(n log n) to sort the whole set when you
+want only K, and exploiting a bounded key so the rank step is O(n). A size-K heap
+is the alternative when K is tiny; bucketing by frequency is strictly linear here.
+
 ## Start from the obvious
 
 Two clear steps. First count how often each value appears — that's a hash map,

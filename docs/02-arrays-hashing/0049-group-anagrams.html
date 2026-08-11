@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>49. Group Anagrams</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details open><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li class="active"><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">2. Arrays &amp; Strings: Manipulation &amp; Hashing</a> / <span>49</span></nav><article class="notes"><h1>49. Group Anagrams</h1>
+<p><strong>Pattern:</strong> Hashing (canonical key / signature) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/group-anagrams/</p>
+<h2>The problem in plain words</h2>
+<p>You&#x27;re given a pile of words. Sort them into groups where every word in a group is an anagram of the others — same letters rearranged. Return the groups.</p>
+<h2>Why this matters</h2>
+<p>The real problem is: *reduce each item to a canonical signature so that &quot;the same under the rules I care about&quot; becomes &quot;equal key,&quot; then let a hash map bucket them for free.* The fundamental operation is grouping by a derived key, not comparing every pair.</p>
+<p>This shows up constantly. Deduplication systems fingerprint files (a content hash) so identical files collapse regardless of name. Search and dedupe pipelines normalize records — lowercase, strip punctuation, sort fields — before hashing so &quot;same customer entered twice&quot; merges. Compilers hash-cons expressions to a canonical form so <code>a+b</code> and <code>b+a</code> share one node. Image and near-duplicate detection maps content to a signature and groups by it.</p>
+<p>What you&#x27;re solving for is time and simplicity: instead of O(n^2) pairwise comparisons plus messy merge bookkeeping, you compute one key per item and get O(n) grouping, with the hash map doing the clustering.</p>
+<h2>Start from the obvious</h2>
+<p>The naive read is &quot;compare every word against every other word to see if they&#x27;re anagrams,&quot; then stitch the matches into groups. That&#x27;s <code>O(n^2)</code> comparisons plus the bookkeeping of merging matches — fiddly and slow.</p>
+<p>Step back. Grouping is what a hash map does for free: things with the *same key* land in the same bucket. So the real problem isn&#x27;t comparing pairs — it&#x27;s finding a key that is <strong>identical for anagrams and different for everything else</strong>.</p>
+<h2>Find the waste</h2>
+<p>From <a href="../0242-valid-anagram/">Valid Anagram / 242</a> we know two words are anagrams exactly when they share the same letters and counts. So any &quot;canonical name&quot; that depends only on the multiset of letters works as a key.</p>
+<p>The easy canonical name is the <strong>sorted word</strong>: <code>&quot;tea&quot;</code> and <code>&quot;eat&quot;</code> both sort to <code>&quot;aet&quot;</code>. Bucket by that:</p>
+<pre><code>key = &quot;&quot;.join(sorted(word))
+buckets[key].append(word)</code></pre>
+<p>That&#x27;s clean and correct at <code>O(n * k log k)</code> for <code>n</code> words of length <code>k</code>. The only waste left is the sort — it fully orders <code>k</code> letters when, again, we only need their counts.</p>
+<h2>The insight</h2>
+<p>Replace the sorted string with the <strong>count signature</strong>: a tuple of 26 numbers saying how many a&#x27;s, b&#x27;s, … the word has. Anagrams have identical signatures, and building one is a single linear pass with no sorting:</p>
+<pre><code>counts = [0]*26
+for ch in word: counts[ord(ch) - ord(&#x27;a&#x27;)] += 1
+key = tuple(counts)   # tuples are hashable, lists aren&#x27;t</code></pre>
+<p>Now each word is bucketed in <code>O(k)</code> instead of <code>O(k log k)</code>.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n * k)</code> for the count-signature version (<code>n</code> words, length <code>k</code>); the sort-key version is <code>O(n * k log k)</code>.</li><li><strong>Space:</strong> <code>O(n * k)</code> to hold all the words in their buckets.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li>Using a <strong>list</strong> as a dict key throws — lists aren&#x27;t hashable. Convert to a <code>tuple</code> (or a string) first.</li><li>The <code>[0]*26</code> signature bakes in the &quot;lowercase a–z only&quot; constraint. For a wider alphabet, key by the sorted string or a <code>frozenset</code>/dict of counts.</li><li>The empty string <code>&quot;&quot;</code> is a valid word and its own anagram group — don&#x27;t drop it.</li><li>The output order (of groups, and within a group) doesn&#x27;t matter; the test normalizes both sides before comparing.</li></ul>
+<h2>Transfer</h2>
+<p>The move here is <strong>&quot;map each item to a canonical signature, then let a dict do the grouping.&quot;</strong> It generalizes far beyond anagrams: group points by slope, group numbers by remainder, dedupe shapes by a normalized form. Whenever &quot;these belong together if some derived key matches,&quot; compute the key and bucket. Directly builds on <a href="../0242-valid-anagram/">Valid Anagram / 242</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0049-group-anagrams/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;49. Group Anagrams — https://leetcode.com/problems/group-anagrams/
+
+Given a list of strings, group together the ones that are anagrams of each other
+(same letters, any order). Return the groups in any order.
+
+The whole problem is choosing a *key* that is identical for anagrams and
+different for everything else, so a dict can bucket them in one pass.
+&quot;&quot;&quot;
+from typing import Dict, List, Tuple
+
+
+def group_anagrams_sortkey(strs: List[str]) -&gt; List[List[str]]:
+    &quot;&quot;&quot;Key each word by its sorted letters. O(n * k log k) time.
+
+    Two words are anagrams exactly when their sorted letters are equal, so the
+    sorted string is a canonical name shared by a whole anagram family. Bucket by
+    that name. Simple, but sorting each word costs a k log k factor.
+    &quot;&quot;&quot;
+    buckets: Dict[str, List[str]] = {}
+    for word in strs:
+        key = &quot;&quot;.join(sorted(word))
+        buckets.setdefault(key, []).append(word)
+    return list(buckets.values())
+
+
+def group_anagrams(strs: List[str]) -&gt; List[List[str]]:
+    &quot;&quot;&quot;Key each word by its 26-letter count signature. O(n * k) time.
+
+    Key insight (from Valid Anagram): anagrams share the same letter counts, so
+    the tuple of 26 counts is already a canonical name — no sorting needed. Build
+    that count vector per word and use it as the dict key.
+    &quot;&quot;&quot;
+    buckets: Dict[Tuple[int, ...], List[str]] = {}
+    for word in strs:
+        counts = [0] * 26  # assumes lowercase a-z, per the problem constraints
+        for ch in word:
+            counts[ord(ch) - ord(&quot;a&quot;)] += 1
+        buckets.setdefault(tuple(counts), []).append(word)
+    return list(buckets.values())
+
+
+def _normalize(groups: List[List[str]]) -&gt; List[List[str]]:
+    &quot;&quot;&quot;Sort within and across groups so results compare regardless of order.&quot;&quot;&quot;
+    return sorted(sorted(g) for g in groups)
+
+
+def _test() -&gt; None:
+    cases = [
+        ([&quot;eat&quot;, &quot;tea&quot;, &quot;tan&quot;, &quot;ate&quot;, &quot;nat&quot;, &quot;bat&quot;],
+         [[&quot;ate&quot;, &quot;eat&quot;, &quot;tea&quot;], [&quot;bat&quot;], [&quot;nat&quot;, &quot;tan&quot;]]),
+        ([&quot;&quot;], [[&quot;&quot;]]),          # single empty string is its own group
+        ([&quot;a&quot;], [[&quot;a&quot;]]),        # single letter
+        ([&quot;abc&quot;, &quot;bca&quot;, &quot;xyz&quot;], [[&quot;abc&quot;, &quot;bca&quot;], [&quot;xyz&quot;]]),
+    ]
+    for strs, expected in cases:
+        assert _normalize(group_anagrams(strs)) == _normalize(expected), strs
+        assert _normalize(group_anagrams_sortkey(strs)) == _normalize(expected), strs
+    print(&quot;group_anagrams: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../02-arrays-hashing/0242-valid-anagram.html">← 242 · Valid Anagram</a><a class="pn next" href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements →</a></nav></main>
+</div>
+</body>
+</html>

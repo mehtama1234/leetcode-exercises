@@ -10,6 +10,23 @@ You have a list of numbers and a target. Somewhere in the list, exactly two of
 them add up to the target. Return *where* they are (their indices), not the
 numbers themselves.
 
+## Why this matters
+
+Underneath the puzzle is one fundamental operation: *as data streams past you,
+can you ask "have I already seen the thing that completes this one?" in constant
+time?* You're not searching — you're remembering, then checking membership. A
+hash map turns that check into O(1).
+
+That exact move runs real systems. A database join matching rows on a key builds
+a hash table of one side and probes it with the other. Deduplication and
+"have-I-processed-this-event" checks in stream pipelines are the same lookup.
+Detecting a transaction that pairs with an earlier one (matching a debit to a
+credit, a request to its response) is Two Sum with business names.
+
+What the good solution buys is a single pass over data you often can't rewind,
+and it replaces an O(n) rescan-per-element with an O(1) lookup — the difference
+between a query that finishes and one that times out as the input grows.
+
 ## Start from the obvious
 
 The definition itself hands you an algorithm: a "pair that sums to target"

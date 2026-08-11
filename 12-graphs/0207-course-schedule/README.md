@@ -10,6 +10,14 @@ You have `numCourses` courses. A pair `[a, b]` means "before you can take course
 `a`, you must finish course `b`." Can you finish all the courses, or do the
 prerequisites tangle up so badly that some courses can never be taken?
 
+## Why this matters
+
+Strip away the courses and this is **ordering tasks under dependency constraints, and detecting when the dependencies form an impossible loop**. The fundamental operation is topological sort with built-in cycle detection.
+
+You have used systems built on this today. Build tools (Make, Bazel, Gradle, npm/pip resolvers) topo-sort targets so each thing is built after what it needs — and report an error when a dependency cycle makes the build impossible. Spreadsheets recompute cells in dependency order and flag circular references the same way. Schedulers like Airflow run DAG stages in order; CPUs and compilers order instructions respecting data dependencies; package managers order installs and refuse cyclic requirements.
+
+What you're solving for is **a valid execution order plus a cheap, honest "is this even possible?" verdict** — in one linear pass. Kahn's in-degree counters let each task become ready exactly once, so the finished-count doubles as the cycle detector with no separate `O(V²)` re-scan.
+
 ## Start from the obvious
 
 Model it as a directed graph: draw an arrow `b -> a` for "finish `b`, then `a`

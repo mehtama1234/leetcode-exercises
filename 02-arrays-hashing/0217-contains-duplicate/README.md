@@ -9,6 +9,23 @@
 You have a list of numbers. Answer a single yes/no question: does any number
 show up more than once?
 
+## Why this matters
+
+The core operation is the simplest and most reused one in the whole family: *as
+you walk a stream, remember what you've seen and ask "seen this before?" in O(1).*
+That's set membership — the base case that Two Sum and dozens of others build on.
+
+Uniqueness checks like this are everywhere in real systems. A database enforcing a
+UNIQUE constraint or primary key is answering "have I already stored this value?"
+Deduplication of log lines, emails, or crawled URLs before processing is the same
+check. Detecting a replayed request or a double-submitted form uses a seen-set
+(often a Bloom filter when memory is tight and an occasional false positive is
+acceptable). Spam and fraud systems flag a device or token that shows up twice.
+
+What you buy is a single pass with early exit: the instant the first repeat
+appears you can stop, instead of the O(n^2) rescan the brute force does. You spend
+O(n) memory to remember, and get an answer in O(n) time.
+
 ## Start from the obvious
 
 A duplicate means two different positions holding the same value. So compare

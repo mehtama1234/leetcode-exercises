@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>153. Find Minimum In Rotated Sorted Array</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details open><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li class="active"><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">7. Binary Search</a> / <span>153</span></nav><article class="notes"><h1>153. Find Minimum in Rotated Sorted Array</h1>
+<p><strong>Pattern:</strong> Binary search on a rotated (piecewise-sorted) array <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/</p>
+<h2>The problem in plain words</h2>
+<p>Start with a sorted array of distinct numbers, like <code>[1, 2, 3, 4, 5]</code>. &quot;Rotate&quot; it some number of times — chop a chunk off the front and paste it on the back — giving something like <code>[3, 4, 5, 1, 2]</code>. You&#x27;re handed the rotated version and asked for the smallest element. The catch: you must do it in <code>O(log n)</code>, so scanning everything is off the table.</p>
+<h2>Why this matters</h2>
+<p>The real task here isn&#x27;t &quot;find the smallest number&quot; — it&#x27;s <strong>find the one discontinuity</strong> in data that is otherwise monotonic. That&#x27;s the fundamental operation: locate the single point where a smooth, increasing sequence breaks, using only <code>O(log n)</code> probes instead of reading everything.</p>
+<p>That pattern shows up wherever a sorted or monotonic sequence has exactly one turning point. Circular/ring buffers wrap at an unknown offset, and finding the oldest entry is finding this cliff. Time-series with a counter reset or a rollover (sequence numbers, timestamps that wrap) have one break you must find to reorder the data. Consistent-hashing rings and rotated index structures need the wrap-around point located to resolve a lookup. It&#x27;s also the shape behind &quot;binary search on the answer&quot;: a monotone yes/no function has one boundary, and you hunt it the same way.</p>
+<p>What you&#x27;re solving for is time — turning an <code>O(n)</code> scan into <code>O(log n)</code> — which matters most when this runs inside a tight loop or under a strict latency budget, where reading every element repeatedly would dominate the cost.</p>
+<h2>Start from the obvious</h2>
+<p>The smallest element is just... the minimum.</p>
+<pre><code>return min(nums)</code></pre>
+<p>Correct, but <code>O(n)</code> — it reads all <code>n</code> elements. The problem specifically asks for <code>O(log n)</code>, which is a strong hint: there&#x27;s hidden structure to exploit. The <code>min</code> scan ignores it completely.</p>
+<h2>Find the waste</h2>
+<p>A rotated sorted array isn&#x27;t random — it&#x27;s two sorted runs glued together. There is exactly <strong>one</strong> spot where the order breaks: a bigger number sits right before a smaller one. In <code>[4, 5, 6, 7, 0, 1, 2]</code> that break is <code>7 -&gt; 0</code>, and the number right after the break, <code>0</code>, is the minimum. So the real task isn&#x27;t &quot;find the smallest number&quot; — it&#x27;s &quot;<strong>find the one cliff</strong>&quot;, and a cliff is exactly the kind of thing binary search can hunt by halving.</p>
+<h2>The insight</h2>
+<p>Compare the middle element to the <strong>rightmost</strong> element of the current window:</p>
+<ul><li>If <code>nums[mid] &gt; nums[hi]</code>, the window is *not* sorted from <code>mid</code> to <code>hi</code> — the cliff lies somewhere to the right of <code>mid</code>. The minimum is over there, so set <code>lo = mid + 1</code> (mid itself can&#x27;t be the min, since something smaller follows).</li><li>Otherwise <code>nums[mid] &lt;= nums[hi]</code>, so <code>[mid, hi]</code> *is* properly sorted. The minimum is at <code>mid</code> or to its left. Set <code>hi = mid</code> — and crucially <strong>keep <code>mid</code></strong>, because <code>mid</code> might itself be the smallest element.</li></ul>
+<pre><code>lo, hi = 0, len(nums) - 1
+while lo &lt; hi:
+    mid = lo + (hi - lo) // 2
+    if nums[mid] &gt; nums[hi]: lo = mid + 1   # min is to the right
+    else:                    hi = mid       # min is mid or left; don&#x27;t drop mid
+return nums[lo]</code></pre>
+<p>Why compare to <code>hi</code> and not <code>lo</code>? Comparing to <code>lo</code> is ambiguous — in a not-rotated array <code>nums[mid] &gt; nums[lo]</code> is normal and tells you nothing about where the cliff is. The right edge gives a clean two-way split every time. When the loop ends, <code>lo == hi</code> points at the one surviving element: the minimum.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(log n)</code> — each step halves the window, same as plain binary search.</li><li><strong>Space:</strong> <code>O(1)</code> — two indices, nothing grows with input size.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong><code>hi = mid</code>, not <code>hi = mid - 1</code>.</strong> In the sorted-right case, <code>mid</code> is a live candidate for the minimum, so you can&#x27;t throw it away. This is why the loop uses <code>while lo &lt; hi</code> (converge to one element) rather than <code>lo &lt;= hi</code> — with <code>hi = mid</code> and <code>lo &lt;= hi</code>, the window can stop shrinking and loop forever.</li><li><strong>Comparing to the wrong edge.</strong> Comparing <code>nums[mid]</code> to <code>nums[lo]</code> instead of <code>nums[hi]</code> breaks on the already-sorted case. Anchor on <code>hi</code>.</li><li><strong>Not-rotated input.</strong> <code>[11, 13, 15, 17]</code> is handled naturally: <code>nums[mid]</code> is always <code>&lt;= nums[hi]</code>, so <code>hi</code> keeps walking left until <code>lo == hi == 0</code>.</li><li>This version assumes <strong>distinct</strong> values. With duplicates (LeetCode 154), <code>nums[mid] == nums[hi]</code> is ambiguous and you fall back to <code>hi -= 1</code>, losing the <code>O(log n)</code> guarantee in the worst case.</li></ul>
+<h2>Transfer</h2>
+<p>The move — *use one comparison to decide which piecewise-sorted half holds the break point* — is the foundation of <a href="../0033-search-in-rotated-sorted-array/">Search in Rotated Sorted Array / 33</a>, which first locates structure like this and then searches within it. It builds directly on plain <a href="../0704-binary-search/">Binary Search / 704</a>. Whenever an array is &quot;sorted except for one rotation,&quot; think: which half is clean, and which half hides the seam?</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/07-binary-search/0153-find-minimum-in-rotated-sorted-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;153. Find Minimum in Rotated Sorted Array — https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
+
+A sorted array of distinct numbers has been rotated some unknown number of times
+(the front chunk moved to the back). Return the smallest element. Do it in
+O(log n).
+
+Two implementations sit side by side so the reason binary search still works —
+even though the array isn&#x27;t fully sorted — is visible.
+&quot;&quot;&quot;
+from typing import List
+
+
+def find_min_linear(nums: List[int]) -&gt; int:
+    &quot;&quot;&quot;Just take the minimum. O(n) time, O(1) space.
+
+    The honest first thought: scan everything and keep the smallest. Correct, but
+    it reads all n elements and ignores that the array is *almost* sorted — only
+    one &quot;cliff&quot; breaks the order. That structure is what we exploit next.
+    &quot;&quot;&quot;
+    return min(nums)
+
+
+def find_min(nums: List[int]) -&gt; int:
+    &quot;&quot;&quot;Binary search on which half holds the rotation point. O(log n), O(1) space.
+
+    Key insight: rotating a sorted array leaves exactly one place where a larger
+    value is immediately followed by a smaller one — the &quot;cliff&quot; — and the minimum
+    is the value right after that cliff. Comparing the middle element to the
+    rightmost element tells us which side the cliff (and thus the minimum) is on:
+
+      - If nums[mid] &gt; nums[hi], the array wraps somewhere in (mid, hi]. The
+        minimum is strictly to the right of mid, so move lo = mid + 1.
+      - Otherwise nums[mid] &lt;= nums[hi], meaning [mid, hi] is properly sorted, so
+        the minimum is at mid or to its left; move hi = mid (keep mid — it might
+        BE the minimum).
+
+    Comparing to `hi` rather than `lo` is what makes the two cases clean and
+    unambiguous. The window shrinks to a single element, which is the answer.
+    &quot;&quot;&quot;
+    lo, hi = 0, len(nums) - 1
+    while lo &lt; hi:  # stop when the window is a single element
+        mid = lo + (hi - lo) // 2
+        if nums[mid] &gt; nums[hi]:
+            lo = mid + 1  # minimum is to the right of mid
+        else:
+            hi = mid      # minimum is mid or to its left (don&#x27;t drop mid)
+    return nums[lo]
+
+
+def _test() -&gt; None:
+    cases = [
+        ([3, 4, 5, 1, 2], 1),
+        ([4, 5, 6, 7, 0, 1, 2], 0),
+        ([11, 13, 15, 17], 11),   # not rotated at all
+        ([1], 1),                 # single element
+        ([2, 1], 1),              # smallest possible rotation
+        ([5, 1, 2, 3, 4], 1),     # rotated so min is second
+    ]
+    for nums, expected in cases:
+        assert find_min(nums) == expected, nums
+        # brute force must agree on every case
+        assert find_min_linear(nums) == expected, nums
+    print(&quot;find_min_rotated: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../07-binary-search/0704-binary-search.html">← 704 · Binary Search</a><a class="pn next" href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array →</a></nav></main>
+</div>
+</body>
+</html>
