@@ -165,7 +165,15 @@
     var actEls = [];
     if (trace.acts && trace.acts.length) {
       var bar = el("div", "viz-acts", mount);
-      trace.acts.forEach(function (label, i) { var s = el("span", "viz-act", bar); s.textContent = (i + 1) + ". " + label; actEls.push(s); });
+      trace.acts.forEach(function (label, i) {
+        var s = el("button", "viz-act", bar);
+        s.type = "button";
+        s.textContent = (i + 1) + ". " + label;
+        // jump to the first frame of this act (show/stop are hoisted below)
+        var firstIdx = frames.findIndex(function (f) { return (f.act || 0) === i; });
+        if (firstIdx >= 0) s.onclick = function () { stop(); show(firstIdx); };
+        actEls.push(s);
+      });
     }
     var intro = el("div", "viz-intro", mount); intro.style.display = "none";
     var invar = el("div", "viz-invariant", mount); invar.style.display = "none";
