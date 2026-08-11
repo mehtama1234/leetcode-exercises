@@ -6,85 +6,112 @@
 
 ## The problem in plain words
 
-You have a source string `s` and a target `t`. Count how many different ways you can
-delete some characters from `s` (without reordering the rest) so that what remains is
-exactly `t`. Two ways are different if they keep a different *set of positions*, even
-when the leftover text looks identical.
+You have a big string `s` and a small string `t`. Count how many different ways you
+can cross out some letters of `s` (keeping the rest in order) so that what's left
+reads exactly `t`. Two ways count as different if they cross out different letters,
+even if the surviving text is the same.
+
+```diagram
+   s = "rabbbit"    t = "rabbit"
+
+   pick which 'b's to keep (t needs two b's, s has three):
+
+   ra[bb]bit   ra[b_b]it   ra[_bb]it     -> 3 distinct ways
+      keep 1,2    keep 1,3    keep 2,3
+```
 
 ## Why this matters
 
-The core operation is *counting distinct alignments of a pattern inside a sequence
-when the same characters can align in many positions.* It's not "does `t` occur?"
-(that's easy) — it's "in how many positionally-distinct ways?" That subtlety, where
-`aaa` contains `aa` three times, is exactly where naive counting double-counts or
-under-counts, and it's why you need to sum "use this character" and "save it for
-later" as separate branches.
+The trick is counting alignments, not just deciding yes/no. When you stand on a
+letter of `s` that could match, you don't have to commit — you can *use* it here,
+or *skip* it and hope a later copy matches instead. Adding up "use" and "skip"
+tallies every distinct way separately, without ever listing them.
 
-This shape appears in real work. Counting how many ways a template's required fields
-can be filled from an ordered log (which log lines satisfy which slots) is this
-count. In bioinformatics, counting occurrences of a motif as a subsequence of a
-genome is literally this. Diff and patch tooling that quantifies how many minimal
-deletions transform one sequence into another leans on the same grid.
-
-What the good solution buys is `O(m·n)` time versus the `2^m` brute force of trying
-every subset of `s`, plus a `O(n)` rolled version that fits a large `s` in tiny
-memory.
+That "sum over the choices you didn't have to make" move is the heart of counting
+problems everywhere: number of paths through a grid, number of ways to make change,
+number of parse trees. The shape of the recurrence changes, but the habit — one
+choice splits into a sum of sub-counts — carries over.
 
 ## Start from the obvious
 
-Walk `s` left to right, matching against `t`. State `(i, j)` = "how many ways to
-match the rest of `t` (`t[j:]`) using the rest of `s` (`s[i:]`)":
+Walk `s` and `t` together from the front. Look at the current `s` letter:
 
+- It doesn't match the current `t` letter → you have no choice, skip it and move on
+  in `s`.
+- It matches → you have two choices. **Use** it (advance in both `s` and `t`) or
+  **skip** it (advance in `s` only, leave `t` where it is, hoping a later `s` letter
+  matches). The total count is the sum of both.
+
+```diagram
+   at s-letter c, needing t-letter d:
+
+        c == d ?
+        /        \
+      no          yes
+      |          /    \
+     skip     use      skip
+      |     (both++)   (s++ only)
+   count(skip)  count(use) + count(skip)
 ```
-def count(i, j):
-    if j == len(t): return 1         # all of t matched
-    if i == len(s): return 0         # s ran out, t didn't
-    ways = count(i+1, j)             # skip s[i]
-    if s[i] == t[j]: ways += count(i+1, j+1)   # also try using s[i]
-    return ways
-```
 
-When characters match you must count **both** using and skipping — that's the whole
-game. Unmemoized it's exponential.
-
-## Find the waste
-
-Only `(m+1)·(n+1)` distinct `(i, j)` states exist, revisited endlessly by the
-overlapping recursion. Cache them → `O(m·n)`.
+Written as recursion this is correct, but the same "still need `t[j:]` inside
+`s[i:]`" state is reached from many prefixes, so it's re-solved over and over.
 
 ## The insight
 
-Bottom-up, `dp[i][j]` = ways `t[:j]` appears in `s[:i]`:
+Let `dp[i][j]` be the number of ways `t[:j]` shows up in `s[:i]`. That's a grid: one
+axis per string. The whole top row is 1 — the empty target matches any prefix
+exactly one way (cross everything out).
 
-```
-dp[i][j] = dp[i-1][j]                              # ignore s[i-1]
-         + (dp[i-1][j-1] if s[i-1] == t[j-1] else 0)  # match s[i-1] to t[j-1]
+```diagram
+   s = "rab..." (down)   t = "rab" (across)
+
+            j:  ""   r    a    b
+       i    +----+----+----+----+
+       ""   | 1  | 0  | 0  | 0  |   empty t: 1 way; nonempty t in "": 0
+       r    | 1  |    |    |    |
+       a    | 1  |    |    |    |
+       b    | 1  |    |    |    |
+            +----+----+----+----+
+   left column all 1: empty t is always matchable.
 ```
 
-Base: `dp[i][0] = 1` (the empty target matches any prefix one way — delete
-everything). A cell needs only the row above, so keep **one row** and iterate `j`
-from **high to low**, so `dp[j-1]` still holds the *previous* character's count when
-you read it:
+Now fill one cell. It always inherits the "skip this `s` letter" count from the cell
+directly above. If the letters also match, it *adds* the "use it" count from the
+cell up-and-to-the-left (the diagonal):
 
+```diagram
+   filling dp[i][j], comparing s[i-1] vs t[j-1]
+
+        diag = dp[i-1][j-1]     up = dp[i-1][j]
+        "use s[i-1]"            "skip s[i-1]"
+              \                    |
+               \                   v
+                +-----------> dp[i][j]
+
+   letters differ ->  dp[i][j] = up
+   letters match  ->  dp[i][j] = up + diag
 ```
-for c in s:
-    for j in range(n, 0, -1):
-        if c == t[j-1]: dp[j] += dp[j-1]
-```
+
+Sweep the grid; the bottom-right cell is the count. Because a cell only needs the
+row above, you can roll it to a single row — scanning `j` from high to low so the
+"before this letter" counts stay intact. That's the version in `solution.py`.
 
 ## Complexity
 
-- **Time:** `O(m·n)` — one pass per grid cell.
-- **Space:** `O(n)` rolled (`O(m·n)` full grid).
+- **Time: about m × n steps** (m = len `s`, n = len `t`). One add per grid cell.
+  Doubling both roughly quadruples the work.
+- **Extra memory: about n** in the rolled version — one row over `t`. The full grid
+  uses about m × n.
 
 ## Pitfalls
 
-- **Direction of the 1-D update.** Must go `j` high→low. Left-to-right would let a
-  single `s`-character match the same `t`-character twice, inflating the count.
-- `dp[0] = 1` and it must stay 1 through the whole run — never touch it in the loop
-  (the loop stops at `j >= 1`).
-- Answers can be large; in languages other than Python you need 64-bit / big-int.
-- Empty `t` gives 1 (not 0); `t` longer than `s` gives 0.
+- Seeding the empty-target case wrong. `dp[i][0] = 1` for every `i`: there's exactly
+  one way to spell the empty string (delete everything).
+- On the rolled 1-D version, sweeping `j` low-to-high double-counts, because
+  `dp[j-1]` would already include the current letter. Go high-to-low.
+- Overwriting the "skip" count. The new cell must add to the old `dp[j]` (skip), not
+  replace it, when the letters don't match.
 
 ## Transfer
 

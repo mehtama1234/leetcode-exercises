@@ -6,100 +6,110 @@
 
 ## The problem in plain words
 
-Given `1 -> 2 -> 3 -> 4 -> 5`, rearrange it to `1 -> 5 -> 2 -> 4 -> 3`: first
-node, then last, then second, then second-to-last, and so on — zig-zagging from
-the outside in. Do it in place (rewire nodes, don't just copy values into a new
-list, and don't return anything).
+Given `1 -> 2 -> 3 -> 4 -> 5`, rearrange it to `1 -> 5 -> 2 -> 4 -> 3`: first node,
+then last, then second, then second-to-last, zig-zagging from the outside in. Do it
+in place — rewire nodes, don't copy values into a new list, and don't return
+anything.
+
+```diagram
+   from:  1 -> 2 -> 3 -> 4 -> 5
+   to:    1 -> 5 -> 2 -> 4 -> 3
+          ^front ^back ^front ^back ^middle
+```
 
 ## Why this matters
 
-This puzzle is really three classic list operations composed in place: find the
-middle, reverse the back half, then interleave two lists. The fundamental skill is
-*restructuring a sequence by rewiring pointers* rather than allocating a new copy —
-splitting, flipping, and zipping without extra storage.
+This puzzle is really three classic list operations run in sequence, in place: find
+the middle, reverse the back half, then weave the two halves together. The skill it
+teaches is *restructuring a sequence by relinking pointers* instead of allocating a
+copy — splitting, flipping, and zipping without extra storage.
 
-That "transform data in place by relinking, not rebuilding" pattern is everywhere
-memory or copying is the constraint. In-place array/buffer rearrangement powers
-things like double-buffering and zero-copy pipelines. Interleaving two halves is
-the shape of a perfect shuffle (audio channel weaving, some data-layout tricks).
-And the sub-steps themselves — find-middle and reverse — are reusable primitives
-you'll compose again and again once you can do them cleanly.
+That "transform in place by relinking, not rebuilding" pattern shows up wherever
+memory or copying is the constraint. In-place buffer rearrangement drives things
+like double-buffering and zero-copy pipelines. Interleaving two halves is the shape
+of a perfect shuffle (weaving audio channels, some data-layout tricks). And the
+sub-steps — find-middle and reverse — are reusable primitives you'll compose over
+and over once you can do each cleanly.
 
-What you're solving for is doing a non-trivial reshuffle with O(1) extra space and
-a linear number of pointer swaps, instead of dumping everything into an array,
-reindexing, and rebuilding. When the structure is large or you're on a tight
-memory budget, composing in-place primitives is what keeps it cheap.
+What you are solving for is a non-trivial reshuffle with fixed extra space and a
+linear number of pointer moves, instead of dumping everything into an array,
+reindexing, and rebuilding. When the structure is large or memory is tight,
+composing in-place primitives is what keeps it cheap.
 
 ## Start from the obvious
 
-Read the target pattern literally: alternate "next from the front" and "next
-from the back". With random access that's trivial:
+Read the target literally: alternate "next from the front" and "next from the
+back." With random access that's easy.
 
-```
-arr = [all nodes]
-i, j = 0, len(arr) - 1
-while i < j:
-    link arr[i] -> arr[j] -> arr[i+1]
-    i += 1; j -= 1
+```diagram
+   nodes = [1, 2, 3, 4, 5]
+   i=0, j=4:  link 1 -> 5 -> 2
+   i=1, j=3:  link 2 -> 4 -> 3
+   stop when i meets j
+   result:  1 -> 5 -> 2 -> 4 -> 3
 ```
 
-Correct, but it's `O(n)` extra space for the array — and a linked list has no
-back-index, so "the node at the end" is exactly what's expensive to reach
-repeatedly.
+Correct, but it costs a full array's worth of extra memory — and a linked list has
+no back-index, so "the node at the end" is exactly what's expensive to reach again
+and again.
 
 ## Find the waste
 
-The array only exists to give us the list *from both ends at once*. There's a
-cheaper way to get that: if you cut the list in half and **reverse the second
-half**, then the second half is already ordered back-to-front. Now "front, back,
-front, back" is just "take one from each half, alternating" — a plain merge, no
-indexing.
+The array only exists to give you the list *from both ends at once*. There's a
+cheaper way to get that: cut the list in half and **reverse the second half**. Now
+the back half is already ordered end-to-front. "Front, back, front, back" becomes
+"take one from each half, alternating" — a plain merge, no indexing.
+
+```diagram
+   1 -> 2 -> 3 -> 4 -> 5
+
+   find middle (876):        front = 1 -> 2 -> 3
+                             back  = 4 -> 5
+   reverse back (206):       back  = 5 -> 4
+   weave front & back:       1 -> 5 -> 2 -> 4 -> 3
+```
 
 ## The insight
 
-Three primitives you already know, run in sequence:
+Three primitives you already know, run in order.
 
-```
-# 1. Find the middle with fast/slow.
-slow, fast = head, head
-while fast and fast.next:
-    slow = slow.next; fast = fast.next.next
+```diagram
+   step 1 -- find middle with fast/slow:
+     1 -> 2 -> 3 -> 4 -> 5
+               ^ slow ends here (middle)
 
-# 2. Reverse from slow to the end (the three-pointer flip).
-prev = None
-while slow:
-    nxt = slow.next; slow.next = prev; prev = slow; slow = nxt
-# prev = head of reversed second half
+   step 2 -- reverse from the middle onward (three-pointer flip):
+     3 -> 4 -> 5   becomes   5 -> 4 -> 3
+     front stays:  1 -> 2 -> 3   (3 now also the reversed tail)
 
-# 3. Weave the two halves, alternating nodes.
-first, second = head, prev
-while second and second.next:
-    f, s = first.next, second.next
-    first.next = second; second.next = f
-    first, second = f, s
+   step 3 -- weave, alternating one node from each half:
+     take 1(front), then 5(back):   1 -> 5
+     take 2(front), then 4(back):   1 -> 5 -> 2 -> 4
+     3 is the shared middle:        1 -> 5 -> 2 -> 4 -> 3
 ```
 
-The second half is the same length or one shorter than the first, so stopping
+The back half is the same length as the front or one shorter, so stopping the weave
 when `second.next` is `None` leaves the middle node correctly attached.
 
 ## Complexity
 
-- **Time:** `O(n)` — each of find-middle, reverse, and merge is a single pass.
-- **Space:** `O(1)` — everything is in-place pointer surgery.
+- **Time: about n steps.** Find-middle, reverse, and weave are each a single pass.
+- **Extra memory: fixed.** Everything is in-place pointer surgery.
 
 ## Pitfalls
 
-- The merge stop condition (`while second and second.next`) is fussy. Test both
-  even (`[1,2,3,4]`) and odd (`[1,2,3,4,5]`) lengths — off-by-one here either
-  drops the middle node or creates a cycle.
-- Save `first.next` and `second.next` *before* rewiring, same as ordinary list
-  reversal — overwrite first and you lose the rest.
-- Empty / single / two-node lists should come out unchanged; guard early.
+- The weave stop condition (`while second and second.next`) is fussy. Test both
+  even (`[1,2,3,4]`) and odd (`[1,2,3,4,5]`) lengths — an off-by-one here either
+  drops the middle node or creates a loop.
+- Save `first.next` and `second.next` *before* rewiring, same as ordinary reversal.
+  Overwrite first and you lose the rest.
+- Empty, single, and two-node lists should come out unchanged; guard early.
 
 ## Transfer
 
-This is the archetype of "hard list problem = compose easy ones". You're reusing
-[find the middle / 876](../0876-middle-of-the-linked-list/) and
-[reverse / 206](../0206-reverse-linked-list/) as subroutines. The same
-split-reverse-merge combo shows up in Palindrome Linked List / 234 and Sort List
-/ 148.
+This is the archetype of "a hard list problem is a few easy ones composed." You're
+reusing [find the middle / 876](../0876-middle-of-the-linked-list/) and
+[reverse / 206](../0206-reverse-linked-list/) as subroutines, and the weave is a
+cousin of [merge two lists / 21](../0021-merge-two-sorted-lists/). The same
+split-reverse-merge combo shows up in Palindrome Linked List / 234 and Sort List /
+148.

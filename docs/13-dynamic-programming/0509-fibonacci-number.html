@@ -16,42 +16,68 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">13. Dynamic Programming: Memoization / Tabulation</a> / <span>509</span></nav><article class="notes"><h1>509. Fibonacci Number</h1>
 <p><strong>Pattern:</strong> Dynamic programming (1-D, look back two steps) <strong>Difficulty:</strong> Easy <strong>Link:</strong> https://leetcode.com/problems/fibonacci-number/</p>
 <h2>The problem in plain words</h2>
-<p>The Fibonacci numbers start <code>0, 1</code> and every number after that is the sum of the two before it: <code>0, 1, 1, 2, 3, 5, 8, ...</code>. Given <code>n</code>, return <code>F(n)</code>.</p>
-<p>This problem is the &quot;hello world&quot; of dynamic programming — it&#x27;s the smallest place where you can watch the whole DP idea appear.</p>
+<p>The Fibonacci numbers start <code>0, 1</code>, and every number after that is the sum of the two before it. Given <code>n</code>, hand back <code>F(n)</code>.</p>
+<pre class="diagram">   index:   0   1   2   3   4   5   6   7
+   F:       0   1   1   2   3   5   8  13
+                        ^
+              F(4) = F(3) + F(2) = 2 + 1 = 3
+              each number is fed by the two on its left</pre>
+<p>This is the smallest place where the whole dynamic-programming idea shows up, so it&#x27;s worth slowing down here — the move you learn carries to every harder DP.</p>
 <h2>Why this matters</h2>
-<p>Fibonacci itself is a toy, but the operation it teaches is the whole of dynamic programming: <strong>find the repeated subproblem, solve it once, reuse the answer.</strong> The recurrence &quot;each value depends on a fixed number of earlier values&quot; is the smallest possible instance of memoization and of look-back rolling state.</p>
-<p>Where the *method* (and this exact look-back-a-few-steps shape) really shows up:</p>
-<ul><li><strong>Any DP-solved system</strong> — build tools memoizing recomputed results, incremental compilers, spreadsheet recalculation, and query planners all rest on &quot;cache the subproblem.&quot;</li><li><strong>Linear recurrences</strong> — population/growth models, signal filters (IIR), and amortization schedules that reference the last few states.</li><li><strong>Counting problems</strong> — tilings and constrained-string counts share Fibonacci&#x27;s recurrence exactly.</li></ul>
-<p>The good solution buys the canonical DP win: <strong>exponential recomputation → <code>O(n)</code> time</strong> by solving each subproblem once, and then the rolling-two-variables squeeze buys <strong><code>O(1)</code> memory</strong> because the recurrence never reaches back more than two steps. Learn it here and you carry it to every harder DP.</p>
+<p>Fibonacci itself is a toy. The move it teaches is not: <strong>find the subproblem you keep re-solving, solve it once, reuse the answer.</strong> The recurrence &quot;each value depends on a fixed number of earlier values&quot; is the smallest possible case of remembering-instead-of-recomputing.</p>
+<p>The same shape runs real systems. Build tools cache compiled results instead of rebuilding from scratch; a spreadsheet recomputes only the cells that changed; population and growth models, and audio filters, all reference the last few states to produce the next one. Counting problems — tilings, constrained-string counts — obey this exact recurrence too.</p>
+<p>What the fast version buys you is the jump from redoing exponential amounts of work to touching each value once. That is the line between a program that answers for <code>n = 50</code> and one that hangs.</p>
 <h2>Start from the obvious</h2>
-<p>The definition *is* an algorithm. Turn it straight into recursion:</p>
+<p>The definition *is* an algorithm. Write it as recursion:</p>
 <pre><code>F(n) = n                    if n &lt; 2
 F(n) = F(n-1) + F(n-2)      otherwise</code></pre>
-<p>That&#x27;s correct. It&#x27;s also the honest first thing to write. But run it for <code>n=40</code> and it crawls.</p>
+<p>Correct, and the honest first thing to reach for. But run it for <code>n = 40</code> and it crawls. Look at *why*.</p>
 <h2>Find the waste</h2>
-<p>Draw the call tree for <code>F(5)</code>:</p>
-<pre><code>                F(5)
-             /        \
-          F(4)         F(3)
-         /    \       /    \
-      F(3)   F(2)  F(2)   F(1)
-      ...</code></pre>
-<p><code>F(3)</code> gets computed twice. <code>F(2)</code> three times. <code>F(1)</code> five times. Every branch re-derives values that some other branch already found. The number of calls itself grows like Fibonacci — exponential. The waste is obvious: <strong>we keep solving the same subproblem from scratch.</strong></p>
+<p>Draw the call tree for <code>F(5)</code> and watch the same values reappear:</p>
+<pre class="diagram">                 F(5)
+              /        \
+           F(4)         F(3)      &lt;- F(3) shows up here...
+          /    \        /   \
+       F(3)   F(2)   F(2)  F(1)   &lt;- ...and again here, from scratch
+       / \
+    F(2) F(1)
+
+   F(3) computed twice.  F(2) three times.  F(1) five times.</pre>
+<p>Every branch re-derives values another branch already found. The number of calls grows like Fibonacci itself — exponential. The waste is plain: <strong>the same subproblem gets solved from scratch again and again.</strong></p>
 <h2>The insight</h2>
-<p>There are only <code>n + 1</code> distinct subproblems here: <code>F(0)</code> through <code>F(n)</code>. If we solve each one *once* and remember the answer, the exponential tree collapses to a line. Two equivalent ways to do it:</p>
-<p><strong>Top-down (memoized recursion):</strong> keep the recursion, but cache each answer the first time you compute it. Later requests are a dictionary lookup.</p>
-<p><strong>Bottom-up (tabulation):</strong> fill the answers in order, smallest first, so every value you need is already known when you reach it.</p>
-<p>And here&#x27;s the last squeeze: the recurrence only ever reaches back <strong>two</strong> steps. So you don&#x27;t need the whole table — just the last two numbers. Slide a window forward:</p>
-<pre><code>prev, curr = 0, 1
-repeat n-1 times:
-    prev, curr = curr, prev + curr</code></pre>
-<p>That&#x27;s <code>O(1)</code> space.</p>
+<p>There are only <code>n + 1</code> distinct subproblems in the whole tree: <code>F(0)</code> through <code>F(n)</code>. Solve each *once*, remember it, and the branching tree collapses into a straight line.</p>
+<p><strong>Top-down (memoized — cache each answer once):</strong> keep the recursion, but the first time you compute a value, write it down. Later requests are a lookup.</p>
+<p><strong>Bottom-up (fill a table in order):</strong> compute <code>F(0)</code>, <code>F(1)</code>, <code>F(2)</code>, ... in sequence, so every value you need is already sitting there when you reach it.</p>
+<pre class="diagram">   fill left to right; each new cell reads the two before it
+
+   idx:   0   1   2   3   4   5
+   F:   [ 0 ][ 1 ][ . ][   ][   ][   ]
+                    ^
+          F(2) = F(1) + F(0) = 1 + 0 = 1
+                    |    \____ reads idx 0
+                    \_________ reads idx 1
+
+   F:   [ 0 ][ 1 ][ 1 ][ . ][   ][   ]
+                         ^
+          F(3) = F(2) + F(1) = 1 + 1 = 2</pre>
+<p>Now the last squeeze. The recurrence only ever reaches back <strong>two</strong> steps, so you never need the whole row — only the last two numbers. Slide a two-cell window forward:</p>
+<pre class="diagram">   keep just (prev, curr); step it n-1 times
+
+   prev curr
+   [ 0 ][ 1 ]                start: F(0), F(1)
+        \____ +
+   [ 1 ][ 1 ]                curr becomes 0+1 = 1  -&gt; F(2)
+        \____ +
+   [ 1 ][ 2 ]                curr becomes 1+1 = 2  -&gt; F(3)
+        \____ +
+   [ 2 ][ 3 ]                curr becomes 1+2 = 3  -&gt; F(4)</pre>
+<p>That&#x27;s <code>O(1)</code> space — constant memory, no table at all.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Naive recursion:</strong> <code>O(phi^n)</code> time (exponential), <code>O(n)</code> stack space.</li><li><strong>Memoized:</strong> <code>O(n)</code> time (each of n subproblems solved once), <code>O(n)</code> space.</li><li><strong>Rolling loop:</strong> <code>O(n)</code> time, <code>O(1)</code> space — the natural endpoint.</li></ul>
+<ul><li><strong>Naive recursion:</strong> exponential time (calls grow like Fibonacci), <code>O(n)</code> stack from the recursion depth.</li><li><strong>Memoized:</strong> about <code>n</code> steps (each of <code>n + 1</code> subproblems solved once), about <code>n</code> memory for the cache.</li><li><strong>Rolling loop:</strong> about <code>n</code> steps, constant memory — the natural endpoint.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Off-by-one in the base cases: <code>F(0)=0</code>, <code>F(1)=1</code>. Getting these wrong shifts the whole sequence.</li><li>The naive version is genuinely too slow for large <code>n</code> on LeetCode — don&#x27;t submit it.</li><li>In the swap <code>prev, curr = curr, prev + curr</code>, both right-hand values are read *before* either assignment happens; doing it in two separate statements without a temp would corrupt one of them.</li></ul>
+<ul><li>Off-by-one in the base cases: <code>F(0) = 0</code>, <code>F(1) = 1</code>. Get these wrong and the whole sequence shifts.</li><li>The naive version is genuinely too slow for large <code>n</code> — don&#x27;t submit it.</li><li>In <code>prev, curr = curr, prev + curr</code>, both right-hand values are read *before* either assignment lands. Splitting it into two statements without a temp would overwrite one value before the other could use it.</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Only look back a fixed number of steps, so keep a few rolling variables&quot; is the core of many easy DP problems: <a href="../0070-climbing-stairs/">Climbing Stairs / 70</a> (same recurrence, different story), <a href="../0198-house-robber/">House Robber / 198</a> (look back two with a choice). The bigger transfer is the DP method itself: *find the repeated subproblem, solve it once, reuse it.*</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0509-fibonacci-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;509. Fibonacci Number — https://leetcode.com/problems/fibonacci-number/
+<p>&quot;Only look back a fixed number of steps, so keep a few rolling variables&quot; is the core of many easy DPs: <a href="../0070-climbing-stairs/">Climbing Stairs / 70</a> (same recurrence, different story) and <a href="../0198-house-robber/">House Robber / 198</a> (look back with a choice attached). The bigger transfer is the method itself: *find the repeated subproblem, solve it once, reuse it.*</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0509-fibonacci-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;509. Fibonacci Number — https://leetcode.com/problems/fibonacci-number/
 
 Return the n-th Fibonacci number, where F(0)=0, F(1)=1, and each later value is
 the sum of the two before it.

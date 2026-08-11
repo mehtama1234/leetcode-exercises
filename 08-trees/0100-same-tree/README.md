@@ -1,81 +1,100 @@
 # 100. Same Tree
 
-**Pattern:** Tree recursion (DFS), lockstep traversal
+**Pattern:** Tree recursion, walking two trees in lockstep
 **Difficulty:** Easy
 **Link:** https://leetcode.com/problems/same-tree/
 
 ## The problem in plain words
 
-You get two trees. Are they exactly the same? "Same" means two things at once:
-they have the same shape (a node exists in one exactly where it exists in the
-other) **and** the values line up at every matching spot.
+You get two trees. Are they exactly the same? "Same" means two things at once: the
+same shape (a node sits in one exactly where it sits in the other) **and** the same
+value at every matching spot.
+
+```diagram
+      p            q            same?
+      1            1
+     / \          / \
+    2   3        2   3      -> YES  (same shape, same values)
+
+      1            1
+     /              \
+    2                2       -> NO  (2 is on the left vs. the right)
+```
 
 ## Why this matters
 
-The deeper problem is **structural equality**: deciding whether two recursively
-defined things are identical in both shape and content, by walking them in
-lockstep and short-circuiting the moment they disagree. The fundamental operation
-is a synchronized traversal of two structures.
+Strip the story away and the job is: *decide if two nested things are identical, by
+walking them side by side and stopping the instant they disagree.* You stand on a
+position in each tree at the same time and ask one question — "do these two agree
+right here?" — then step into the children together.
 
-This shows up constantly. Diff tools and `git` compare tree-shaped data (file
-trees, ASTs) to decide what changed. React and other UI frameworks reconcile a
-new virtual DOM tree against the old one — "same node here?" is the core question
-that decides whether to reuse or repaint. Test frameworks' deep-equal assertions,
-JSON/config comparison, and schema-migration checks all reduce to this lockstep
-walk.
+This lockstep walk runs real tools. Diff tools and `git` compare tree-shaped data
+to see what changed. UI frameworks reconcile a new virtual DOM against the old one;
+"same node here?" is the question that decides reuse versus repaint. Deep-equal
+assertions in test frameworks and config comparison are the same walk.
 
-What you're solving for is **one linear pass that stops early**: you never build
-intermediate copies or serialize both sides to compare strings, and a mismatch
-near the root ends the work immediately instead of touching every node. It's the
-minimal, allocation-free way to answer "are these two the same?".
+What you buy is one pass that quits early: no copies, no serializing both sides into
+strings to compare — a mismatch near the top ends the work immediately.
 
 ## Start from the obvious
 
-Compare them position by position, walking both at the same time. Stand on a
-node in each tree simultaneously and ask "do these two agree?".
+Compare position by position, walking both trees together. Stand on a node in each
+and ask "do these agree, and do their children agree?".
 
-```
-same(a, b):
-    if both empty: True
-    if only one empty: False        # shapes differ here
-    return a.val == b.val and same(a.left, b.left) and same(a.right, b.right)
+```diagram
+   same(p, q):
+     both empty?        -> True   (nothing here, they agree)
+     exactly one empty? -> False  (one has a node, the other a gap)
+     both present?      -> values equal AND left-subtrees same
+                                        AND right-subtrees same
 ```
 
-This is the natural first thought and it's already the answer — "same tree" is a
-recursive property, so the code is a recursive check.
+This first thought is already the answer — "same tree" is a recursive property, so
+the code is a recursive check. There is no slow version to fix.
 
 ## The insight
 
-The key is enumerating the three cases at each pair of positions cleanly:
+Everything rides on handling the three cases at each pair of positions cleanly, in
+the right order:
 
-1. **Both `None`** — nothing here in either tree, so they agree. Return `True`.
-2. **Exactly one `None`** — one tree has a node where the other has a gap. The
-   shapes already differ. Return `False`.
-3. **Both present** — the local values must match, and then the two left
-   subtrees must be the same and the two right subtrees must be the same.
+1. **Both `None`** — nothing in either tree here, so they agree. Return `True`.
+2. **Exactly one `None`** — one tree has a node where the other has a hole. Shapes
+   already differ. Return `False`.
+3. **Both present** — the values must match, and then the two left subtrees must be
+   the same and the two right subtrees must be the same.
 
-Ordering matters: check the "both empty" case first so that the "one empty" case
-can safely assume they're not both empty. The `and` short-circuits, so a mismatch
-anywhere stops the walk early.
+Check "both empty" first so the "one empty" case can safely assume they are not both
+empty. The `and` short-circuits, so a disagreement anywhere stops the whole walk.
+
+```diagram
+   p:  1        q:  1
+      / \          / \
+     2   3        2   4
+
+   compare 1 vs 1: equal -> recurse
+     compare 2 vs 2: equal, both leaves -> True
+     compare 3 vs 4: 3 != 4 -> False       <- and short-circuits here
+   overall: False   (right subtrees never fully walked past this point)
+```
 
 ## Complexity
 
-- **Time:** `O(n)` where `n` is the size of the smaller tree — we stop as soon as
-  shapes diverge, and otherwise touch each node once.
-- **Space:** `O(h)` for the recursion stack.
+- **Time: about n steps**, where n is the size of the smaller tree — we stop as
+  soon as shapes diverge, and otherwise touch each node once.
+- **Extra memory: about the height of the tree**, for the call stack.
 
 ## Pitfalls
 
-- Comparing values before handling the `None` cases — `p.val` crashes when `p` is
+- Reading `p.val` before handling the `None` cases — that crashes when `p` is
   `None`.
-- Treating "same values in a different shape" as equal. `[1,2]` and `[1,null,2]`
-  have the same multiset of values but are **not** the same tree.
+- Treating "same values, different shape" as equal. `[1,2]` and `[1,null,2]` hold
+  the same values but are not the same tree.
 - Forgetting that both-empty must return `True`, not `False`.
 
 ## Transfer
 
-Lockstep DFS over two trees powers
+Lockstep DFS over two trees also drives
 [Symmetric Tree / 101](https://leetcode.com/problems/symmetric-tree/) (compare a
-tree against itself, mirrored) and is the inner check for
-[Subtree of Another Tree / 572](../0572-subtree-of-another-tree/), which asks
-"is `t` the same tree as some subtree of `s`?".
+tree against its own mirror) and is the inner check inside
+[Subtree of Another Tree / 572](../0572-subtree-of-another-tree/), which asks "is
+`t` the same tree as some subtree of `s`?".

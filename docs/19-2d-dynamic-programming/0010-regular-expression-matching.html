@@ -16,36 +16,54 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">19. 2-D Dynamic Programming</a> / <span>10</span></nav><article class="notes"><h1>10. Regular Expression Matching</h1>
 <p><strong>Pattern:</strong> 2-D dynamic programming (two-suffix grid with a branching wildcard) <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/regular-expression-matching/</p>
 <h2>The problem in plain words</h2>
-<p>Match a string <code>s</code> against a pattern <code>p</code>. In the pattern, <code>.</code> matches any one character, and <code>*</code> means &quot;zero or more of the character right before it&quot; (so <code>a*</code> is any run of <code>a</code>s, including none). The whole string must be consumed — a prefix match doesn&#x27;t count. Return whether they match.</p>
+<p>You have a string <code>s</code> and a pattern <code>p</code>. In the pattern, <code>.</code> matches any single character, and <code>*</code> means &quot;zero or more of the character right before it.&quot; Decide whether the pattern matches the *entire* string — not a piece of it, the whole thing.</p>
+<pre class="diagram">   s = &quot;aab&quot;     p = &quot;c*a*b&quot;
+
+   c*  -&gt; zero c&#x27;s   (used 0 times)
+   a*  -&gt; two a&#x27;s    (used 2 times)
+   b   -&gt; one b
+
+   &quot;aab&quot; fully consumed  -&gt;  match</pre>
 <h2>Why this matters</h2>
-<p>The deep operation is *matching against a pattern where one construct (<code>*</code>) can expand to many lengths, so a single position offers a fork you can&#x27;t resolve greedily.* Greedy &quot;eat as many as possible&quot; fails — sometimes <code>a*</code> must give back characters so the rest of the pattern can fit. That backtracking is exactly what DP replaces with a clean two-suffix table, and it&#x27;s a miniature version of how real regex engines reason about ambiguity.</p>
-<p>This is not a toy: it&#x27;s the heart of every regex library, <code>grep</code>, and lexer/tokenizer. Log filtering, input validation, search-and-replace, syntax highlighting, and route matching in web frameworks all run a pattern matcher with this zero-or-more branching. Understanding the <code>*</code> recurrence is understanding why a badly written pattern can blow up (catastrophic backtracking) — and why the DP form doesn&#x27;t.</p>
-<p>What the good solution buys is <code>O(m·n)</code> time, turning the exponential backtracking of naive <code>*</code>-expansion into one pass over a grid — a bounded, predictable cost.</p>
+<p>The whole difficulty lives in the <code>*</code>, because <code>x*</code> can stand for any number of copies — zero, one, five. You can&#x27;t decide up front how many to use. The move that untangles it is: don&#x27;t count copies, offer a binary choice at each step — *skip the <code>x*</code> entirely* or *eat one character and keep the <code>x*</code> around for more*. Every count you could have chosen is reachable by repeating that second option.</p>
+<p>This &quot;let a repeated choice cover an unknown quantity&quot; idea is exactly how regex engines, glob matching, and simple parsers work. And the two-string grid it lives on is the same grid behind edit distance and subsequence counting — one axis per string, cells reading nearby cells.</p>
 <h2>Start from the obvious</h2>
-<p>Compare the fronts of <code>s[i:]</code> and <code>p[j:]</code>. A plain character or <code>.</code> must match, then both advance. The only branch is when the pattern char is followed by <code>*</code>:</p>
-<pre><code>def match(i, j):
-    if j == len(p): return i == len(s)
-    first = i &lt; len(s) and (p[j] == s[i] or p[j] == &#x27;.&#x27;)
-    if j+1 &lt; len(p) and p[j+1] == &#x27;*&#x27;:
-        return match(i, j+2)                    # use x* ZERO times: skip &#x27;x*&#x27;
-            or (first and match(i+1, j))        # use x* once more: eat s[i], keep &#x27;x*&#x27;
-    return first and match(i+1, j+1)            # plain single-char match</code></pre>
-<p>The <code>x*</code> fork — skip the pair, or consume one <code>s</code> char and *stay* on <code>x*</code> — is the whole trick. Naively this re-explores overlapping <code>(i, j)</code> states exponentially.</p>
-<h2>Find the waste</h2>
-<p>There are only <code>(m+1)·(n+1)</code> distinct <code>(i, j)</code> suffix pairs. The branching recursion revisits them constantly (many expansions of <code>*</code> land on the same state). Memoize on <code>(i, j)</code> → <code>O(m·n)</code>.</p>
+<p>Compare the fronts of the two suffixes (<code>s[i:]</code> and <code>p[j:]</code>). If the next pattern piece is a plain character or <code>.</code>, it either matches the next <code>s</code> character or it doesn&#x27;t — advance both, or fail. The one real fork is <code>x*</code>:</p>
+<pre class="diagram">   pattern piece is  x*  (x is a letter or &#x27;.&#x27;)
+
+     option A: use it ZERO times   -&gt;  skip &quot;x*&quot;, keep same s
+     option B: if x matches s[i]   -&gt;  eat s[i], KEEP &quot;x*&quot; for reuse
+
+   answer = A  OR  B</pre>
+<p>Write that as recursion on <code>(i, j)</code> and it&#x27;s correct. But the same <code>(i, j)</code> suffix pair gets asked about repeatedly through different chains of <code>*</code> choices, so plain recursion re-solves the same states.</p>
 <h2>The insight</h2>
-<p>Bottom-up, <code>dp[i][j]</code> = &quot;does <code>s[i:]</code> match <code>p[j:]</code>?&quot; Fill from the bottom-right (empty suffixes) back to <code>(0,0)</code>, exactly mirroring the recurrence:</p>
-<pre><code>dp[m][n] = True
-if p[j+1] == &#x27;*&#x27;:
-    dp[i][j] = dp[i][j+2]                      # zero copies
-            or (first and dp[i+1][j])          # one+ copy
-else:
-    dp[i][j] = first and dp[i+1][j+1]</code></pre>
-<p><code>dp[i][j+2]</code> is the &quot;star matches nothing&quot; jump over <code>x*</code>; <code>dp[i+1][j]</code> is &quot;star ate one <code>s</code> char, keep the star.&quot; No backtracking — every state is decided once.</p>
+<p>Let <code>dp[i][j]</code> mean *does <code>s[i:]</code> match <code>p[j:]</code>?* — one axis per string, a grid of yes/no answers. Fill it from the bottom-right corner (both suffixes empty, which is a match) back toward <code>(0, 0)</code>.</p>
+<pre class="diagram">   dp[i][j] = does s[i:] match p[j:]
+
+   s = &quot;aa&quot;        p = &quot;a*&quot;
+            j:  a    *    &quot;&quot;
+       i    +----+----+----+
+       a    |    |    |  F |
+       a    |    |    |  F |
+       &quot;&quot;   |    |    |  T |   empty vs empty = match
+            +----+----+----+
+   bottom-right seeded True; everything else reads cells below/right of it.</pre>
+<p>Now watch a cell fill. A plain character reads one neighbor (down-and-right on the diagonal). A <code>x*</code> reads two: the cell two columns right (skip the pair) and the cell directly below (consumed one <code>s</code> char, kept the <code>*</code>):</p>
+<pre class="diagram">   filling dp[i][j]
+
+   plain char / &#x27;.&#x27; :         &#x27;  x* &#x27;  case:
+                              skip pair        consume via *
+     dp[i+1][j+1]             dp[i][j+2]       dp[i+1][j]
+          ^                        \              |
+          |                         \             v
+        dp[i][j]                     +---&gt; dp[i][j] = skip OR (x~s[i] AND consume)
+
+   plain:  dp[i][j] = (p[j] matches s[i])  AND  dp[i+1][j+1]</pre>
+<p>Sweep <code>i</code> from bottom, <code>j</code> from right; the top-left cell <code>dp[0][0]</code> is the answer. The recursion and this table are the same computation — the table just fills the grid in a safe order instead of recursing.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(m·n)</code> — one pass over the grid, constant work per cell.</li><li><strong>Space:</strong> <code>O(m·n)</code> for the table (reducible to <code>O(n)</code> with two rolling rows).</li></ul>
+<ul><li><strong>Time: about m × n steps</strong> (m = len <code>s</code>, n = len <code>p</code>). One cheap decision per grid cell. Doubling both roughly quadruples the work.</li><li><strong>Extra memory: about m × n</strong> for the grid (or the memo cache in the top-down version).</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><code>*</code> binds to the character <strong>before</strong> it and always comes as a pair — read <code>p[j], p[j+1]</code> together; never treat a lone <code>*</code> as a normal char.</li><li><strong>Empty string, non-empty pattern can still match:</strong> <code>&quot;&quot;</code> matches <code>&quot;a*&quot;</code>, <code>&quot;.*&quot;</code>, <code>&quot;a*b*&quot;</code>. The base row/<code>dp[i][j+2]</code> path handles this — don&#x27;t early-return false just because <code>s</code> is empty.</li><li>The <code>first</code> guard must check <code>i &lt; m</code> *before* indexing <code>s[i]</code>.</li><li>Whole-string match: <code>dp[m][n]</code> is the only true base; a prefix match is not a match.</li><li>Order matters: for <code>x*</code>, evaluate the zero-use skip AND the consume branch — a greedy &quot;consume as long as it matches&quot; is wrong (see <code>&quot;aaa&quot;</code> vs <code>&quot;a*a&quot;</code>).</li></ul>
+<ul><li>Reading <code>*</code> as &quot;match anything.&quot; It matches zero-or-more of *the one character before it*, not any run of any characters.</li><li>Forgetting the zero-copies branch. <code>x*</code> must be allowed to vanish — <code>dp[i][j+2]</code> — even when <code>x</code> could match, because using it zero times is often the only path.</li><li>Requiring a partial match. The pattern must cover the whole string; that&#x27;s why the base case is &quot;both suffixes empty,&quot; not &quot;<code>s</code> empty.&quot;</li><li>Peeking at <code>p[j+1]</code> without a bounds check before deciding it&#x27;s a <code>*</code>.</li></ul>
 <h2>Transfer</h2>
 <p>The reusable idea is *a two-suffix (or two-prefix) grid where one construct branches into &quot;skip it&quot; OR &quot;consume one and stay.&quot;* The nearest sibling is <a href="https://leetcode.com/problems/wildcard-matching/">Wildcard Matching / 44</a> (<code>*</code> matches any run of *any* characters — a simpler branch). It also shares the two-string grid skeleton with <a href="../0072-edit-distance/">Edit Distance / 72</a> and <a href="../0115-distinct-subsequences/">Distinct Subsequences / 115</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0010-regular-expression-matching/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;10. Regular Expression Matching —
 https://leetcode.com/problems/regular-expression-matching/

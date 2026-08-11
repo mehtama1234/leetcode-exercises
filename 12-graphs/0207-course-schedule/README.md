@@ -1,83 +1,129 @@
 # 207. Course Schedule
 
-**Pattern:** Topological sort / cycle detection on a directed graph
+**Pattern:** Topological sort / spotting a loop in a directed graph
 **Difficulty:** Medium
 **Link:** https://leetcode.com/problems/course-schedule/
 
 ## The problem in plain words
 
 You have `numCourses` courses. A pair `[a, b]` means "before you can take course
-`a`, you must finish course `b`." Can you finish all the courses, or do the
+`a`, you must finish course `b`." Can you finish every course, or do the
 prerequisites tangle up so badly that some courses can never be taken?
+
+```diagram
+   [1,0] means: finish 0, then 1 is allowed
+
+        finish 0
+           |
+           v
+          (1)          -> take 0, then 1.  possible.
+
+   but if 0 needs 1 AND 1 needs 0:
+
+        (0) --> (1)
+         ^       |
+         |_______|          neither can go first.  impossible.
+```
 
 ## Why this matters
 
-Strip away the courses and this is **ordering tasks under dependency constraints, and detecting when the dependencies form an impossible loop**. The fundamental operation is topological sort with built-in cycle detection.
+Draw an arrow from each prerequisite to the course it unlocks and you have a
+directed graph. The real question becomes one word: **is there a loop?** If courses
+chain back on themselves — 0 needs 1, 1 needs 2, 2 needs 0 — none of them can ever
+be the first one, and you are stuck. No loop means you can finish everything.
 
-You have used systems built on this today. Build tools (Make, Bazel, Gradle, npm/pip resolvers) topo-sort targets so each thing is built after what it needs — and report an error when a dependency cycle makes the build impossible. Spreadsheets recompute cells in dependency order and flag circular references the same way. Schedulers like Airflow run DAG stages in order; CPUs and compilers order instructions respecting data dependencies; package managers order installs and refuse cyclic requirements.
+The reusable idea is **topological sort**: put dependent tasks in an order where
+everything comes after the things it needs, and flag when no such order exists.
+Build tools (Make, Bazel, npm) sort targets so each is built after what it depends
+on, and error out on a dependency loop. Spreadsheets recompute cells in dependency
+order and shout "circular reference" the same way. Schedulers run pipeline stages
+in order; package managers order installs and refuse cyclic requirements.
 
-What you're solving for is **a valid execution order plus a cheap, honest "is this even possible?" verdict** — in one linear pass. Kahn's in-degree counters let each task become ready exactly once, so the finished-count doubles as the cycle detector with no separate `O(V²)` re-scan.
+What you are solving for is a valid order **plus** a cheap, honest "is this even
+possible?" verdict — in a single pass.
 
 ## Start from the obvious
 
-Model it as a directed graph: draw an arrow `b -> a` for "finish `b`, then `a`
-becomes takeable." Now the question is simple to state: **is there a cycle?** If
-courses form a loop — `0` needs `1`, `1` needs `2`, `2` needs `0` — none of them
-can ever be the "first" one, so you're stuck. No cycle ⇒ you can finish
-everything.
+Model it as the directed graph above: an arrow `b -> a` for "finish `b`, then `a`
+opens up." The question is now "does this graph have a loop?"
 
-A first instinct is DFS with three colors (unvisited / in-progress / done) and
-report a cycle if DFS re-enters an in-progress node. That works. But there's an
-approach that mirrors how you'd actually schedule the courses.
+One instinct is to walk the graph marking nodes as in-progress, and shout "loop!"
+if the walk re-enters a node still marked in-progress. That works. But there is a
+second approach that mirrors how you would actually schedule the courses by hand,
+so let's build that one.
 
-## The insight — Kahn's algorithm (peel off what's ready)
+## The insight — peel off whatever is ready
 
-For each course, count its **in-degree**: how many prerequisites it's still
-waiting on. Courses with in-degree `0` have nothing blocking them — take them now.
+For each course, count its **in-degree**: how many prerequisites it is still
+waiting on. Courses with in-degree `0` have nothing blocking them — take those now.
+Then repeat:
 
-Repeat:
-
-1. Take any ready course (in-degree 0) and "finish" it.
-2. For every course that depended on it, decrement that course's in-degree by 1 —
-   one of its prerequisites is now satisfied.
-3. If a course's in-degree hits `0`, it just became ready — queue it.
+1. Take a ready course (in-degree 0) and mark it finished.
+2. For every course that depended on it, drop that course's in-degree by 1 — one of
+   its prerequisites is now done.
+3. If a course's in-degree hits `0`, it just became ready — add it to the queue.
 
 Keep going until nothing is ready.
 
-- If you finished **all** `numCourses`, a valid order exists → return `True`.
-- If courses remain but nothing is ready, those leftovers are exactly a **cycle**:
-  each is still waiting on another that never got finished → return `False`.
+```diagram
+   courses 0..3,  edges: 0->1, 0->2, 1->3, 2->3   (diamond)
 
-The finished-count *is* the cycle detector — no separate check needed.
+   in-degree:  0:0   1:1   2:1   3:2
+   ready queue: [0]                       finished = 0
+
+   take 0  -> drop 1 and 2   in-deg 1:0, 2:0    ready: [1,2]   finished=1
+   take 1  -> drop 3         in-deg 3:1         ready: [2]     finished=2
+   take 2  -> drop 3         in-deg 3:0         ready: [3]     finished=3
+   take 3                                       ready: []      finished=4
+
+   finished 4 == numCourses 4   ->  YES, order exists
+```
+
+Now watch a loop stall the same machine:
+
+```diagram
+   edges: 0->1, 1->2, 2->0    (a 3-cycle)
+
+   in-degree:  0:1   1:1   2:1
+   ready queue: []                    <- nothing starts at 0
+
+   the queue is empty on step one.  finished = 0, not 3.  ->  NO
+```
+
+The finished-count **is** the loop detector. If you finished all `numCourses`, an
+order exists. If courses remain but nothing is ready, those leftovers are exactly a
+loop — each still waiting on another that never got finished.
 
 ## Find the waste
 
-Naively re-scanning "which courses are ready now?" every round would be `O(V^2)`.
-The in-degree counters + a ready-queue let each course become ready exactly once
-and each edge be relaxed exactly once, collapsing it to linear.
+Re-scanning "which courses are ready now?" every round would cost about V × V steps
+(each round rescans all courses). The in-degree counters plus a ready-queue let
+each course become ready exactly once and each edge be handled exactly once, which
+collapses the work to grow in step with courses + prerequisites.
 
 ## Complexity
 
-- **Time:** `O(V + E)` — build the graph and in-degrees in `O(V + E)`, then each
-  node is dequeued once and each edge relaxed once.
-- **Space:** `O(V + E)` for the adjacency list, in-degree array, and queue.
+- **Time: about V + E steps** (courses plus prerequisite pairs). Building the graph
+  and in-degrees is linear, then each course leaves the queue once and each edge is
+  handled once.
+- **Extra memory: about V + E** for the graph, the in-degree array, and the queue.
 
 ## Pitfalls
 
-- **Edge direction.** Store `prereq -> course`. Flipping it inverts the whole
-  dependency logic.
+- **Edge direction.** Store `prereq -> course`. Flip it and the whole dependency
+  logic inverts.
 - **Courses with no prerequisites.** They start at in-degree 0 and must seed the
   queue, or nothing ever begins.
-- **The self-loop `[a, a]`.** A course that requires itself is an instant cycle —
-  it never reaches in-degree 0. (Kahn handles it automatically.)
+- **The self-loop `[a, a]`.** A course that requires itself never reaches in-degree
+  0 — an instant loop. The counting handles it on its own.
 - **Reading the result wrong.** The answer is "did we finish *all* of them?", i.e.
   `finished == numCourses`, not "did the queue empty."
 
 ## Transfer
 
-Kahn's algorithm gives you both a yes/no cycle test and the actual order.
+This peel-off machine gives both a yes/no loop test and the actual order.
 [Course Schedule II / 210](https://leetcode.com/problems/course-schedule-ii/) asks
-for the order (just record the dequeue sequence),
-[Alien Dictionary / 269](../0269-alien-dictionary/) topo-sorts letters, and
+for the order (just record the take-off sequence),
+[Alien Dictionary / 269](../0269-alien-dictionary/) sorts letters this way, and
 [Minimum Height Trees / 310](https://leetcode.com/problems/minimum-height-trees/)
-peels leaves the same layer-by-layer way.
+peels leaves layer by layer the same way.

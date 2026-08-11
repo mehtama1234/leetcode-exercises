@@ -1,102 +1,108 @@
 # 50. Pow(x, n)
 
-**Pattern:** Fast exponentiation by squaring (divide the exponent)
+**Pattern:** Fast exponentiation by squaring (halve the work each step)
 **Difficulty:** Medium
 **Link:** https://leetcode.com/problems/powx-n/
 
 ## The problem in plain words
 
-Given a number `x` and an integer exponent `n`, compute `x^n`. The exponent can
-be negative (which means one over the positive power), zero, or very large.
-Return the answer as a float.
+Compute `x` raised to the power `n`, and return a float. The exponent `n` can be
+negative — `x^(-2)` means `1 / (x*x)`. The exponent can also be huge, like two
+billion, so multiplying `x` by itself that many times is out of the question.
+
+```diagram
+   pow(2, 10) = 2*2*2*2*2*2*2*2*2*2 = 1024
+   pow(2, -2) = 1 / (2*2) = 0.25
+   pow(x, 0) = 1  for any x
+```
 
 ## Why this matters
 
-Underneath the puzzle is one idea: *you can compute a repeated operation in a
-number of steps proportional to the logarithm of how many times it repeats,
-instead of doing it that many times.* The trick is that `x^n` contains `x^(n/2)`
-twice — so if you compute the half once and square it, you've halved the work,
-and halving repeatedly is what gives you `log n` steps.
+The naive definition — multiply `n` times — is a straight line of work: double the
+exponent, double the multiplications. The insight is that powers hide a huge
+amount of repeated work, and you can fold the exponent in half at every step
+instead of subtracting one. That turns two billion multiplications into about
+thirty.
 
-That exact move runs real systems. RSA and Diffie-Hellman encryption raise
-numbers to enormous exponents (hundreds of digits) modulo a prime — the naive
-"multiply n times" would never finish, so every crypto library uses modular
-exponentiation by squaring. Computing a graph's reachability or a Markov chain's
-long-run state uses matrix power by squaring. Even Fibonacci in `O(log n)` comes
-from raising a 2×2 matrix to a power the same way.
-
-What the good solution buys is turning an `O(n)` loop into `O(log n)` — for an
-exponent of two billion, that's the difference between two billion multiplies
-and about 31. It also buys correctness on the negative-exponent and
-integer-overflow edges that trip up the obvious code.
+Halving instead of decrementing is one of the biggest speedups in computing.
+Binary search halves a search space; merge sort halves an array; this halves an
+exponent. The same squaring trick is what makes modular exponentiation in RSA and
+Diffie-Hellman fast enough to be practical — raising a number to a 2048-bit power
+would be impossible one multiply at a time.
 
 ## Start from the obvious
 
-The definition of a power is "multiply x by itself n times", so write exactly
-that:
+Multiply `x` by itself `n` times. It's the definition turned straight into code.
 
+```diagram
+   pow(2, 10):
+   result = 1
+   x1  x2  x3  x4  x5  x6  x7  x8  x9  x10
+   2   4   8   16  32  64  128 256 512 1024
+       ^ ten separate multiplications
 ```
-result = 1
-for _ in range(abs(n)):
-    result *= x
-if n < 0: result = 1 / result
-```
 
-That's `O(n)`. It's correct and it's the honest first thought — and staring at
-what it repeats tells you the fix.
-
-## Find the waste
-
-To get `x^8`, the loop multiplies: `x·x·x·x·x·x·x·x`. But `x^8 = (x^4)^2`, and
-`x^4 = (x^2)^2`. The loop recomputes the same partial products the squaring
-version could reuse. The waste is treating the exponent as a tally of ones when
-it's really a *binary number*.
+Correct, and fine for small `n`. But for `n = 2000000000` this does two billion
+multiplications. The waste is that it never reuses any product — computing `x^10`
+throws away everything it learned computing `x^5`.
 
 ## The insight
 
-Read the exponent in binary. Keep a running value `current` that starts at `x`
-and gets squared each step, so it walks through `x, x^2, x^4, x^8, ...` — the
-`x` raised to each power of two. Look at the exponent's binary digits from the
-low end: wherever there's a `1`, that power of two is part of the sum in the
-exponent, so fold `current` into the answer.
+To get `x^10`, you don't need ten multiplies. If you already have `x^5`, then
+`x^10` is just `x^5` squared — one multiply. And `x^5` is `x^2` squared times one
+more `x`. Each step either squares what you have (doubling the exponent) or
+squares and tacks on one extra `x` (for an odd exponent). That's driven by the
+*binary digits* of the exponent.
 
-```
-result = 1
-current = x
-while n > 0:
-    if n & 1: result *= current   # this power-of-two is present
-    current *= current            # x, x^2, x^4, x^8, ...
-    n >>= 1                        # consume that binary digit
+```diagram
+   10 in binary = 1010
+
+   walk the exponent's bits from low to high, keeping a
+   running power of x:  x, x^2, x^4, x^8, ...
+
+   bit  power-of-x   this bit set?   result so far
+   ---  ----------   -------------   -------------
+    0    x^1  = 2       0 (no)        1
+    1    x^2  = 4       1 (yes)       1 * 4      = 4
+    2    x^4  = 16      0 (no)        4
+    3    x^8  = 256     1 (yes)       4 * 256    = 1024
+
+   10 = 8 + 2, so x^10 = x^8 * x^2 = 256 * 4 = 1024
 ```
 
-Because `13 = 1101` in binary means `x^13 = x^8 · x^4 · x^1`, we only multiply
-in the powers whose bit is set. Negative `n`: replace `x` with `1/x` and make
-`n` positive first.
+Each pass squares the running power (`x -> x^2 -> x^4 -> x^8`) and folds it into
+the answer only where the exponent has a `1` bit. About `log2(n)` steps total
+instead of `n`.
+
+```diagram
+   n=10 (1010):  fold in x^2 and x^8    -> 4 * 256 = 1024
+   n=13 (1101):  fold in x^1, x^4, x^8
+
+   squaring chain:  x -> x^2 -> x^4 -> x^8   (only ~4 multiplies for exp 13)
+```
+
+Negative `n` is handled up front: `x^(-n)` is `(1/x)^n`, so flip `x` to its
+reciprocal and make `n` positive.
 
 ## Complexity
 
-- **Time:** `O(log n)` — the `while` loop runs once per binary digit of `n`, and
-  `n` has about `log2(n)` digits.
-- **Space:** `O(1)` — a couple of accumulators, no recursion needed.
+- **Time: about log2(n) steps.** The exponent halves every pass (one bit dropped),
+  so a billion becomes roughly thirty multiplications.
+- **Extra memory: constant.** A running result and a running power of `x`.
 
 ## Pitfalls
 
-- **Overflow on `-n`.** In C/Java, `n = -2^31` and then `n = -n` overflows,
-  because `+2^31` doesn't fit in a signed 32-bit int. Python ints are unbounded
-  so it's safe here, but the idiomatic guard is to work with the negation
-  carefully (or use a wider type). This problem is *about* that edge.
-- Forgetting `x^0 = 1` (the loop handles it: it never runs, result stays 1).
-- Doing `1/x` but forgetting to also make `n` positive, or vice versa.
-- Recursion depth: a recursive squaring version is fine at `log n` depth, but
-  the iterative one avoids the call stack entirely.
+- The naive `n`-multiply loop times out on large exponents — the whole reason the
+  squaring trick exists.
+- Handling negative `n`. Flip `x` to `1/x` and negate `n` before the loop.
+- In fixed-width languages, negating the most-negative exponent overflows;
+  convert its magnitude carefully. (Python integers don't overflow, so this trap
+  doesn't bite here.)
 
 ## Transfer
 
-The move "halve the exponent by squaring" reappears whenever you repeat an
-*associative* operation many times: modular exponentiation in crypto, matrix
-power for linear recurrences (Fibonacci, path counts), and repeated function
-composition. Sibling problems:
-[Sqrt(x) / 69](https://leetcode.com/problems/sqrtx/) (binary search on the
-answer) and
-[Super Pow / 372](https://leetcode.com/problems/super-pow/) (the same trick
-under a modulus).
+The reusable move is **halve the problem each step instead of shaving one off,
+driven by the binary digits of a count.** The same square-and-multiply idea
+powers modular exponentiation in cryptography, and the halving instinct connects
+to [Binary Search / 704](https://leetcode.com/problems/binary-search/) and any
+divide-in-half algorithm.

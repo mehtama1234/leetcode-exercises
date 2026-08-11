@@ -16,47 +16,50 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">3. Arrays &amp; Strings: Two Pointers</a> / <span>15</span></nav><article class="notes"><h1>15. 3Sum</h1>
 <p><strong>Pattern:</strong> Sort + two pointers (fix one, converge the rest) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/3sum/</p>
 <h2>The problem in plain words</h2>
-<p>Find every group of three numbers in the array that add up to zero. Return the triplets themselves (their values, not indices), and don&#x27;t list the same triplet twice even if the array has repeated numbers.</p>
+<p>Find every group of three numbers in the array that add up to zero. Return the triplets themselves (their values, not positions), and don&#x27;t list the same triplet twice even when the array has repeats.</p>
+<pre class="diagram">   nums = [-1, 0, 1, 2, -1, -4]
+   groups of three that sum to 0:
+     -1 + 0 + 1 = 0   -&gt; [-1, 0, 1]
+     -1 + -1 + 2 = 0  -&gt; [-1, -1, 2]
+   (the two -1s look the same but sit at different spots — count the group once)</pre>
 <h2>Why this matters</h2>
-<p>The real problem is <strong>finding combinations that satisfy a numeric relationship without checking every combination</strong> — and doing it while suppressing duplicate answers. The core operation is reducing a k-way search to a (k-1)-way search plus a single linear sweep, using sorted order to both guide the sweep and make dedup fall out for free (equal values sit adjacent).</p>
-<p>This &quot;match up entries that sum or balance to a target&quot; pattern is everywhere money and quantities move:</p>
-<ul><li><strong>Finance/accounting reconciliation</strong> — finding sets of transactions that net to a given balance, or offsetting entries that cancel.</li><li><strong>Analytics and reporting</strong> — grouping records whose measures combine to hit a threshold, deduplicating equivalent groups.</li><li><strong>Computational geometry / collision</strong> — triples of points meeting a coplanar or distance condition after sorting by coordinate.</li></ul>
-<p>What we&#x27;re solving for is <strong>avoiding the combinatorial blowup</strong>: brute force is <code>O(n^3)</code>, and sorting once turns it into <code>O(n^2)</code> with <code>O(1)</code> extra space — no hash set, because sorted adjacency handles the duplicates that would otherwise corrupt the output.</p>
+<p>The real problem is *finding combinations that hit a numeric target without checking every combination* — and doing it while quietly dropping duplicate answers. The one reusable move: turn a three-way search into a two-way search plus a single sweep, and use sorted order both to guide the sweep and to make dedup fall out for free (equal values land next to each other).</p>
+<p>That &quot;match up entries that sum to a target&quot; pattern shows up wherever quantities move. Accounting reconciliation looks for sets of transactions that net to a balance. Analytics groups records whose measures combine to hit a threshold. Geometry finds triples of points meeting a distance condition after sorting.</p>
+<p>What you&#x27;re solving for is dodging the blowup: brute force is about n × n × n steps, and sorting once turns it into about n × n with no extra hash set — sorted adjacency handles the duplicates that would otherwise corrupt the output.</p>
 <h2>Start from the obvious</h2>
-<p>&quot;Three numbers that sum to zero&quot; turns straight into three nested loops:</p>
-<pre><code>for i:
-  for j after i:
-    for k after j:
-      if nums[i] + nums[j] + nums[k] == 0: record it</code></pre>
-<p>Correct, but <code>O(n^3)</code>, and it has a second problem: duplicates. <code>[0,0,0,0]</code> would report <code>[0,0,0]</code> many times, so you need to dedupe (sort each triplet, drop it in a set). It&#x27;s a fine first draft — and staring at it shows the fix.</p>
+<p>&quot;Three numbers that sum to zero&quot; turns straight into three nested loops.</p>
+<pre class="diagram">   for i:
+     for j after i:
+       for k after j:
+         if nums[i] + nums[j] + nums[k] == 0: record it</pre>
+<p>Correct, but about n × n × n steps, and it has a second problem: duplicates. <code>[0,0,0,0]</code> reports <code>[0,0,0]</code> many times, so you&#x27;d need a set to dedupe. Fine first draft — and staring at the inner two loops shows the fix.</p>
 <h2>Find the waste</h2>
-<p>Rewrite the inner two loops as a question: *given a fixed first number <code>nums[i]</code>, find two numbers in the rest that sum to <code>-nums[i]</code>.* That is literally <strong>Two Sum</strong>.</p>
-<p>And we already know sorted Two Sum doesn&#x27;t need a nested loop — two converging pointers solve it in one linear pass (see <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>). So the waste in the brute force is re-scanning the tail with a full inner loop when a sorted array lets a single sweep do it.</p>
+<p>Rewrite the inner two loops as a question: *given a fixed first number <code>nums[i]</code>, find two numbers in the rest that sum to <code>-nums[i]</code>.* That is exactly <strong>Two Sum</strong>. And on a *sorted* array, Two Sum doesn&#x27;t need a nested loop — two converging pointers solve it in one sweep (see <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>). The waste is the full inner loop where a single sweep would do.</p>
 <h2>The insight</h2>
-<p><strong>Sort the array first.</strong> Then for each index <code>i</code>:</p>
-<ul><li>Set <code>left = i+1</code>, <code>right = n-1</code>.</li><li>Look at <code>nums[i] + nums[left] + nums[right]</code>. Too small? move <code>left</code> right for a bigger number. Too big? move <code>right</code> left for a smaller one. Exactly zero? record the triplet and step both inward.</li></ul>
-<p>Sorting pays off twice. It powers the two-pointer sweep, <strong>and</strong> it makes deduping trivial — equal values are adjacent, so:</p>
-<ul><li>skip <code>nums[i]</code> if it equals the previous anchor,</li><li>after recording a hit, skip past any repeated <code>left</code> and <code>right</code> values.</li></ul>
-<p>One more freebie: once <code>nums[i] &gt; 0</code>, every remaining number is positive, so no triplet can sum to zero — stop early.</p>
-<pre><code>nums.sort()
-for i in range(n):
-    if nums[i] &gt; 0: break
-    if i &gt; 0 and nums[i] == nums[i-1]: continue
-    left, right = i+1, n-1
-    while left &lt; right:
-        s = nums[i] + nums[left] + nums[right]
-        if s &lt; 0: left += 1
-        elif s &gt; 0: right -= 1
-        else:
-            record [nums[i], nums[left], nums[right]]
-            left += 1; right -= 1
-            skip duplicate lefts and rights</code></pre>
+<p><strong>Sort first.</strong> Then for each anchor <code>i</code>, put <code>left = i+1</code> and <code>right = n-1</code> and let the sum steer the pointers.</p>
+<pre class="diagram">   sorted: [-4, -1, -1, 0, 1, 2]      anchor i=1 (nums[i] = -1), need pair summing to +1
+            i    L              R
+                 -1 + 2 = 1  (with anchor: -1 + -1 + 2 = 0)  -&gt; record [-1,-1,2]
+                 step both inward:
+            i        L      R
+                 0 + 1 = 1  (with anchor: -1 + 0 + 1 = 0)    -&gt; record [-1,0,1]
+                 step both inward: L meets R -&gt; done with this anchor
+
+   steering rule (with anchor fixed):
+     triple sum &lt; 0 -&gt; need bigger -&gt; L++
+     triple sum &gt; 0 -&gt; need smaller -&gt; R--
+     triple sum == 0 -&gt; record, then L++ and R--</pre>
+<p>Sorting pays off twice. It powers the sweep, <strong>and</strong> it makes deduping cheap — equal values sit next to each other:</p>
+<pre class="diagram">   dedup by skipping repeats:
+     anchor:  skip nums[i] if it equals nums[i-1]   (keep first, drop later copies)
+     after a hit: skip repeated L values, skip repeated R values
+     early stop: once nums[i] &gt; 0, every later number is positive -&gt; no zero triple</pre>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n^2)</code> — sorting is <code>O(n log n)</code>, then for each of <code>n</code> anchors the two pointers sweep the tail in <code>O(n)</code>. The <code>n^2</code> term dominates.</li><li><strong>Space:</strong> <code>O(1)</code> beyond the output (ignoring sort&#x27;s temporary space). No hash set for deduping — sorted adjacency handles it.</li></ul>
+<ul><li><strong>Time: about n × n steps.</strong> Sorting is about n·log n; then each of n anchors sweeps the tail in about n. The n × n term dominates.</li><li><strong>Extra memory: constant</strong> beyond the output (ignoring the sort&#x27;s scratch space). No hash set — sorted adjacency handles duplicates.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Duplicate triplets</strong> are the whole difficulty. You must skip repeats in three places: the anchor <code>i</code>, and the <code>left</code>/<code>right</code> values after a successful match.</li><li>Skipping the anchor with <code>i &gt; 0 and nums[i] == nums[i-1]</code> — compare to the *previous*, not the next, so you keep the first occurrence and drop later copies.</li><li>Forgetting to move <strong>both</strong> pointers after recording a hit — leaving one put will just re-find the same or an invalid triplet.</li><li>Not sorting first: every step of the method depends on sorted order.</li></ul>
+<ul><li><strong>Duplicate triplets</strong> are the whole difficulty. Skip repeats in three places: the anchor <code>i</code>, and the <code>left</code>/<code>right</code> values after a match.</li><li>Skip the anchor with <code>i &gt; 0 and nums[i] == nums[i-1]</code> — compare to the *previous*, so you keep the first copy and drop later ones.</li><li>Forgetting to move <strong>both</strong> pointers after a hit — leave one and you just re-find the same triplet.</li><li>Not sorting first: every step of the method depends on sorted order.</li></ul>
 <h2>Transfer</h2>
-<p>This is the template for the whole &quot;k-Sum&quot; family: fix outer values and two-pointer the innermost pair. It extends directly to <a href="https://leetcode.com/problems/4sum/">4Sum / 18</a> (two fixed loops, then two pointers) and *3Sum Closest*. The reusable move — <strong>sort, then reduce a k-sum to a (k-1)-sum with two converging pointers</strong> — builds straight on <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/03-two-pointers/0015-3sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;15. 3Sum — https://leetcode.com/problems/3sum/
+<p>This is the template for the whole &quot;k-Sum&quot; family: fix outer values and two-pointer the innermost pair. It extends straight to <a href="https://leetcode.com/problems/4sum/">4Sum / 18</a> (two fixed loops, then two pointers) and *3Sum Closest*. The reusable move — <strong>sort, then reduce a k-sum to a (k-1)-sum with two converging pointers</strong> — builds directly on <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/03-two-pointers/0015-3sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;15. 3Sum — https://leetcode.com/problems/3sum/
 
 Given an integer array, return all unique triplets [a, b, c] that sum to zero.
 The result must not contain duplicate triplets.

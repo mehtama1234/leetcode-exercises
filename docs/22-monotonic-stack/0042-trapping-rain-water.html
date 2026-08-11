@@ -17,39 +17,61 @@
 <p><strong>Pattern:</strong> Monotonic stack (decreasing) / two pointers <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/trapping-rain-water/</p>
 <h2>The problem in plain words</h2>
 <p>The array is a cross-section of terrain: each number is the height of a wall one unit wide. After rain, water pools in the dips. Water can sit above a spot only up to the shorter of the two tallest walls flanking it — anything higher spills off the low side. Count the total trapped water.</p>
+<pre class="diagram">   height = [0,1,0,2,1,0,1,3,2,1,2,1]
+
+                              #
+              #      w  w  w  # #    w  #      w = trapped water
+      #  w  # #  w  w  #  #  # # #  # #
+   _  #  #  # #  #  #  #  #  # # #  # #
+   0  1  0  2  1  0  1  3  2  1  2  1
+
+   total trapped = 6 units of water</pre>
 <h2>Why this matters</h2>
-<p>The core operation is: *for each position, how high can it be held up before it leaks — bounded by the tallest barrier on each side?* You&#x27;re computing, per cell, <code>min(best-so-far-from-left, best-so-far-from-right)</code>. That &quot;bounded by the weaker of two flanks&quot; shape recurs far beyond puzzles.</p>
-<p>Concrete places: terrain and flood modelling in GIS, where you flood-fill basins up to their lowest surrounding ridge; buffer and backpressure analysis, where a queue between two stages fills only to the height its neighbours permit; and container/bin packing on an uneven floor, where usable volume is capped by the lowest rim. Any &quot;fill a valley until it overflows the nearest lip&quot; reasoning is this problem.</p>
-<p>The payoff is resource. The brute force recomputes both flanking maxima for every cell — O(n²) and, for a long profile, hopelessly slow. The monotonic stack and the two-pointer method each make one pass: the stack fills water in horizontal slabs, resolving a valley the moment its right wall appears; the two-pointer version does it in O(1) extra space by always advancing the weaker side.</p>
+<p>The core operation: *for each spot, how high can it hold water before it leaks — set by the tallest wall on each side?* You&#x27;re computing, per cell, <code>min(tallest to the left, tallest to the right) - height</code>. That &quot;bounded by the weaker of two flanks&quot; shape recurs far beyond puzzles.</p>
+<p>Concrete places: terrain and flood modeling, where you fill a basin up to its lowest surrounding ridge; buffer and backpressure analysis, where a queue between two stages fills only as high as its neighbors permit; container packing on an uneven floor, where usable volume is capped by the lowest rim. Any &quot;fill a valley until it overflows the nearest lip&quot; reasoning is this problem.</p>
+<p>The payoff is resource. The brute force recomputes both flanking maxima for every cell — about <code>n × n</code> and hopeless on a long profile. The monotonic stack and the two-pointer method each make one pass: the stack fills water in flat horizontal slabs, resolving a valley the moment its right wall appears; the two-pointer version does it with a fixed, tiny amount of extra memory by always advancing the weaker side.</p>
 <h2>Start from the obvious</h2>
-<p>Water above column <code>i</code> is <code>min(tallest left, tallest right) - height[i]</code> (or 0). So for each column, scan both directions for the tallest wall:</p>
-<pre><code>for each i:
-    left_max  = max(height[0..i])
-    right_max = max(height[i..n-1])
-    water += min(left_max, right_max) - height[i]</code></pre>
-<p>Correct and readable. But it&#x27;s <code>O(n^2)</code>: every column rescans the whole array for maxima it mostly already knows.</p>
+<p>Water above column <code>i</code> is <code>min(tallest left, tallest right) - height[i]</code> (or 0). So for each column, scan both directions for the tallest wall.</p>
+<pre class="diagram">   height = [4, 2, 0, 3, 2, 5]      column i=2 (height 0)
+
+   tallest to its left  = max(4,2,0) = 4
+   tallest to its right = max(3,2,5) = 5
+   water here = min(4,5) - 0 = 4
+
+   ...but every column rescans the whole array for maxima it mostly already knows</pre>
+<p>Correct and readable. But it&#x27;s about <code>n × n</code>: every column re-scans the entire array for maxima that barely change.</p>
 <h2>Find the waste</h2>
-<p>Those two maxima barely change as <code>i</code> moves by one — yet we recompute them from scratch each time. There are two clean ways to stop repeating the work.</p>
-<p><strong>Precompute the flanks</strong> (the simplest fix): one left-to-right pass filling <code>left_max[i]</code>, one right-to-left pass filling <code>right_max[i]</code>, then a final pass summing. That&#x27;s already O(n) time / O(n) space. The monotonic stack is the same idea done in a *single* pass, resolving water as walls appear.</p>
+<p>Those two flanking maxima shift only slightly as <code>i</code> moves by one — yet we recompute them from scratch each time. Two clean ways to stop repeating the work.</p>
+<p><strong>Precompute the flanks</strong> (the simplest fix): one left-to-right pass filling <code>left_max[i]</code>, one right-to-left pass filling <code>right_max[i]</code>, then a final pass summing. That&#x27;s already one linear pass each. The monotonic stack is the same idea done in a *single* sweep, resolving water as walls appear.</p>
 <h2>The insight (monotonic stack)</h2>
-<p>Keep a stack of indices with <strong>non-increasing</strong> heights — a descending wall on the left waiting for a taller wall on the right. When the current bar is taller than the stack top, that top is a <strong>valley floor</strong> that just found its right wall. Pop it and resolve the slab of water above it:</p>
-<pre><code>for i, h in enumerate(height):
-    while stack and height[stack[-1]] &lt; h:
-        bottom = stack.pop()
-        if not stack: break            # no left wall -&gt; water spills off
-        left  = stack[-1]              # left wall
-        width = i - left - 1
-        bounded = min(height[left], h) - height[bottom]
-        total += width * bounded
-    stack.append(i)</code></pre>
-<p>Why monotonic gives O(n): the descending stack guarantees that when a taller bar arrives, every floor it clears has *both* walls known — left wall is the new top, right wall is <code>i</code>. Each index is pushed and popped once. Each pop &quot;resolves&quot; one horizontal layer of trapped water for good.</p>
-<p><strong>Two pointers (tightest).</strong> Walk inward from both ends, tracking <code>left_max</code> and <code>right_max</code>. The side with the smaller running max is the binding constraint, so that column can be settled immediately — its water is fixed by the weaker side, regardless of what&#x27;s still hidden on the other. O(n) time, O(1) space.</p>
+<p>Keep a stack of indices with <strong>non-increasing</strong> heights — a descending wall on the left, waiting for a taller wall on the right. When the current bar is taller than the stack top, that top is a <strong>valley floor</strong> that just found its right wall. Pop it and resolve the slab of water sitting above it: the left wall is the new top, the right wall is the current bar, and the water depth is the shorter of the two walls minus the floor.</p>
+<pre class="diagram">   height = [4, 1, 3]    (a simple pit)
+   stack holds indices, heights non-increasing bottom -&gt; top
+
+   i=0 h=4:  push 0                    stack:[0]     (walls: 4)
+   i=1 h=1:  1 &lt; 4, no pop, push 1     stack:[0,1]   (walls: 4,1)
+   i=2 h=3:  3 &gt; 1 -&gt; floor is index 1 (height 1)
+             pop 1.  left wall = index 0 (h=4), right wall = index 2 (h=3)
+             depth = min(4,3) - 1 = 2
+             width = 2 - 0 - 1 = 1
+             water += 1 * 2 = 2
+             3 &lt; 4, stop.  push 2      stack:[0,2]
+
+   total = 2</pre>
+<p>Why the descending stack makes this one pass: when a taller bar arrives, every floor it clears has *both* walls known — the left wall is the new top, the right wall is the current index. Each index is pushed once and popped once. Each pop resolves one flat layer of trapped water for good.</p>
+<p><strong>Two pointers (tightest on memory).</strong> Walk inward from both ends, tracking <code>left_max</code> and <code>right_max</code>. The side with the smaller running max is the binding constraint, so that column can be settled immediately — its water is fixed by the weaker side, whatever&#x27;s still hidden on the other. One pass, constant extra memory.</p>
+<pre class="diagram">   height = [4, 2, 0, 3, 2, 5]
+   L-&gt;                          &lt;-R      left_max=4, right_max=5
+
+   left_max(4) &lt;= right_max(5): the LEFT side binds. settle column at L, step L right.
+   at h=2: water += 4-2 = 2 | at h=0: water += 4-0 = 4 | at h=3: water += 4-3 = 1 ...
+   always advance the weaker wall; its side&#x27;s max is what caps the water there.</pre>
 <h2>Complexity</h2>
-<ul><li><strong>Brute:</strong> O(n²) time, O(1) space.</li><li><strong>Stack / precomputed flanks:</strong> O(n) time, O(n) space.</li><li><strong>Two pointers:</strong> O(n) time, O(1) space — the winner when memory is tight.</li></ul>
+<ul><li><strong>Brute:</strong> about <code>n × n</code> time, tiny extra memory.</li><li><strong>Stack / precomputed flanks:</strong> about <code>n</code> time, about <code>n</code> extra memory.</li><li><strong>Two pointers:</strong> about <code>n</code> time, constant extra memory — the winner when memory is tight.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Empty input and single bars trap 0 — handle <code>[]</code> before touching indices.</li><li>In the stack version, <code>break</code> when the stack empties after a pop: a floor with no left wall leaks off the left edge and traps nothing.</li><li>Water is measured in <strong>horizontal slabs</strong> here, not per-column columns; mixing the two mental models causes double counting.</li><li>In two pointers, advance the pointer on the side with the <strong>smaller</strong> max and update its max *before* adding water, or you count the current bar wrong.</li></ul>
+<ul><li>Empty input and single bars trap 0 — handle <code>[]</code> before touching indices.</li><li>In the stack version, stop the inner loop when the stack empties after a pop: a floor with no left wall leaks off the left edge and traps nothing.</li><li>Water is measured in <strong>horizontal slabs</strong> here, not per-column straws; mixing the two mental models causes double counting.</li><li>In two pointers, advance the pointer on the side with the <strong>smaller</strong> max and update its max *before* adding water, or you count the current bar wrong.</li></ul>
 <h2>Transfer</h2>
-<p>This is the nearest-<strong>taller</strong>-element cousin of the histogram problem — same monotonic-stack skeleton, opposite comparison. See <a href="../0084-largest-rectangle-in-histogram/">Largest Rectangle in Histogram / 84</a> (nearest shorter on both sides). The two-pointer &quot;advance the weaker side&quot; trick also drives <a href="../../03-two-pointers/0011-container-with-most-water/">Container With Most Water / 11</a>. Whenever a value is capped by &quot;the weaker of two running bests,&quot; reach for one of these two shapes.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/22-monotonic-stack/0042-trapping-rain-water/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;42. Trapping Rain Water — https://leetcode.com/problems/trapping-rain-water/
+<p>This is the nearest-<strong>taller</strong>-bar cousin of the histogram problem — same monotonic-stack skeleton, opposite comparison. See <a href="../0084-largest-rectangle-in-histogram/">Largest Rectangle in Histogram / 84</a> (nearest shorter on both sides). The two-pointer &quot;advance the weaker side&quot; trick also drives <a href="../../03-two-pointers/0011-container-with-most-water/">Container With Most Water / 11</a>. Whenever a value is capped by &quot;the weaker of two running bests,&quot; reach for one of these two shapes.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/22-monotonic-stack/0042-trapping-rain-water/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;42. Trapping Rain Water — https://leetcode.com/problems/trapping-rain-water/
 
 Given an elevation map of bar heights, compute how many units of water it traps
 after rain. Water sits above a bar up to the shorter of the tallest walls on its

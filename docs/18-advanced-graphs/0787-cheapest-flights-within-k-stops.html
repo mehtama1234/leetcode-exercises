@@ -16,34 +16,63 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">18. Advanced Graphs: Shortest Paths &amp; MST</a> / <span>787</span></nav><article class="notes"><h1>787. Cheapest Flights Within K Stops</h1>
 <p><strong>Pattern:</strong> Shortest path with a hop limit (Bellman-Ford in rounds) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/cheapest-flights-within-k-stops/</p>
 <h2>The problem in plain words</h2>
-<p>You have cities and priced flights between them. Find the cheapest total price to fly from <code>src</code> to <code>dst</code> — but you&#x27;re only allowed at most <code>k</code> stops along the way (so at most <code>k+1</code> flights). If no route fits that limit, return -1.</p>
-<p>The twist that trips people up: the *cheapest* route and the *fewest-flights* route are often different cities apart. A dirt-cheap price might require five hops; a two-hop route might cost more. You have to minimize price <strong>subject to</strong> the hop budget.</p>
+<p>You have cities and priced flights between them. Find the cheapest total price to fly from <code>src</code> to <code>dst</code> — but you may make at most <code>k</code> stops along the way (so at most <code>k+1</code> flights). If no route fits that limit, return -1.</p>
+<p>The twist that trips people up: the *cheapest* route and the *fewest-flights* route are often different. A dirt-cheap price might need five hops; a two-hop route might cost more. You have to make the price as low as possible <strong>while staying inside</strong> the hop budget.</p>
+<pre class="diagram">   0 --100--&gt; 1 --100--&gt; 2 --100--&gt; 0    (loop back)
+                         |
+   1 --600--&gt; 3          200
+                         v
+                         3
+
+   goal: 0 -&gt; 3,  at most k=1 stop (so &lt;= 2 flights)
+
+   0-&gt;1-&gt;3   = 100 + 600 = 700   uses 1 stop   OK
+   0-&gt;1-&gt;2-&gt;3= 100+100+200=400   uses 2 stops  too many, forbidden
+
+   cheaper route exists but breaks the budget  -&gt;  answer = 700</pre>
 <h2>Why this matters</h2>
-<p>The deeper operation is *shortest path under a constraint on path length* — not just &quot;cheapest,&quot; but &quot;cheapest using no more than N steps.&quot; That extra dimension changes everything, because the greedy &quot;finalize the nearest node&quot; trick that Dijkstra relies on breaks: a node reached cheaply might have used up your whole hop budget, so it&#x27;s not actually usable.</p>
-<p>Real systems hit this constantly. Flight and logistics pricing engines cap layovers or transfers. Network routing bounds the number of hops a packet may take (TTL) to prevent loops and control latency. Any &quot;cheapest plan with a limit on the number of moves&quot; — supply chains with a max number of handoffs, currency conversion chains with a trade limit — is this exact shape.</p>
-<p>What the good solution buys is a clean way to fold the step-limit into the algorithm&#x27;s *structure* rather than tracking it as extra state. Bellman-Ford relaxes edges in rounds, and &quot;round number&quot; <strong>is</strong> &quot;flights used.&quot; So bounding hops is just: stop after <code>k+1</code> rounds. Time is <code>O(k·E)</code> — small and predictable.</p>
+<p>The deeper operation is *shortest path under a limit on how many steps you take* — not just &quot;cheapest,&quot; but &quot;cheapest using no more than N steps.&quot; That extra dimension changes everything, because the greedy &quot;finish the nearest node&quot; trick Dijkstra leans on breaks. A node reached cheaply might have burned your whole hop budget getting there, so that cheap price isn&#x27;t actually usable.</p>
+<p>Real systems hit this constantly. Flight and logistics pricing engines cap layovers or transfers. Network routing bounds the number of hops a packet may take (the TTL field) to stop loops and control delay. Any &quot;cheapest plan with a limit on the number of moves&quot; — supply chains with a max number of handoffs, currency conversion chains with a trade limit — is this exact shape.</p>
+<p>What the good solution buys is a clean way to fold the step-limit into the algorithm&#x27;s *structure* instead of tracking it as extra state. Bellman-Ford relaxes links in rounds, and &quot;round number&quot; <strong>is</strong> &quot;flights used.&quot; So bounding hops is just: stop after <code>k+1</code> rounds. Time is about <code>k·E</code> — small and predictable.</p>
 <h2>Start from the obvious</h2>
-<p>The honest first thought: reach for Dijkstra, since we&#x27;re minimizing price over non-negative weights.</p>
-<pre><code>dijkstra from src, pop cheapest node each time</code></pre>
-<p>But plain Dijkstra finalizes a city the moment it&#x27;s reached cheapest — with no memory of *how many flights* that took. It may lock in a cheap price that used too many hops, and reject a pricier route that would&#x27;ve fit the budget. The hop limit is invisible to it. You&#x27;d have to carry hop-count as extra state, and then you can no longer finalize each city just once.</p>
+<p>The honest first thought: reach for Dijkstra, since we&#x27;re minimizing price over non-negative prices.</p>
+<pre class="diagram">   dijkstra from src, always pop the cheapest-so-far city</pre>
+<p>But plain Dijkstra locks in a city the moment it is reached cheapest — with no memory of *how many flights* that took. It may fix a cheap price that used too many hops, and turn away a pricier route that would have fit the budget. The hop limit is invisible to it. You&#x27;d have to carry hop-count as extra state, and then you can no longer finish each city just once.</p>
 <h2>The insight</h2>
-<p>Bellman-Ford already thinks in the right unit. It works by <strong>rounds</strong>: in each round it relaxes every edge once. Crucially:</p>
+<p>Bellman-Ford already thinks in the right unit. It works in <strong>rounds</strong>: each round relaxes every link once. The key fact:</p>
 <blockquote>After round <code>i</code>, <code>dist[city]</code> = cheapest price to reach <code>city</code> using <strong>at most <code>i</code> flights</strong>.</blockquote>
-<p>So the hop limit isn&#x27;t a special case — it&#x27;s just how many rounds you run. At most <code>k</code> stops means at most <code>k+1</code> flights, so run exactly <code>k+1</code> rounds:</p>
-<pre><code>dist[src] = 0, everything else = infinity
-repeat (k+1) times:
-    curr = copy of dist            # snapshot — one flight added this round
-    for each flight (u, v, price):
-        curr[v] = min(curr[v], dist[u] + price)
-    dist = curr
-answer = dist[dst], or -1 if still infinity</code></pre>
-<p>The <strong>snapshot copy</strong> is the subtle load-bearing detail. If you relaxed into <code>dist</code> in place, a price could chain across two edges *within one round*, sneaking in an extra flight and quietly exceeding the hop limit. Reading from the previous round&#x27;s frozen <code>dist</code> guarantees exactly one new flight per round.</p>
+<p>So the hop limit isn&#x27;t a special case — it is just how many rounds you run. At most <code>k</code> stops means at most <code>k+1</code> flights, so run exactly <code>k+1</code> rounds.</p>
+<pre class="diagram">   flights: 0-&gt;1 (100)  1-&gt;2 (100)  0-&gt;2 (500)
+   src=0  dst=2  k=1  -&gt;  run 2 rounds.   INF = infinity
+
+   start        dist = [ 0, INF, INF ]
+
+   round 1  (&lt;=1 flight)   read from the frozen start:
+       0-&gt;1: 0+100 = 100  &lt;  INF   set curr[1]=100
+       0-&gt;2: 0+500 = 500  &lt;  INF   set curr[2]=500
+       1-&gt;2: 1 is INF at start     no change
+                            dist = [ 0, 100, 500 ]
+
+   round 2  (&lt;=2 flights)  read from round-1&#x27;s frozen dist:
+       1-&gt;2: 100+100 = 200  &lt;  500  set curr[2]=200
+                            dist = [ 0, 100, 200 ]
+
+   dist[2] = 200   (the 0-&gt;1-&gt;2 route, exactly 2 flights)</pre>
+<p>The <strong>frozen snapshot</strong> each round is the load-bearing detail. If you relaxed into <code>dist</code> in place, a price could chain across two links *within one round*, sneaking in an extra flight and quietly breaking the hop limit. Reading from the previous round&#x27;s frozen <code>dist</code> guarantees exactly one new flight per round.</p>
+<pre class="diagram">   why the snapshot matters (in-place would be WRONG):
+
+   round 1, if we wrote into the SAME array left-to-right:
+       0-&gt;1 sets dist[1]=100
+       1-&gt;2 then reads the FRESH dist[1]=100  -&gt;  dist[2]=200
+   that used TWO flights inside &quot;round 1&quot; — the budget is now a lie.
+
+   reading from a frozen copy blocks that chain: one flight per round.</pre>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(k · E)</code> — <code>k+1</code> rounds, each scanning all <code>E</code> flights once.</li><li><strong>Space:</strong> <code>O(V)</code> — two distance arrays of size <code>n</code> (<code>dist</code> and its snapshot).</li></ul>
+<ul><li><strong>Time: about k·E.</strong> <code>k+1</code> rounds, each scanning all <code>E</code> flights once. Double the hop budget and you roughly double the work.</li><li><strong>Extra memory: about V.</strong> Two distance arrays of size <code>n</code> (<code>dist</code> and its snapshot).</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>k stops = k+1 flights.</strong> Run <code>k+1</code> rounds, not <code>k</code>. Off-by-one here is the classic bug.</li><li><strong>The snapshot copy is mandatory.</strong> Relaxing in place lets a route take extra hops in a single round and corrupts the answer.</li><li>Don&#x27;t reach for plain Dijkstra — it can&#x27;t respect the hop budget without being reworked to carry hop-count, at which point it&#x27;s no longer the simple version.</li><li>Handle <strong><code>src == dst</code></strong> (answer 0) and genuinely unreachable <code>dst</code> (-1).</li></ul>
+<ul><li><strong>k stops = k+1 flights.</strong> Run <code>k+1</code> rounds, not <code>k</code>. Off-by-one here is the classic bug.</li><li><strong>The snapshot copy is mandatory.</strong> Relaxing in place lets a route take extra hops in a single round and corrupts the answer.</li><li>Don&#x27;t reach for plain Dijkstra — it can&#x27;t respect the hop budget without being reworked to carry hop-count, at which point it is no longer the simple version.</li><li>Handle <strong><code>src == dst</code></strong> (answer 0) and a genuinely unreachable <code>dst</code> (-1).</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Relax edges in rounds, where round = steps used&quot; is the reusable trick for any step-bounded shortest path. It generalizes Bellman-Ford, which is also the go-to when edges can be <strong>negative</strong> (Dijkstra fails there). Compare with <a href="../0743-network-delay-time/">Network Delay Time / 743</a>, which is the *unbounded* version and so gets to use Dijkstra&#x27;s faster heap. A Dijkstra variant that tracks <code>(cost, city, stops)</code> in the heap solves this too — but the round-based version is simpler to reason about.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/18-advanced-graphs/0787-cheapest-flights-within-k-stops/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;787. Cheapest Flights Within K Stops — https://leetcode.com/problems/cheapest-flights-within-k-stops/
+<p>&quot;Relax links in rounds, where round = steps used&quot; is the reusable trick for any step-bounded shortest path. It is Bellman-Ford, which is also the go-to when links can be <strong>negative</strong> (Dijkstra fails there). Compare with <a href="../0743-network-delay-time/">Network Delay Time / 743</a>, the *unbounded* version, which gets to use Dijkstra&#x27;s faster heap. A Dijkstra variant that tracks <code>(cost, city, stops)</code> in the heap solves this too — but the round-based version is easier to reason about.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/18-advanced-graphs/0787-cheapest-flights-within-k-stops/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;787. Cheapest Flights Within K Stops — https://leetcode.com/problems/cheapest-flights-within-k-stops/
 
 Find the cheapest price from `src` to `dst` using at most `k` intermediate stops
 (so at most k+1 flights). Return -1 if no such route exists.

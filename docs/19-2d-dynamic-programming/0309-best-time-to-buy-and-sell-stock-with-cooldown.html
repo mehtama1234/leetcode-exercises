@@ -16,32 +16,52 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">19. 2-D Dynamic Programming</a> / <span>309</span></nav><article class="notes"><h1>309. Best Time to Buy and Sell Stock with Cooldown</h1>
 <p><strong>Pattern:</strong> 2-D dynamic programming (state machine over time) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/</p>
 <h2>The problem in plain words</h2>
-<p>Prices for a stock, one per day. You can buy and sell any number of times but hold at most one share, and after you <strong>sell</strong> you must wait one day before buying again. Find the largest total profit.</p>
+<p>You have a list of daily stock prices. You can buy and sell as many times as you want, but the day after you sell you must sit out — no buying. You can&#x27;t hold two shares at once. Find the most profit you can make.</p>
+<pre class="diagram">   prices = [1, 2, 3, 0, 2]
+
+   day:      0  1  2  3  4
+   price:    1  2  3  0  2
+   action:  buy    sell  X  buy sell   (X = forced cooldown after selling)
+            -1     +3          -0  +2
+   profit = (3 - 1) + (2 - 0) = 3</pre>
 <h2>Why this matters</h2>
-<p>The real skill here is *modeling a decision process as a small set of states with rules for moving between them, then finding the best path through time.* The stock is a prop — what you&#x27;re building is a finite state machine (hold / just-sold / free) and letting DP pick the highest-value walk. The cooldown is a constraint on which transitions are legal, and encoding a rule as &quot;you can only reach this state through that state&quot; is the transferable trick.</p>
-<p>That modeling shows up any time an action forces a temporary lockout: a rate limiter that blocks the next request after one fires, a machine that needs a cool-off between jobs, a retry policy with a mandatory backoff, an ad system that can&#x27;t re-show a creative for N slots. Each is &quot;take an action, then you&#x27;re barred from a class of actions for a window.&quot;</p>
-<p>What the good solution buys is <code>O(n)</code> time and — after rolling the table — <code>O(1)</code> memory: you decide the entire trading strategy in a single pass with three running numbers, no lookahead, no re-simulating.</p>
+<p>The clean way to think about this isn&#x27;t &quot;when do I trade?&quot; — it&#x27;s &quot;what situation am I in at the end of each day?&quot; There are only a few situations: holding a share, just sold today, or free and idle. Each day you move between them by a fixed set of legal moves. That reframing — a small set of states, a fixed set of transitions, march forward one day at a time — is a *state machine*, and it makes the cooldown rule almost disappear: it&#x27;s just one missing arrow between states.</p>
+<p>State machines like this run trading logic, game AI, network protocols, and UI flows — anywhere the future depends only on which state you&#x27;re in now, not the whole history of how you got there.</p>
 <h2>Start from the obvious</h2>
-<p>The only things that matter on a given day are the day itself and whether you hold a share. Recurse on <code>(day, holding)</code>:</p>
-<pre><code>def best(day, holding):
-    if day &gt;= n: return 0
-    rest = best(day+1, holding)              # do nothing
-    if holding: return max(rest, prices[day] + best(day+2, False))  # sell, then cooldown
-    else:       return max(rest, -prices[day] + best(day+1, True))  # buy</code></pre>
-<p>The cooldown is simply the <code>day+2</code> on the sell branch — selling skips the very next day. Without memoization this branches exponentially.</p>
-<h2>Find the waste</h2>
-<p>There are only <code>2n</code> distinct <code>(day, holding)</code> states, but the raw recursion revisits them through countless different action histories. Cache on <code>(day, holding)</code> and it&#x27;s <code>O(n)</code>. That&#x27;s already an accepted solution.</p>
-<h2>The insight</h2>
-<p>Read it bottom-up and name the states after each day:</p>
-<ul><li><strong>hold</strong> — best profit while holding a share.</li><li><strong>sold</strong> — best profit having sold *today* (tomorrow is a forced cooldown).</li><li><strong>rest</strong> — best profit holding nothing and free to buy.</li></ul>
-<pre><code>sold&#x27; = hold + p               # sell today
-hold&#x27; = max(hold, rest - p)    # keep holding, or buy today from a free day
-rest&#x27; = max(rest, sold)        # stay free, or yesterday&#x27;s sale&#x27;s cooldown is over</code></pre>
-<p>The cooldown is enforced structurally: a fresh <strong>buy</strong> is only reachable from <strong>rest</strong>, and you only *enter* <strong>rest</strong> the day after being in <strong>sold</strong>. So there is no way to buy on the day right after selling — the wall between <code>sold</code> and <code>rest</code> is the one-day wait. Three scalars replace the whole table.</p>
+<p>Track two things per day: the day number, and whether you currently hold a share. From &quot;not holding&quot; you may rest or buy. From &quot;holding&quot; you may rest or sell — and selling jumps you two days forward, because the day after is a forced cooldown. Take the best over the choices.</p>
+<pre class="diagram">   best(day, holding):
+      not holding -&gt; rest to (day+1, no)   OR   buy to (day+1, yes),  pay price
+      holding     -&gt; rest to (day+1, yes)  OR   sell to (day+2, no),  gain price
+                                                       ^^^^^ skips cooldown day</pre>
+<p>That&#x27;s a grid of states — one row per day, two columns (holding / not) — but written as plain recursion it re-solves the same <code>(day, holding)</code> pairs, so cache them.</p>
+<h2>The insight — three end-of-day states</h2>
+<p>Sharpen &quot;not holding&quot; into two cases, because the cooldown depends on *why* you&#x27;re idle. End each day in one of three states:</p>
+<ul><li><strong>hold</strong> — you own a share.</li><li><strong>sold</strong> — you sold *today* (so tomorrow is a forced rest).</li><li><strong>rest</strong> — you own nothing and are free to buy (not fresh off a sale).</li></ul>
+<p>Draw the day-by-day grid of best profit reachable in each state:</p>
+<pre class="diagram">   prices = [1, 2, 3, 0, 2]
+
+   day:       start   1     2     3     0     2
+   hold  |    -inf   -1    -1    -1     0     0
+   sold  |     0      0     1     2    -1     2
+   rest  |     0      0     0     1     2     2
+                                              ^ answer = max(sold, rest) = 2</pre>
+<p>Now fill one column (one day, price <code>p</code>) from the previous column&#x27;s three cells:</p>
+<pre class="diagram">   moving from yesterday to today, price = p
+
+   yesterday:   hold      sold      rest
+                  \  \      |         / |
+                   \  \     |        /  |
+   today:  hold&#x27; = max(hold, rest - p)     keep holding, or buy from a free day
+           sold&#x27; = hold + p                sell the share you held
+           rest&#x27; = max(rest, sold)         stay free, or the cooldown just ended
+
+   the cooldown is the WALL between sold and rest: the only door to a fresh
+   buy is through rest, and you only enter rest the day AFTER a sale.</pre>
+<p>Since today&#x27;s numbers depend only on yesterday&#x27;s three, you don&#x27;t need the grid at all — carry three running values and update them each day. That&#x27;s the O(1)-space version in <code>solution.py</code>. The answer never ends in *hold* (a share you&#x27;re still holding is unsold profit), so it&#x27;s <code>max(sold, rest)</code>.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n)</code> — one pass, constant work per day.</li><li><strong>Space:</strong> <code>O(1)</code> for the rolled version (<code>O(n)</code> for the plain memo). Only the previous day&#x27;s three numbers are needed.</li></ul>
+<ul><li><strong>Time: about n steps</strong> — one pass over the prices, a few comparisons per day.</li><li><strong>Extra memory: constant</strong> — three running numbers. (The memoized version uses about n for its cache.)</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Ordering the three updates wrong within a day: compute <code>sold</code> from the *old* <code>hold</code>, and <code>rest</code> from the *old* <code>sold</code> (stash <code>prev_sold</code> first), or you&#x27;ll let a sale and a re-buy happen on the same day.</li><li>Initializing <code>hold = 0</code>: before any day you cannot be holding, so it must be <code>-inf</code>.</li><li>Forgetting the answer is <code>max(sold, rest)</code> — ending while still holding a share is never optimal (you&#x27;d have unrealized cost, not profit).</li><li>Empty price list should return 0.</li></ul>
+<ul><li>Collapsing &quot;idle&quot; into one state. You need *sold* and *rest* separate, or the cooldown wall vanishes and you&#x27;ll let a buy happen the day after a sale.</li><li>Updating the three values out of order and reading a value already overwritten. Stash yesterday&#x27;s <code>sold</code> before recomputing (see <code>prev_sold</code> in the code).</li><li>Ending in *hold*. A share you never sold isn&#x27;t profit — answer over <code>sold</code>/<code>rest</code>.</li></ul>
 <h2>Transfer</h2>
 <p>The reusable pattern is *DP as a state machine: enumerate a handful of states, write each legal transition, take the max, then roll the table to scalars.* Siblings: <a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/">Best Time to Buy and Sell Stock II / 122</a> (no cooldown, greedy collapses it), <a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/">with Transaction Fee / 714</a> (same machine, a fee on the sell edge), and <a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/">III / 123</a> (add a &quot;transactions used&quot; dimension).</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0309-best-time-to-buy-and-sell-stock-with-cooldown/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;309. Best Time to Buy and Sell Stock with Cooldown —
 https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/

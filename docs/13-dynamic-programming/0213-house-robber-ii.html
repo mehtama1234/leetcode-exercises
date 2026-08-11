@@ -16,35 +16,53 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">13. Dynamic Programming: Memoization / Tabulation</a> / <span>213</span></nav><article class="notes"><h1>213. House Robber II</h1>
 <p><strong>Pattern:</strong> Dynamic programming (reduce a circular constraint to two linear runs) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/house-robber-ii/</p>
 <h2>The problem in plain words</h2>
-<p>Exactly <a href="../0198-house-robber/">House Robber / 198</a> — houses in a row, each with money, no robbing two neighbors — with one twist: the houses form a <strong>circle</strong>. That means the first house and the last house are neighbors too, so you can&#x27;t rob both of them. Return the most money you can safely take.</p>
+<p>Exactly <a href="../0198-house-robber/">House Robber / 198</a> — houses in a row, each with money, no robbing two neighbors — with one twist: the houses form a <strong>circle</strong>. Now the first house and the last house are neighbors too, so you can&#x27;t rob both of them. Return the most money you can safely take.</p>
+<pre class="diagram">             [0]---[1]
+            /         \
+          [4]         [2]
+            \         /
+             [3]-----.
+
+   0 and 4 are now neighbors (the ends touch).
+   robbing both is illegal, even though in a straight row it was fine.</pre>
 <h2>Why this matters</h2>
-<p>The real lesson here is a general move: <strong>when a constraint couples the two ends of a sequence, don&#x27;t tangle it into the recurrence — fix one boundary decision and solve the rest as an ordinary line, once per choice, then combine.</strong> The fundamental operation is *case-splitting on a wrap-around* to reduce a circular problem to linear ones you already know how to solve.</p>
-<p>Where &quot;break the wrap-around by fixing an endpoint&quot; shows up:</p>
-<ul><li><strong>Circular scheduling</strong> — round-robin shifts, ring buffers, or a rotating on-call rota where the first and last slots are adjacent.</li><li><strong>Layout on a loop</strong> — placing items around a ring (fixtures on a circular track, seating at a round table) under a no-adjacent rule.</li><li><strong>Any circular-array DP</strong> — max circular subarray sums and similar problems all use this fix-a-boundary trick.</li></ul>
-<p>The good solution buys <strong>simplicity and correctness at the same cost</strong>: two linear <code>O(n)</code> sweeps and <code>O(1)</code> state, instead of a fiddly, bug-prone recurrence that tries to remember whether the first house was robbed.</p>
+<p>The real lesson is a general move: <strong>when a constraint ties the two ends of a sequence together, don&#x27;t try to weave it into the recurrence — fix one boundary decision, solve the rest as an ordinary line, once per choice, then combine.</strong> You split on the wrap-around to turn a circular problem into linear ones you already know how to solve.</p>
+<p>That &quot;break the wrap-around by fixing an endpoint&quot; move shows up in round-robin shift schedules and ring buffers where the first and last slots touch, in placing items around a ring under a no-adjacent rule, and in circular-array DPs like the maximum circular subarray sum.</p>
+<p>The clean version buys correctness at no extra cost: two linear passes and constant state, instead of a fiddly recurrence that has to remember whether the first house was robbed so it can forbid the last.</p>
 <h2>Start from the obvious</h2>
-<p>Your instinct is to reuse the linear solution. But the wrap-around breaks it: the linear DP is perfectly happy to rob both house <code>0</code> and house <code>n-1</code>, and in a circle that&#x27;s illegal. You could try to bolt the &quot;ends touch&quot; rule directly into the recurrence, tracking whether you robbed the first house so you can forbid the last — doable, but fiddly and easy to get wrong.</p>
-<h2>Find the waste — and the cleaner framing</h2>
-<p>Step back and look at what the circle actually adds: <strong>a single extra constraint</strong>, &quot;not both end houses&quot;. Instead of encoding that inside the DP, use it to *split* the problem.</p>
-<p>Any valid circular plan falls into one of two buckets, because it can never contain both ends:</p>
-<ul><li><strong>It doesn&#x27;t rob the last house.</strong> Then houses <code>0 .. n-2</code> behave like a plain straight row — the wrap-around neighbor of house 0 (the last house) is out of play.</li><li><strong>It doesn&#x27;t rob the first house.</strong> Then houses <code>1 .. n-1</code> behave like a plain straight row.</li></ul>
-<p>Every legal circular plan lives in at least one bucket (a plan that skips both ends is counted in both, which is fine — we&#x27;re taking a max, not a sum). So:</p>
+<p>Your instinct is to reuse the linear solution. But the wrap-around breaks it: the straight-line DP is perfectly happy to rob both house <code>0</code> and house <code>n-1</code>, and in a circle that&#x27;s illegal. You could bolt the &quot;ends touch&quot; rule directly into the recurrence — tracking whether you robbed the first house so you can forbid the last — but that&#x27;s fiddly and easy to get wrong.</p>
+<h2>The insight</h2>
+<p>Step back and look at what the circle actually adds: <strong>one extra constraint</strong>, &quot;not both end houses.&quot; Instead of encoding that inside the DP, use it to *split* the problem in two.</p>
+<p>Any legal circular plan must fall into one of these buckets, since it can never hold both ends:</p>
+<ul><li><strong>It doesn&#x27;t rob the last house</strong> → houses <code>0 .. n-2</code> behave like a plain straight row.</li><li><strong>It doesn&#x27;t rob the first house</strong> → houses <code>1 .. n-1</code> behave like a plain straight row.</li></ul>
+<pre class="diagram">   nums = [ 2 ][ 3 ][ 2 ]     (a circle; ends 0 and 2 touch)
+
+   bucket A: drop the LAST house -&gt; run robber on [ 2 ][ 3 ]      = 3
+             ^^^^^^^^^^^^^^^^^^^^                  0    1
+
+   bucket B: drop the FIRST house -&gt; run robber on      [ 3 ][ 2 ] = 3
+             ^^^^^^^^^^^^^^^^^^^^^                        1    2
+
+   answer = max(A, B) = max(3, 3) = 3     (can&#x27;t take both 2s)</pre>
+<p>Every legal circular plan lives in at least one bucket (a plan that skips both ends lands in both — fine, we take a max, not a sum). So:</p>
 <pre><code>answer = max( rob_line(nums[0 .. n-2]),
               rob_line(nums[1 .. n-1]) )</code></pre>
-<p>We reuse the already-solved linear robber twice and pick the better run. The circular difficulty dissolves into two ordinary problems.</p>
-<h2>The insight</h2>
-<p><strong>When a constraint couples the two ends of a sequence, fix one end&#x27;s decision and solve the rest as a normal line — once per choice, then combine.</strong> Here the decision is &quot;which end do I leave untouched&quot;, giving two linear passes.</p>
+<p>We reuse the already-solved linear robber twice and keep the better run. The circular difficulty dissolves into two ordinary problems.</p>
 <p><code>rob_line</code> is the same two-rolling-variable House Robber:</p>
-<pre><code>take, skip = 0, 0
-for money in row:
-    take, skip = skip + money, max(take, skip)
-return max(take, skip)</code></pre>
+<pre class="diagram">   run rob_line on [ 1 ][ 3 ][ 1 ][ 3 ][ 100 ]  (bucket B of a bigger example)
+
+   money:     1      3      1      3     100
+   take:  0 -&gt;1     0+3    3+1    4+3   6+100
+   skip:  0-&gt; 0  -&gt; 1  -&gt;  3  -&gt;  4  -&gt;  103
+              \____ take = prev skip + money;  skip = max(prev take, prev skip)
+
+   answer for this line = max(take, skip) = 103   (rob the 3 and the 100)</pre>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n)</code> — two linear sweeps, each <code>O(n)</code>.</li><li><strong>Space:</strong> <code>O(1)</code> for the DP itself. (Slicing <code>nums[:-1]</code> / <code>nums[1:]</code> copies, which is <code>O(n)</code> memory; iterate over index ranges instead if you want strict <code>O(1)</code>.)</li></ul>
+<ul><li><strong>Time:</strong> about <code>n</code> steps — two linear sweeps, each about <code>n</code>.</li><li><strong>Space:</strong> constant for the DP itself. (Slicing <code>nums[:-1]</code> / <code>nums[1:]</code> copies, which costs <code>O(n)</code> memory; iterate over index ranges instead if you want strictly constant memory.)</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>The <code>n == 1</code> case.</strong> With one house there is no &quot;other end&quot;, and both slices <code>nums[:-1]</code> and <code>nums[1:]</code> are empty, giving <code>0</code>. Handle single-house directly and return <code>nums[0]</code>.</li><li>Trying to drop *just the first* or *just the last* house isn&#x27;t enough on its own — you need <strong>both</strong> runs and the max; each alone misses plans that the other allows.</li><li>Don&#x27;t double-count: it&#x27;s tempting to think the two buckets must be disjoint. They aren&#x27;t (a plan robbing neither end is in both), but <code>max</code> handles that correctly.</li></ul>
+<ul><li><strong>The <code>n == 1</code> case.</strong> With one house there is no &quot;other end,&quot; and both slices <code>nums[:-1]</code> and <code>nums[1:]</code> come out empty, giving <code>0</code>. Handle a single house directly and return <code>nums[0]</code>.</li><li>Dropping *just* the first or *just* the last house isn&#x27;t enough on its own — you need <strong>both</strong> runs and the max; each alone misses plans the other allows.</li><li>Don&#x27;t assume the two buckets are disjoint. They aren&#x27;t (a plan robbing neither end sits in both), but <code>max</code> handles the overlap correctly.</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Break a circular / wrap-around constraint by fixing one boundary choice and solving linear cases&quot; is a reusable move. You&#x27;ll see it whenever a problem is a known linear DP made circular. The underlying line solver is <a href="../0198-house-robber/">House Robber / 198</a>; the same reduce-to-cases instinct shows up in circular-array problems like <a href="https://leetcode.com/problems/maximum-sum-circular-subarray/">Maximum Sum Circular Subarray / 918</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0213-house-robber-ii/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;213. House Robber II — https://leetcode.com/problems/house-robber-ii/
+<p>&quot;Break a circular / wrap-around constraint by fixing one boundary choice and solving the linear cases&quot; is a reusable move — reach for it whenever a problem is a known linear DP made circular. The underlying line solver is <a href="../0198-house-robber/">House Robber / 198</a>; the same reduce-to-cases instinct shows up in circular-array problems like <a href="https://leetcode.com/problems/maximum-sum-circular-subarray/">Maximum Sum Circular Subarray / 918</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0213-house-robber-ii/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;213. House Robber II — https://leetcode.com/problems/house-robber-ii/
 
 Same as House Robber, but the houses are arranged in a circle, so the first and
 last house are also adjacent. Return the maximum you can rob without hitting two

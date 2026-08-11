@@ -6,94 +6,109 @@
 
 ## The problem in plain words
 
-You're given two non-negative whole numbers written as strings — possibly
-hundreds of digits long — and you must return their product, also as a string.
-The catch: you can't just call `int(num1) * int(num2)`; you have to multiply
-them the way you were taught on paper.
+Two non-negative whole numbers arrive as strings — possibly hundreds of digits
+long, far bigger than any machine integer. Multiply them and give back the
+product as a string. No cheating by converting to `int` and using `*`; do the
+multiplication by hand, the way you learned on paper.
+
+```diagram
+        1 2 3
+      x 4 5 6
+      -------
+        7 3 8     <- 123 x 6
+      6 1 5       <- 123 x 5, shifted one place left
+    4 9 2         <- 123 x 4, shifted two places left
+    ---------
+    5 6 0 8 8
+```
 
 ## Why this matters
 
-Underneath the puzzle is the reality that *the numbers are too big to fit in any
-native integer type, so you compute with arrays of digits* — and multiplication,
-unlike addition, needs you to place each partial product at the right place
-value and then settle all the carries.
+The point is that numbers too big for a machine word have to be stored as arrays
+of digits, and every operation on them is done one digit at a time. Multiplication
+is the interesting one because a single digit-times-digit gives a two-digit result
+that has to land in the right *place* and carry into the next.
 
-That exact move is what big-integer libraries do. Python's unbounded `int`,
-Java's `BigInteger`, and every RSA/elliptic-curve crypto routine multiply
-multi-hundred-digit numbers as arrays of "limbs" using exactly this
-place-value-plus-carry structure (with faster algorithms layered on top for huge
-sizes). Financial and scientific systems that need exact, non-floating-point
-arithmetic rely on the same core.
-
-What the good solution buys is **correctness at any size** with a predictable
-`O(m·n)` cost, and it teaches the one insight everything bigger builds on: the
-digit at position `i` times the digit at position `j` always lands in the
-product's place `i + j`. Get that placement right and the carries take care of
-the rest.
+This is the core of every big-number library — Python's own integers, Java's
+`BigInteger`, the modular arithmetic under RSA and elliptic-curve crypto. When a
+number won't fit in 64 bits, this per-digit multiply with carries is what actually
+runs. Learning where each partial product lands, and how carries settle, is
+learning how arbitrary-precision math works.
 
 ## Start from the obvious
 
-The tempting shortcut:
+Turn both strings into integers, multiply, turn the result back into a string.
 
-```
-return str(int(num1) * int(num2))
+```diagram
+   "123" -> 123 ,  "456" -> 456
+   123 * 456 = 56088  ->  "56088"
 ```
 
-It's the honest first thought and it even passes — but only because Python
-already implements big-integer multiplication for you. The problem exists to
-make you *build* that, so the shortcut sidesteps the entire lesson. We reject it
-on purpose.
+Fine for short numbers. But the whole reason the problem hands you strings is that
+the numbers might be longer than any native integer can hold. Leaning on `int`
+either fails outright on a fixed-width machine or quietly relies on the very
+big-number support the problem wants you to build. So do it by hand.
 
 ## The insight
 
-Remember stacking numbers on paper. To multiply `123 × 456`, you compute
-`123×6`, then `123×5` shifted one place left, then `123×4` shifted two places —
-and add the columns. The shift is the whole trick, and there's a clean rule for
-it:
+Here is the fact that makes it clean. When you multiply digit `i` of the first
+number by digit `j` of the second, that partial product always lands in the same
+place: position `i + j` counted from the right. A number with `m` digits times one
+with `n` digits has at most `m + n` digits, so make a result array of that size,
+drop every digit-times-digit product into its `i + j` slot, and settle the carries
+at the very end.
 
-> If you number both inputs' digits **from the right** starting at 0, then digit
-> `i` of one times digit `j` of the other contributes to place `i + j` of the
-> product.
+```diagram
+   num1 = "12"  (positions from right: '2'->0, '1'->1)
+   num2 = "34"  (positions from right: '4'->0, '3'->1)
 
-So allocate a result array of length `m + n` (a product of an `m`-digit and an
-`n`-digit number can't be longer than that). For every pair of digits, add their
-product into slot `i + j`. Don't worry about carries yet — just accumulate:
+   result[]:   [ .  .  .  . ]   indices 0..3, 0 = units place
 
+   2 x 4 = 8   -> slot 0+0=0     result[0] += 8
+   2 x 3 = 6   -> slot 0+1=1     result[1] += 6
+   1 x 4 = 4   -> slot 1+0=1     result[1] += 4
+   1 x 3 = 3   -> slot 1+1=2     result[2] += 3
+
+   result (before carries): [ 8, 10, 3, 0 ]
+                                  ^ 10 is too big for one slot
 ```
-result = [0] * (m + n)
-for i (from right of num1):
-    for j (from right of num2):
-        result[i + j] += d1 * d2
-```
 
-Then make one pass to settle carries: each slot keeps its ones digit, the rest
-rolls into the next slot to the left. Finally strip leading zeros and join.
+Notice slot 1 holds `10` — bigger than a single digit. That's fine; carries are
+resolved in one final left-to-right sweep. Each slot keeps its ones digit and
+passes the rest up to the next slot.
+
+```diagram
+   settle carries, slot by slot (0 = units):
+     slot 0:  8            -> keep 8,  carry 0
+     slot 1:  10 + 0 = 10  -> keep 0,  carry 1
+     slot 2:  3  + 1 = 4   -> keep 4,  carry 0
+     slot 3:  0  + 0 = 0   -> keep 0
+
+   result (little-endian): [ 8, 0, 4, 0 ]
+   read big-endian, drop leading zeros:  "408"
+   check: 12 x 34 = 408  ok
+```
 
 ## Complexity
 
-- **Time:** `O(m·n)` — every digit of one number meets every digit of the other
-  once, plus an `O(m+n)` carry pass. (Specialized algorithms like Karatsuba beat
-  this for very large inputs, but the schoolbook method is the foundation.)
-- **Space:** `O(m + n)` for the result array.
+- **Time: about m x n steps.** Every digit of the first number meets every digit
+  of the second once, then one linear sweep settles the carries.
+- **Extra memory: about m + n.** The result array, the most places the product
+  can occupy.
 
 ## Pitfalls
 
-- **The `"0"` case** — if either input is `"0"`, return `"0"` immediately;
-  otherwise you emit `"000..."` from the padded array.
-- **Leading zeros** — the result array is fixed at length `m + n`, but the
-  product may be shorter, so trim leading zeros (keeping at least one digit).
-- **Place-value indexing** — mixing up left-counted vs right-counted indices is
-  the classic bug; being explicit that place = `i + j` from the right avoids it.
-- **Deferring carries** — accumulating first and normalizing carries in a single
-  final pass is cleaner and avoids carrying inside the double loop.
-- Don't fall back to `int()` — the exercise is to not need it.
+- Getting the place wrong. The partial product of digits at positions `i` and `j`
+  (counted from the right) lands at slot `i + j`, not `i * j`.
+- Forgetting the `"0"` case — if either input is `"0"`, the answer is `"0"`, not a
+  string of leading zeros.
+- Trimming leading zeros too eagerly (or not at all). The top slot may or may not
+  carry, so strip leading zeros but leave a single `0` if that's all there is.
 
 ## Transfer
 
-This is the multiplication sibling of the addition problems: carries over digit
-arrays appear in
-[Add Strings / 415](https://leetcode.com/problems/add-strings/),
-[Add Binary / 67](https://leetcode.com/problems/add-binary/), and
-[Plus One / 66](../0066-plus-one/). The place = `i + j` accumulation idea also
-underlies polynomial multiplication and, taken further, the FFT-based multiply
-used for enormous numbers.
+The reusable move is **store a big number as a digit array, place each partial
+result by its position, and settle carries in one final pass.** It shares its
+carry machinery with [Plus One / 66](../0066-plus-one/) and
+[Add Binary / 67](https://leetcode.com/problems/add-binary/), and it's the
+schoolbook multiply that every arbitrary-precision integer library is built on.

@@ -16,40 +16,53 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">24. Cyclic Sort &amp; Index Tricks</a> / <span>287</span></nav><article class="notes"><h1>287. Find the Duplicate Number</h1>
 <p><strong>Pattern:</strong> Index-as-hash → linked-list cycle (Floyd&#x27;s tortoise and hare) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/find-the-duplicate-number/</p>
 <h2>The problem in plain words</h2>
-<p>You have a list of length n+1 where every value is between 1 and n. By the pigeonhole principle at least one value repeats — and here exactly one value does, possibly many times. Find that repeated value. Two hard rules: <strong>don&#x27;t modify the array</strong>, and use only <strong>O(1) extra space</strong>.</p>
+<p>You have a list of length <code>n+1</code> where every value is between 1 and <code>n</code>. With <code>n+1</code> values crammed into <code>n</code> possible slots, at least one value has to repeat — and here exactly one value does, possibly many times. Find that repeated value. Two hard rules: <strong>don&#x27;t modify the array</strong>, and use only a constant amount of extra memory.</p>
+<pre class="diagram">   nums = [1, 3, 4, 2, 2]      length 5, values in 1..4
+
+   value counts:  1:once  2:twice  3:once  4:once
+   answer = 2</pre>
 <h2>Why this matters</h2>
-<p>The interesting part isn&#x27;t finding a duplicate — it&#x27;s finding one under a resource lockdown that kills the obvious tools. You can&#x27;t sort (that modifies the array), you can&#x27;t hash (that&#x27;s O(n) space), and you can&#x27;t sign-flip like #442/#448 (that mutates). The way out is a change of *representation*: read the array as a function and the duplicate becomes the entrance of a cycle in an implicit linked list, which Floyd&#x27;s algorithm locates with two pointers and nothing else.</p>
-<p>That reframing — &quot;treat <code>i → nums[i]</code> as pointers and reason about cycles&quot; — is a genuinely reusable tool. Detecting a loop in a linked structure or a state machine you can&#x27;t fully store, finding where a pseudo-random generator&#x27;s sequence starts repeating (Pollard&#x27;s rho for integer factorization is Floyd&#x27;s cycle-finding applied to a numeric map), and spotting reference cycles all lean on the same two-pointer trick. The constraint &quot;you may not touch the input and you have no room to spare&quot; is common when the array is memory-mapped, shared, or enormous.</p>
-<p>What the good solution buys is O(1) space on read-only input: it answers the question without a scratch copy or a hash set, respecting a hard memory and immutability budget that the easy solutions blow through.</p>
+<p>The interesting part isn&#x27;t finding a duplicate — it&#x27;s finding one under a resource lockdown that kills the obvious tools. You can&#x27;t sort (that modifies the array), you can&#x27;t build a set (that&#x27;s extra memory that grows with the input), and you can&#x27;t sign-flip like #442/#448 (that mutates). The way out is a change of *representation*: read the array as a set of pointers, and the duplicate becomes the entrance of a loop in an implicit linked list, which two walking pointers can locate with nothing else.</p>
+<p>That reframing — &quot;treat <code>i -&gt; nums[i]</code> as pointers and reason about loops&quot; — is a genuinely reusable tool. Detecting a loop in a structure you can&#x27;t fully store, finding where a pseudo-random sequence starts repeating (Pollard&#x27;s rho for integer factorization is exactly this idea applied to a numeric map), and spotting reference cycles all lean on it. The constraint &quot;you may not touch the input and you have no room to spare&quot; is common when the array is shared, memory-mapped, or enormous.</p>
+<p>What the good solution buys: constant extra memory on read-only input — no scratch copy, no set, respecting a hard memory and immutability budget that the easy solutions blow through.</p>
 <h2>Start from the obvious</h2>
-<p>The bounded range invites the #442-style sign trick — mark value <code>v</code>&#x27;s home negative; the first home already negative is the duplicate:</p>
-<pre><code>for x in nums:
-    home = abs(x) - 1
-    if nums[home] &lt; 0: return abs(x)
-    nums[home] = -nums[home]</code></pre>
-<p>It&#x27;s O(n)/O(1)... except it <strong>modifies the array</strong>, which #287 forbids. (Sorting and a hash set are the other honest first thoughts, and they fail the same constraints — one mutates, the other costs O(n) space.) The real challenge is doing it read-only.</p>
+<p>The bounded range invites the #442-style sign trick — mark value <code>v</code>&#x27;s home negative; the first home already negative is the duplicate.</p>
+<pre class="diagram">   for x in nums:  home = abs(x) - 1
+                   if nums[home] &lt; 0: return abs(x)
+                   else flip nums[home] negative</pre>
+<p>Constant extra memory, one pass... except it <strong>modifies the array</strong>, which #287 forbids. (Sorting and a set are the other honest first thoughts, and they fail the same constraints — one mutates, the other&#x27;s memory grows with the input.) The real challenge is doing it read-only.</p>
 <h2>Find the waste</h2>
-<p>Every read-only approach that scans-and-searches (for each value, look for a later copy) is O(n²) — it re-scans the tail over and over. The way to beat that isn&#x27;t a cleverer search; it&#x27;s to stop searching and *change how we read the array*.</p>
-<p>Here&#x27;s the key observation. Build a sequence of positions: start at 0, and from position <code>i</code> jump to position <code>nums[i]</code>. Because values are in 1..n and there are n+1 of them, two different positions must hold the same value — meaning two positions jump to the <strong>same</strong> next position. That shared target is a node with two incoming arrows. A walk that keeps jumping can never fall off the end (values are always valid indices ≥ 1), so it must eventually revisit a node: the sequence has a <strong>cycle</strong>, and the node where two arrows converge is the cycle&#x27;s entrance — which is precisely the duplicated value.</p>
+<p>Every read-only approach that scans-and-searches (for each value, hunt for a later copy) re-walks the tail over and over — about <code>n × n</code> work. The way to beat that isn&#x27;t a cleverer search; it&#x27;s to stop searching and *change how we read the array*.</p>
+<p>Here&#x27;s the key observation. Build a chain of positions: start at 0, and from position <code>i</code> jump to position <code>nums[i]</code>. Because values are in <code>1..n</code> and there are <code>n+1</code> of them, two different positions must hold the same value — meaning two positions jump to the <strong>same</strong> next position. That shared target is a spot with two arrows pointing into it. A walk that keeps jumping can never fall off the end (values are always valid indices ≥ 1), so it must eventually revisit a spot: the chain has a <strong>loop</strong>, and the spot where two arrows converge is the loop&#x27;s entrance — which is exactly the duplicated value.</p>
+<pre class="diagram">   nums = [1, 3, 4, 2, 2]     read as &quot;index i points to index nums[i]&quot;
+
+   0 -&gt; 1 -&gt; 3 -&gt; 2 -&gt; 4 -+
+             ^            |
+             +------------+     both index 3 and index 4 point to index 2
+
+   the loop entrance is index 2, and 2 is the duplicated value</pre>
 <h2>The insight</h2>
-<p><strong>Read <code>i → nums[i]</code> as a linked list; the duplicate is the cycle&#x27;s entrance; find it with Floyd&#x27;s tortoise and hare.</strong></p>
-<p>Phase 1 — detect the cycle and get a meeting point. Move <code>slow</code> one hop (<code>slow = nums[slow]</code>) and <code>fast</code> two hops (<code>fast = nums[nums[fast]]</code>) per step. Inside a cycle the fast pointer laps the slow one, so they collide somewhere in the loop.</p>
-<p>Phase 2 — locate the entrance. Reset <code>slow</code> to the start (<code>nums[0]</code>), keep <code>fast</code> at the meeting point, and now advance <strong>both one hop at a time</strong>. Floyd&#x27;s distance identity guarantees they meet exactly at the cycle&#x27;s entrance:</p>
-<pre><code>slow = fast = nums[0]
-while True:
-    slow = nums[slow]; fast = nums[nums[fast]]
-    if slow == fast: break
-slow = nums[0]
-while slow != fast:
-    slow = nums[slow]; fast = nums[fast]
-return slow</code></pre>
-<p>Why phase 2 works: if the distance from the start to the entrance is <code>a</code> and the meeting point is <code>b</code> steps into the cycle of length <code>c</code>, the fast pointer&#x27;s double speed forces <code>a ≡ (c − b) (mod c)</code>. So walking <code>a</code> steps from the start and <code>a</code> steps from the meeting point both land on the entrance. Nothing is written; two integer pointers are the entire memory cost.</p>
+<p><strong>Read <code>i -&gt; nums[i]</code> as a linked list; the duplicate is the loop&#x27;s entrance; find it with Floyd&#x27;s tortoise and hare.</strong></p>
+<p>Phase 1 — detect the loop and get a meeting point. Move <code>slow</code> one hop (<code>slow = nums[slow]</code>) and <code>fast</code> two hops (<code>fast = nums[nums[fast]]</code>) each step. Inside a loop the fast pointer laps the slow one, so they collide somewhere in the loop.</p>
+<p>Phase 2 — locate the entrance. Reset <code>slow</code> to the start (<code>nums[0]</code>), keep <code>fast</code> at the meeting point, and now move <strong>both one hop at a time</strong>. Floyd&#x27;s distance math guarantees they meet exactly at the loop&#x27;s entrance.</p>
+<pre class="diagram">   chain:  0 -&gt; 1 -&gt; 3 -&gt; 2 -&gt; 4 -&gt; 2 -&gt; 4 -&gt; ...   (loop is 2 -&gt; 4 -&gt; 2)
+
+   phase 1 (slow +1, fast +2), starting both at nums[0]=1:
+     step  slow      fast
+      1    nums[1]=3 nums[nums[1]]=nums[3]... = 2
+      2    2         2      &lt;- collide at value 2 (inside the loop)
+
+   phase 2: slow back to start (nums[0]=1), fast stays at 2, both +1:
+     slow: 1 -&gt; 3 -&gt; 2
+     fast: 2 -&gt; 4 -&gt; 2
+                    ^ meet at 2 = the loop entrance = the duplicate</pre>
+<p>Why phase 2 works: if the distance from the start to the entrance is <code>a</code>, and the meeting point is <code>b</code> steps into a loop of length <code>c</code>, the fast pointer&#x27;s double speed forces <code>a</code> and <code>c - b</code> to line up (they&#x27;re equal, counting around the loop). So walking <code>a</code> steps from the start and <code>a</code> steps from the meeting point both land on the entrance. Nothing is written; two integer pointers are the entire memory cost.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n)</code> — each phase is a linear number of hops; the pointers travel a bounded multiple of the cycle/tail length.</li><li><strong>Space:</strong> <code>O(1)</code> — two index variables, and the array is never modified.</li></ul>
+<ul><li><strong>Time:</strong> about <code>n</code> steps — each phase is a linear number of hops; the pointers travel a bounded multiple of the loop and tail length.</li><li><strong>Extra memory:</strong> constant — two index variables, and the array is never modified.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Starting the two-pointer walk from index 0 as a value.</strong> The traversal is over *values as next-pointers*; seed both pointers with <code>nums[0]</code>, and the algorithm relies on 0 never being a value (guaranteed, since values are ≥ 1) so index 0 is a safe, outside-the-cycle start.</li><li><strong>Fusing the two phases.</strong> Phase 1 finds a meeting point *inside* the cycle, not the entrance. You must run phase 2 (equal speed from the start) to get the answer.</li><li><strong>Reaching for the sign-flip trick.</strong> It&#x27;s O(n)/O(1) but mutates the input — disqualified here.</li><li>**Assuming exactly one duplicated *slot*.** The value may repeat many times; the cycle argument still pins down the single repeated *value*.</li></ul>
+<ul><li><strong>Seeding the walk.</strong> The traversal is over *values as next-pointers*; seed both pointers with <code>nums[0]</code>. The algorithm relies on 0 never being a value (guaranteed, since values are ≥ 1), so index 0 is a safe start outside the loop.</li><li><strong>Fusing the two phases.</strong> Phase 1 finds a meeting point *inside* the loop, not the entrance. You must run phase 2 (equal speed from the start) to get the answer.</li><li><strong>Reaching for the sign-flip trick.</strong> Constant memory, yes, but it mutates the input — disqualified here.</li><li>**Assuming exactly one duplicated *slot*.** The value may repeat many times; the loop argument still pins down the single repeated *value*.</li></ul>
 <h2>Transfer</h2>
-<p>Two transferable ideas live here. First, *index-as-hash* ties it to its chapter siblings <a href="../0442-find-all-duplicates-in-an-array/">Find All Duplicates / 442</a> and <a href="../0448-find-all-numbers-disappeared-in-an-array/">Find All Numbers Disappeared / 448</a> — but the read-only rule blocks their sign trick. Second, *Floyd&#x27;s cycle detection*, which powers <a href="../../05-linked-list/0141-linked-list-cycle/">Linked List Cycle / 141</a> and <a href="../../05-linked-list/0142-linked-list-cycle-ii/">Linked List Cycle II / 142</a>: whenever &quot;for each x, jump to f(x)&quot; over a finite set must eventually repeat, two pointers at 1× and 2× speed find where the repetition begins in O(1) space.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/24-cyclic-sort/0287-find-the-duplicate-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;287. Find the Duplicate Number — https://leetcode.com/problems/find-the-duplicate-number/
+<p>Two transferable ideas live here. First, *index-as-hash* ties it to its chapter siblings <a href="../0442-find-all-duplicates-in-an-array/">Find All Duplicates / 442</a> and <a href="../0448-find-all-numbers-disappeared-in-an-array/">Find All Numbers Disappeared / 448</a> — but the read-only rule blocks their sign trick. Second, *Floyd&#x27;s cycle detection*, which powers <a href="../../05-linked-list/0141-linked-list-cycle/">Linked List Cycle / 141</a> and <a href="../../05-linked-list/0142-linked-list-cycle-ii/">Linked List Cycle II / 142</a>: whenever &quot;for each x, jump to f(x)&quot; over a finite set must eventually repeat, two pointers at 1× and 2× speed find where the repetition begins in constant space.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/24-cyclic-sort/0287-find-the-duplicate-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;287. Find the Duplicate Number — https://leetcode.com/problems/find-the-duplicate-number/
 
 Given `nums` of length n+1 where every value is in 1..n, exactly one value is
 repeated (possibly many times). Find that repeated value WITHOUT modifying the

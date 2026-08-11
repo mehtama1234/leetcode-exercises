@@ -16,32 +16,54 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">21. Subsets &amp; Combinatorial Backtracking</a> / <span>51</span></nav><article class="notes"><h1>51. N-Queens</h1>
 <p><strong>Pattern:</strong> Backtracking with constraint propagation (place, check, prune, undo) <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/n-queens/</p>
 <h2>The problem in plain words</h2>
-<p>Put <code>n</code> queens on an <code>n×n</code> chessboard so that no two can attack each other. A queen attacks along its row, its column, and both diagonals. Return every valid board, drawn with <code>Q</code> for a queen and <code>.</code> for an empty square. For <code>n=4</code> there are exactly two solutions; for <code>n=8</code>, ninety-two.</p>
+<p>Put <code>n</code> queens on an <code>n×n</code> chessboard so no two can attack each other. A queen attacks along its row, its column, and both diagonals. Return every valid board, drawn with <code>Q</code> for a queen and <code>.</code> for empty. For <code>n=4</code> there are exactly two solutions; for <code>n=8</code>, ninety-two.</p>
+<pre class="diagram">   one of the two solutions for n=4:
+
+     . Q . .      queen in row 0 at column 1
+     . . . Q      row 1 at column 3
+     Q . . .      row 2 at column 0
+     . . Q .      row 3 at column 2
+     no two share a row, column, or diagonal</pre>
 <h2>Why this matters</h2>
-<p>This is the archetypal <strong>constraint-satisfaction search</strong>: fill a set of slots with values so a web of &quot;these two can&#x27;t coexist&quot; rules all hold. N-Queens is the teaching example precisely because the constraints are simple to state (same row / column / diagonal) yet dense enough that blind enumeration is hopeless — <code>8×8</code> placements of 8 queens is over four billion arrangements, but only 92 are legal.</p>
+<p>This is the archetypal <strong>constraint-satisfaction search</strong>: fill a set of slots with values so a web of &quot;these two can&#x27;t coexist&quot; rules all hold. N-Queens is the teaching example because the rules are simple to state (same row / column / diagonal) yet dense enough that blind enumeration is hopeless — <code>8×8</code> placements of 8 queens is over four billion arrangements, but only 92 are legal.</p>
 <p>That shape is the honest core of real solvers. Sudoku, graph coloring, exam and shift scheduling (no person in two places, no room double-booked), register allocation in a compiler (interfering values can&#x27;t share a register), and hardware placement all say &quot;assign values so no pair of conflicting assignments coexists.&quot;</p>
-<p>What good backtracking buys is <strong>pruning by constraint propagation</strong>: you check a placement&#x27;s legality *before* committing and abandon a whole subtree the instant a partial board is already doomed. That&#x27;s the difference between exploring billions of dead boards and thousands of live ones — the constraint check turns an intractable enumeration into a fast search.</p>
+<p>What good backtracking buys is <strong>pruning by constraint</strong>: you check a placement&#x27;s legality *before* committing and abandon a whole subtree the instant a partial board is already doomed. That&#x27;s the gap between exploring billions of dead boards and thousands of live ones.</p>
 <h2>Start from the obvious</h2>
-<p>The definition suggests: try every way to place <code>n</code> queens, keep the boards with no attacks.</p>
-<pre><code>for every choice of n squares:
-    if no two queens attack: record the board</code></pre>
-<p>Correct and completely hopeless — <code>C(64,8)</code> boards for <code>n=8</code>. But two facts shrink it immediately. First, <strong>no two queens can share a row</strong>, so with <code>n</code> queens on <code>n</code> rows there&#x27;s exactly one per row: a solution is just &quot;which column in each row?&quot;, cutting the space to <code>n^n</code>. Second, most partial boards are dead early — the moment two placed queens conflict, every completion of that board is wasted.</p>
+<p>The definition suggests: try every way to place <code>n</code> queens, keep the boards with no attacks. Hopeless — <code>C(64,8)</code> boards for <code>n=8</code>. But two facts shrink it fast. First, <strong>no two queens can share a row</strong>, so with <code>n</code> queens on <code>n</code> rows there&#x27;s exactly one per row: a solution is just &quot;which column in each row?&quot;, cutting the space to <code>n^n</code>. Second, most partial boards die early.</p>
+<pre class="diagram">   place row by row, n=4. put a queen, then check the next row&#x27;s options.
+
+   row0: Q at col0
+     . . . .    row1 columns still open after row0&#x27;s queen:
+     col:0 1 2 3
+          X X . .   0 blocked (same column), 1 blocked (diagonal)
+                    so only col 2 and 3 are even worth trying</pre>
 <h2>The insight</h2>
-<p>Place queens <strong>one row at a time</strong>, and before committing a queen to <code>(row, col)</code>, check it against everything already placed. The clever part is making that check <code>O(1)</code> with three sets:</p>
-<ul><li><strong>Column:</strong> <code>col in cols</code> — a column is taken or it isn&#x27;t.</li><li><strong><code>\</code> diagonal:</strong> two cells lie on the same top-left-to-bottom-right diagonal iff <code>row - col</code> is equal. Track the set of used <code>row - col</code>.</li><li><strong><code>/</code> diagonal:</strong> same for the other diagonal iff <code>row + col</code> is equal. Track used <code>row + col</code>.</li></ul>
-<pre><code>backtrack(row):
-    if row == n: record the board; return          # all rows filled -&gt; a solution
-    for col in 0..n-1:
-        if col in cols or (row-col) in diag or (row+col) in anti_diag:
-            continue                                # attacked -&gt; prune
-        add col, row-col, row+col to the sets       # choose
-        backtrack(row+1)                            # explore
-        remove them again                           # un-choose</code></pre>
-<p>This is the full backtracking template with a real prune. <strong>Choose</strong> commits the queen and marks its three lines of attack; <strong>explore</strong> moves to the next row; <strong>un-choose</strong> retracts the queen and *all three* marks so the sibling column sees a clean board. Reaching <code>row == n</code> means all queens are placed with no conflict — a solution.</p>
+<p>Place queens <strong>one row at a time</strong>, and before committing a queen to <code>(row, col)</code>, check it against everything already placed. The trick is making that check one step with three sets:</p>
+<ul><li><strong>Column:</strong> <code>col in cols</code> — a column is taken or it isn&#x27;t.</li><li><strong><code>\</code> diagonal:</strong> two cells lie on the same top-left-to-bottom-right diagonal exactly when <code>row - col</code> is equal. Track the set of used <code>row - col</code>.</li><li><strong><code>/</code> diagonal:</strong> same for the other diagonal when <code>row + col</code> is equal. Track used <code>row + col</code>.</li></ul>
+<pre class="diagram">   search tree, n=4, choosing a column for each row
+   (X = pruned: column or a diagonal already threatened)
+
+   row0:        col0        col1     col2   col3
+                 |
+   row1:   c0 c1 c2 c3
+           X  X  ok c3      (c0 same col, c1 on \ diag from (0,0))
+              |
+   row2:   place at c2 -&gt; then row3 has NO safe column -&gt; dead, back up
+           ...
+   the two surviving full paths are the two solutions</pre>
+<pre class="diagram">   backtrack(row):
+     if row == n: record the board; return          # all rows filled -&gt; solution
+     for col in 0..n-1:
+       if col in cols or (row-col) in diag or (row+col) in anti_diag:
+         continue                                    # attacked -&gt; PRUNE
+       add col, row-col, row+col to the sets         # choose
+       backtrack(row+1)                              # explore
+       remove them again                             # un-choose</pre>
+<p><strong>Choose</strong> commits the queen and marks its three lines of attack; <strong>explore</strong> moves to the next row; <strong>un-choose</strong> retracts the queen and *all three* marks so the sibling column sees a clean board. Reaching <code>row == n</code> means all queens are placed with no conflict — a solution.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> exponential but hard to state tightly — bounded above by <code>O(n!)</code> (at most <code>n</code> legal columns in row 0, fewer below as diagonals fill), and far smaller in practice because the constraint prune kills most branches high in the tree. Building each solution board costs <code>O(n^2)</code>.</li><li><strong>Space:</strong> <code>O(n)</code> for the recursion, the three sets, and the column placement array. The output holds the solution boards.</li></ul>
+<ul><li><strong>Time:</strong> exponential but hard to state tightly — bounded above by about <code>n!</code> (at most <code>n</code> legal columns in row 0, fewer below as diagonals fill), and far smaller in practice because the cut kills most branches high in the tree. Building each solution board costs about <code>n^2</code>.</li><li><strong>Extra memory: about <code>n</code></strong> — the recursion, the three sets, and the column array. The output holds the solution boards.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>The diagonal identities.</strong> <code>\</code> is <code>row - col</code> constant, <code>/</code> is <code>row + col</code> constant. Swap them or use <code>+</code>/<code>-</code> wrong and boards leak diagonal attacks.</li><li><strong>Incomplete undo.</strong> You must remove the queen from *all three* sets on the way back up; forgetting the diagonals is a classic silent bug that drops solutions.</li><li><strong>Rebuilding an <code>O(n^2)</code> attack grid every check</strong> instead of the <code>O(1)</code> set lookups — correct but needlessly slow.</li><li>Assuming a solution always exists — <code>n=2</code> and <code>n=3</code> have none; return an empty list, don&#x27;t loop forever.</li></ul>
+<ul><li><strong>The diagonal identities.</strong> <code>\</code> is <code>row - col</code> constant, <code>/</code> is <code>row + col</code> constant. Swap them or use <code>+</code>/<code>-</code> wrong and boards leak diagonal attacks.</li><li><strong>Incomplete undo.</strong> You must remove the queen from *all three* sets on the way back up; forgetting the diagonals is a classic silent bug that drops solutions.</li><li><strong>Rebuilding an <code>n^2</code> attack grid every check</strong> instead of the one-step set lookups — correct but needlessly slow.</li><li>Assuming a solution always exists — <code>n=2</code> and <code>n=3</code> have none; return an empty list, don&#x27;t loop forever.</li></ul>
 <h2>Transfer</h2>
 <p>The move — *assign slots in order, check each assignment against the constraints before recursing, undo on the way back* — is the general constraint-satisfaction solver. It&#x27;s exactly how you&#x27;d solve Sudoku (check row/column/box before writing a digit) or graph coloring (check neighbors before assigning a color). Whenever the task is &quot;assign values so no pair of conflicting assignments coexists,&quot; this place-check-prune-undo skeleton is the tool.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0051-n-queens/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;51. N-Queens — https://leetcode.com/problems/n-queens/
 

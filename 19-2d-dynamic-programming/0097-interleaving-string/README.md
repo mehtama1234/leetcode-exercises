@@ -6,83 +6,109 @@
 
 ## The problem in plain words
 
-You have three strings `s1`, `s2`, `s3`. Can you build `s3` by shuffling `s1` and
-`s2` together, like riffling two decks of cards? Each string's characters must stay
-in their original order, but you may switch back and forth between the two sources
-however you like. Return true if some such shuffle produces exactly `s3`.
+You have three strings: `s1`, `s2`, and `s3`. You want to know if `s3` can be built
+by shuffling `s1` and `s2` together — drawing letters one at a time from either one,
+never reordering the letters inside `s1` or inside `s2`. Think of two decks of
+cards riffled into one pile: each deck keeps its order, but they interleave.
+
+```diagram
+   s1 = "aab"    s2 = "dbbca"    s3 = "aadbbcbcac"
+
+   draw:  a a        b   b c   c
+   from:  1 1  d b b   c   b   a c
+          ^^^  ^^^^^   ^   ^   ^^^
+          s1   s2     s1   ...    -> "aadbbcbcac"  works
+```
 
 ## Why this matters
 
-The deep operation is *deciding whether one sequence is a valid merge of two, when
-at every step you face a fork with no obvious right choice.* The greedy instinct —
-"take from whichever string matches the next character" — fails, because sometimes
-both match and only one leads to a full solution. That "a local match can be a
-trap" quality is what forces DP: you can't commit, so you remember which
-`(prefix-of-s1, prefix-of-s2)` positions are reachable.
+The real move here is recognizing that a third pointer you thought you needed is
+already decided by the other two. If you've used `i` letters of `s1` and `j` letters
+of `s2`, then you've placed exactly `i + j` letters of `s3` — there's no freedom
+left in where you are in `s3`. Spotting a variable that's forced by the others is
+what collapses a seemingly 3-D search into a plain 2-D grid.
 
-This exact merge-validation appears in real systems. Reconstructing whether a
-combined event log could have come from interleaving two ordered producers is this
-problem. Verifying that a merged data stream preserves the per-source order (as in
-CRDT/merge reasoning, or checking a k-way merge kept each input monotonic) is the
-same check. Parsing a format built by shuffling two ordered token streams reduces to
-it too.
-
-What the good solution buys is `O(m·n)` time instead of the `2^(m+n)` blind
-enumeration of every possible interleaving, and — rolled — `O(n)` memory.
+That's the same instinct that keeps merge steps, log-interleaving, and stream-
+merging honest: two sources feed one output, order preserved on each side, and the
+output position is bookkeeping, not a real choice.
 
 ## Start from the obvious
 
-To match the next character of `s3`, take it from `s1` or from `s2`, whichever
-matches, and recurse. Track how much of each we've used with `(i, j)`:
+At each step you're at some position in `s3`, and the next `s3` letter must come
+from either the front of what's left in `s1` or the front of what's left in `s2`.
+So branch: try taking it from `s1`, try taking it from `s2`. If a source's next
+letter doesn't match, that branch is dead.
 
+```diagram
+   need s3[k].  take from s1 if s1[i] == s3[k];  take from s2 if s2[j] == s3[k].
+
+              (i, j)
+              /     \
+       s1[i]==s3   s2[j]==s3
+          |            |
+       (i+1, j)     (i, j+1)
 ```
-def solve(i, j):                 # used s1[:i] and s2[:j]
-    if i == m and j == n: return True
-    k = i + j                    # so we've filled s3[:k]
-    return (i < m and s1[i] == s3[k] and solve(i+1, j)) \
-        or (j < n and s2[j] == s3[k] and solve(i,   j+1))
-```
 
-The key simplification: there is **no third pointer**. Because every s3 character
-comes from s1 or s2, once you've used `i` of one and `j` of the other you've
-necessarily produced `s3[:i+j]`. So `k = i + j` is derived — two dimensions, not
-three. Without memoization it's exponential (each fork doubles).
-
-## Find the waste
-
-There are only `(m+1)·(n+1)` distinct `(i, j)` states, but the recursion revisits
-them along many interleaving orders. Cache on `(i, j)` → `O(m·n)`.
+This explores a tree, and different paths land on the same `(i, j)` again and again
+— you re-solve "from here, does the rest interleave?" many times. That repetition
+is the waste.
 
 ## The insight
 
-Bottom-up, `dp[i][j]` = "can `s1[:i]` and `s2[:j]` interleave into `s3[:i+j]`?"
+Let `dp[i][j]` mean: *can the first `i` letters of `s1` and first `j` letters of
+`s2` interleave to form the first `i + j` letters of `s3`?* Only two dimensions,
+because the `s3` position is `i + j`.
 
-```
-dp[i][j] = (dp[i-1][j] and s1[i-1] == s3[i+j-1])   # last char came from s1
-        or (dp[i][j-1] and s2[j-1] == s3[i+j-1])   # last char came from s2
+```diagram
+   s1 = "aab" (down)   s2 = "dbbca" (across)   target = s3
+
+            j:  ""   d    b    b    c    a
+       i    +----+----+----+----+----+----+
+       ""   | T  |    |    |    |    |    |
+       a    |    |    |    |    |    |    |
+       a    |    |    |    |    |    |    |
+       b    |    |    |    |    |    |    |
+            +----+----+----+----+----+----+
+   dp[""][""] = True: empty + empty makes empty.
 ```
 
-Base: `dp[0][0] = True`; the first row/column handle "used only s2" / "only s1". A
-cell depends only on the cell above and the cell to the left, so sweeping row by row
-we can keep just **one row**: the "from-s1" term reads the same column in the old row
-(`dp[j]`), the "from-s2" term reads the just-updated `dp[j-1]`.
+Each cell asks a yes/no question and reads two neighbors — the cell above (last
+letter came from `s1`) and the cell to the left (last letter came from `s2`):
+
+```diagram
+   filling dp[i][j], target letter is s3[i+j-1]
+
+        up = dp[i-1][j]           left = dp[i][j-1]
+        "came from s1"            "came from s2"
+             |                         |
+             v                         v
+        (up  AND s1[i-1]==s3[i+j-1])  OR  (left AND s2[j-1]==s3[i+j-1])
+                                  = dp[i][j]
+
+   True can arrive from EITHER neighbor.  One valid path is enough.
+```
+
+Fill row by row; the bottom-right cell is the answer. Since a row only needs the
+row above it, you can roll the grid down to a single row — that's the version in
+`solution.py`.
+
+One quick gate first: if `len(s1) + len(s2) != len(s3)`, the answer is no before
+you start.
 
 ## Complexity
 
-- **Time:** `O(m·n)` — fill each grid cell once.
-- **Space:** `O(n)` rolled (`O(m·n)` for the full grid). Only the previous row is
-  needed.
+- **Time: about m × n steps** (m, n the lengths of `s1`, `s2`). One yes/no check
+  per grid cell. Doubling both inputs roughly quadruples the work.
+- **Extra memory: about n** in the rolled version — one row over `s2`. The full
+  grid uses about m × n.
 
 ## Pitfalls
 
-- **The length gate.** If `len(s1) + len(s2) != len(s3)`, it's immediately false —
-  check first, or the indexing breaks.
-- Being greedy: when `s1[i]` and `s2[j]` both equal `s3[k]`, you must consider both
-  branches, not pick one.
-- Off-by-one in the 1-D roll: within the new row, `from_s2` reads the *updated*
-  `dp[j-1]` (current row) while `from_s1` reads the *old* `dp[j]` (previous row);
-  overwrite in place carefully.
-- Empty-string cases (`""`,`""`,`""` is true) must fall out of the base row/column.
+- Skipping the length gate. If `m + n != len(s3)`, no interleaving can exist.
+- A greedy "take from whichever matches" fails: sometimes both match and you must
+  keep both branches open. The grid keeps every reachable state, so it's safe.
+- Getting the `s3` index wrong. When filling `dp[i][j]`, the letter under scrutiny
+  is `s3[i+j-1]`, not `s3[i]` or `s3[j]`.
 
 ## Transfer
 

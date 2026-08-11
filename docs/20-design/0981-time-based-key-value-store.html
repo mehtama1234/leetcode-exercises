@@ -16,33 +16,48 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">20. Design</a> / <span>981</span></nav><article class="notes"><h1>981. Time Based Key-Value Store</h1>
 <p><strong>Pattern:</strong> Sorted history + binary search (floor query) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/time-based-key-value-store/</p>
 <h2>The problem in plain words</h2>
-<p>Store values under a key, but every write is tagged with a timestamp, so a key can have many versions over time. When someone reads with <code>get(key, t)</code>, give back the value that was set at the *latest* timestamp still at or before <code>t</code> — the value that was &quot;in effect&quot; at time <code>t</code>. If nothing was set by then, return <code>&quot;&quot;</code>. Writes always arrive with increasing timestamps.</p>
+<p>Store values under a key, but every write is tagged with a timestamp, so one key can have many versions over time. When someone reads with <code>get(key, t)</code>, hand back the value that was set at the *latest* timestamp still at or before <code>t</code> — the value that was &quot;in effect&quot; at time <code>t</code>. If nothing was set by then, return <code>&quot;&quot;</code>. Writes always arrive with increasing timestamps.</p>
+<pre class="diagram">   set(&quot;k&quot;,&quot;v1&quot;,10)  set(&quot;k&quot;,&quot;v2&quot;,20)  set(&quot;k&quot;,&quot;v3&quot;,30)
+
+   get(&quot;k&quot;, 25) -&gt; &quot;v2&quot;   (v2 set at 20 is the latest at-or-before 25)
+   get(&quot;k&quot;, 20) -&gt; &quot;v2&quot;   (exact hit)
+   get(&quot;k&quot;,  9) -&gt; &quot;&quot;     (nothing was set by time 9)</pre>
 <h2>Why this matters</h2>
-<p>The real operation is a <strong>point-in-time / &quot;as-of&quot; read of versioned data</strong>: given a history of changes, answer &quot;what did this look like at moment T?&quot; The clever part is realizing the history is *already sorted by time*, which turns the query into a binary search for the floor of <code>t</code>.</p>
-<p>This is the beating heart of many real systems. Multi-version concurrency control (MVCC) in Postgres and MySQL keeps timestamped row versions so each transaction reads a consistent snapshot. Time-series databases and monitoring stores answer &quot;value as of this time.&quot; Git, event-sourced systems, and configuration stores that let you read a past revision all do this floor-by-time lookup.</p>
-<p>What the good solution buys is a <strong>latency win by avoiding a scan</strong>: because each key&#x27;s versions are sorted, a <code>get</code> is O(log n) instead of walking backward through possibly millions of historical writes. You spend a little ordered storage to make time-travel reads fast.</p>
+<p>The real operation is a <strong>point-in-time, &quot;as-of&quot; read of versioned data</strong>: given a history of changes, answer &quot;what did this look like at moment T?&quot; The turn is noticing the history is *already sorted by time*, which makes the query a binary search for the floor of <code>t</code> — the last timestamp not past it.</p>
+<p>This is the beating heart of many real systems. Multi-version concurrency control in Postgres and MySQL keeps timestamped row versions so each transaction reads a consistent snapshot. Time-series databases and monitoring stores answer &quot;value as of this time.&quot; Git, event-sourced systems, and config stores that let you read a past revision all do this floor-by-time lookup.</p>
+<p>What the good solution buys is speed by skipping a scan: because each key&#x27;s versions are sorted, a <code>get</code> costs about log-n steps instead of walking backward through possibly millions of historical writes. You spend a little ordered storage to make time-travel reads fast.</p>
 <h2>Start from the obvious</h2>
-<p>Keep a list of <code>(timestamp, value)</code> per key. To answer <code>get(key, t)</code>, scan for the entry with the largest timestamp that is &lt;= t.</p>
-<pre><code>best = &quot;&quot;
-for (ts, val) in history[key]:
-    if ts &lt;= t:
-        best = val          # keep the latest that qualifies
-    else:
-        break               # list is sorted; nothing later qualifies
-return best</code></pre>
-<p>Correct, and thanks to sorted order it can stop early — but in the worst case (large <code>t</code>) it still walks the entire history: O(n) per query.</p>
+<p>Keep a list of <code>(timestamp, value)</code> per key. To answer <code>get(key, t)</code>, scan for the entry with the largest timestamp that is at or before <code>t</code>.</p>
+<pre class="diagram">   history[&quot;k&quot;] = [ (10,v1), (20,v2), (30,v3) ]   sorted by time
+
+   get(&quot;k&quot;, 25): walk left to right, keep the last that qualifies
+       (10,v1) ok -&gt; best=v1
+       (20,v2) ok -&gt; best=v2
+       (30,v3) too late -&gt; stop
+       ^ still touched most of the list to land on one entry</pre>
+<p>Correct, and thanks to the sorted order it can stop early — but in the worst case (a large <code>t</code>) it still walks the entire history: a full pass per query.</p>
 <h2>Find the waste</h2>
-<p>The scan visits every version even though the list is sorted. Any time you&#x27;re linearly searching a *sorted* list for a boundary (&quot;largest value &lt;= t&quot;), you&#x27;re leaving a binary search on the table. We don&#x27;t need to look at each version — we need to *land on the boundary* directly.</p>
+<p>The scan visits every version even though the list is sorted. Any time you&#x27;re walking a *sorted* list to find a boundary — &quot;largest value at or before <code>t</code>&quot; — you&#x27;re leaving a binary search on the table. You don&#x27;t need to look at each version; you need to *land on the boundary* directly.</p>
 <h2>The insight</h2>
-<p>Store two parallel arrays per key: the timestamps and the values, appended in order. Since timestamps arrive strictly increasing, the timestamp array is sorted with zero extra effort.</p>
-<p>For <code>get(key, t)</code>, do a <strong>floor query</strong> with binary search:</p>
-<ul><li><code>bisect_right(times, t)</code> returns the first index whose timestamp is strictly greater than <code>t</code>.</li><li>The entry just *before* that index (index <code>i - 1</code>) is the largest timestamp &lt;= t — our answer.</li><li>If that index is 0, every stored time is later than <code>t</code>, so return <code>&quot;&quot;</code>.</li></ul>
+<p>Store two parallel arrays per key: the timestamps and the values, appended in order. Since timestamps arrive strictly increasing, the timestamp array is sorted for free.</p>
+<p>For <code>get(key, t)</code>, do a <strong>floor query</strong> with binary search — repeatedly halve the range instead of walking it:</p>
+<pre class="diagram">   times = [ 10, 20, 30, 40, 50 ]     t = 35
+
+   bisect_right finds the first timestamp strictly greater than 35:
+       low                       high
+       [ 10, 20, 30, 40, 50 ]
+                     ^ mid=30, &lt;=35 -&gt; go right
+       [ 40, 50 ]
+         ^ mid=40, &gt;35 -&gt; go left
+       lands at index 3 (the 40)
+   answer is the entry just before -&gt; index 2 -&gt; the value set at time 30</pre>
+<ul><li><code>bisect_right(times, t)</code> returns the first index whose timestamp is strictly greater than <code>t</code>.</li><li>The entry just *before* that index (index <code>i - 1</code>) holds the largest timestamp at or before <code>t</code> — the answer.</li><li>If that index is 0, every stored time is later than <code>t</code>, so return <code>&quot;&quot;</code>.</li></ul>
 <h2>Complexity</h2>
-<ul><li><strong>set:</strong> <code>O(1)</code> — append to two lists.</li><li><strong>get:</strong> <code>O(log n)</code> — binary search over one key&#x27;s <code>n</code> versions.</li><li><strong>Space:</strong> <code>O(total writes)</code> — every version is kept (that&#x27;s the point; you can read any past moment).</li></ul>
+<ul><li><strong>set: one step.</strong> Append to two lists.</li><li><strong>get: about log-n steps.</strong> Binary search over one key&#x27;s <code>n</code> versions — each step halves the range.</li><li><strong>Space: proportional to total writes.</strong> Every version is kept (that&#x27;s the point; you can read any past moment).</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Reaching for <code>bisect_left</code> when you want <code>bisect_right</code>. For &quot;largest timestamp &lt;= t,&quot; <code>bisect_right</code> then step back one is the clean pattern; getting this wrong breaks exact-timestamp hits.</li><li>Forgetting the &quot;nothing set yet&quot; case — index 0 means return <code>&quot;&quot;</code>.</li><li>Assuming timestamps are sorted when they might not be. Here the problem guarantees increasing timestamps; if it didn&#x27;t, you&#x27;d need to insert in order (or sort), which changes the cost.</li><li>Storing <code>(ts, value)</code> tuples and re-sorting on every read — unnecessary given the ordering guarantee.</li></ul>
+<ul><li>Reaching for <code>bisect_left</code> when you want <code>bisect_right</code>. For &quot;largest timestamp at or before <code>t</code>,&quot; use <code>bisect_right</code> then step back one; getting this wrong breaks exact-timestamp hits.</li><li>Forgetting the &quot;nothing set yet&quot; case — index 0 means return <code>&quot;&quot;</code>.</li><li>Assuming timestamps are sorted when they might not be. Here the problem guarantees increasing timestamps; without that you&#x27;d need to insert in order (or sort), which changes the cost.</li><li>Storing <code>(ts, value)</code> tuples and re-sorting on every read — needless given the ordering guarantee.</li></ul>
 <h2>Transfer</h2>
-<p>The &quot;binary-search a sorted structure for a boundary&quot; move is broad. See <a href="https://leetcode.com/problems/search-insert-position/">Search Insert Position / 35</a>, <a href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/">Find First and Last Position / 34</a>, and <a href="https://leetcode.com/problems/snapshot-array/">Snapshot Array / 1146</a>, which is nearly the same versioned-read idea. Whenever data is kept in sorted order and you need &quot;the last thing at or before X,&quot; reach for <code>bisect</code>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0981-time-based-key-value-store/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;981. Time Based Key-Value Store — https://leetcode.com/problems/time-based-key-value-store/
+<p>The &quot;binary-search a sorted structure for a boundary&quot; move is broad. See <a href="https://leetcode.com/problems/search-insert-position/">Search Insert Position / 35</a>, <a href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/">Find First and Last Position / 34</a>, and <a href="https://leetcode.com/problems/snapshot-array/">Snapshot Array / 1146</a>, which is nearly the same versioned-read idea. Whenever data is kept in sorted order and you need &quot;the last thing at or before X,&quot; reach for a binary search.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0981-time-based-key-value-store/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;981. Time Based Key-Value Store — https://leetcode.com/problems/time-based-key-value-store/
 
 Store multiple timestamped values per key. `get(key, t)` returns the value that
 was set at the largest timestamp &lt;= t (the value &quot;in effect&quot; at time t), or &quot;&quot; if

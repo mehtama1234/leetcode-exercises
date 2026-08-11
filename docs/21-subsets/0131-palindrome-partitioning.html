@@ -16,32 +16,52 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">21. Subsets &amp; Combinatorial Backtracking</a> / <span>131</span></nav><article class="notes"><h1>131. Palindrome Partitioning</h1>
 <p><strong>Pattern:</strong> Backtracking (choose a cut point, prune to valid prefixes) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/palindrome-partitioning/</p>
 <h2>The problem in plain words</h2>
-<p>Cut a string into consecutive pieces so that *every* piece reads the same forward and backward (a palindrome), and return all the different ways to do it. For <code>&quot;aab&quot;</code> there are two: <code>[&quot;a&quot;,&quot;a&quot;,&quot;b&quot;]</code> and <code>[&quot;aa&quot;,&quot;b&quot;]</code>. Every character must land in exactly one piece.</p>
+<p>Cut a string into consecutive pieces so that *every* piece reads the same forward and backward (a palindrome), and return all the ways to do it. For <code>&quot;aab&quot;</code> there are two: <code>[&quot;a&quot;,&quot;a&quot;,&quot;b&quot;]</code> and <code>[&quot;aa&quot;,&quot;b&quot;]</code>. Every character lands in exactly one piece.</p>
+<pre class="diagram">   s = &quot;a a b&quot;    the gaps between characters:  a | a | b
+                                                  ^   ^  choose which gaps to cut
+
+   cut both gaps   -&gt; [&quot;a&quot;,&quot;a&quot;,&quot;b&quot;]
+   cut only gap 2  -&gt; [&quot;aa&quot;,&quot;b&quot;]      (&quot;aa&quot; is a palindrome, ok)
+   cut only gap 1  -&gt; [&quot;a&quot;,&quot;ab&quot;]      X &quot;ab&quot; is not a palindrome</pre>
 <h2>Why this matters</h2>
-<p>The primitive here is <strong>segmenting a sequence subject to a validity rule on each segment</strong>. A string of <code>n</code> characters has <code>n-1</code> gaps between characters, and a partition is a choice of which gaps to cut — <code>2^(n-1)</code> raw ways. The twist that makes it interesting: not every cut is legal, so you&#x27;re searching a *constrained* partition space, and the art is refusing illegal branches early.</p>
-<p>Segment-under-a-rule is the honest core of real parsing. Word-breaking a string into dictionary words, tokenizing input where each token must match a pattern, splitting a log or DNA sequence into meaningful runs, chunking a stream so each chunk satisfies a size/format constraint — all choose cut points where each resulting piece must pass a test.</p>
-<p>What the good solution buys is pruning at the moment of choice: you never recurse past a prefix that already fails the palindrome test, so entire subtrees of doomed partitions are skipped. Without that, you&#x27;d generate all <code>2^(n-1)</code> partitions and filter — doing full work to build answers you immediately discard.</p>
+<p>The move here is <strong>segmenting a sequence under a rule on each segment</strong>. A string of <code>n</code> characters has <code>n-1</code> gaps between characters, and a partition is a choice of which gaps to cut — <code>2^(n-1)</code> raw ways. The twist: not every cut is legal, so you&#x27;re searching a *constrained* partition space, and the art is refusing illegal branches early.</p>
+<p>Segment-under-a-rule is the honest core of real parsing. Breaking a string into dictionary words, tokenizing input where each token must match a pattern, splitting a log or DNA sequence into meaningful runs, chunking a stream so each chunk fits a size/format rule — all choose cut points where each piece must pass a test.</p>
+<p>What the good solution buys is cutting at the moment of choice: you never recurse past a prefix that already fails the palindrome test, so whole subtrees of doomed partitions are skipped. Without that you&#x27;d generate all <code>2^(n-1)</code> partitions and filter — full work to build answers you throw away.</p>
 <h2>Start from the obvious</h2>
 <p>Generate every possible partition, then keep the ones where all pieces are palindromes:</p>
-<pre><code>for every way to cut s into pieces:
-    if all pieces are palindromes: keep it</code></pre>
-<p>Honest and correct, but wasteful: if the very first piece isn&#x27;t a palindrome, this still builds out every completion of that bad start before rejecting them. The rejection should happen the instant the first piece is known to be bad.</p>
+<pre class="diagram">   for every way to cut &quot;aab&quot;:
+     [&quot;a&quot;,&quot;a&quot;,&quot;b&quot;]  all palindromes   keep
+     [&quot;a&quot;,&quot;ab&quot;]     &quot;ab&quot; bad          THROW AWAY (but only after building it)
+     [&quot;aa&quot;,&quot;b&quot;]     all palindromes   keep
+     [&quot;aab&quot;]        &quot;aab&quot; bad         throw away</pre>
+<p>Honest and correct, but wasteful: if the first piece isn&#x27;t a palindrome, this still builds out every completion of that bad start before rejecting them. The rejection should happen the instant the first piece is known to be bad.</p>
 <h2>The insight</h2>
-<p>Fold the test *into* the choice. Walk left to right; at position <code>start</code>, try each possible end for the next piece — but only actually take a piece <code>s[start..end]</code> <strong>if it is a palindrome</strong>. That single <code>if</code> is the prune:</p>
-<pre><code>backtrack(start):
-    if start == n: record a copy of path; return   # cut everything, valid partition
-    for end in start..n-1:
-        if s[start..end] is a palindrome:           # &lt;-- prune
-            path.push(s[start..end])                # choose
-            backtrack(end+1)                        # explore the suffix
-            path.pop()                              # un-choose</code></pre>
-<p>Reaching <code>start == n</code> means every character has been placed into a palindromic piece — a complete valid partition, so record a <strong>copy</strong> of <code>path</code>. The palindrome check itself is a cheap two-pointer walk from both ends. Because a bad prefix is never chosen, we never explore any partition that builds on it.</p>
+<p>Fold the test *into* the choice. Walk left to right; at position <code>start</code>, try each possible end for the next piece — but only actually take <code>s[start..end]</code> <strong>if it is a palindrome</strong>. That single <code>if</code> is the cut.</p>
+<pre class="diagram">   cut tree for &quot;aab&quot;, branch = &quot;where does the next piece end?&quot;
+   (X = pruned because the prefix isn&#x27;t a palindrome)
+
+                         start=0
+        &quot;a&quot; /           &quot;aa&quot; |           &quot;aab&quot; \
+        start=1          start=2            X &quot;aab&quot; not palindrome
+      &quot;a&quot;/  &quot;ab&quot;\        &quot;b&quot;|
+     start=2    X       start=3 (end)
+       &quot;b&quot;|   &quot;ab&quot; bad    -&gt; record [&quot;aa&quot;,&quot;b&quot;]
+     (end)
+   record [&quot;a&quot;,&quot;a&quot;,&quot;b&quot;]</pre>
+<pre class="diagram">   backtrack(start):
+     if start == n: record a copy of path; return   # cut everything -&gt; valid
+     for end in start..n-1:
+       if s[start..end] is a palindrome:             # &lt;-- prune
+         path.push(s[start..end])                    # choose
+         backtrack(end+1)                            # explore the suffix
+         path.pop()                                  # un-choose</pre>
+<p>Reaching <code>start == n</code> means every character has been placed into a palindromic piece — a complete valid partition, so record a <strong>copy</strong> of <code>path</code>. The palindrome check is a cheap two-pointer walk from both ends. Because a bad prefix is never chosen, we never explore any partition built on it.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n * 2^n)</code> in the worst case (e.g. <code>&quot;aaaa...&quot;</code>, where every prefix is a palindrome so nothing prunes): up to <code>2^(n-1)</code> partitions, each costing <code>O(n)</code> to check and copy. On typical strings the palindrome prune cuts this sharply.</li><li><strong>Space:</strong> <code>O(n)</code> extra — recursion depth and <code>path</code> are each <code>O(n)</code>. The result is the required output. (You can precompute an <code>is_palindrome[i][j]</code> DP table to make each check <code>O(1)</code>; here the two-pointer check is kept for clarity.)</li></ul>
+<ul><li><strong>Time: about <code>n * 2^n</code> worst case</strong> (e.g. <code>&quot;aaaa...&quot;</code>, where every prefix is a palindrome so nothing gets cut): up to <code>2^(n-1)</code> partitions, each costing about <code>n</code> to check and copy. On typical strings the palindrome cut trims this sharply.</li><li><strong>Extra memory: about <code>n</code></strong> — recursion depth and <code>path</code>. (You can precompute an <code>is_palindrome[i][j]</code> table to make each check one step; here the two-pointer check is kept for clarity.)</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Off-by-one on the substring.</strong> <code>s[start:end+1]</code> includes <code>end</code>; the next call must start at <code>end+1</code>, not <code>end</code>, or pieces overlap or repeat.</li><li><strong>Recording the live <code>path</code></strong> instead of <code>path[:]</code> — all stored partitions alias and end up empty after backtracking.</li><li>Re-checking palindromes from scratch on huge inputs — fine for the constraints, but the DP table is the standard speedup worth knowing.</li></ul>
+<ul><li><strong>Off-by-one on the substring.</strong> <code>s[start:end+1]</code> includes <code>end</code>; the next call must start at <code>end+1</code>, not <code>end</code>, or pieces overlap or repeat.</li><li><strong>Storing the live <code>path</code></strong> instead of <code>path[:]</code> — all stored partitions point at one list and end up empty after backtracking.</li><li>Re-checking palindromes from scratch on huge inputs — fine for the constraints, but the precomputed table is the standard speedup worth knowing.</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Advance a cursor, take a prefix only if it passes a rule, recurse on the rest&quot; is the sequence-partition template. It&#x27;s exactly the shape of Word Break II (prefix must be a dictionary word) and Restore IP Addresses (each segment must be a valid octet). Whenever you split a sequence and each piece must satisfy a predicate, reach for this cut-and-prune recursion.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0131-palindrome-partitioning/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;131. Palindrome Partitioning —
+<p>&quot;Advance a cursor, take a prefix only if it passes a rule, recurse on the rest&quot; is the sequence-partition template. It&#x27;s exactly the shape of Word Break II (prefix must be a dictionary word) and Restore IP Addresses (each segment must be a valid octet). Whenever you split a sequence and each piece must satisfy a test, reach for this cut-and-prune recursion.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0131-palindrome-partitioning/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;131. Palindrome Partitioning —
 https://leetcode.com/problems/palindrome-partitioning/
 
 Cut a string into pieces so that every piece is a palindrome, and return all such

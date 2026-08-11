@@ -16,38 +16,52 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">5. Linked List: Fast &amp; Slow Pointers</a> / <span>141</span></nav><article class="notes"><h1>141. Linked List Cycle</h1>
 <p><strong>Pattern:</strong> Fast/slow pointers (Floyd&#x27;s cycle detection) <strong>Difficulty:</strong> Easy <strong>Link:</strong> https://leetcode.com/problems/linked-list-cycle/</p>
 <h2>The problem in plain words</h2>
-<p>Walk a linked list. Does it ever loop back on itself — some node&#x27;s <code>next</code> pointing to an earlier node — so that walking forever never reaches <code>None</code>? Return true/false.</p>
+<p>Walk a linked list by following <code>next</code>. Does it ever loop back — some node&#x27;s <code>next</code> pointing at an earlier node — so that walking forever never reaches <code>None</code>? Return true or false.</p>
+<pre class="diagram">   no cycle:   1 -&gt; 2 -&gt; 3 -&gt; 4 -&gt; None
+
+   cycle:      1 -&gt; 2 -&gt; 3 -&gt; 4
+                    ^         |
+                    +---------+     (4&#x27;s next points back to 2)</pre>
 <h2>Why this matters</h2>
-<p>The real question is: does following a chain of &quot;next&quot; references terminate, or does it loop forever? The fundamental operation is *cycle detection* in a sequence you generate one step at a time — and Floyd&#x27;s slow/fast pointer answers it using O(1) memory instead of remembering every node you&#x27;ve visited.</p>
-<p>This shows up wherever you follow references and a loop would be a bug or a hang. Dependency resolvers (package managers, build systems, spreadsheet formula engines) must detect circular dependencies before they recurse forever. Garbage collectors and serializers walk object graphs that can point back at themselves. Deadlock detection looks for cycles in a &quot;who waits on whom&quot; graph. Even pointer chasing that follows corrupted or attacker-crafted <code>next</code> links needs a loop guard.</p>
-<p>What you&#x27;re solving for is catching the loop without a growing set of &quot;seen&quot; nodes. On a huge or streaming structure — or inside a memory-constrained runtime like a GC — you often can&#x27;t afford O(n) bookkeeping, so the two-pointer trick that uses constant space is the one that actually ships.</p>
+<p>The real question is whether following a chain of &quot;next&quot; references ever stops, or loops forever. And the trick answers it while remembering almost nothing — instead of a growing set of every node you&#x27;ve seen, you use two pointers moving at different speeds and a fixed amount of memory.</p>
+<p>This shows up wherever you follow references and a loop would be a bug or a hang. Package managers, build systems, and spreadsheet formula engines must catch a circular dependency before they recurse forever. Garbage collectors and serializers walk object graphs that can point back at themselves. Deadlock detection looks for a loop in a &quot;who is waiting on whom&quot; graph. Even chasing pointers through corrupted or attacker-crafted <code>next</code> links needs a loop guard.</p>
+<p>What you are solving for is catching the loop *without* a growing set of visited nodes. On a huge or streaming structure — or inside a memory-tight runtime like a garbage collector — you often can&#x27;t afford bookkeeping that grows with the list, so the two-pointer version that uses fixed memory is the one that ships.</p>
 <h2>Start from the obvious</h2>
-<p>A cycle means &quot;I returned to a node I&#x27;ve already stood on&quot;. So remember every node you&#x27;ve visited and check each new one against that memory:</p>
-<pre><code>seen = set()
-node = head
-while node:
-    if node in seen: return True
-    seen.add(node)
-    node = node.next
-return False</code></pre>
-<p>Correct, and <code>O(n)</code> time. But it spends <code>O(n)</code> memory just to answer a yes/no question.</p>
+<p>A cycle means &quot;I came back to a node I already stood on.&quot; So remember every node you visit and check each new one against that memory.</p>
+<pre class="diagram">   seen = {}         walk and record:
+   at 1: seen? no -&gt; add 1     seen = {1}
+   at 2: seen? no -&gt; add 2     seen = {1,2}
+   at 3: seen? no -&gt; add 3     seen = {1,2,3}
+   at 4: seen? no -&gt; add 4     seen = {1,2,3,4}
+   at 2: seen? YES -&gt; cycle!</pre>
+<p>Correct, and about n steps. But it spends memory that grows with the list just to answer a yes/no question.</p>
 <h2>Find the waste</h2>
-<p>The set is only there to notice &quot;have I been here before?&quot;. But you don&#x27;t actually need to store the whole history to detect a loop — you just need two things moving through the same nodes at different rates.</p>
+<p>The set is only there to notice &quot;have I been here before?&quot; You don&#x27;t need the whole history to detect a loop. You need two things moving through the same nodes at different rates.</p>
 <h2>The insight</h2>
-<p>Picture a circular running track. A fast runner (2 steps per turn) and a slow runner (1 step) both on the track: the fast one *must* eventually catch up to and land on the slow one — it gains one step of distance each turn and the track wraps around. On a straight track (no cycle), the fast runner just reaches the finish line (<code>None</code>) and there&#x27;s no catch-up.</p>
-<pre><code>slow = fast = head
-while fast and fast.next:
-    slow = slow.next
-    fast = fast.next.next
-    if slow is fast: return True   # they met -&gt; cycle
-return False                       # fast ran off the end -&gt; no cycle</code></pre>
-<p>Compare nodes by <strong>identity</strong> (<code>is</code>), not value — two different nodes can hold the same value.</p>
+<p>Picture a circular running track. A fast runner (two steps per turn) and a slow runner (one step) both start together. The fast one gains one step of lead each turn, and the track wraps around, so the fast one *must* eventually land on the slow one. On a straight track (no loop) the fast runner just reaches the finish line (<code>None</code>) and never catches up.</p>
+<pre class="diagram">   list with a cycle:   1 -&gt; 2 -&gt; 3 -&gt; 4 -&gt; 5
+                             ^              |
+                             +--------------+   (5 -&gt; 2)
+
+   slow +1, fast +2 each turn:
+   start:  slow=1   fast=1
+   turn1:  slow=2   fast=3
+   turn2:  slow=3   fast=5
+   turn3:  slow=4   fast=3   (fast wrapped: 5-&gt;2-&gt;3)
+   turn4:  slow=5   fast=5   &lt;- slow is fast -&gt; CYCLE</pre>
+<pre class="diagram">   no cycle:   1 -&gt; 2 -&gt; 3 -&gt; 4 -&gt; None
+
+   start:  slow=1   fast=1
+   turn1:  slow=2   fast=3
+   turn2:  slow=3   fast=None   (fast ran off the end)
+           stop -&gt; no cycle</pre>
+<p>Compare nodes by *identity* (<code>is</code>), not by value — two different nodes can hold the same number.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n)</code> — with a cycle, fast catches slow within one lap; without one, fast reaches the end in <code>n/2</code> steps.</li><li><strong>Space:</strong> <code>O(1)</code> — two pointers, no bookkeeping.</li></ul>
+<ul><li><strong>Time: about n steps.</strong> With a cycle, fast catches slow within one lap; without one, fast reaches the end in about n/2 turns.</li><li><strong>Extra memory: fixed.</strong> Two pointers, no visited set.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Guard both <code>fast</code> and <code>fast.next</code> before <code>fast.next.next</code>, or you&#x27;ll dereference <code>None</code> at the end of an acyclic list.</li><li>Check <code>slow is fast</code>, not <code>slow.val == fast.val</code> — value equality gives false positives on lists with repeated values.</li><li>Check *after* moving both pointers. They start equal at <code>head</code>; checking before the first move reports a false cycle immediately.</li></ul>
+<ul><li>Guard both <code>fast</code> and <code>fast.next</code> before <code>fast.next.next</code>, or you&#x27;ll dereference <code>None</code> at the end of a list with no cycle.</li><li>Check <code>slow is fast</code>, not <code>slow.val == fast.val</code> — value equality gives false positives on lists with repeated numbers.</li><li>Check *after* moving both pointers. They start equal at <code>head</code>; checking before the first move reports a false cycle right away.</li></ul>
 <h2>Transfer</h2>
-<p>Once you can detect the cycle, the same two pointers find *where* the loop starts (<a href="../0142-linked-list-cycle-ii/">142</a>), find the middle (<a href="../0876-middle-of-the-linked-list/">876</a>), and detect cycles in a numeric &quot;jump&quot; sequence like Happy Number / 202. Floyd&#x27;s trick applies any time &quot;advancing&quot; is deterministic and you&#x27;re asking whether it repeats.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0141-linked-list-cycle/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;141. Linked List Cycle — https://leetcode.com/problems/linked-list-cycle/
+<p>Once you can detect the cycle, the same two pointers can find *where* the loop starts (<a href="../0142-linked-list-cycle-ii/">142</a>), find the middle (<a href="../0876-middle-of-the-linked-list/">876</a>), and detect loops in a numeric &quot;jump&quot; sequence like Happy Number / 202. The fast/slow trick applies any time &quot;advancing&quot; is deterministic and you&#x27;re asking whether it ever repeats.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0141-linked-list-cycle/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;141. Linked List Cycle — https://leetcode.com/problems/linked-list-cycle/
 
 Given the head of a linked list, return True if the list contains a cycle
 (some node&#x27;s `next` points back to an earlier node), else False.

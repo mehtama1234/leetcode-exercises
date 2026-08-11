@@ -1,88 +1,131 @@
 # 73. Set Matrix Zeroes
 
-**Pattern:** In-place marking (reuse the grid as its own scratch space)
+**Pattern:** In-place marking (use the grid itself as your notepad)
 **Difficulty:** Medium
 **Link:** https://leetcode.com/problems/set-matrix-zeroes/
 
 ## The problem in plain words
 
-Scan the grid. Wherever you find a 0, that 0's whole row and whole column must
-become all zeros. Do it to the **same grid**, and ideally without allocating extra
+Scan the grid. Wherever you find a `0`, that cell's whole row and whole column
+must become all zeros. Do it to the **same grid**, and ideally without adding
 storage that grows with the grid's size.
+
+```diagram
+     1 1 1                1 0 1
+     1 0 1     -->        0 0 0
+     1 1 1                1 0 1
+
+   the single 0 sits at (1,1), so row 1 and column 1 both go to zero
+```
 
 ## Why this matters
 
-The deeper idea is **storing your bookkeeping inside the data structure you were already handed, to hit `O(1)` extra space** — plus the discipline of separating a "record what's true" pass from an "act on it" pass so in-progress writes don't corrupt the reads.
+Two ideas are hiding in this problem. First: **keep your notes inside the data
+you were already handed**, so you don't pay for extra storage. Second: **write in
+two separate passes — first record what's true, then act on it** — so your own
+edits don't get read back in and corrupt the answer.
 
-The "reuse the input as scratch" trick is a real memory technique. In-place array algorithms encode a seen-set into the array's own indices or sign bits (as in First Missing Positive) to avoid an auxiliary structure — valuable on embedded and memory-tight systems, and in tight numerical kernels where an extra allocation blows the cache. The two-phase "mark, then mutate" split is the same hazard management behind double-buffering and applying diffs: read the old state fully before overwriting, or you feed your own edits back into the computation.
+Reusing the input as a notepad is a real memory technique. In-place array code
+encodes "have I seen this?" into the array's own indices or sign bits to avoid a
+side structure — valuable on small devices and in tight number-crunching loops
+where an extra allocation would blow the processor's cache. The "record, then
+change" split is the same hazard-avoidance behind double-buffering and applying a
+list of edits: read the old state fully before you start overwriting, or you feed
+your own changes back into the work.
 
-What you're solving for is **the `O(m+n)` marker storage the naive fix spends** — repurposing row 0 and column 0 as the marker arrays removes it entirely, keeping the work to a constant number of linear passes with `O(1)` extra memory.
+What you save is the **extra row-marker and column-marker storage** the easy fix
+spends. Reusing row 0 and column 0 as those markers removes it, keeping the work
+to a handful of straight passes with constant extra memory.
 
 ## Start from the obvious
 
-The first trap is to zero a row the instant you see a 0. Don't — the zeros you
-write get re-read as you continue scanning, so they trigger *more* rows and columns
-to blank. That chain reaction floods the whole grid.
+The first trap is to zero a row the instant you see a `0`. Don't — the zeros you
+write get re-read as you keep scanning, so they trigger *more* rows and columns to
+blank. That chain reaction floods the whole grid.
+
+```diagram
+   BAD: zeroing on sight, scanning left to right, top to bottom
+
+     1 0 1      see 0 at (0,1)      1 0 1      now (1,1)==0 too, so
+     1 1 1  ->  zero row 0 & col 1  0 0 0  ->  it blanks row 1 as well
+     1 1 1                          1 0 1      ...and it spreads
+
+   the zeros you wrote get mistaken for original zeros
+```
 
 The honest fix is a two-pass plan with a marker for each row and column:
 
-```
-zero_rows, zero_cols = set(), set()
-for r, c:
-    if matrix[r][c] == 0:
-        zero_rows.add(r); zero_cols.add(c)
-for r, c:
-    if r in zero_rows or c in zero_cols:
-        matrix[r][c] = 0
+```diagram
+   pass 1 (record from the ORIGINAL grid):
+      for every cell that is 0 at (r,c):  zero_rows.add(r);  zero_cols.add(c)
+
+   pass 2 (act):
+      set cell (r,c) to 0 if r is in zero_rows OR c is in zero_cols
 ```
 
-First record everything from the *original* grid, then act on it. Correct — but it
-spends `O(m + n)` extra memory on those two sets. That memory is the waste.
+Correct — but it spends extra memory on those two sets, one entry per row and one
+per column. That memory is the waste.
 
 ## Find the waste
 
-Those marker sets store one bit per row and one bit per column: "does this row/
-column contain a zero?" But the grid already has a spare place to keep one bit per
-row and one bit per column — its **first row** and **first column**. If we
-repurpose them as the marker arrays, we need no separate storage at all.
+Those two sets hold one bit per row and one bit per column: "does this row (or
+column) contain a zero?" But the grid already has a spare place to keep exactly
+one bit per row and one bit per column — its **first row** and its **first
+column**. Repurpose those as the markers and you need no separate storage at all.
 
 ## The insight
 
 Let **row 0** hold the column markers and **column 0** hold the row markers.
 
-Their only clash is cell `(0,0)`, which both would want. So pull column 0 out into
-a single boolean flag and treat the rest uniformly:
+The only clash is cell `(0,0)`, which both would want to use. So pull column 0
+out into a single true/false flag and treat everything else uniformly:
 
-1. **Mark.** Scan every cell. On a 0 at `(r, c)`, set `matrix[r][0] = 0` and
-   `matrix[0][c] = 0`. If the 0 is in column 0, set a separate `first_col_zero`
-   flag instead of relying on the shared corner.
-2. **Blank the interior** (`r >= 1, c >= 1`) using those markers.
-3. **Blank the first row and first column last.** The first row goes to zero iff
-   `matrix[0][0]` was marked; the first column goes to zero iff `first_col_zero`
-   was set.
+1. **Mark.** Scan every cell. On a `0` at `(r, c)`, set `matrix[r][0] = 0` and
+   `matrix[0][c] = 0`. If that zero is in column 0, set a separate
+   `first_col_zero` flag instead of leaning on the shared corner.
+2. **Blank the inside** (`r >= 1, c >= 1`) using those markers.
+3. **Blank the first row and first column last.** Row 0 goes to zero only if
+   `matrix[0][0]` got marked; column 0 goes to zero only if `first_col_zero` was
+   set.
 
-Doing the interior before the border is what keeps the markers readable until the
-moment you're done with them.
+```diagram
+   markers live on the edges.  reading down col 0 and across row 0:
+
+        c0  c1  c2  c3
+   r0 [ M | *   *   * ]   <- row 0 marks which COLUMNS must zero
+   r1 [ * | .   .   . ]
+   r2 [ * | .   .   . ]        col 0 marks which ROWS must zero
+        ^
+     col 0 marks rows; corner M and a separate flag settle the (0,0) clash
+
+   do the inner cells (.) first, then the edges (* and M) last
+```
+
+Doing the inside before the edges is what keeps the markers readable right up to
+the moment you're done with them.
 
 ## Complexity
 
-- **Time:** `O(m*n)` — a constant number of passes over the grid.
-- **Space:** `O(1)` extra — one boolean; the markers live inside the grid itself.
+- **Time: about m times n steps.** A fixed number of passes over the grid.
+- **Extra memory: constant.** One true/false flag; the markers live inside the
+  grid itself.
 
 ## Pitfalls
 
-- **Zeroing rows/columns as you first see them** — the classic chain reaction that
-  blanks everything. Separate marking from acting.
+- **Zeroing rows or columns the moment you first see them** — the chain reaction
+  that blanks everything. Keep marking separate from acting.
 - **The `(0,0)` overlap.** One corner cell can't be the marker for both row 0 and
   column 0. Track column 0 with its own flag.
 - **Order of the final steps.** If you blank row 0 or column 0 *before* using them
-  to fix the interior, you erase your own markers. Interior first, border last.
+  to fix the inside, you erase your own markers. Inside first, edges last.
 - Assuming there's at least one zero — a grid with none must come out unchanged.
 
 ## Transfer
 
-The reusable trick is "store your bookkeeping *inside* the data structure you're
-already given to hit O(1) space." It shows up whenever a marker array mirrors a
-dimension the input already has — e.g. using the array's own indices as a seen-set
-in [First Missing Positive / 41](https://leetcode.com/problems/first-missing-positive/),
-and the general in-place grid work in [Rotate Image / 48](../0048-rotate-image/).
+The reusable trick is "store your notes *inside* the data structure you were
+already given, to keep extra memory constant." It shows up whenever a marker array
+mirrors a dimension the input already has — for example using the array's own
+indices as a seen-set in
+[First Missing Positive / 41](https://leetcode.com/problems/first-missing-positive/),
+and it shares the in-place-grid discipline of
+[Rotate Image / 48](../0048-rotate-image/).

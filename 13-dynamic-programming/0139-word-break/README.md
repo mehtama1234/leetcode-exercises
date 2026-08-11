@@ -1,94 +1,119 @@
 # 139. Word Break
 
-**Pattern:** Dynamic programming (1-D over string positions)
+**Pattern:** Dynamic programming (walk string positions, cache "is the rest solvable?")
 **Difficulty:** Medium
 **Link:** https://leetcode.com/problems/word-break/
 
 ## The problem in plain words
 
-You're given a string like `"applepenapple"` and a set of allowed words like
-`["apple", "pen"]`. Can you chop the string into a sequence of those words, back
-to back, using each word as many times as you like? Return true or false.
+You get a string like `"applepenapple"` and a set of allowed words like
+`["apple", "pen"]`. Can you chop the string into those words, back to back, using
+each word as many times as you want? Return true or false.
+
+```diagram
+   s = "applepenapple"     words = { apple, pen }
+
+     apple | pen | apple
+     -----   ---   -----
+       ok     ok     ok      ->  TRUE
+```
 
 ## Why this matters
 
-The abstract problem is **can this sequence be segmented into legal pieces from a vocabulary** — a reachability question where the fundamental operation is "from position `i`, does some legal chunk take me to a position from which the rest is also solvable?" You cache the answer per position instead of re-deriving it down every path.
+The real question is **can this sequence be cut into legal pieces from a known
+vocabulary**. It's a reachability walk: from position `i`, does some allowed chunk
+carry me to a position from which the rest is *also* solvable? You store that
+yes/no per position instead of re-deriving it down every path.
 
-Where segmentation-against-a-dictionary genuinely lives:
-
-- **Word segmentation** — splitting space-free text (Chinese/Japanese/Thai NLP, or breaking up run-together identifiers and hashtags like `#thisisawesome`).
-- **Tokenizing and parsing** — a lexer deciding whether an input stream splits into valid tokens; URL/path routers matching against known segments.
-- **Spellcheck and search** — recognizing whether a compound is composed of known words.
-
-The good solution buys **time**: naive recursion re-solves the same suffix once per path that reaches it (exponential), while keying the subproblem on the start index leaves only `n + 1` real subproblems for `O(n²·L)` total, with a set lookup keeping each membership test `O(1)`.
+That's the machinery behind splitting space-free text into words (Chinese,
+Japanese, or run-together hashtags like `#thisisawesome`), a lexer deciding
+whether an input breaks into valid tokens, and a spellchecker asking whether a
+compound is built from real words.
 
 ## Start from the obvious
 
-Where does the *first* word end? You don't know, so try every possibility. If
-some prefix `s[0:j]` is a dictionary word, then the whole string is breakable iff
-the **rest** of the string, `s[j:]`, is also breakable — the same question on a
-shorter string:
+Where does the *first* word end? You don't know, so try every cut. If a prefix
+`s[0:j]` is an allowed word, then the whole string works exactly when the **rest**,
+`s[j:]`, also works — the same question on a shorter string.
 
 ```
-breakable(s) = any prefix that is a dict word, whose remainder is also breakable
+breakable(s) = some prefix is a word AND the remainder is breakable
 breakable("") = True
 ```
 
-Recursively: pick a word off the front, recurse on what's left. Correct, and the
-natural first thought.
+Peel a word off the front, recurse on what's left. Correct, and the honest first
+thought.
 
 ## Find the waste
 
-Different prefix choices land you on the **same suffix**. Splitting
-`"aaaa"` as `a|aaa` and as `aa|aa` both leave you asking "is `aaa` breakable?" —
-and `a|a|aa`, `aa|a|a`, ... pile up even more repeats. The naive recursion
-re-solves each suffix once per path that reaches it, and the number of paths is
-exponential.
+Different cuts land you on the **same leftover**. Splitting `"aaaa"` as `a|aaa`
+and as `aa|aa` both leave you asking "is `aaa` breakable?" — and `a|a|aa`,
+`aa|a|a`, ... pile on more repeats.
 
-But a suffix is fully described by **one number**: where it starts. There are only
-`n + 1` starting positions. So there are only `n + 1` real subproblems.
+```diagram
+   "aaaa"          the recursion reaches "aa" (start index 2) many ways:
+
+     a | a | aa...   -> asks breakable("aa")
+     aa | aa         -> asks breakable("aa")   again
+     a | aaa? no...
+
+   same suffix, re-solved once per path that reaches it -> exponential
+```
+
+But a leftover is fully described by **one number**: where it starts. There are
+only `n + 1` start positions, so only `n + 1` real subproblems.
 
 ## The insight
 
-Let `dp[i]` mean "**can `s[i:]` be broken into dictionary words?**" There are only
-`n + 1` of these, so compute each once.
+Let `dp[i]` mean "**can `s[i:]` be broken into allowed words?**" Only `n + 1` of
+these exist. Fill from the end:
 
-Base case: `dp[n] = True` — the empty suffix is trivially "broken" (you've used up
-the string). Then, going from the end backward:
+- `dp[n] = True` — the empty tail is trivially broken (you used up the string).
+- Going backward: `dp[i] = True` if for some `j`, `s[i:j]` is a word **and**
+  `dp[j]` is already True. The answer is `dp[0]`.
 
+```diagram
+   s = "leetcode"   words = { leet, code }   (n=8)
+
+   index: 0 1 2 3 4 5 6 7 8
+          l e e t c o d e
+
+   dp[8] = True                          (empty tail)
+   dp[4]: "code" is a word, dp[8] True  -> dp[4] = True
+   dp[0]: "leet" is a word, dp[4] True  -> dp[0] = True   <-- answer
+
+   dp:  [ T,  _,  _,  _,  T,  _,  _,  _,  T ]
+          0               4               8
+          |_______________^_______________^
+          "leet" jumps 0->4     "code" jumps 4->8
+
+   dp[i] reads dp[j] for the word that starts at i
 ```
-dp[i] = True  if for some j: s[i:j] is a dict word AND dp[j] is True
-```
 
-That is: some word starts at `i`, and after that word the rest is breakable. The
-answer is `dp[0]`.
-
-Top-down it's the same thing with a cache keyed on the start index; bottom-up it's
-this table filled right-to-left.
+Top-down it's the same rule with a cache keyed on the start index; bottom-up it's
+this table filled right to left.
 
 ## Complexity
 
-- **Time:** `O(n^2 * L)` — `n` positions, each tries up to `n` end points, and
-  each candidate substring costs `O(L)` to slice and hash (`L` = max word length).
-  (Using a set of word lengths to only test real lengths trims the constant.)
-- **Space:** `O(n)` for the table, plus `O(total dictionary length)` for the word
-  set.
+- **Time:** about n × n × L — `n` start positions, each tries up to `n` end
+  points, and each candidate chunk costs about `L` to slice and hash (`L` = the
+  longest word). Testing only real word lengths trims the constant.
+- **Space:** about n for the table, plus the size of the word set.
 
 ## Pitfalls
 
-- Forgetting the base case `dp[n] = True`; without it every path dead-ends and you
-  always return false.
-- Testing membership against a **list** instead of a **set** — that turns each
-  lookup into an `O(dict)` scan and blows up the time.
-- This asks *whether* a split exists. Counting all splits or returning them (Word
-  Break II) is a different, heavier problem.
+- Forgetting `dp[n] = True`. Without it every path dead-ends and you always
+  return false.
+- Storing the vocabulary as a **list** instead of a **set** — that turns each
+  membership check into a full scan and blows up the time.
+- This asks *whether* a split exists. Counting all splits or listing them (Word
+  Break II) is a heavier, different problem.
 - Words are **reusable**, so `"applepenapple"` legitimately uses `"apple"` twice.
 
 ## Transfer
 
 The shape is "walk a line of positions; `dp[i]` depends on jumping ahead by an
-allowed step." It's the same skeleton as
-[Coin Change / 322](../0322-coin-change/) (reach an amount using reusable coins),
-Jump Game, and Decode Ways (reach the end of a digit string). Whenever a brute
-force keeps re-asking "is the rest solvable from here?", key the subproblem on
-*here* and cache it.
+allowed step." Same skeleton as [Coin Change / 322](../0322-coin-change/) (reach
+an amount with reusable coins), Jump Game, and its true/false-vs-counting sibling
+[Decode Ways / 91](../0091-decode-ways/). Whenever a brute force keeps re-asking
+"is the rest solvable from here?", key the subproblem on *here* and cache it.

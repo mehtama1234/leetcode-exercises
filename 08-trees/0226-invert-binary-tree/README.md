@@ -1,49 +1,59 @@
 # 226. Invert Binary Tree
 
-**Pattern:** Tree recursion (DFS)
+**Pattern:** Tree recursion (transform each node, let the subtrees transform themselves)
 **Difficulty:** Easy
 **Link:** https://leetcode.com/problems/invert-binary-tree/
 
 ## The problem in plain words
 
-Take a binary tree and flip it into its mirror image. Every node keeps its
-value, but its two children trade places — and this happens at *every* level,
-all the way down.
+Flip a binary tree into its mirror image. Each node keeps its value, but its two
+children trade places — and this happens at *every* node, all the way down.
+
+```diagram
+        4                 4
+       / \               / \
+      2   7    ---->     7   2
+     / \ / \            / \ / \
+    1  3 6  9          9  6 3  1
+
+   left and right swap at every level, top to bottom
+```
 
 ## Why this matters
 
-Underneath the meme-famous puzzle is a real pattern: **applying a transformation
-uniformly to every node of a recursive structure**, where the transform at each
-node (swap the children) plus recursion on the subtrees produces the whole result.
-The fundamental operation is a structural map/rewrite over a tree.
+The real move is: *apply the same small change to every node of a nested
+structure, and make the whole thing update by itself.* The change here is "swap the
+two children." You do not manage the descent by hand — you state what a mirrored
+tree is, in terms of smaller mirrored trees, and the recursion does the rest.
 
-That operation is everywhere real trees get manipulated. Compilers and linters
-rewrite abstract syntax trees — constant folding, desugaring, reordering
-commutative operands — by walking and transforming each node. DOM/UI code mirrors
-or reorders layout subtrees for right-to-left languages. Graphics and geometry
-code reflects hierarchical scene graphs. Any "normalize this nested structure"
-task is a tree rewrite of exactly this form.
+That "walk a tree and rewrite each node" operation is everywhere real trees get
+edited. Compilers rewrite syntax trees — folding constants, reordering operands
+that commute. UI code mirrors layout subtrees for right-to-left languages. Graphics
+code reflects scene graphs. Any "normalize this nested thing" job is a tree rewrite
+of this exact form.
 
-What you're solving for is a **single O(n) pass, O(height) stack**, mutating in
-place with no extra copy of the tree. The deeper lesson is recognizing that a
-transformation defined recursively ("the mirror of a tree is a tree whose swapped
-subtrees are themselves mirrored") maps straight onto code with no cleverness
-required — which is why it's a favorite warm-up.
+What you buy is one pass that touches each node once, editing the tree in place with
+no second copy. The lesson is spotting that a recursively-defined transform maps
+straight onto code — which is why this is a classic warm-up.
 
 ## Start from the obvious
 
-What does "mirror" mean at a single node? Its left child should become its right
-child and vice versa. But its children have children too, and those need to be
-mirrored as well.
+What does "mirror" mean at a single node? Its left child should end up on the right
+and its right child on the left. But those children have children too, and each of
+those subtrees must also be mirrored.
 
-```
-mirror(node):
-    node.left, node.right = mirror of node.right, mirror of node.left
+```diagram
+   at node 2:              want:
+        2                    2
+       / \        ---->     / \
+      1   3                3   1
+
+   ...but if 1 and 3 had subtrees, those must flip too
 ```
 
-The honest first thought is: I have to visit every node and swap. The only real
-question is how to make "the whole subtree below also gets mirrored" fall out
-automatically.
+The honest first thought: I have to visit every node and swap. The only real
+question is how to make "and everything below also flips" happen without me tracking
+it.
 
 ## The insight
 
@@ -51,37 +61,42 @@ The definition of a mirrored tree is itself recursive: a tree's mirror is a tree
 whose **left** subtree is the mirror of the original **right** subtree, and whose
 **right** subtree is the mirror of the original **left** subtree.
 
-So you don't manage the recursion by hand. You invert the right side, invert the
-left side, then assign them crossed over:
+So you invert the right side, invert the left side, and assign them crossed over. The
+recursion handles every deeper level for you.
 
-```
-root.left, root.right = invert(root.right), invert(root.left)
+```diagram
+   invert(4):
+      L = invert(node 7 subtree)   -> returns the mirrored 7-subtree
+      R = invert(node 2 subtree)   -> returns the mirrored 2-subtree
+      4.left, 4.right = L, R       (crossed: old-right lands on the left)
+      return 4
+
+   each invert(...) call did the same crossing for its own children
 ```
 
-The base case is the empty tree — an empty tree looks the same in a mirror, so
-return `None` unchanged. Because Python evaluates the whole right-hand side
-before assigning, the swap is safe even without a temp variable.
+The base case is the empty tree — a mirror of nothing is nothing, so return `None`
+unchanged. Python evaluates the whole right-hand side before assigning, so
+`a, b = invert(b), invert(a)` swaps safely with no temp variable.
 
 ## Complexity
 
-- **Time:** `O(n)` — each node is visited exactly once and does `O(1)` work.
-- **Space:** `O(h)` where `h` is the height, for the recursion call stack. A
-  balanced tree gives `O(log n)`; a degenerate (linked-list-shaped) tree gives
-  `O(n)`.
+- **Time: about n steps.** Each node is visited once and swaps two pointers.
+- **Extra memory: about the height of the tree**, for the call stack. Balanced is
+  about `log n`; a chain is about `n`.
 
 ## Pitfalls
 
-- Swapping the children **before** you recurse but forgetting to recurse into
-  the new positions — you'll only mirror the top level.
-- Using a temp variable incorrectly in languages without tuple assignment
-  (`a = b; b = a` loses `a`). Python's `a, b = b, a` avoids this.
-- Forgetting the empty-tree base case, causing a `None.left` crash.
+- Swapping the children but forgetting to recurse into them — you would only mirror
+  the top level.
+- In a language without tuple assignment, writing `a = b; b = a` loses `a`. Python's
+  `a, b = b, a` sidesteps that.
+- Forgetting the empty-tree base case, which crashes on `None.left`.
 
 ## Transfer
 
-The move "the transformed tree is defined in terms of transformed subtrees, so
-recurse then combine" is the core of nearly every tree problem:
+"The transformed tree is defined in terms of transformed subtrees, so recurse then
+combine" is the heart of nearly every tree problem:
 [Maximum Depth / 104](../0104-maximum-depth-of-binary-tree/),
-[Same Tree / 100](../0100-same-tree/),
-[Symmetric Tree / 101](https://leetcode.com/problems/symmetric-tree/) (which is
-literally "is this tree its own mirror?").
+[Same Tree / 100](../0100-same-tree/), and
+[Symmetric Tree / 101](https://leetcode.com/problems/symmetric-tree/), which asks
+"is this tree its own mirror?".

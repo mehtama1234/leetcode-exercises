@@ -6,32 +6,44 @@
 
 ## The problem in plain words
 
-Houses stand in a row, each with some money inside. You want to grab as much as
-possible, but there's an alarm rule: **you can't rob two houses that are next to
-each other.** Return the largest total you can safely take.
+Houses stand in a row, each holding some money. You want as much as you can carry,
+but the alarm rule is: **you can't rob two houses next to each other.** Return the
+largest total you can safely take.
+
+```diagram
+   houses:  [ 2 ][ 7 ][ 9 ][ 3 ][ 1 ]
+              *         *         *
+              rob 0, 2, 4  ->  2 + 9 + 1 = 12
+              (never two adjacent; this beats robbing 7 and 3)
+```
 
 ## Why this matters
 
-Underneath the heist story is **maximizing a total under a "no two adjacent picks" constraint**. The fundamental operation is a per-item binary choice (take-and-skip-the-neighbor vs. skip) resolved by carrying two rolling states: best-if-I-take-here and best-if-I-don't.
+Under the heist story is **maximize a total under a "no two adjacent picks"
+rule.** The move to learn is a per-item choice — take this one and skip its
+neighbor, or skip it — carried forward with two running totals.
 
-Where non-adjacent selection genuinely appears:
+Non-adjacent selection is a real shape. Picking the most valuable set of
+non-overlapping jobs or time slots reduces to it once sorted. So does spacing out
+cell towers or ads so neighbors don't conflict while you maximize coverage, and
+choosing a highest-scoring set of items under a "no two in a row" rule.
 
-- **Scheduling** — picking the most valuable set of non-overlapping jobs or time slots (weighted interval scheduling reduces to this shape once sorted).
-- **Resource placement** — spacing out cell towers, sensors, or ads/promos so neighbors don't conflict, while maximizing coverage or revenue.
-- **Sequence labeling** — choosing a highest-scoring set of items with a "no two in a row" rule.
-
-The good solution buys **time** — an exponential rob-or-skip tree collapses to a single `O(n)` sweep because only `n` distinct suffixes exist — and the two-variable form buys **`O(1)` memory** since the recurrence never reaches back more than one step. The honest caveat it teaches: greedy "every other house" is wrong; values decide the pattern.
+The fast version collapses an exponential rob-or-skip tree into a single pass —
+only `n` distinct suffixes exist — and the two-variable form keeps constant
+memory, since the recurrence never reaches back more than one step. The honest
+caveat it teaches: "grab every other house" is wrong; the values decide the
+pattern.
 
 ## Start from the obvious
 
-The only real decision at each house is binary: rob it or don't. So think about
-the last house, `n-1`:
+At each house the only real decision is binary: rob it or don't. Think about the
+last house, `n-1`:
 
-- If you **rob** it, you take its money but you're forbidden from house `n-2`, so
-  the rest of your loot comes from houses `0..n-3`.
-- If you **skip** it, your loot is just the best you could do on houses `0..n-2`.
+- **Rob it:** you take its money, but house `n-2` is now off-limits, so the rest of
+  your loot comes from houses `0 .. n-3`.
+- **Skip it:** your loot is the best you could do on houses `0 .. n-2`.
 
-You take whichever is larger. Writing this as a recursion from the front:
+Take whichever is larger. As a recursion from the front:
 
 ```
 best(i) = max( nums[i] + best(i+2),   # rob house i, jump past i+1
@@ -39,57 +51,79 @@ best(i) = max( nums[i] + best(i+2),   # rob house i, jump past i+1
 best(i) = 0   when i is past the end
 ```
 
-That's a correct, honest recursion. But it branches, and it re-solves the same
-suffixes over and over.
+Correct and honest. But it branches, and it re-solves the same suffixes.
 
 ## Find the waste
 
-Draw the calls. `best(0)` needs `best(1)` and `best(2)`. `best(1)` also needs
-`best(2)` and `best(3)`. So `best(2)` gets computed from two different places, and
-this doubling cascades — exponential calls for a problem that only has `n`
-distinct subproblems (`best(0)` … `best(n)`). **We keep recomputing the answer for
-the same starting house.**
+`best(0)` needs `best(1)` and `best(2)`. But `best(1)` *also* needs `best(2)`. So
+`best(2)` gets computed from two different places — and that doubling cascades all
+the way down.
+
+```diagram
+              best(0)
+             /       \
+        best(1)       best(2)     <- best(2) reached here...
+        /     \
+   best(2)   best(3)              <- ...and again here
+
+   exponential calls, but only n distinct starting points exist
+```
+
+**The answer for the same starting house gets recomputed over and over.**
 
 ## The insight
 
-Solve each suffix once. Top-down that's memoization: cache `best(i)` the first time
-you hit it. Bottom-up, flip direction and sweep left to right carrying just two
-numbers:
+Solve each suffix once. Sweep left to right carrying just two numbers:
 
-- `take` — the best total if we're *allowed* to rob the house we're now looking at
-  (i.e. we did not rob the previous one),
-- `skip` — the best total we've already locked in without robbing the current house.
+- `take` — best total if we're *allowed* to rob the house we're now looking at
+  (meaning we did not rob the previous one),
+- `skip` — best total already locked in without robbing the current house.
 
 At each house holding `money`:
 
 ```
-new_take = skip + money          # rob here: add to whatever didn't include the neighbor
-new_skip = max(take, skip)       # don't rob here: carry the best so far
-take, skip = new_take, new_skip
+new_take = skip + money       # rob here: add to whatever didn't include the neighbor
+new_skip = max(take, skip)    # don't rob here: carry the best so far
 ```
 
-The answer is `max(take, skip)`. Only the previous two states ever matter, so
-there's no table to keep — `O(1)` space.
+Watch it run on `[2, 7, 9, 3, 1]`. Each cell reads only the pair before it:
+
+```diagram
+   money:     2      7      9      3      1
+             ---    ---    ---    ---    ---
+   take:  0 ->2     0+7    2+9    16+3   11+1     take = prev skip + money
+             |       ^     ^       ^      ^
+   skip:  0-> 0  ->  2  -> 7  ->  11  -> 16       skip = max(prev take, prev skip)
+
+   at house 2 (money 9):
+        new take = skip(=7 from before house 1) + 9 = 16
+        new skip = max(take=7, skip=7) = 7
+                      \___ each cell only needs the previous take/skip
+   answer = max(take, skip) at the end = max(11, 16) = ... final = 12
+```
+
+The answer is `max(take, skip)` at the end. Only the previous two states ever
+matter, so there's no table to keep — constant memory.
 
 ## Complexity
 
 - **Naive recursion:** exponential time, `O(n)` stack.
-- **Memoized:** `O(n)` time (n subproblems solved once), `O(n)` space.
-- **Rolling loop:** `O(n)` time, `O(1)` space — the natural endpoint.
+- **Memoized:** about `n` steps (n subproblems solved once), about `n` memory.
+- **Rolling loop:** about `n` steps, constant memory — the natural endpoint.
 
 ## Pitfalls
 
 - Forgetting the empty list (`[]` → `0`) and the single house (`[x]` → `x`).
-- Assuming the best plan is "every other house". Values matter: for `[2,1,1,2]`
+- Assuming the best plan is "every other house." Values matter: for `[2,1,1,2]`
   the answer robs the two ends (`2 + 2 = 4`), skipping *two* houses in the middle.
-- In the update, both new values are computed from the *old* pair — do the
-  assignment simultaneously (or with temps) so one doesn't clobber the other.
+- In the update, both new values come from the *old* pair — assign them together
+  (or with temps) so one doesn't clobber the other before it's read.
 
 ## Transfer
 
-The "at each item, take-it-and-jump vs skip-it, keep two rolling states" pattern is
-the backbone of many linear DPs. Its direct sequels:
+The "at each item, take-it-and-jump vs skip-it, carry two rolling states" pattern
+is the backbone of many linear DPs. Its direct sequel:
 [House Robber II / 213](../0213-house-robber-ii/) (houses in a circle — solve two
-linear passes), and it rhymes with
+linear passes). It also rhymes with
 [Delete and Earn / 740](https://leetcode.com/problems/delete-and-earn/), which
-reduces to this exact recurrence after bucketing values.
+becomes this exact recurrence after bucketing values.

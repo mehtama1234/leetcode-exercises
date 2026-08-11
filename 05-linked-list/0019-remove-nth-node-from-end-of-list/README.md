@@ -1,97 +1,118 @@
 # 19. Remove Nth Node From End of List
 
-**Pattern:** Two pointers with a fixed gap + dummy head
+**Pattern:** Two pointers held a fixed gap apart, plus a dummy head
 **Difficulty:** Medium
 **Link:** https://leetcode.com/problems/remove-nth-node-from-end-of-list/
 
 ## The problem in plain words
 
-Delete the node that is `n`th from the *end* of the list (n=1 is the last node)
-and return the head. A singly linked list only lets you walk forward, so "from
-the end" is the awkward part.
+Delete the node that is `n`th from the *end* of the list (n=1 is the last node) and
+return the head. A singly linked list only walks forward, so "from the end" is the
+awkward part.
+
+```diagram
+   1 -> 2 -> 3 -> 4 -> 5      n = 2  (2nd from the end)
+                  ^ remove this
+   result:  1 -> 2 -> 3 -> 5
+```
 
 ## Why this matters
 
-The real problem is answering a question about a *forward-only* stream when the
-thing you care about is measured from the end you haven't reached yet. The
-fundamental move — a second pointer held `n` steps behind a lead pointer — lets
-you locate "n from the end" in one pass, without first measuring the length and
-walking back over it.
+You're asked about a spot measured from the end of a forward-only chain — an end
+you haven't reached yet. The move that fixes this is to hold a second pointer a
+fixed number of steps *behind* a lead pointer. When the lead reaches the end, the
+trailing one is automatically `n` from the end. One pass, no measuring the length
+and walking back.
 
-That two-pointer "trailing window" shows up wherever you process a sequence you
-can't cheaply rewind: keeping the last N lines of a log file (`tail`), holding a
-sliding window over a network packet or sensor stream, trimming the oldest entry
-from a bounded buffer, or streaming a large file where seeking backward is
-expensive. Databases and log processors lean on exactly this so they never buffer
-the whole input.
+That "trailing window" shows up wherever you process a sequence you can't cheaply
+rewind: keeping the last N lines of a log (`tail`), sliding a window over a network
+or sensor stream, dropping the oldest entry from a bounded buffer, or streaming a
+large file where seeking backward is expensive. Databases and log processors lean
+on this so they never buffer the whole input.
 
-What you're buying is a single pass and constant extra memory. Instead of two
-traversals (measure, then delete) or storing every node to index from the back,
-one walk with a fixed-gap pair does the job — the difference that matters when the
-stream is huge or arrives live.
+What you are buying is a single pass and fixed extra memory. Instead of two walks
+(measure, then delete) or storing every node to index from the back, one walk with
+a fixed-gap pair does it — the difference that matters when the stream is huge or
+arrives live.
 
 ## Start from the obvious
 
-"nth from the end" is just "(length − n)th from the front". You can count first,
-then walk:
+"nth from the end" is the same as "(length − n)th from the front." So count first,
+then walk.
 
-```
-length = count all nodes            # pass 1
-before = walk (length - n) steps    # pass 2, stop at the node before target
-before.next = before.next.next      # unlink
+```diagram
+   pass 1 (count):  1 -> 2 -> 3 -> 4 -> 5   ->  length = 5, n = 2
+   pass 2 (walk):   stop (5 - 2) = 3 steps in, at node 3 (just before target)
+                    1 -> 2 -> 3 -> 4 -> 5
+                              ^ node before target
+   unlink:          3.next = 3.next.next  ->  3 -> 5
 ```
 
-Correct and `O(n)`. But it walks the list roughly twice, and it needs a dummy
-node in front so that deleting the *first* node isn't a special case.
+Correct, but it walks the list roughly twice, and deleting the *first* node would
+be a special case unless you put a dummy node in front.
 
 ## Find the waste
 
-The whole first pass exists only to learn the length. But we don't need the
-number — we need a pointer positioned relative to the end. If we could park one
-pointer `n` nodes ahead of another and slide them together, the trailing one
-would automatically be `n` from the end when the leader hits the end. No count
-needed.
+The whole first pass exists only to learn the length. You don't need the number —
+you need a pointer positioned relative to the end. Park one pointer `n` nodes ahead
+of another and slide them together: when the leader falls off the end, the trailing
+one lands `n` from the end, no counting.
 
 ## The insight
 
-Use a dummy head, then open a gap of exactly `n + 1` between two pointers:
+Use a dummy head, then open a gap of exactly `n + 1` between two pointers, and
+slide them together until the lead runs off the end.
 
-```
-dummy = ListNode(0, head)
-lead = trail = dummy
-for _ in range(n + 1):    # push lead n+1 ahead
-    lead = lead.next
-while lead:               # slide both until lead runs off the end
-    lead = lead.next
-    trail = trail.next
-trail.next = trail.next.next   # trail is now just before the target
-return dummy.next
+```diagram
+   dummy -> 1 -> 2 -> 3 -> 4 -> 5      n = 2
+
+   open a gap of n+1 = 3 (push lead 3 ahead of trail):
+     trail=dummy                 lead=3
+
+   slide both until lead is None:
+     trail=1    lead=4
+     trail=2    lead=5
+     trail=3    lead=None   <- lead fell off
+                ^ trail sits just BEFORE the target (node 4)
+
+   unlink:  trail.next = trail.next.next
+     dummy -> 1 -> 2 -> 3 -> 5      return dummy.next
 ```
 
-Why `n + 1` and not `n`? Because we want `trail` to stop on the node *before* the
-one we delete, so we can splice it out. The dummy guarantees such a "before"
+Why `n + 1` and not `n`? Because you want `trail` to stop on the node *before* the
+one you delete, so you can splice around it. The dummy guarantees such a "before"
 node always exists — even when the target is the real head.
+
+```diagram
+   deleting the real head (n = length):
+
+   dummy -> 1 -> 2 -> 3      n = 3
+   trail=dummy      lead=None after the slide
+   trail.next = trail.next.next
+   dummy -> 2 -> 3      return dummy.next  (new head is 2)
+```
 
 ## Complexity
 
-- **Time:** `O(n)` — a single pass; `lead` traverses the list once.
-- **Space:** `O(1)` — two pointers plus the dummy.
+- **Time: about n steps.** A single pass; the lead pointer crosses the list once.
+- **Extra memory: fixed.** Two pointers plus the dummy.
 
 ## Pitfalls
 
 - Off-by-one on the gap: `n` steps leaves `trail` *on* the target (can't unlink
-  it); `n + 1` leaves it just before. Get this wrong and you delete the wrong
-  node or crash.
-- Deleting the head: without the dummy you'd need a separate branch. The dummy
-  makes `dummy.next = dummy.next.next` handle it for free — and you return
-  `dummy.next`, not the original `head`.
-- The problem guarantees `1 <= n <= length`, so you don't have to defend against
-  `n` too large — but the `assert` in the code documents the assumption.
+  it); `n + 1` leaves it just before. Get this wrong and you delete the wrong node
+  or crash.
+- Deleting the head: without the dummy you'd need a separate branch. The dummy makes
+  `dummy.next = dummy.next.next` handle it, and you return `dummy.next`, not the
+  original `head`.
+- The problem guarantees `1 <= n <= length`, so you don't defend against `n` too
+  large — but the `assert` in the code documents that assumption.
 
 ## Transfer
 
 "Two pointers a fixed distance apart" is the reusable move for anything phrased
-relative to the end of a forward-only structure: find the kth-from-last node,
-and it pairs with the dummy-head trick used across list-editing problems like
+relative to the end of a forward-only structure — the kth-from-last node, for
+instance. It pairs with the dummy-head trick used across list-editing problems like
 [merge two lists / 21](../0021-merge-two-sorted-lists/) and Remove Linked List
-Elements / 203.
+Elements / 203. The fixed-gap slide is a cousin of the fast/slow walk in
+[middle of the list / 876](../0876-middle-of-the-linked-list/).

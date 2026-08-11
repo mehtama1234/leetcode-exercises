@@ -16,31 +16,47 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">15. Merge Intervals</a> / <span>435</span></nav><article class="notes"><h1>435. Non-overlapping Intervals</h1>
 <p><strong>Pattern:</strong> Greedy interval scheduling (sort by end time) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/non-overlapping-intervals/</p>
 <h2>The problem in plain words</h2>
-<p>You have a set of ranges, some of which overlap. Delete as few as possible so that none of the survivors overlap. Return *how many* you had to delete.</p>
+<p>You have a set of ranges, some overlapping. Delete as few as possible so that none of the survivors overlap. Return *how many* you had to delete.</p>
+<pre class="diagram">   time:  1  2  3  4
+   [1,2]   [==]
+   [2,3]      [==]
+   [3,4]         [==]
+   [1,3]   [=====]
+              ^ [1,3] clashes with [2,3] -&gt; drop 1 interval -&gt; answer 1
+   keep: [1,2] [2,3] [3,4]   (all touch but none overlap)</pre>
 <h2>Why this matters</h2>
-<p>This is <strong>activity selection</strong> — keep the largest set of non-overlapping intervals (removing the fewest is the mirror of keeping the most). The fundamental operation is a greedy scan sorted *by end time*: always keep the interval that finishes soonest, because it leaves the most room for the rest, and an exchange argument proves that&#x27;s optimal.</p>
-<p>It&#x27;s the core of maximizing throughput on a single resource. Schedulers pick the most jobs one machine or one CPU can run without conflict. Broadcast and advertising systems select the most non-conflicting slots to air. Meeting and room booking maximizes how many requests one room can honor. Compilers use the same idea in register allocation — fitting the most live ranges into limited registers. Bandwidth and reservation systems admit the most non-overlapping requests a channel can serve.</p>
-<p>What we buy is <code>O(n log n)</code>: one end-sorted pass replaces an exponential search over subsets, and the greedy is provably optimal, not just a heuristic — so we get the true best packing under a tight time budget.</p>
+<p>This is <strong>activity selection</strong> — keep the largest set of non-overlapping intervals (removing the fewest is the mirror of keeping the most). The core operation is a greedy scan sorted *by end time*: always keep the interval that finishes soonest, because it leaves the most room for the rest, and a swap argument proves that is best.</p>
+<p>It is the heart of squeezing the most work onto one resource. Schedulers pick the most jobs one machine can run without conflict. Broadcasters select the most non-conflicting ad slots. Compilers use the same idea in register allocation — fitting the most live ranges into limited registers.</p>
+<p>What you buy is about n·log n: one end-sorted pass replaces an exploding search over subsets, and the greedy is provably best, not just a decent guess.</p>
 <h2>Start from the obvious</h2>
-<p>&quot;Delete the fewest&quot; invites a brute force: try every subset of intervals, check which subsets are overlap-free, and keep the biggest one. The answer is <code>total - biggest_overlap_free_subset</code>.</p>
+<p>&quot;Delete the fewest&quot; invites a brute force: try every subset of intervals, check which subsets are overlap-free, keep the biggest. The answer is <code>total - biggest_overlap_free_subset</code>.</p>
 <pre><code>best = 0
 for each subset S of intervals:
     if no two intervals in S overlap:
         best = max(best, len(S))
 return len(intervals) - best</code></pre>
-<p>That&#x27;s <code>O(2^n)</code> — hopeless. But it names the real goal precisely: <strong>removing the fewest is the same as keeping the most non-overlapping intervals.</strong></p>
+<p>That is about 2ⁿ subsets — hopeless. But it names the real goal precisely: <strong>removing the fewest is the same as keeping the most non-overlapping intervals.</strong></p>
 <h2>Find the waste / The insight</h2>
 <p>That reframing — &quot;keep the most&quot; — is the classic *activity selection* problem, and it has a clean greedy answer. The trick is choosing which interval to keep when two clash.</p>
 <p>Sort the intervals <strong>by end time</strong>. Then repeatedly keep the interval that finishes earliest among those that still fit:</p>
 <blockquote>The interval that ends soonest is always safe to keep, because it leaves the most of the timeline free for everything after it.</blockquote>
-<p>Why is greedy *optimal* and not just a reasonable guess? Exchange argument: take any optimal set of kept intervals. Look at whichever of them ends earliest. If it&#x27;s not the globally-earliest-ending interval, you can swap that one in without creating any new overlap (it ends even sooner, so it can only free up room). So some optimal solution always includes the earliest-finishing interval — keep it, then recurse on what&#x27;s left. The greedy is following exactly that optimal choice at every step.</p>
-<p>Concretely: walk the end-sorted list tracking <code>kept_end</code>, the finish time of the last interval we kept. The next interval fits if <code>start &gt;= kept_end</code> — keep it and advance <code>kept_end</code>. Otherwise it overlaps something we&#x27;re keeping, so it&#x27;s a removal.</p>
+<pre class="diagram">   sort by END:   [1,2]  [2,3]  [1,3]  [3,4]
+   ends:            2      3      3      4
+
+   time:  1  2  3  4
+   [1,2]   [==]                 keep, kept_end = 2
+   [2,3]      [==]  start 2 &gt;= 2  -&gt; keep, kept_end = 3
+   [1,3]   [=====]  start 1 &lt;  3  -&gt; CLASH, remove  (removed = 1)
+   [3,4]         [==] start 3 &gt;= 3 -&gt; keep, kept_end = 4
+   kept 3 of 4  -&gt;  removed = 4 - 3 = 1</pre>
+<p><strong>Why is greedy the true best, not just a reasonable guess?</strong> Swap argument: take any best set of kept intervals. Look at whichever of them ends earliest. If it is not the globally-earliest-ending interval, swap that one in — it ends even sooner, so it only frees up room and creates no new overlap. So some best solution always includes the earliest-finishing interval. Keep it, then repeat on what is left. The greedy follows exactly that best choice at every step.</p>
+<p>Concretely: walk the end-sorted list tracking <code>kept_end</code>, the finish time of the last interval you kept. The next interval fits if <code>start &gt;= kept_end</code> — keep it and advance <code>kept_end</code>. Otherwise it clashes with something you are keeping, so it is a removal.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n log n)</code> — the sort dominates; the sweep is one <code>O(n)</code> pass.</li><li><strong>Space:</strong> <code>O(1)</code> beyond the sort (we only track a count and one boundary).</li></ul>
+<ul><li><strong>Time: about n·log n</strong> — the sort dominates; the sweep is one pass.</li><li><strong>Extra memory: a fixed amount</strong> beyond the sort (a count and one boundary).</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Touching is not overlapping.</strong> <code>[1, 2]</code> and <code>[2, 3]</code> share only the endpoint <code>2</code>; they can both stay. Use <code>start &gt;= kept_end</code>, so equality means &quot;fits.&quot;</li><li><strong>Sorting by start instead of end</strong> is the common wrong instinct. It can be made to work if, on a clash, you keep the interval that *ends* earlier (see <code>erase_overlap_intervals_brute</code> in the solution) — but sort-by-end is the cleaner, canonical form and makes the optimality argument obvious.</li><li>Returning the kept count instead of the removed count (<code>n - kept</code>).</li></ul>
+<ul><li><strong>Touching is not overlapping.</strong> <code>[1, 2]</code> and <code>[2, 3]</code> share only the point <code>2</code>; both can stay. Use <code>start &gt;= kept_end</code>, so equality means &quot;fits.&quot;</li><li><strong>Sorting by start instead of end</strong> is the common wrong instinct. It can be made to work if, on a clash, you keep the interval that *ends* earlier (see <code>erase_overlap_intervals_brute</code> in the solution) — but sort-by-end is the cleaner, canonical form and makes the &quot;why it&#x27;s best&quot; argument obvious.</li><li>Returning the kept count instead of the removed count (<code>n - kept</code>).</li></ul>
 <h2>Transfer</h2>
-<p>Sort-by-end greedy is the template for scheduling the maximum number of non-conflicting tasks: meeting-room selection, the &quot;maximum number of events you can attend,&quot; and any &quot;pick the most compatible intervals&quot; problem. It&#x27;s the mirror image of <a href="../0253-meeting-rooms-ii/">Meeting Rooms II / 253</a> (which asks how many rooms you&#x27;d need if you *couldn&#x27;t* drop any). Contrast with <a href="../0056-merge-intervals/">Merge Intervals / 56</a>, where you sort by <strong>start</strong> because you&#x27;re fusing overlaps rather than choosing among them.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/15-intervals/0435-non-overlapping-intervals/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;435. Non-overlapping Intervals — https://leetcode.com/problems/non-overlapping-intervals/
+<p>Sort-by-end greedy is the template for scheduling the maximum number of non-conflicting tasks: meeting-room selection, &quot;maximum number of events you can attend,&quot; and any &quot;pick the most compatible intervals&quot; problem. It is the mirror image of <a href="../0253-meeting-rooms-ii/">Meeting Rooms II / 253</a> (which asks how many rooms you would need if you *could not* drop any). Contrast with <a href="../0056-merge-intervals/">Merge Intervals / 56</a>, where you sort by <strong>start</strong> because you are fusing overlaps rather than choosing among them.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/15-intervals/0435-non-overlapping-intervals/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;435. Non-overlapping Intervals — https://leetcode.com/problems/non-overlapping-intervals/
 
 Given a set of intervals, return the minimum number you must remove so that none
 of the ones that remain overlap.

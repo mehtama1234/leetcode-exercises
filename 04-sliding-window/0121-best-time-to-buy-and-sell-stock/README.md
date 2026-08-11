@@ -1,34 +1,48 @@
 # 121. Best Time to Buy and Sell Stock
 
-**Pattern:** Sliding window / running minimum
+**Pattern:** Sliding window / running minimum (compress the past into one number)
 **Difficulty:** Easy
 **Link:** https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
 
 ## The problem in plain words
 
-You're given a price for each day. Pick one day to buy and a **later** day to
-sell. What's the most profit you can make? If prices only ever fall, you simply
-don't trade, and the answer is `0`.
+You get a price for each day. Pick one day to buy and a **later** day to sell.
+What's the most profit you can make? If prices only ever fall, you don't trade at
+all and the answer is `0`.
 
-The "buy before you sell" rule is the whole game: it means for any sell day, the
-buy day has to come from the days *before* it.
+The "buy before you sell" rule is the whole game. For any day you sell on, the buy
+day has to come from the days *before* it.
+
+```diagram
+   day:     0    1    2    3    4    5
+   price: [ 7 ,  1 ,  5 ,  3 ,  6 ,  4 ]
+
+   buy on day 1 (price 1), sell on day 4 (price 6)
+                 buy ^                ^ sell
+   profit = 6 - 1 = 5    (best possible)
+```
 
 ## Why this matters
 
-Underneath the trading story this is the **best-gap-where-one-point-must-precede-the-other** problem, solved by carrying a **running minimum of the prefix**. The fundamental operation is: compress everything you've seen so far into one summary number (the cheapest price yet), and answer each new position against it in constant time — no re-scanning the past.
+Underneath the trading story the question is: **what's the best gap between two
+points where one must come before the other?** The reusable move is to squeeze
+everything you've seen so far into one summary number — the cheapest price yet —
+and answer each new day against it in a single step. You never re-scan the past.
 
-This running-extremum-over-a-stream move is everywhere in real monitoring and analytics:
+This "carry a running best over a stream" move is everywhere in monitoring and
+analytics. The largest peak-to-trough drop of a metric is computed online as data
+arrives. Running min, max, and best-so-far over a price, sensor, or latency feed
+are kept the same way, on data you often can't store or re-read. The biggest rise
+between a valley and a later peak in a time series is this exact shape.
 
-- **Metrics and alerting** — largest drawdown or peak-to-trough drop, computed online as data arrives.
-- **Streaming aggregates** — running min/max/best-so-far over sensor, price, or latency feeds where you can't store or re-read history.
-- **Signal processing** — maximum rise between a valley and a later peak in a time series.
-
-What we're solving for is **one pass and constant memory over data you may only see once**: brute force re-searches the whole prefix for the cheapest earlier point (`O(n^2)`), while a single carried minimum collapses that history to `O(1)` state and `O(n)` time — the right shape for a live stream, not just an array.
+What the good version buys you is one pass and constant memory over data you may
+only see once. The slow version re-searches the whole past for the cheapest earlier
+day; the running minimum collapses that history into a single number.
 
 ## Start from the obvious
 
-Try every valid pair — every buy day with every later sell day — and keep the
-best difference.
+Try every valid pair — every buy day with every later sell day — and keep the best
+difference.
 
 ```
 best = 0
@@ -38,62 +52,68 @@ for buy i:
 return best
 ```
 
-That's `O(n^2)`. It's correct, and it's the honest first thought. Now stare at
-what it wastes.
+That's about `n × n` steps. It's correct and it's the honest first thought. Now
+stare at what it wastes.
 
 ## Find the waste
 
 Fix a sell day `j`. The inner loop is really asking one thing: *what is the
-cheapest price on any day before `j`?* Because to maximize `prices[j] - buy`, you
-want the smallest possible `buy`. The brute force re-discovers that cheapest
-earlier price from scratch for every `j` — but as you move day by day, the
-"cheapest so far" only ever gets updated, never recomputed.
+cheapest price on any day before `j`?* Because to make `prices[j] - buy` as large
+as possible, you want the smallest `buy` you can find. The slow version re-discovers
+that cheapest earlier price from scratch for every `j`.
+
+```diagram
+   price: [ 7 ,  1 ,  5 ,  3 ,  6 ,  4 ]
+
+   sell on day 3 (price 3): rescans days 0..2 to find cheapest -> 1
+   sell on day 4 (price 6): rescans days 0..3 to find cheapest -> 1  (again!)
+   sell on day 5 (price 4): rescans days 0..4 to find cheapest -> 1  (again!)
+
+   the "cheapest so far" only ever updates -- it never needs recomputing
+```
+
+As you walk day by day, the cheapest price so far only ever gets lower or stays
+put. Recomputing it every time is the waste.
 
 ## The insight
 
-Walk left to right, carrying one number: `min_price`, the lowest price seen so
-far. On each day:
+Walk left to right carrying one number: `min_price`, the lowest price seen so far.
+On each day, either this is a new cheapest day to have bought, or you pretend to
+sell today against that minimum and keep the best profit.
 
-1. If today is cheaper than anything before, update `min_price` (a better day to
-   have bought).
-2. Otherwise, pretend you sell today: `profit = price - min_price`, and keep the
-   best.
+```diagram
+   price: [ 7 ,  1 ,  5 ,  3 ,  6 ,  4 ]
 
-```
-min_price = +infinity
-best = 0
-for price in prices:
-    if price < min_price: min_price = price
-    else:                 best = max(best, price - min_price)
-return best
+   day 0  p=7   new min -> min_price = 7        best = 0
+   day 1  p=1   new min -> min_price = 1        best = 0
+   day 2  p=5   sell: 5-1 = 4                   best = 4
+   day 3  p=3   sell: 3-1 = 2                   best = 4
+   day 4  p=6   sell: 6-1 = 5                   best = 5   <- best profit
+   day 5  p=4   sell: 4-1 = 3                   best = 5
 ```
 
-The past is compressed into a single number — the best buy price so far — so one
-pass is enough.
+The entire past is compressed into a single number — the best buy price so far —
+so one pass is enough.
 
 ## Complexity
 
-- **Time:** `O(n)` — one pass, constant work per day.
-- **Space:** `O(1)` — just `min_price` and `best`.
-
-The brute force is `O(n^2)`; the trick is realizing the entire history you need is
-one running minimum.
+- **Time: about n steps.** One pass, constant work per day.
+- **Extra memory: constant.** Just `min_price` and `best`.
 
 ## Pitfalls
 
-- Selling **before** buying — the "later day" rule is easy to drop; tracking a
-  *running* minimum enforces it automatically.
-- Returning `0` when a real profit exists because you started `best` too high, or
-  a negative number when no trade is profitable (clamp at `0`).
-- Confusing this with "max difference between any two elements" — order matters
+- Selling **before** buying. The "later day" rule is easy to drop; tracking a
+  *running* minimum enforces it for free — you only ever sell against a price from
+  an earlier day.
+- Returning a negative number when no trade is profitable. Clamp `best` at `0`.
+- Confusing this with "biggest difference between any two numbers." Order matters
   here; the smaller value must come first.
-- Empty or single-day input: profit is `0` (you can't buy and sell).
+- Empty or single-day input: profit is `0`, since you can't buy and sell.
 
 ## Transfer
 
-This is the running-extremum idea: sweep once, keep the best "so far" value you
-need, and answer each new position against it. The same shape solves
-[Maximum Subarray / 53](../../02-arrays-hashing/) (running best-ending-here),
-maximum profit variants, and any "best pair where one index must precede the
-other" question. Whenever a brute force re-searches the prefix for a min or max,
-carry it as you go instead.
+The reusable move is the running extremum: **sweep once, keep the best "so far"
+value you need, and answer each new position against it.** The same shape solves
+Maximum Subarray (carry the best sum ending here), the harder buy/sell variants,
+and any "best pair where one index must precede the other" question. Whenever a
+slow solution re-searches the prefix for a min or max, carry it as you go instead.

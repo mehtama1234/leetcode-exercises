@@ -16,34 +16,57 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">19. 2-D Dynamic Programming</a> / <span>115</span></nav><article class="notes"><h1>115. Distinct Subsequences</h1>
 <p><strong>Pattern:</strong> 2-D dynamic programming (two-prefix counting grid) <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/distinct-subsequences/</p>
 <h2>The problem in plain words</h2>
-<p>You have a source string <code>s</code> and a target <code>t</code>. Count how many different ways you can delete some characters from <code>s</code> (without reordering the rest) so that what remains is exactly <code>t</code>. Two ways are different if they keep a different *set of positions*, even when the leftover text looks identical.</p>
+<p>You have a big string <code>s</code> and a small string <code>t</code>. Count how many different ways you can cross out some letters of <code>s</code> (keeping the rest in order) so that what&#x27;s left reads exactly <code>t</code>. Two ways count as different if they cross out different letters, even if the surviving text is the same.</p>
+<pre class="diagram">   s = &quot;rabbbit&quot;    t = &quot;rabbit&quot;
+
+   pick which &#x27;b&#x27;s to keep (t needs two b&#x27;s, s has three):
+
+   ra[bb]bit   ra[b_b]it   ra[_bb]it     -&gt; 3 distinct ways
+      keep 1,2    keep 1,3    keep 2,3</pre>
 <h2>Why this matters</h2>
-<p>The core operation is *counting distinct alignments of a pattern inside a sequence when the same characters can align in many positions.* It&#x27;s not &quot;does <code>t</code> occur?&quot; (that&#x27;s easy) — it&#x27;s &quot;in how many positionally-distinct ways?&quot; That subtlety, where <code>aaa</code> contains <code>aa</code> three times, is exactly where naive counting double-counts or under-counts, and it&#x27;s why you need to sum &quot;use this character&quot; and &quot;save it for later&quot; as separate branches.</p>
-<p>This shape appears in real work. Counting how many ways a template&#x27;s required fields can be filled from an ordered log (which log lines satisfy which slots) is this count. In bioinformatics, counting occurrences of a motif as a subsequence of a genome is literally this. Diff and patch tooling that quantifies how many minimal deletions transform one sequence into another leans on the same grid.</p>
-<p>What the good solution buys is <code>O(m·n)</code> time versus the <code>2^m</code> brute force of trying every subset of <code>s</code>, plus a <code>O(n)</code> rolled version that fits a large <code>s</code> in tiny memory.</p>
+<p>The trick is counting alignments, not just deciding yes/no. When you stand on a letter of <code>s</code> that could match, you don&#x27;t have to commit — you can *use* it here, or *skip* it and hope a later copy matches instead. Adding up &quot;use&quot; and &quot;skip&quot; tallies every distinct way separately, without ever listing them.</p>
+<p>That &quot;sum over the choices you didn&#x27;t have to make&quot; move is the heart of counting problems everywhere: number of paths through a grid, number of ways to make change, number of parse trees. The shape of the recurrence changes, but the habit — one choice splits into a sum of sub-counts — carries over.</p>
 <h2>Start from the obvious</h2>
-<p>Walk <code>s</code> left to right, matching against <code>t</code>. State <code>(i, j)</code> = &quot;how many ways to match the rest of <code>t</code> (<code>t[j:]</code>) using the rest of <code>s</code> (<code>s[i:]</code>)&quot;:</p>
-<pre><code>def count(i, j):
-    if j == len(t): return 1         # all of t matched
-    if i == len(s): return 0         # s ran out, t didn&#x27;t
-    ways = count(i+1, j)             # skip s[i]
-    if s[i] == t[j]: ways += count(i+1, j+1)   # also try using s[i]
-    return ways</code></pre>
-<p>When characters match you must count <strong>both</strong> using and skipping — that&#x27;s the whole game. Unmemoized it&#x27;s exponential.</p>
-<h2>Find the waste</h2>
-<p>Only <code>(m+1)·(n+1)</code> distinct <code>(i, j)</code> states exist, revisited endlessly by the overlapping recursion. Cache them → <code>O(m·n)</code>.</p>
+<p>Walk <code>s</code> and <code>t</code> together from the front. Look at the current <code>s</code> letter:</p>
+<ul><li>It doesn&#x27;t match the current <code>t</code> letter → you have no choice, skip it and move on in <code>s</code>.</li><li>It matches → you have two choices. <strong>Use</strong> it (advance in both <code>s</code> and <code>t</code>) or <strong>skip</strong> it (advance in <code>s</code> only, leave <code>t</code> where it is, hoping a later <code>s</code> letter matches). The total count is the sum of both.</li></ul>
+<pre class="diagram">   at s-letter c, needing t-letter d:
+
+        c == d ?
+        /        \
+      no          yes
+      |          /    \
+     skip     use      skip
+      |     (both++)   (s++ only)
+   count(skip)  count(use) + count(skip)</pre>
+<p>Written as recursion this is correct, but the same &quot;still need <code>t[j:]</code> inside <code>s[i:]</code>&quot; state is reached from many prefixes, so it&#x27;s re-solved over and over.</p>
 <h2>The insight</h2>
-<p>Bottom-up, <code>dp[i][j]</code> = ways <code>t[:j]</code> appears in <code>s[:i]</code>:</p>
-<pre><code>dp[i][j] = dp[i-1][j]                              # ignore s[i-1]
-         + (dp[i-1][j-1] if s[i-1] == t[j-1] else 0)  # match s[i-1] to t[j-1]</code></pre>
-<p>Base: <code>dp[i][0] = 1</code> (the empty target matches any prefix one way — delete everything). A cell needs only the row above, so keep <strong>one row</strong> and iterate <code>j</code> from <strong>high to low</strong>, so <code>dp[j-1]</code> still holds the *previous* character&#x27;s count when you read it:</p>
-<pre><code>for c in s:
-    for j in range(n, 0, -1):
-        if c == t[j-1]: dp[j] += dp[j-1]</code></pre>
+<p>Let <code>dp[i][j]</code> be the number of ways <code>t[:j]</code> shows up in <code>s[:i]</code>. That&#x27;s a grid: one axis per string. The whole top row is 1 — the empty target matches any prefix exactly one way (cross everything out).</p>
+<pre class="diagram">   s = &quot;rab...&quot; (down)   t = &quot;rab&quot; (across)
+
+            j:  &quot;&quot;   r    a    b
+       i    +----+----+----+----+
+       &quot;&quot;   | 1  | 0  | 0  | 0  |   empty t: 1 way; nonempty t in &quot;&quot;: 0
+       r    | 1  |    |    |    |
+       a    | 1  |    |    |    |
+       b    | 1  |    |    |    |
+            +----+----+----+----+
+   left column all 1: empty t is always matchable.</pre>
+<p>Now fill one cell. It always inherits the &quot;skip this <code>s</code> letter&quot; count from the cell directly above. If the letters also match, it *adds* the &quot;use it&quot; count from the cell up-and-to-the-left (the diagonal):</p>
+<pre class="diagram">   filling dp[i][j], comparing s[i-1] vs t[j-1]
+
+        diag = dp[i-1][j-1]     up = dp[i-1][j]
+        &quot;use s[i-1]&quot;            &quot;skip s[i-1]&quot;
+              \                    |
+               \                   v
+                +-----------&gt; dp[i][j]
+
+   letters differ -&gt;  dp[i][j] = up
+   letters match  -&gt;  dp[i][j] = up + diag</pre>
+<p>Sweep the grid; the bottom-right cell is the count. Because a cell only needs the row above, you can roll it to a single row — scanning <code>j</code> from high to low so the &quot;before this letter&quot; counts stay intact. That&#x27;s the version in <code>solution.py</code>.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(m·n)</code> — one pass per grid cell.</li><li><strong>Space:</strong> <code>O(n)</code> rolled (<code>O(m·n)</code> full grid).</li></ul>
+<ul><li><strong>Time: about m × n steps</strong> (m = len <code>s</code>, n = len <code>t</code>). One add per grid cell. Doubling both roughly quadruples the work.</li><li><strong>Extra memory: about n</strong> in the rolled version — one row over <code>t</code>. The full grid uses about m × n.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Direction of the 1-D update.</strong> Must go <code>j</code> high→low. Left-to-right would let a single <code>s</code>-character match the same <code>t</code>-character twice, inflating the count.</li><li><code>dp[0] = 1</code> and it must stay 1 through the whole run — never touch it in the loop (the loop stops at <code>j &gt;= 1</code>).</li><li>Answers can be large; in languages other than Python you need 64-bit / big-int.</li><li>Empty <code>t</code> gives 1 (not 0); <code>t</code> longer than <code>s</code> gives 0.</li></ul>
+<ul><li>Seeding the empty-target case wrong. <code>dp[i][0] = 1</code> for every <code>i</code>: there&#x27;s exactly one way to spell the empty string (delete everything).</li><li>On the rolled 1-D version, sweeping <code>j</code> low-to-high double-counts, because <code>dp[j-1]</code> would already include the current letter. Go high-to-low.</li><li>Overwriting the &quot;skip&quot; count. The new cell must add to the old <code>dp[j]</code> (skip), not replace it, when the letters don&#x27;t match.</li></ul>
 <h2>Transfer</h2>
 <p>The reusable move is *a two-prefix grid where each cell = &quot;skip a source character&quot; plus (on a match) &quot;consume it,&quot; and you sum for counts / max for lengths / min for costs.* Siblings: <a href="../0072-edit-distance/">Edit Distance / 72</a> (min over the same grid), <a href="../0097-interleaving-string/">Interleaving String / 97</a> (boolean over a two-prefix grid), <a href="https://leetcode.com/problems/longest-common-subsequence/">Longest Common Subsequence / 1143</a> (max over it).</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0115-distinct-subsequences/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;115. Distinct Subsequences — https://leetcode.com/problems/distinct-subsequences/
 

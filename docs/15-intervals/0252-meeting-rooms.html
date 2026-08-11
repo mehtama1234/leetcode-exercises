@@ -16,33 +16,54 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">15. Merge Intervals</a> / <span>252</span></nav><article class="notes"><h1>252. Meeting Rooms</h1>
 <p><strong>Pattern:</strong> Intervals (sort by start, check neighbors) <strong>Difficulty:</strong> Easy (LeetCode premium) <strong>Link:</strong> https://leetcode.com/problems/meeting-rooms/</p>
 <h2>The problem in plain words</h2>
-<p>You&#x27;re given a list of meetings, each with a start and end time. Can one person sit through all of them? They can iff no two meetings overlap in time.</p>
+<p>You are given a list of meetings, each with a start and end time. Can one person sit through all of them? They can exactly when no two meetings overlap in time.</p>
 <p>Standard signature: <code>can_attend_all(intervals) -&gt; bool</code>.</p>
+<pre class="diagram">   time:  0  5  10 15 20 25 30
+   [0,30]  [==================]
+   [5,10]     [==]
+   [15,20]           [==]
+                ^         ^
+   [0,30] covers both -&gt; overlaps -&gt; can&#x27;t attend all -&gt; false</pre>
 <h2>Why this matters</h2>
-<p>The fundamental operation is a <strong>conflict / double-booking check</strong>: given a set of reservations on a single shared resource, can they all coexist without any two overlapping. Sorting by start reduces &quot;compare every pair&quot; to &quot;compare each item to its neighbor,&quot; because in sorted order any overlap forces an adjacent overlap.</p>
-<p>This is the yes/no gate behind a lot of real scheduling. Booking systems check whether one room, one doctor, or one rental car can honor a set of reservations. Operating systems and real-time schedulers verify that tasks assigned to one core don&#x27;t overlap. Databases detect conflicting locks or transaction time-ranges on the same row. Network and radio systems check that transmissions on one channel don&#x27;t collide. Any &quot;is this single resource over-committed?&quot; question is this check.</p>
-<p>What we buy is <code>O(n log n)</code>: a sort plus one neighbor-only pass, and an early exit the moment a conflict appears — instead of the quadratic cost of comparing every pair of bookings.</p>
+<p>The core operation is a <strong>double-booking check</strong>: given reservations on one shared resource, can they all coexist without any two overlapping? Sorting by start reduces &quot;compare every pair&quot; to &quot;compare each item to its neighbor,&quot; because in sorted order any overlap forces an *adjacent* overlap.</p>
+<p>This is the yes/no gate behind a lot of real scheduling. Booking systems check whether one room, one doctor, or one rental car can honor a set of reservations. Operating systems verify that tasks on one core do not overlap. Databases detect conflicting locks or transaction time-ranges on the same row. Any &quot;is this single resource over-committed?&quot; question is this check.</p>
+<p>What you buy is about n·log n: a sort plus one neighbor-only pass, with an early exit the moment a conflict appears — instead of the n × n cost of comparing every pair.</p>
 <h2>Start from the obvious</h2>
 <p>Overlap is a pairwise thing, so the honest brute force checks every pair:</p>
 <pre><code>for each pair (a, b):
     if a and b overlap: return False
 return True</code></pre>
-<p>Two meetings overlap when one starts before the other ends. That&#x27;s <code>O(n^2)</code> comparisons — correct, but wasteful.</p>
+<p>Two meetings overlap when one starts before the other ends. That is about n × n comparisons — correct, but wasteful.</p>
 <h2>Find the waste</h2>
-<p>We&#x27;re comparing meetings that are nowhere near each other in time. If we sort by start time, the meetings line up chronologically, and a strong fact drops out:</p>
+<p>You are comparing meetings that are nowhere near each other in time. If you sort by start time, the meetings line up chronologically and a strong fact drops out:</p>
 <blockquote>If any two meetings overlap at all, then two *adjacent* meetings (in start order) overlap.</blockquote>
-<p>Why? Sort by start. Suppose meeting <code>j</code> overlaps an earlier meeting <code>i</code>. Then every meeting *between* them started before <code>j</code> too, and since <code>i</code> reaches into <code>j</code>&#x27;s time, it reaches into theirs as well — so a neighboring pair already conflicts. That means we never have to look further than the previous meeting.</p>
+<p>Why? Sort by start. Suppose meeting <code>j</code> overlaps an earlier meeting <code>i</code>. Every meeting *between* them started before <code>j</code> too, and since <code>i</code> reaches into <code>j</code>&#x27;s time, it reaches into theirs as well — so a neighboring pair already conflicts. You never have to look further than the previous meeting.</p>
+<pre class="diagram">   sorted by start:   i        k          j
+   time:            [i===========]
+                         [k==]                 k starts inside i -&gt; i,k already clash
+                              [j========]
+   if i reaches j, it reaches k (which sits between) -&gt; neighbors conflict first</pre>
 <h2>The insight</h2>
-<p>Sort by start, then sweep once and compare each meeting to the one right before it. If the current meeting starts *before* the previous one ends, that&#x27;s a conflict — return <code>False</code>. If we get through the whole list, return <code>True</code>.</p>
+<p>Sort by start, then sweep once and compare each meeting to the one right before it. If the current meeting starts *before* the previous one ends, that is a conflict — return <code>False</code>. Survive the whole list, return <code>True</code>.</p>
 <pre><code>sort by start
 for i in 1..n-1:
     if intervals[i].start &lt; intervals[i-1].end: return False
 return True</code></pre>
+<pre class="diagram">   input:  [[7,10], [2,4]]   -&gt;  sorted:  [2,4]  [7,10]
+   time:  2  4        7   10
+          [==]        [====]
+   check:  [7,10].start = 7  &gt;=  [2,4].end = 4   -&gt; no conflict
+   result: true
+
+   back-to-back is allowed:  [1,5] [5,10]
+   time:  1        5        10
+          [========|========]
+          [5,10].start = 5  &lt;  [1,5].end = 5 ?  5 &lt; 5 is false -&gt; OK, true</pre>
 <p>Use strict <code>&lt;</code>: a meeting starting exactly when the previous ends (<code>[1,5]</code> then <code>[5,10]</code>) is back-to-back, which is allowed.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n log n)</code> — the sort; the neighbor check is one <code>O(n)</code> pass.</li><li><strong>Space:</strong> <code>O(1)</code> beyond sorting (we only look at adjacent pairs).</li></ul>
+<ul><li><strong>Time: about n·log n</strong> — the sort; the neighbor check is one pass.</li><li><strong>Extra memory: a fixed amount</strong> beyond sorting (only adjacent pairs are compared).</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Boundary equality.</strong> <code>[1,5]</code> and <code>[5,10]</code> do <strong>not</strong> overlap. Comparing with <code>&lt;=</code> would wrongly reject them; use <code>&lt;</code>.</li><li><strong>Forgetting to sort</strong> — the &quot;only neighbors matter&quot; shortcut is only valid after sorting by start.</li><li>Empty list and single meeting are both trivially <code>True</code>.</li></ul>
+<ul><li><strong>Boundary equality.</strong> <code>[1,5]</code> and <code>[5,10]</code> do <strong>not</strong> overlap. Comparing with <code>&lt;=</code> would wrongly reject them; use <code>&lt;</code>.</li><li><strong>Forgetting to sort</strong> — the &quot;only neighbors matter&quot; shortcut is only valid after sorting by start.</li><li>Empty list and single meeting both return <code>True</code> with no work to do.</li></ul>
 <h2>Transfer</h2>
 <p>This is the cheapest member of the interval family: sort by start, then a single &quot;does this overlap its neighbor?&quot; check. The moment you need to know *how many* rooms conflicting meetings require rather than just yes/no, it becomes <a href="../0253-meeting-rooms-ii/">Meeting Rooms II / 253</a>. The same sort-then-scan skeleton underlies <a href="../0056-merge-intervals/">Merge Intervals / 56</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/15-intervals/0252-meeting-rooms/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;252. Meeting Rooms — https://leetcode.com/problems/meeting-rooms/  (premium)
 

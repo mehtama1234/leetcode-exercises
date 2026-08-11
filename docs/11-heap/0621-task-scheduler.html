@@ -17,11 +17,19 @@
 <p><strong>Pattern:</strong> Greedy max-heap simulation (and a counting formula) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/task-scheduler/</p>
 <h2>The problem in plain words</h2>
 <p>You have a list of tasks, each labeled by a letter, and a cooldown number <code>n</code>. Each unit of time is one slot: you either run one task or sit idle. The rule: the *same* task must have at least <code>n</code> other slots (running something else or idle) before it can run again. Different tasks have no such restriction. Return the smallest number of slots needed to run every task.</p>
-<p>Example: <code>[&quot;A&quot;,&quot;A&quot;,&quot;A&quot;,&quot;B&quot;,&quot;B&quot;,&quot;B&quot;]</code>, <code>n = 2</code> → <code>8</code>, one valid schedule being <code>A B _ A B _ A B</code> (the underscores are forced idle slots).</p>
+<pre class="diagram">   tasks = A A A B B B,  n = 2
+
+   one valid schedule:
+   slot:  1  2  3  4  5  6  7  8
+   task:  A  B  _  A  B  _  A  B      (_ = forced idle)
+                 ^        ^
+                 A must wait 2 slots between runs
+
+   answer = 8 slots</pre>
 <h2>Why this matters</h2>
-<p>The deeper operation is *greedy scheduling under a spacing constraint*: you have a resource that must rest between uses, many competing demands, and you want to finish in the least time. The winning move is to always serve the most-pressing demand first, because the item with the most work left is the one most likely to create forced gaps if you leave it for later.</p>
-<p>This is real scheduling. A CPU or thread pool spacing out retries of the same failing job; a rate limiter that must leave a gap between calls to the same API key; a manufacturing line where a machine needs cooldown between identical runs; a message system enforcing per-recipient send intervals. The &quot;most frequent thing paces everything&quot; insight is exactly how you reason about the bottleneck resource.</p>
-<p>What the good solution buys is either an easy-to-trust simulation (<code>O(total time)</code> with a heap) or, once you see *why* the most frequent task dominates, an <code>O(k)</code> formula that computes the answer with no simulation at all — no time budget spent walking every slot.</p>
+<p>The real operation is *greedy scheduling under a spacing constraint*: you have a resource that must rest between uses, many competing demands, and you want to finish in the least time. The winning move is to always serve the most-pressing demand first, because the item with the most work left is the one most likely to create forced gaps if you leave it for later.</p>
+<p>This is real scheduling. A CPU spacing out retries of the same failing job; a rate limiter that must leave a gap between calls to the same API key; a manufacturing line where a machine needs cooldown between identical runs. The &quot;most frequent thing paces everything&quot; insight is how you reason about the bottleneck resource.</p>
+<p>What you buy is either an easy-to-trust simulation (walk every slot with a heap) or, once you see *why* the most frequent task dominates, a formula that computes the answer with no simulation at all.</p>
 <h2>Start from the obvious</h2>
 <p>The rule is stated slot by slot, so the honest first move is to *simulate* it. At each slot, which task should you run? Greedy answer: run the task with the <strong>most copies left</strong>. Burning down the most frequent task early keeps it from stranding copies at the end that have nowhere to go but idle slots.</p>
 <pre><code>each slot:
@@ -29,23 +37,41 @@
     put it on cooldown for n slots
     if nothing is available, idle</code></pre>
 <p>&quot;The task with the most remaining&quot; is a repeated *max* query over a changing set — that&#x27;s a max-heap. Tasks on cooldown wait in a queue tagged with the time they&#x27;re allowed back, and rejoin the heap when that time arrives.</p>
+<pre class="diagram">   tasks A:3 B:3, n=2. max-heap keyed by copies-left, most on top.
+
+   t=1: heap{A3,B3} run A -&gt; A2 cools until t=4    | out: A
+   t=2: heap{B3}    run B -&gt; B2 cools until t=5    | out: A B
+   t=3: heap{}      nothing off cooldown -&gt; idle   | out: A B _
+   t=4: A2 returns. run A -&gt; A1 cools until t=7    | out: A B _ A
+   t=5: B2 returns. run B -&gt; B1 cools until t=8    | out: A B _ A B
+   t=6: idle ; t=7: run A ; t=8: run B             | out: A B _ A B _ A B
+   -&gt; 8 slots</pre>
 <h2>Find the waste</h2>
-<p>The simulation is correct and clear, but it *walks every slot*, including all the idle ones, to arrive at a single number. If you watch it run, a pattern jumps out: the whole schedule is paced entirely by the <strong>most frequent task</strong>. Everything else just fills the gaps that task&#x27;s cooldown creates.</p>
+<p>The simulation is correct and clear, but it *walks every slot*, including all the idle ones, to arrive at a single number. Watch it run and a pattern jumps out: the whole schedule is paced by the <strong>most frequent task</strong>. Everything else just fills the gaps that task&#x27;s cooldown creates.</p>
 <p>So the real question is: *how many gaps does the most frequent task force, and do the other tasks fill them?*</p>
 <h2>The insight</h2>
 <p>Let <code>f_max</code> be the count of the most frequent task. Lay its copies out as anchors with <code>n</code> empty slots between consecutive copies:</p>
-<pre><code>A . . . A . . . A          (f_max = 3, n = 3)</code></pre>
-<p>That skeleton is <code>(f_max - 1)</code> blocks of width <code>(n + 1)</code>, plus the final anchor:</p>
-<pre><code>frame = (f_max - 1) * (n + 1) + 1</code></pre>
-<p>If several tasks tie for <code>f_max</code>, each tie rides in the final column alongside the last <code>A</code>, so add one per extra tied task:</p>
-<pre><code>frame = (f_max - 1) * (n + 1) + (number of tasks tied at f_max)</code></pre>
-<p>The remaining tasks drop into the dots. If there are so many other tasks that the gaps overflow, there are <strong>no idle slots at all</strong> and the answer is just <code>len(tasks)</code>. So take the larger of the two:</p>
+<pre class="diagram">   f_max = 3, n = 3:
+
+   A . . . A . . . A
+   |&lt;-block-&gt;|&lt;-block-&gt;|A|
+   two blocks of width (n+1)=4, plus the final A
+
+   frame = (f_max - 1) * (n + 1) + 1
+         =    (3 - 1)  *  (3 + 1) + 1  =  9</pre>
+<p>If several tasks tie for <code>f_max</code>, each tie rides in the final column alongside the last <code>A</code>, so add one per tied task:</p>
+<pre class="diagram">   A A B B tied at f_max=2, n=2:
+
+   A B . A B          &lt;- A and B both anchor
+   frame = (2-1)*(2+1) + (2 tied) = 3 + 2 = 5
+   but len(tasks)=4, and gaps here actually fill... take the max (below)</pre>
+<p>The remaining tasks drop into the dots. If there are so many other tasks that the gaps overflow, there are <strong>no idle slots at all</strong> and the answer is just the number of tasks. So take the larger of the two:</p>
 <pre><code>answer = max(len(tasks), frame)</code></pre>
 <p>Both the heap simulation and this formula are in <code>solution.py</code>, cross-checked against each other on hundreds of random inputs.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Simulation:</strong> <code>O(total slots)</code> time — it visits each slot once, and each slot does <code>O(log k)</code> heap work (<code>k</code> = number of distinct task labels ≤ 26). Space <code>O(k)</code> for the heap and wait queue.</li><li><strong>Formula:</strong> <code>O(m)</code> time to count <code>m</code> tasks, <code>O(k)</code> space for the counts, and <code>O(1)</code> arithmetic after that.</li></ul>
+<ul><li><strong>Simulation:</strong> about <code>total slots</code> time — it visits each slot once, each slot doing <code>log k</code> heap work (<code>k</code> = number of distinct labels, at most 26). Space <code>k</code> for the heap and wait queue.</li><li><strong>Formula:</strong> about <code>m</code> time to count <code>m</code> tasks, <code>k</code> space for the counts, and constant arithmetic after that.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Max-heap in a min-heap language.</strong> <code>heapq</code> is min-only; store <strong>negated</strong> counts so the most-remaining task is on top.</li><li><strong>Cooldown bookkeeping.</strong> A task just run can&#x27;t rejoin the heap until <code>time + n</code>; releasing it too early (or off by one) breaks the spacing rule. Use a queue keyed by ready-time.</li><li><strong>Idle slots still advance the clock.</strong> When nothing is available but tasks remain, that slot counts toward the total.</li><li><strong>The <code>max(len(tasks), frame)</code> guard.</strong> With many distinct tasks the gaps fill and overflow — forgetting the guard *under*counts by ignoring that there are no idle slots. With <code>n = 0</code> the formula must reduce to <code>len(tasks)</code>, and it does.</li><li><strong>Ties at the top.</strong> Multiple tasks sharing <code>f_max</code> all sit in the final column; add one per tie, or you undercount the tail.</li></ul>
+<ul><li><strong>Max-heap in a min-heap language.</strong> <code>heapq</code> is min-only; store <strong>negated</strong> counts so the most-remaining task is on top.</li><li><strong>Cooldown bookkeeping.</strong> A task just run can&#x27;t rejoin the heap until <code>time + n</code>; releasing it too early (or off by one) breaks the spacing rule. Use a queue keyed by ready-time.</li><li><strong>Idle slots still advance the clock.</strong> When nothing is available but tasks remain, that slot counts toward the total.</li><li><strong>The <code>max(len(tasks), frame)</code> guard.</strong> With many distinct tasks the gaps fill and overflow — forgetting the guard *under*counts by ignoring that there are no idle slots. With <code>n = 0</code> the formula must reduce to the number of tasks, and it does.</li><li><strong>Ties at the top.</strong> Multiple tasks sharing <code>f_max</code> all sit in the final column; add one per tie, or you undercount the tail.</li></ul>
 <h2>Transfer</h2>
 <p>The move is: <strong>serve the highest-demand item first via a max-heap when you must simulate, but look for the counting shortcut once you see which item paces the whole schedule.</strong> The greedy-max-heap half is the same engine as <a href="../1046-last-stone-weight/">Last Stone Weight / 1046</a> and <a href="https://leetcode.com/problems/reorganize-string/">Reorganize String / 767</a> (space out the most frequent character); the &quot;derive a formula from the bottleneck&quot; half is the transferable insight for spacing and interval-packing problems. Whenever a greedy simulation keeps re-picking the current maximum, reach for a heap — then ask whether the answer has a closed form.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0621-task-scheduler/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;621. Task Scheduler — https://leetcode.com/problems/task-scheduler/
 

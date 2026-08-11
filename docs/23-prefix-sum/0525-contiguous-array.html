@@ -16,42 +16,58 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">23. Prefix Sum</a> / <span>525</span></nav><article class="notes"><h1>525. Contiguous Array</h1>
 <p><strong>Pattern:</strong> Prefix sum + hash map (relabel to a running balance) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/contiguous-array/</p>
 <h2>The problem in plain words</h2>
-<p>You have an array of just <code>0</code>s and <code>1</code>s. Find the longest contiguous stretch that contains the *same number* of <code>0</code>s and <code>1</code>s, and return its length.</p>
+<p>You have an array of just <code>0</code>s and <code>1</code>s. Find the longest contiguous stretch that holds the *same number* of <code>0</code>s and <code>1</code>s, and return its length.</p>
+<pre class="diagram">   index:  0  1  2  3  4  5  6  7
+   nums: [ 0  0  1  0  0  0  1  1 ]
+             [ ==== equal 0s and 1s ==== ]
+             indices 2..7: three 0s, three 1s  -&gt;  length 6</pre>
 <h2>Why this matters</h2>
-<p>The lesson here is a relabeling trick that converts a *counting* condition into a *sum* condition, so prefix sums apply. Replace every <code>0</code> with <code>−1</code>. Now &quot;equal zeros and ones&quot; is exactly &quot;this stretch sums to <code>0</code>&quot;, and a stretch sums to zero precisely when its two endpoints have the *same* running total. Finding the longest such stretch becomes: for each prefix value, how early did we first see it?</p>
-<p>This &quot;turn a balance into a sum, then compare prefixes&quot; move is everywhere you track two competing quantities over time. Finding the longest span where wins equal losses, credits equal debits, or bytes-in equal bytes-out is this problem. Log analysis for the longest window where opens balance closes, or up-votes balance down-votes, is the same relabel. More generally it&#x27;s the template for &quot;longest subarray with property P&quot; whenever P is really a statement about equal prefix sums.</p>
-<p>What the good solution buys is a single pass at <code>O(n)</code> instead of the <code>O(n²)</code> of re-checking every subarray — the practical difference on a long log or stream.</p>
+<p>The lesson is a relabeling trick that turns a *counting* condition into a *sum* condition, so prefix sums apply. Replace every <code>0</code> with <code>−1</code>. Now &quot;equal zeros and ones&quot; is exactly &quot;this stretch sums to <code>0</code>&quot;, and a stretch sums to zero precisely when its two ends have the *same* running total. Finding the longest such stretch becomes: for each running-total value, how early did we first see it?</p>
+<p>This &quot;turn a balance into a sum, then compare running totals&quot; move is everywhere you track two competing quantities over time. Finding the longest span where wins equal losses, credits equal debits, or bytes-in equal bytes-out is this problem. Log analysis for the longest window where opens balance closes, or up-votes balance down-votes, is the same relabel. More broadly it is the template for &quot;longest subarray with property P&quot; whenever P is really a statement about equal running totals.</p>
+<p>What the good solution buys is a single pass at about <code>n</code> steps instead of the <code>n²</code> of re-checking every subarray — the practical difference on a long log or stream.</p>
 <h2>Start from the obvious</h2>
 <p>Check every subarray; count its zeros and ones.</p>
-<pre><code>best = 0
-for start in range(n):
-    balance = 0
-    for end in range(start, n):
-        balance += 1 if nums[end] == 1 else -1
-        if balance == 0:
-            best = max(best, end - start + 1)</code></pre>
-<p><code>O(n²)</code>, correct, right first thought. The <code>balance</code> variable is already the clue.</p>
+<pre class="diagram">   best = 0
+   for start in 0..n-1:
+       balance = 0
+       for end in start..n-1:
+           balance += (nums[end] == 1) ? +1 : -1
+           if balance == 0:
+               best = max(best, end - start + 1)</pre>
+<p>About <code>n²</code>, correct, the right first thought. The <code>balance</code> variable is already the clue.</p>
 <h2>Find the waste</h2>
-<p>Every <code>start</code> recomputes the running balance from scratch, even though most of that work overlaps the previous start. Define a global running balance where <code>1</code> adds <code>+1</code> and <code>0</code> adds <code>−1</code>. A subarray <code>(i..j)</code> is balanced when:</p>
-<pre><code>balance_after(j) == balance_before(i)</code></pre>
-<p>i.e. the running total is the *same* at both ends — everything in between summed to zero. So instead of re-summing, we just watch for a balance value we&#x27;ve seen before.</p>
+<p>Every <code>start</code> recomputes the running balance from scratch, even though most of that work overlaps the previous start. Define one global running balance where <code>1</code> adds <code>+1</code> and <code>0</code> adds <code>−1</code>. A subarray is balanced when the running total is the *same* at both ends — everything in between summed to zero.</p>
+<pre class="diagram">   nums:      0   1   0   1
+   relabel:  -1  +1  -1  +1
+   balance: 0  -1   0  -1   0
+           ^                 ^
+        before idx0       after idx3
+        both are 0  -&gt;  the whole stretch 0..3 sums to 0  -&gt;  balanced, length 4</pre>
+<p>So instead of re-summing, watch for a balance value you have seen before.</p>
 <h2>The insight</h2>
-<p>Sweep once, maintaining the running balance. The moment the current balance equals a value seen at some earlier index, the stretch in between is balanced — and to make it *longest*, we want the *earliest* time we saw that value. So store each balance&#x27;s <strong>first</strong> index only:</p>
-<pre><code>best, balance = 0, 0
-first_seen = {0: -1}          # balance 0 exists &quot;before index 0&quot;
-for i, x in enumerate(nums):
-    balance += 1 if x == 1 else -1
-    if balance in first_seen:
-        best = max(best, i - first_seen[balance])
-    else:
-        first_seen[balance] = i     # keep only the earliest occurrence</code></pre>
+<p>Sweep once, keeping the running balance. The moment the current balance equals a value seen at some earlier index, the stretch in between is balanced — and to make it *longest*, we want the *earliest* time we saw that value. So store each balance&#x27;s <strong>first</strong> index only.</p>
+<pre class="diagram">   nums:      0    0    1    0    0    0    1    1
+   relabel:  -1   -1   +1   -1   -1   -1   +1   +1
+
+   i:  balance   first_seen (balance -&gt; earliest index)   length if repeat
+   -   0         {0: -1}                                    (seed)
+   0   -1        new -&gt; {0:-1, -1:0}
+   1   -2        new -&gt; add -2:1
+   2   -1        SEEN at 0  -&gt;  i - 0 = 2 - 0 = 2
+   3   -2        SEEN at 1  -&gt;  3 - 1 = 2
+   4   -3        new -&gt; add -3:4
+   5   -4        new -&gt; add -4:5
+   6   -3        SEEN at 4  -&gt;  6 - 4 = 2
+   7   -2        SEEN at 1  -&gt;  7 - 1 = 6   &lt;- longest
+
+   answer = 6</pre>
 <p>The seed <code>{0: -1}</code> is what lets a balanced run that starts at index <code>0</code> be measured: its balance returns to <code>0</code>, which we treat as first seen &quot;before the array&quot; at index <code>−1</code>, giving length <code>i - (-1) = i + 1</code>.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n)</code> — one pass, <code>O(1)</code> map operations.</li><li><strong>Space:</strong> <code>O(n)</code> — the map holds each distinct balance once; balances range over <code>[-n, n]</code>.</li></ul>
+<ul><li><strong>Time: about n</strong> — one pass, constant-time map operations.</li><li><strong>Extra memory: about n</strong> — the map holds each distinct balance once; balances range over <code>[-n, n]</code>.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Store the earliest index, not the latest.</strong> If a balance repeats, do *not* overwrite — the first occurrence gives the longest span.</li><li>Forgetting the <code>{0: -1}</code> seed — runs starting at index 0 come out one short (or missed entirely).</li><li>Trying a sliding window: because entries are <code>±1</code>, the balance is non-monotonic, so a window won&#x27;t work — you genuinely need the prefix map.</li><li>Returning the balance or a count instead of the <strong>length</strong>.</li></ul>
+<ul><li><strong>Store the earliest index, not the latest.</strong> If a balance repeats, do *not* overwrite — the first occurrence gives the longest span.</li><li>Forgetting the <code>{0: -1}</code> seed — runs starting at index 0 come out one short (or are missed entirely).</li><li>Trying a sliding window: because entries are <code>+1</code>/<code>−1</code>, the balance goes up and down, so a window won&#x27;t work — you genuinely need the running-total map.</li><li>Returning the balance or a count instead of the <strong>length</strong>.</li></ul>
 <h2>Transfer</h2>
-<p>Same engine as <a href="../0560-subarray-sum-equals-k/">Subarray Sum Equals K / 560</a> — prefix sum plus a hash map — but the key is &quot;have I seen this exact prefix before?&quot; (with earliest index) rather than &quot;have I seen <code>current − k</code>?&quot;. The relabel-to-<code>±1</code> idea generalizes: any &quot;equal counts of A and B&quot; question becomes a prefix-sum-equals-zero question, and problems asking for the longest balanced window reuse this pattern directly.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/23-prefix-sum/0525-contiguous-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;525. Contiguous Array — https://leetcode.com/problems/contiguous-array/
+<p>Same engine as <a href="../0560-subarray-sum-equals-k/">Subarray Sum Equals K / 560</a> — prefix sum plus a hash map — but the key here is &quot;have I seen this exact running total before?&quot; (earliest index) rather than &quot;have I seen <code>current − k</code>?&quot;. The relabel-to-<code>±1</code> idea generalizes: any &quot;equal counts of A and B&quot; question becomes a running-total-equals-zero question, and problems asking for the longest balanced window reuse this pattern directly.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/23-prefix-sum/0525-contiguous-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;525. Contiguous Array — https://leetcode.com/problems/contiguous-array/
 
 Given a binary array of 0s and 1s, find the length of the longest contiguous
 subarray with an equal number of 0s and 1s. A relabel turns this into a prefix-sum

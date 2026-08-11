@@ -16,29 +16,56 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">19. 2-D Dynamic Programming</a> / <span>312</span></nav><article class="notes"><h1>312. Burst Balloons</h1>
 <p><strong>Pattern:</strong> 2-D dynamic programming (interval DP — split on the *last* action) <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/burst-balloons/</p>
 <h2>The problem in plain words</h2>
-<p>A row of balloons, each with a number. When you burst balloon <code>i</code> you earn <code>nums[left] × nums[i] × nums[right]</code>, where <code>left</code> and <code>right</code> are its neighbours *at that moment* (a missing edge counts as 1). After bursting, the gap closes and neighbours change. Choose an order to burst all of them that earns the most coins.</p>
+<p>Each balloon holds a number. When you burst balloon <code>i</code>, you earn <code>nums[left] * nums[i] * nums[right]</code>, where left and right are its neighbors *at that moment* (a missing end counts as 1). After it pops, its neighbors become adjacent. Pop every balloon in some order to earn the most coins.</p>
+<pre class="diagram">   nums = [3, 1, 5, 8]   (pad ends with virtual 1&#x27;s: [1, 3, 1, 5, 8, 1])
+
+   burst 1: 3*1*5 = 15   -&gt; [1, 3, 5, 8, 1]
+   burst 5: 3*5*8 = 120  -&gt; [1, 3, 8, 1]
+   burst 3: 1*3*8 = 24   -&gt; [1, 8, 1]
+   burst 8: 1*8*1 = 8
+   total = 167   (this order is optimal)</pre>
 <h2>Why this matters</h2>
-<p>The teachable idea is *interval DP with a reversal of intuition: don&#x27;t ask what happens first, ask what happens last.* The naive &quot;which balloon do I pop first?&quot; framing is a trap — popping first rewires everyone&#x27;s neighbours, so subproblems overlap in a tangled, non-independent way. Flipping to &quot;which balloon pops <strong>last</strong> in this range?&quot; is what makes the two sides independent, and that &quot;split on the final operation&quot; trick is the reusable jewel here.</p>
-<p>The pattern generalizes to any &quot;combine a range in the best order, where each merge&#x27;s cost depends on the pieces at its edges.&quot; Matrix-chain multiplication (parenthesize to minimize multiplications) is the classic industrial version. Optimal file/segment merging, building an optimal binary search tree, and cost-of-joining problems in query planners are all interval DPs with this same &quot;pick the last/topmost split&quot; structure.</p>
-<p>What the good solution buys is <code>O(n³)</code> time — polynomial — versus the <code>n!</code> of trying every burst order, which is intractable past a dozen balloons.</p>
+<p>The natural instinct — decide which balloon to pop *first* — is a trap. The moment you pop one, everyone&#x27;s neighbors shift, so the subproblems overlap in a tangled way you can&#x27;t cleanly separate. The fix is to think backwards: in a range of balloons, decide which one pops <strong>last</strong>. When balloon <code>k</code> is last, everything else in the range is already gone, so its neighbors are exactly the fixed walls on either side of the range. That pins down its score and cleanly splits the range into two independent pieces — the balloons left of <code>k</code> and the balloons right of <code>k</code>.</p>
+<p>&quot;Split on the last (or top-level) operation so the two sides stop interfering&quot; is the signature move of *interval DP*, and it recurs in matrix-chain multiplication, optimal parenthesization, and parsing.</p>
 <h2>Start from the obvious</h2>
-<p>Try every possible next balloon to burst, recurse on what&#x27;s left, take the max. But &quot;what&#x27;s left&quot; isn&#x27;t two clean halves — bursting a middle balloon merges its neighbours, so the remaining balloons don&#x27;t split into independent groups. The subproblems overlap in a way you can&#x27;t cleanly memoize by &quot;set of remaining balloons&quot; without exponential state. This framing fights you.</p>
-<h2>Find the waste — flip first to last</h2>
-<p>Pad the array with virtual <code>1</code>s at both ends. Consider the open interval strictly between walls <code>l</code> and <code>r</code>. Ask: **which balloon <code>k</code> in this interval is the *last* to burst?** When <code>k</code> is last, every other balloon in the interval is already gone, so at that instant <code>k</code>&#x27;s neighbours are exactly the fixed walls <code>l</code> and <code>r</code>. It earns <code>nums[l] × nums[k] × nums[r]</code> — and, crucially, the balloons to <code>k</code>&#x27;s left and right were burst *within their own subintervals*, <code>(l, k)</code> and <code>(k, r)</code>, which are now <strong>independent</strong> because <code>l</code>, <code>k</code>, <code>r</code> are permanent walls for them.</p>
-<pre><code>best(l, r) = max over k in (l, r) of
-             nums[l]*nums[k]*nums[r] + best(l, k) + best(k, r)</code></pre>
-<h2>The insight (tabulate)</h2>
-<p><code>dp[l][r]</code> = most coins from bursting everything strictly between walls <code>l</code> and <code>r</code>. Fill by increasing gap <code>r - l</code>, so both <code>dp[l][k]</code> and <code>dp[k][r]</code> (shorter intervals) are ready:</p>
-<pre><code>for gap in 2..n-1:
-    for l in 0..n-1-gap:
-        r = l + gap
-        dp[l][r] = max(nums[l]*nums[k]*nums[r] + dp[l][k] + dp[k][r]
-                       for k in l+1..r-1)</code></pre>
-<p>Answer is <code>dp[0][n-1]</code> over the fully padded array.</p>
+<p>Try every possible burst order. That&#x27;s <code>n!</code> orders — hopeless past a handful of balloons. Worse, popping first makes overlapping subproblems messy to reuse.</p>
+<p>The reframing: pad the array with a <code>1</code> on each end, and think about *open* ranges <code>(l, r)</code> — the balloons strictly between walls <code>l</code> and <code>r</code>. For that range, try each <code>k</code> inside it as the last balloon to pop. When <code>k</code> is last, its neighbors are the walls <code>l</code> and <code>r</code>, and the two sides <code>(l, k)</code> and <code>(k, r)</code> are solved independently.</p>
+<pre class="diagram">   range (l ......... r), pick k as the LAST to burst inside it
+
+     l   [ ... left side ... ]   k   [ ... right side ... ]   r
+
+   k is last, so left side and right side are already empty when k pops:
+   score(k as last) = nums[l]*nums[k]*nums[r] + best(l, k) + best(k, r)
+                       \_____ walls are l and r _____/   \____ two subranges ____/</pre>
+<h2>The insight — an interval grid</h2>
+<p>Let <code>dp[l][r]</code> = most coins from bursting every balloon strictly between walls <code>l</code> and <code>r</code>. Fill it by <strong>increasing gap</strong> (the distance <code>r - l</code>), so short ranges are solved before the longer ranges that depend on them.</p>
+<pre class="diagram">   balloons padded: index 0..5 = [1, 3, 1, 5, 8, 1]
+   dp[l][r], only l &lt; r used (upper triangle)
+
+            r:  1    2    3    4    5
+       l=0  |  0 |  3 | 30 |159 |167 |    grow along diagonals (gap = r-l)
+       l=1  |    |  0 | 15 |135 |159 |
+       l=2  |    |    |  0 | 40 | 48 |
+       l=3  |    |    |    |  0 | 40 |
+       l=4  |    |    |    |    |  0 |
+   adjacent-wall ranges (gap 1) hold no balloons = 0;
+   the gap grows outward toward dp[0][5] = 167.</pre>
+<p>Now watch cell <code>dp[l][r]</code> fill. It scans every <code>k</code> between the walls, and for each <code>k</code> it reads two already-finished cells — one to its <strong>left</strong> in the row (<code>dp[l][k]</code>) and one <strong>below</strong> in the column (<code>dp[k][r]</code>) — then keeps the best:</p>
+<pre class="diagram">   filling dp[l][r]: try each k in (l, r) as last
+
+        dp[l][k]   (same row, shorter range on the left)
+             \
+              \         dp[k][r]   (same column, shorter range on the right)
+               \       /
+                v     v
+        dp[l][r] = max over k of  nums[l]*nums[k]*nums[r] + dp[l][k] + dp[k][r]
+
+   both dp[l][k] and dp[k][r] are shorter ranges, already filled -&gt; safe to read</pre>
+<p>The bottom-line answer is <code>dp[0][n-1]</code> over the padded array — the whole span between the two virtual walls.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n³)</code> — <code>O(n²)</code> intervals, each scanning up to <code>n</code> choices of last balloon.</li><li><strong>Space:</strong> <code>O(n²)</code> for the interval table.</li></ul>
+<ul><li><strong>Time: about n³ steps.</strong> There are about n² ranges, and each scans up to n choices of <code>k</code>. Doubling n multiplies the work by roughly eight.</li><li><strong>Extra memory: about n²</strong> for the range grid.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Thinking &quot;first&quot; instead of &quot;last.&quot;</strong> First-to-burst does not give independent subproblems; last-to-burst does. This single flip is the whole problem.</li><li>The multiplication uses the <strong>walls</strong> <code>l</code> and <code>r</code>, not <code>k-1</code>/<code>k+1</code> — because when <code>k</code> is last, the walls *are* its neighbours.</li><li>Pad with <code>1</code>s on both ends so edge balloons have a defined neighbour, and treat <code>(l, r)</code> as the *open* interval (base case <code>r - l &lt; 2</code> earns 0).</li><li>Empty input returns 0.</li></ul>
+<ul><li>Splitting on the *first* balloon to pop. Then neighbors keep shifting and the two sides aren&#x27;t independent. Split on the *last* one.</li><li>Forgetting the padding <code>1</code>s. They give the edge balloons a well-defined neighbor and let you use fixed walls <code>l</code> and <code>r</code>.</li><li>Filling in the wrong order. A range needs its sub-ranges done first, so iterate by increasing gap, not by row.</li></ul>
 <h2>Transfer</h2>
 <p>The reusable skeleton is *interval DP: <code>dp[l][r]</code> over a range, split on the last (or top-level) operation <code>k</code> so the two sides become independent, fill by increasing length.* Siblings: <a href="https://en.wikipedia.org/wiki/Matrix_chain_multiplication">Matrix Chain Multiplication</a> (the canonical form), <a href="https://leetcode.com/problems/minimum-cost-to-merge-stones/">Minimum Cost to Merge Stones / 1000</a>, <a href="https://leetcode.com/problems/remove-boxes/">Remove Boxes / 546</a>, and <a href="https://leetcode.com/problems/guess-number-higher-or-lower-ii/">Guess Number Higher or Lower II / 375</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0312-burst-balloons/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;312. Burst Balloons — https://leetcode.com/problems/burst-balloons/
 

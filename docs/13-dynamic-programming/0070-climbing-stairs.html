@@ -16,43 +16,69 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">13. Dynamic Programming: Memoization / Tabulation</a> / <span>70</span></nav><article class="notes"><h1>70. Climbing Stairs</h1>
 <p><strong>Pattern:</strong> Dynamic programming (1-D, look back two steps) <strong>Difficulty:</strong> Easy <strong>Link:</strong> https://leetcode.com/problems/climbing-stairs/</p>
 <h2>The problem in plain words</h2>
-<p>There&#x27;s a staircase with <code>n</code> steps. Each move you make climbs either 1 step or 2 steps. How many different sequences of moves get you exactly to the top?</p>
-<p>For <code>n = 3</code> there are three ways: <code>1+1+1</code>, <code>1+2</code>, <code>2+1</code>. Notice the answer counts *orderings* of moves, not sets of moves.</p>
+<p>A staircase has <code>n</code> steps. Each move climbs either 1 step or 2 steps. How many different sequences of moves land you exactly on top?</p>
+<pre class="diagram">   n = 3, three ways:
+
+   1 + 1 + 1     step -&gt; step -&gt; step
+   1 + 2         step -&gt; hop
+   2 + 1         hop  -&gt; step
+
+   the answer counts ORDERINGS of moves, so 1+2 and 2+1 are two different ways</pre>
 <h2>Why this matters</h2>
-<p>Stripped of the staircase story, this is <strong>counting the sequences that reach a target when each state is reachable from a small fixed set of previous states</strong>. The fundamental operation is a recurrence: the ways to reach <code>n</code> is the sum of the ways to reach the states one legal move away.</p>
-<p>Where &quot;count the arrangements built from a fixed move set&quot; shows up for real:</p>
-<ul><li><strong>Combinatorics and tiling</strong> — the number of ways to tile a <code>2×n</code> strip with dominoes obeys this exact recurrence; so do many counting problems in probability.</li><li><strong>Communications coding</strong> — counting valid bit strings under a constraint (e.g. no two adjacent 1s) is the same look-back sum.</li><li><strong>Version/state reachability</strong> — counting distinct action sequences that land in a given state.</li></ul>
-<p>The good solution buys <strong>time</strong> — collapsing an exponential call tree to a single <code>O(n)</code> pass — and the rolling-variable trick buys <strong><code>O(1)</code> memory</strong> by keeping only the two states the recurrence actually reads. That is the whole DP lesson in its smallest honest form.</p>
+<p>Take the staircase away and this is: <strong>count the sequences that reach a target, when each spot is reachable from a small fixed set of earlier spots.</strong> The move to learn is a recurrence — the number of ways to reach step <code>n</code> is the sum of the ways to reach the steps one legal move behind it.</p>
+<p>That &quot;count the arrangements built from a fixed move set&quot; shape is everywhere. The number of ways to tile a <code>2 × n</code> strip with dominoes obeys this exact recurrence. Counting valid bit strings under a rule like &quot;no two 1s in a row&quot; is the same look-back sum. So is counting distinct action sequences that end in a given state.</p>
+<p>The fast version collapses an exponential call tree into a single pass, and the rolling-variable trick keeps only the two states the recurrence actually reads. That&#x27;s the whole DP lesson in its smallest honest form.</p>
 <h2>Start from the obvious</h2>
-<p>Think about the very last move that lands you on step <code>n</code>. There are only two possibilities:</p>
-<ul><li>your last move was a <strong>1-step</strong>, so just before it you were on step <code>n-1</code>, or</li><li>your last move was a <strong>2-step</strong>, so just before it you were on step <code>n-2</code>.</li></ul>
-<p>Those two cases don&#x27;t overlap and cover everything, so:</p>
+<p>Think about the *very last* move that lands you on step <code>n</code>. There are only two ways it could have gone:</p>
+<ul><li>the last move was a <strong>1-step</strong>, so a moment ago you stood on step <code>n-1</code>, or</li><li>the last move was a <strong>2-step</strong>, so a moment ago you stood on step <code>n-2</code>.</li></ul>
+<p>Those two cases don&#x27;t overlap and cover everything, so the counts just add:</p>
 <pre><code>ways(n) = ways(n-1) + ways(n-2)
 ways(1) = 1
 ways(2) = 2</code></pre>
-<p>Turn that straight into recursion. Correct — but run it for <code>n = 40</code> and it crawls.</p>
+<p>Turn that into recursion. Correct — but run it for <code>n = 40</code> and it crawls.</p>
 <h2>Find the waste</h2>
-<p>That recurrence is *exactly* Fibonacci&#x27;s shape, and it has Fibonacci&#x27;s problem: the call tree branches, and the same subproblem shows up in many branches.</p>
-<pre><code>             ways(5)
-            /        \
-      ways(4)         ways(3)
-       /   \           /   \
-  ways(3) ways(2)  ways(2) ways(1)
-   ...</code></pre>
-<p><code>ways(3)</code> gets recomputed, <code>ways(2)</code> several times, and so on. The number of calls itself grows like Fibonacci — exponential. The waste: <strong>we keep re-solving the same step count from scratch.</strong></p>
+<p>That recurrence is Fibonacci&#x27;s exact shape, and it has Fibonacci&#x27;s problem: the tree branches, and the same subproblem shows up on many branches.</p>
+<pre class="diagram">                ways(5)
+               /       \
+         ways(4)        ways(3)     &lt;- ways(3) here...
+         /    \         /    \
+    ways(3) ways(2)  ways(2) ways(1)   &lt;- ...and again here, recomputed
+      ...
+
+   ways(3) recomputed, ways(2) several times, calls grow exponentially</pre>
+<p>The number of calls itself grows like Fibonacci. The waste: <strong>the same step count gets re-solved from scratch.</strong></p>
 <h2>The insight</h2>
-<p>There are only <code>n</code> distinct subproblems, <code>ways(1)</code> through <code>ways(n)</code>. Solve each once and reuse it. Top-down: memoize the recursion. Bottom-up: fill the counts in order, smallest first.</p>
-<p>Then the final squeeze — the recurrence only reaches back <strong>two</strong> steps, so you never need the whole table, just the last two counts. Slide a window forward:</p>
-<pre><code>prev, curr = 1, 2          # ways(1), ways(2)
-repeat for step 3..n:
-    prev, curr = curr, prev + curr</code></pre>
-<p><code>O(1)</code> space.</p>
+<p>There are only <code>n</code> distinct subproblems, <code>ways(1)</code> through <code>ways(n)</code>. Solve each once. Top-down, cache the recursion. Bottom-up, fill the counts in order, smallest first, so each cell reads answers already sitting to its left:</p>
+<pre class="diagram">   fill left to right; each cell = the two cells before it
+
+   step:   1   2   3   4   5
+   ways: [ 1 ][ 2 ][ . ][   ][   ]
+                    ^
+        ways(3) = ways(2) + ways(1) = 2 + 1 = 3
+                     |    \____ reads step 1
+                     \_________ reads step 2
+
+   ways: [ 1 ][ 2 ][ 3 ][ . ][   ]
+                         ^
+        ways(4) = ways(3) + ways(2) = 3 + 2 = 5</pre>
+<p>Then the final squeeze: the recurrence reaches back only <strong>two</strong> steps, so keep just the last two counts and slide the window forward:</p>
+<pre class="diagram">   keep (prev, curr); step from 3 up to n
+
+   prev curr
+   [ 1 ][ 2 ]              start: ways(1), ways(2)
+        \____ +
+   [ 2 ][ 3 ]              curr = 1+2 = 3   -&gt; ways(3)
+        \____ +
+   [ 3 ][ 5 ]              curr = 2+3 = 5   -&gt; ways(4)
+        \____ +
+   [ 5 ][ 8 ]              curr = 3+5 = 8   -&gt; ways(5)</pre>
+<p>Constant memory.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Naive recursion:</strong> <code>O(2^n)</code> time (the tree branches every level), <code>O(n)</code> stack.</li><li><strong>Memoized:</strong> <code>O(n)</code> time (n subproblems, each solved once), <code>O(n)</code> space.</li><li><strong>Rolling loop:</strong> <code>O(n)</code> time, <code>O(1)</code> space — the natural endpoint.</li></ul>
+<ul><li><strong>Naive recursion:</strong> exponential time (the tree branches every level), <code>O(n)</code> stack.</li><li><strong>Memoized:</strong> about <code>n</code> steps (n subproblems, each solved once), about <code>n</code> memory.</li><li><strong>Rolling loop:</strong> about <code>n</code> steps, constant memory — the natural endpoint.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>The base cases differ from raw Fibonacci: here <code>ways(1) = 1</code> and <code>ways(2) = 2</code>. This is Fibonacci shifted by one index, not Fibonacci itself.</li><li>It&#x27;s easy to think you&#x27;re counting *sets* of moves; you&#x27;re counting *ordered* sequences, which is why <code>1+2</code> and <code>2+1</code> both count.</li><li>The naive recursion times out for large <code>n</code> — don&#x27;t submit it.</li></ul>
+<ul><li>The base cases differ from raw Fibonacci: here <code>ways(1) = 1</code> and <code>ways(2) = 2</code>. This is Fibonacci shifted by one index, not Fibonacci itself.</li><li>It&#x27;s easy to think you&#x27;re counting *sets* of moves. You&#x27;re counting *ordered* sequences — that&#x27;s why <code>1+2</code> and <code>2+1</code> both count.</li><li>The naive recursion times out for large <code>n</code> — don&#x27;t submit it.</li></ul>
 <h2>Transfer</h2>
-<p>Same recurrence, same rolling-variable trick as <a href="../0509-fibonacci-number/">Fibonacci / 509</a>. Once &quot;the last move was one of a few choices, sum over them&quot; clicks, it generalizes: if you could also take 3-step moves, you&#x27;d sum three terms. The look-back-a-fixed-number-of-steps idea also drives <a href="../0198-house-robber/">House Robber / 198</a> and <a href="https://leetcode.com/problems/min-cost-climbing-stairs/">Min Cost Climbing Stairs / 746</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0070-climbing-stairs/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;70. Climbing Stairs — https://leetcode.com/problems/climbing-stairs/
+<p>Same recurrence and same rolling-variable trick as <a href="../0509-fibonacci-number/">Fibonacci / 509</a>. Once &quot;the last move was one of a few choices, sum over them&quot; clicks, it stretches: allow 3-step moves and you&#x27;d sum three terms. The same look-back idea, with a choice bolted on, drives <a href="../0198-house-robber/">House Robber / 198</a> and <a href="https://leetcode.com/problems/min-cost-climbing-stairs/">Min Cost Climbing Stairs / 746</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0070-climbing-stairs/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;70. Climbing Stairs — https://leetcode.com/problems/climbing-stairs/
 
 You climb a staircase of n steps, taking either 1 or 2 steps at a time. Count how
 many distinct sequences of moves reach the top.

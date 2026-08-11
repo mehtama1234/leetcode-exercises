@@ -16,33 +16,56 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">19. 2-D Dynamic Programming</a> / <span>494</span></nav><article class="notes"><h1>494. Target Sum</h1>
 <p><strong>Pattern:</strong> 2-D dynamic programming (subset-sum counting reduction) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/target-sum/</p>
 <h2>The problem in plain words</h2>
-<p>You get a list of non-negative numbers. Put a <code>+</code> or a <code>-</code> in front of each one, then add them all up. Count how many of the <code>2^n</code> ways to choose those signs make the total equal a given target.</p>
+<p>You have a list of non-negative numbers and a target. Put a <code>+</code> or <code>-</code> in front of each number, then add them up. Count how many of the <code>+/-</code> choices land exactly on the target.</p>
+<pre class="diagram">   nums = [1, 1, 1, 1, 1]     target = 3
+
+   +1+1+1+1-1 = 3      +1+1+1-1+1 = 3      +1+1-1+1+1 = 3
+   +1-1+1+1+1 = 3      -1+1+1+1+1 = 3
+
+   -&gt; 5 ways</pre>
 <h2>Why this matters</h2>
-<p>Underneath is a two-part idea: *count assignments over a boolean choice per item* where a huge branching space collapses because only the <strong>running total</strong> matters, not the path that produced it. Two different sign prefixes that reach the same sum are interchangeable from then on — recognizing that &quot;the state is the sum&quot; is the move that tames the explosion.</p>
-<p>The second half is a genuinely useful algebraic reduction: a <code>+/-</code> partition is the same as splitting the numbers into two groups, and that turns the problem into &quot;how many subsets sum to a fixed value?&quot; — subset-sum counting, which shows up in budget allocation (how many ways can these line items net to zero?), reconciling signed ledgers (which transactions cancel to a balance?), and load-balancing two bins.</p>
-<p>What the good solution buys is collapsing an exponential enumeration into <code>O(n × sum)</code> work and <code>O(sum)</code> memory — the difference between a combinatorial blow-up and a table that fits comfortably in a request handler.</p>
+<p>There are two ideas worth taking. First: the state that matters is the *running sum* you&#x27;ve reached, not the exact path you took to get there. Many different sign choices reach the same partial sum, and from there the rest of the problem is identical — so remember the sum, not the history. Second: a little algebra turns a <code>+/-</code> problem into a plain &quot;which numbers do I pick?&quot; problem.</p>
+<p>Split the numbers into the ones you make positive (call their total <code>P</code>) and the ones you make negative (total <code>N</code>). Then:</p>
+<pre class="diagram">   P - N = target          (the signs must hit the target)
+   P + N = total           (every number is in one group)
+   -------------------- add the two lines
+   2P = target + total  -&gt;  P = (target + total) / 2</pre>
+<p>So the whole question becomes: *how many subsets of the numbers add up to <code>P</code>?* That&#x27;s a clean counting problem, and it drops the running-sum axis entirely.</p>
 <h2>Start from the obvious</h2>
-<p>Every number gets a sign, so branch on both choices at every index and carry the running sum:</p>
-<pre><code>def go(i, running):
-    if i == n: return 1 if running == target else 0
-    return go(i+1, running + nums[i]) + go(i+1, running - nums[i])</code></pre>
-<p>Correct, and clearly <code>O(2^n)</code> — it walks the full binary tree of sign choices.</p>
-<h2>Find the waste</h2>
-<p>The tree has <code>2^n</code> leaves but the *state* at any node is just <code>(i, running)</code>, and the running sum ranges only over <code>-total .. +total</code>. So there are at most <code>n × (2·total + 1)</code> distinct states, and the exponential tree revisits them constantly. Memoizing on <code>(i, running)</code> alone drops it to <code>O(n × sum)</code>.</p>
-<h2>The insight</h2>
-<p>You can do better than caching by removing the signs with algebra. Let <code>P</code> be the numbers you mark <code>+</code> and <code>N</code> the ones you mark <code>-</code>:</p>
-<pre><code>sum(P) - sum(N) = target
-sum(P) + sum(N) = total          (every number is in exactly one group)</code></pre>
-<p>Adding the two lines: <code>2·sum(P) = target + total</code>, so <code>sum(P) = (target + total) / 2</code>. The sign problem is now <strong>&quot;how many subsets of nums sum to <code>need = (target + total) / 2</code>?&quot;</strong> — plain 0/1 subset-sum counting:</p>
-<pre><code>dp[0] = 1                        # empty subset makes 0
-for x in nums:
-    for s in range(need, x - 1, -1):
-        dp[s] += dp[s - x]</code></pre>
-<p><code>dp[s]</code> = number of subsets so far that total <code>s</code>. Iterating <code>s</code> <strong>downward</strong> is what enforces &quot;use each number at most once&quot; — it stops <code>x</code> from being counted into a sum that already includes <code>x</code>.</p>
+<p>Branch on every sign: for each number, recurse twice — once adding it, once subtracting it. When you run off the end, you scored a hit if the running sum equals the target. Correct, but it&#x27;s a binary tree of depth <code>n</code>, so about 2ⁿ leaves. Doubling the count of numbers squares the work.</p>
+<pre class="diagram">   go(i, running):
+              (i, s)
+              /      \
+        +nums[i]    -nums[i]
+        (i+1, s+x)  (i+1, s-x)
+
+   two different prefixes can reach the SAME running sum,
+   yet each re-explores its whole subtree -&gt; wasted repeats</pre>
+<h2>The insight — a counting grid</h2>
+<p>After the algebra, count subsets summing to <code>P</code>. Build <code>dp[i][sum]</code> = number of subsets of the first <code>i</code> numbers that total <code>sum</code>. Each number is either left out or put in.</p>
+<pre class="diagram">   nums = [1, 1, 1]    want subsets summing to some target sum
+
+              sum:  0    1    2    3
+        {}         | 1 |  0 |  0 |  0 |   only the empty subset makes 0
+        +num1      | 1 |  1 |  0 |  0 |
+        +num2      | 1 |  2 |  1 |  0 |
+        +num3      | 1 |  3 |  3 |  1 |</pre>
+<p>Each cell reads two neighbors in the row above — the cell straight <strong>up</strong> (skip this number, same sum) and the cell <strong>up and to the left</strong> by this number&#x27;s value (put it in, so before adding it you needed <code>sum - value</code>):</p>
+<pre class="diagram">   filling dp[i][sum], number value = x
+
+        up = dp[i-1][sum]        up-left = dp[i-1][sum - x]
+        &quot;skip x&quot;                 &quot;include x&quot;
+             \                      /
+              \                    /
+               v                  v
+                 dp[i][sum] = up + up-left
+
+   example: dp[+num2][1] = dp[+num1][1] + dp[+num1][0] = 1 + 1 = 2</pre>
+<p>Because each row only needs the row above and cells to its left, roll it to one array and sweep <code>sum</code> downward so each number is used at most once — that&#x27;s the version in <code>solution.py</code>. First, two gates: if <code>target + total</code> is odd or <code>|target|</code> exceeds <code>total</code>, no split exists, so the answer is 0.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n × need)</code> — n numbers, each sweeping the <code>need</code>-sized row once.</li><li><strong>Space:</strong> <code>O(need)</code> — a single row. The <code>(i, running)</code> memo is <code>O(n × sum)</code>; the reduction shrinks both dimensions and drops one.</li></ul>
+<ul><li><strong>Time: about n × S steps</strong>, where <code>S = (target + total)/2</code> is the needed subset sum. One add per grid cell.</li><li><strong>Extra memory: about S</strong> in the rolled 1-D version — one row across sums.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Zeros.</strong> <code>0</code> can be <code>+0</code> or <code>-0</code>, so every zero *doubles* the count. The subset-sum formulation handles this automatically (a 0 lets <code>dp[s] += dp[s]</code>), but ad-hoc solutions often miss it.</li><li>If <code>target + total</code> is <strong>odd</strong>, or <code>|target| &gt; total</code>, there&#x27;s no valid split — return 0 before dividing.</li><li>Iterating <code>s</code> upward instead of downward turns each number into an unbounded coin (Coin Change II), which is the wrong count here.</li></ul>
+<ul><li>Skipping the parity/range check. If <code>target + total</code> is odd, <code>P</code> isn&#x27;t a whole number and the answer is 0; likewise if <code>|target| &gt; total</code>.</li><li>Sweeping <code>sum</code> upward in the 1-D roll. That reuses a number multiple times — this is 0/1 (each number once), so sweep downward.</li><li>Zeros. A <code>0</code> can take <code>+</code> or <code>-</code>, so each zero doubles the count; the subset-sum form handles this correctly as long as you include zeros in <code>total</code>.</li></ul>
 <h2>Transfer</h2>
 <p>The reusable moves are *(a) state = running aggregate, not path*, and *(b) turn a signed/partition problem into subset-sum by algebra*. Siblings: <a href="https://leetcode.com/problems/partition-equal-subset-sum/">Partition Equal Subset Sum / 416</a> (does a subset hit total/2?), <a href="../0518-coin-change-ii/">Coin Change II / 518</a> (the unbounded counting cousin), and <a href="https://leetcode.com/problems/last-stone-weight-ii/">Last Stone Weight II / 1049</a> (same <code>+/-</code> reduction, minimizing the leftover).</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0494-target-sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;494. Target Sum — https://leetcode.com/problems/target-sum/
 

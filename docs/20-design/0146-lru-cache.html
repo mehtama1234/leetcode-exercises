@@ -16,32 +16,52 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">20. Design</a> / <span>146</span></nav><article class="notes"><h1>146. LRU Cache</h1>
 <p><strong>Pattern:</strong> Hash map + doubly linked list (O(1) ordered cache) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/lru-cache/</p>
 <h2>The problem in plain words</h2>
-<p>Build a small cache that holds at most <code>capacity</code> key/value pairs. <code>get(key)</code> returns the value (or -1 if absent). <code>put(key, value)</code> stores a pair. When the cache is already full and a brand-new key arrives, throw out the entry that was used longest ago — the &quot;least recently used&quot; one. Both operations must be O(1).</p>
+<p>Build a small box that holds at most <code>capacity</code> key/value pairs. <code>get(key)</code> hands back the value, or -1 if it isn&#x27;t there. <code>put(key, value)</code> stores a pair. When the box is full and a brand-new key shows up, throw out whatever was touched longest ago — the &quot;least recently used&quot; entry — to make room. Every <code>get</code> and <code>put</code> must take the same tiny amount of time no matter how big the box gets.</p>
+<pre class="diagram">   capacity = 2         box (most-recent on the left)
+
+   put(1,A)    -&gt;   [ 1:A ]
+   put(2,B)    -&gt;   [ 2:B | 1:A ]          full
+   get(1)      -&gt;   [ 1:A | 2:B ]          reading 1 makes it most-recent
+   put(3,C)    -&gt;   [ 3:C | 1:A ]          full again -&gt; evict 2 (oldest)
+                             ^ key 2 fell off the right end</pre>
 <h2>Why this matters</h2>
-<p>Underneath this is one operation: *keep the hottest items reachable and cheaply forget the cold ones, all in constant time.* Memory is finite, so a cache must decide what to drop, and &quot;the thing nobody has touched in a while&quot; is a good guess at what won&#x27;t be needed soon.</p>
-<p>This is not a toy. Operating systems evict memory pages with LRU-style policies. CPU caches, database buffer pools (Postgres, MySQL), and CDN edge nodes all keep recently touched blocks and drop stale ones. Redis and Memcached ship LRU eviction as a headline feature. Your browser&#x27;s back/forward cache and image caches lean on the same idea.</p>
-<p>What the good solution buys is a <strong>latency budget</strong>: every access stays O(1) no matter how large the cache grows. A naive &quot;scan to find the oldest&quot; cache turns each eviction into an O(n) sweep — fine for 10 items, fatal for a hot cache serving millions of requests a second.</p>
+<p>One question sits under all of it: *keep the hot items reachable and cheaply forget the cold ones, every single time, in constant work.* Memory runs out, so a cache must pick something to drop, and &quot;the thing nobody has touched in a while&quot; is a fair guess at what won&#x27;t be wanted soon.</p>
+<p>This runs real machines. Operating systems drop memory pages this way. CPU caches, database buffer pools in Postgres and MySQL, and CDN edge servers all hold the recently touched blocks and shed the stale ones. Redis and Memcached ship this eviction as a headline feature. Your browser&#x27;s back/forward cache leans on it too.</p>
+<p>What the good version buys you is a promise: every access stays fast no matter how large the cache grows. A lazy &quot;scan the whole thing to find the oldest&quot; cache turns each eviction into a full sweep — fine for 10 items, deadly for a hot cache answering millions of requests a second.</p>
 <h2>Start from the obvious</h2>
-<p>Store the pairs in a dict for fast lookup, and keep a separate list of keys in use-order to know who is oldest.</p>
-<pre><code>map[key] = value
-order = [key, ...]        # oldest at front, newest at end
-# on access: order.remove(key); order.append(key)
-# on evict:  victim = order.pop(0); del map[victim]</code></pre>
-<p>Lookups are O(1), but <code>order.remove(key)</code> and <code>pop(0)</code> on a Python list are O(n) — they shift elements. So <code>get</code> and <code>put</code> degrade to O(n). Correct, but it misses the required complexity.</p>
+<p>Store the pairs in a dict for fast lookup. Keep a separate list of keys in use-order so you know who is oldest.</p>
+<pre class="diagram">   map  = { 1:A, 2:B, 3:C }
+   order = [ 1, 2, 3 ]        oldest on the left, newest on the right
+
+   touch key 1:  remove it from the middle, put it on the right
+   order = [ 2, 3 ] -&gt; [ 2, 3, 1 ]
+                   ^ everything after the hole slides left to close it</pre>
+<p>Lookups are fast, but that &quot;remove from the middle&quot; step on a plain list has to shift every element after the hole. On a list of length n that is about n steps. So <code>get</code> and <code>put</code> quietly become slow. Correct, but it misses the required speed.</p>
 <h2>Find the waste</h2>
-<p>The waste is *searching a list to move or delete one element*. In an array you must shift everything after the hole. But if each item knew its own neighbours, you could splice it out in O(1) — no scan, no shift.</p>
-<p>That is exactly a <strong>doubly linked list</strong>: each node has a <code>prev</code> and <code>next</code>, so removing it is just rewiring two pointers. And to jump straight to a node without walking the list, keep a <strong>dict from key -&gt; node</strong>.</p>
+<p>The waste is *searching a list to move or delete one item*. In an array you must shift everything past the gap. But if each item knew its own two neighbours, you could snip it out by rewiring a couple of pointers — no scan, no shift.</p>
+<p>That is a <strong>doubly linked list</strong>: each node holds a <code>prev</code> and a <code>next</code>, so pulling it out is two pointer changes. And to reach a node instantly without walking the chain, keep a <strong>dict from key -&gt; that node</strong>. The dict finds; the list reorders.</p>
 <h2>The insight</h2>
-<p>Run two structures together:</p>
-<ol><li>A <strong>doubly linked list</strong> ordered by recency. Most-recently-used sits at the front, least-recently-used at the back.</li><li>A <strong>dict</strong> mapping key -&gt; the node holding it.</li></ol>
-<ul><li><code>get</code>: dict finds the node (O(1)); unlink it and re-insert at the front.</li><li><code>put</code> (existing key): update value, move node to front.</li><li><code>put</code> (new key, full): the node just before the back sentinel is the LRU — unlink it and delete it from the dict, then insert the new node at the front.</li></ul>
-<p>Use two sentinel nodes (<code>head</code>, <code>tail</code>) so there is always a real node on either side of any position. That erases every &quot;am I at the end?&quot; special case.</p>
+<p>Run the two structures together:</p>
+<ol><li>A <strong>doubly linked list</strong> ordered by recency — most-recently-used at the front, least-recently-used at the back.</li><li>A <strong>dict</strong> mapping each key to the node that holds it.</li></ol>
+<p>Use two dummy end-caps (<code>head</code> and <code>tail</code>) that never carry data, so there is always a real node on either side of any spot you touch — no &quot;am I at the end?&quot; special cases.</p>
+<pre class="diagram">   head &lt;-&gt; [1:A] &lt;-&gt; [2:B] &lt;-&gt; tail        (front .... back)
+
+   get(1):  dict jumps straight to node 1, then we splice it to the front.
+
+   1) unlink node 1:
+        head &lt;-&gt; [2:B] &lt;-&gt; tail
+                            (1 is floating, holding a value)
+
+   2) re-insert at front:
+        head &lt;-&gt; [1:A] &lt;-&gt; [2:B] &lt;-&gt; tail
+                 ^ now most-recent; 2:B is now the eviction candidate</pre>
+<ul><li><code>get</code>: dict finds the node, unlink it, re-insert at the front.</li><li><code>put</code> on an existing key: overwrite the value, move the node to the front.</li><li><code>put</code> on a new key when full: the node just before <code>tail</code> is the LRU — unlink it, delete its key from the dict, then insert the new node at the front.</li></ul>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(1)</code> for both <code>get</code> and <code>put</code> — the dict does the finding, the linked list does the reordering, and neither ever scans.</li><li><strong>Space:</strong> <code>O(capacity)</code> — one node and one dict entry per stored key.</li></ul>
+<ul><li><strong>Time: constant per call.</strong> Both <code>get</code> and <code>put</code> take the same small amount of work regardless of size — the dict does the finding, the list does the reordering, and neither ever scans.</li><li><strong>Extra memory: about <code>capacity</code>.</strong> One node and one dict entry per stored key.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Forgetting to update recency on <code>get</code>. A read *is* a use.</li><li>Updating an existing key&#x27;s value but not moving it to the front — it can then be wrongly evicted.</li><li>Off-by-one at the list ends. Sentinels remove these; without them you must null-check <code>prev</code>/<code>next</code> everywhere.</li><li>Deleting from the dict but not unlinking the node (or vice versa) — the two structures must stay in sync.</li></ul>
+<ul><li>Forgetting to update recency on <code>get</code>. A read *is* a use.</li><li>Overwriting an existing key&#x27;s value but not moving it to the front — then it can be evicted by mistake.</li><li>Off-by-one at the list ends. The dummy end-caps erase these; without them you must null-check <code>prev</code>/<code>next</code> everywhere.</li><li>Deleting from the dict but not unlinking the node, or the reverse — the two structures must always agree.</li></ul>
 <h2>Transfer</h2>
-<p>The move &quot;pair a hash map with a linked list so you get O(1) lookup *and* O(1) ordered removal&quot; is the core of most cache designs. See <a href="../0460-lfu-cache/">LFU Cache / 460</a>, which adds frequency on top of recency, and <a href="https://leetcode.com/problems/all-oone-data-structure/">All O`one Data Structure / 432</a>. Any time you need &quot;fast lookup plus fast reorder/evict,&quot; reach for this pair.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0146-lru-cache/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;146. LRU Cache — https://leetcode.com/problems/lru-cache/
+<p>The move &quot;pair a hash map with a linked list so you get fast lookup *and* fast ordered removal&quot; is the spine of most cache designs. See <a href="../0460-lfu-cache/">LFU Cache / 460</a>, which stacks frequency on top of recency, and <a href="https://leetcode.com/problems/all-oone-data-structure/">All O`one Data Structure / 432</a>. Any time you need &quot;fast lookup plus fast reorder/evict,&quot; reach for this pair.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0146-lru-cache/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;146. LRU Cache — https://leetcode.com/problems/lru-cache/
 
 Build a fixed-size key-&gt;value cache. `get` and `put` must both run in O(1). When
 the cache is full and a new key arrives, evict the *least recently used* one.

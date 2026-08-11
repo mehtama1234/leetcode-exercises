@@ -16,36 +16,61 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">13. Dynamic Programming: Memoization / Tabulation</a> / <span>1143</span></nav><article class="notes"><h1>1143. Longest Common Subsequence</h1>
 <p><strong>Pattern:</strong> Dynamic programming (2-D table over two prefixes) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/longest-common-subsequence/</p>
 <h2>The problem in plain words</h2>
-<p>You have two strings. A *common subsequence* is a run of characters that appears in both, in the same order, but not necessarily next to each other. For <code>&quot;abcde&quot;</code> and <code>&quot;ace&quot;</code>, <code>&quot;ace&quot;</code> appears in both in order, so the answer is <code>3</code>.</p>
-<p>You only need the length, not the actual string.</p>
+<p>You have two strings. A *common subsequence* is a run of characters that appears in both, in the same order, but not necessarily next to each other. For <code>&quot;abcde&quot;</code> and <code>&quot;ace&quot;</code>, <code>&quot;ace&quot;</code> sits inside both in order, so the answer is <code>3</code>. You need only the length, not the string.</p>
+<pre class="diagram">   text1:  a  b  c  d  e
+           |     |     |
+           a     c     e        same order, gaps allowed
+   text2:  a  c  e
+
+   answer = 3   (&quot;ace&quot;)</pre>
 <h2>Why this matters</h2>
-<p>The abstract operation is <strong>measuring how much order-preserving structure two sequences share</strong> by comparing them prefix-by-prefix and reusing every prefix-pair result exactly once. The &quot;compare the last characters of two prefixes; match → take-and-shrink-both, mismatch → drop one and keep the better&quot; recurrence is the template for a whole family of two-sequence comparisons.</p>
-<p>Where this genuinely powers real systems:</p>
-<ul><li><strong><code>diff</code> and version control</strong> — line-level LCS is literally how <code>git diff</code> and merge tools find the common backbone between two file versions.</li><li><strong>Bioinformatics</strong> — DNA/protein sequence alignment (edit distance, a close cousin) scores similarity between genomes.</li><li><strong>Spellcheck, autocorrect, and search</strong> — edit-distance ranking of near-matches uses the same 2-D prefix grid.</li></ul>
-<p>The good solution buys <strong>time</strong>: brute force enumerates <code>2^m</code> subsequences, while the prefix table solves each <code>(i, j)</code> pair once for <code>O(m·n)</code>. The rolling-rows optimization then buys <strong>memory</strong>, dropping <code>O(m·n)</code> storage to <code>O(min(m, n))</code> by keeping only the two rows the recurrence ever reads.</p>
+<p>The core operation is <strong>measuring how much order-preserving structure two sequences share</strong>, by comparing them prefix against prefix and solving each pair of prefixes exactly once. The rule — compare the last characters of two prefixes; if they match, take that character and shrink both, if not, drop one and keep the better side — is the template for a whole family of two-sequence comparisons.</p>
+<p>That grid is literally how <code>git diff</code> and merge tools find the common backbone between two file versions, how DNA and protein alignment scores similarity between genomes, and how spellcheck ranks near-matches by edit distance.</p>
 <h2>Start from the obvious</h2>
-<p>A subsequence is &quot;keep or drop each character&quot;, so brute force is: generate every subsequence of the first string, check which ones also appear in the second, and return the longest match.</p>
+<p>A subsequence is &quot;keep or drop each character,&quot; so brute force is: generate every subsequence of the first string, check which also appear in the second, return the longest match.</p>
 <pre><code>for every subsequence s of text1:
     if s is a subsequence of text2:
-        track max length</code></pre>
-<p><code>text1</code> has <code>2^m</code> subsequences — exponential. But it hints at the right question: we&#x27;re really deciding, character by character, whether a character is shared.</p>
+        track the max length</code></pre>
+<p><code>text1</code> has <code>2^m</code> subsequences — exponential. But it points at the real question: we&#x27;re deciding, character by character, whether a character is shared.</p>
 <h2>Find the waste</h2>
-<p>Instead of whole strings, think about <strong>prefixes</strong>, and look at the *last* character of each. Define:</p>
-<blockquote><code>dp[i][j]</code> = length of the LCS of <code>text1[:i]</code> and <code>text2[:j]</code> (the first <code>i</code> and first <code>j</code> characters).</blockquote>
-<p>Now compare <code>text1[i-1]</code> and <code>text2[j-1]</code>, the last characters of those prefixes:</p>
-<ul><li><strong>They match.</strong> Great — that character can be the *end* of a common subsequence. Take it, then solve the smaller problem with both last characters removed:</li></ul>
+<p>Think about <strong>prefixes</strong> instead of whole strings, and look at the *last* character of each. Define:</p>
+<blockquote><code>dp[i][j]</code> = the LCS length of the first <code>i</code> characters of <code>text1</code> and the first <code>j</code> characters of <code>text2</code>.</blockquote>
+<p>Compare <code>text1[i-1]</code> and <code>text2[j-1]</code>, the last characters of those two prefixes:</p>
+<ul><li><strong>They match.</strong> That shared character can end a common subsequence. Take it, then solve the smaller problem with both last characters removed:</li></ul>
 <pre><code>  dp[i][j] = 1 + dp[i-1][j-1]</code></pre>
-<ul><li><strong>They differ.</strong> Then at least one of these two last characters is not part of the LCS. We don&#x27;t know which, so try dropping each and keep the better:</li></ul>
+<ul><li><strong>They differ.</strong> At least one of the two last characters isn&#x27;t in the LCS. You don&#x27;t know which, so try dropping each and keep the better:</li></ul>
 <pre><code>  dp[i][j] = max(dp[i-1][j], dp[i][j-1])</code></pre>
-<p>The base cases are free: an empty prefix shares nothing, so row 0 and column 0 are all <code>0</code>. Fill the grid with <code>i</code>, <code>j</code> both increasing and every cell you read (<code>i-1</code>, <code>j-1</code>) is already computed. The answer sits in <code>dp[m][n]</code>.</p>
-<p>Notice what this kills: the brute force re-tests the same prefix pair from many different subsequences. Here each <code>(i, j)</code> prefix pair is solved exactly once.</p>
+<p>Row 0 and column 0 are all <code>0</code> (an empty prefix shares nothing). Fill with <code>i</code>, <code>j</code> both increasing, and every cell you read is already done. The answer is <code>dp[m][n]</code>.</p>
+<pre class="diagram">   text1 = &quot;abcde&quot; (down)    text2 = &quot;ace&quot; (across)
+
+          &quot;&quot;  a   c   e
+      &quot;&quot;   0   0   0   0
+      a    0   1   1   1
+      b    0   1   1   1
+      c    0   1   2   2
+      d    0   1   2   2
+      e    0   1   2   3   &lt;- answer
+
+   how the corner cell (e, e) got its 3:
+      text1[i-1]=&#x27;e&#x27; == text2[j-1]=&#x27;e&#x27;  -&gt; MATCH
+      dp[e][e] = 1 + dp[d][c] = 1 + 2 = 3</pre>
+<pre class="diagram">   each cell reads three neighbors — up, left, and the diagonal:
+
+              dp[i-1][j-1]   dp[i-1][j]
+                   \             |
+                    \            v
+        dp[i][j-1] --&gt; [ dp[i][j] ]
+
+   match at the last chars  -&gt;  pull the DIAGONAL + 1
+   mismatch                 -&gt;  take max(up, left)</pre>
+<p>The brute force re-tests the same prefix pair from many different subsequences. Here each <code>(i, j)</code> pair is solved exactly once.</p>
 <h2>The space optimization</h2>
-<p>Look at which cells <code>dp[i][j]</code> depends on: <code>dp[i-1][j-1]</code>, <code>dp[i-1][j]</code>, and <code>dp[i][j-1]</code> — all in the current row or the one directly above. We never reach further back than one row. So keep just <strong>two rows</strong> (previous and current) instead of the full <code>m × n</code> grid, dropping space to <code>O(min(m, n))</code> if you make the shorter string index the row.</p>
-<p>The one gotcha: <code>dp[i-1][j-1]</code> is the diagonal — the value at column <code>j-1</code> in the *previous* row. In a true single-array rolling version you must stash it before overwriting; the two-row version in <code>solution.py</code> sidesteps that by reading <code>prev[j-1]</code> directly.</p>
+<p>Look at which cells <code>dp[i][j]</code> reads: the diagonal <code>dp[i-1][j-1]</code>, the one above <code>dp[i-1][j]</code>, and the one to the left <code>dp[i][j-1]</code> — all in the current row or the one directly above. It never reaches two rows back. So keep just <strong>two rows</strong> (previous and current) instead of the full <code>m × n</code> grid. Making the shorter string index the columns drops the memory to about <code>min(m, n)</code>.</p>
+<p>The one gotcha: <code>dp[i-1][j-1]</code> is the diagonal — column <code>j-1</code> in the *previous* row. A single-array version must stash it before overwriting; the two-row version in <code>solution.py</code> reads <code>prev[j-1]</code> directly and sidesteps that.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Brute force:</strong> <code>O(2^m · n)</code> time.</li><li><strong>2-D DP:</strong> <code>O(m·n)</code> time, <code>O(m·n)</code> space.</li><li><strong>Rolling rows:</strong> <code>O(m·n)</code> time, <code>O(min(m, n))</code> space.</li></ul>
+<ul><li><strong>Brute force:</strong> <code>2^m</code> subsequences.</li><li><strong>2-D DP:</strong> about m × n steps and m × n memory.</li><li><strong>Rolling rows:</strong> about m × n steps, about <code>min(m, n)</code> memory.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Index shift: <code>dp[i][j]</code> uses the *first <code>i</code>* characters, so the last one is <code>text1[i-1]</code>, not <code>text1[i]</code>. Off-by-one here is the classic bug.</li><li>Confusing <strong>subsequence</strong> (order preserved, gaps allowed) with <strong>substring</strong> (contiguous). This problem is subsequence.</li><li>Forgetting the zero-filled first row/column; without those base cases the recurrence has nothing to stand on.</li></ul>
+<ul><li>Index shift: <code>dp[i][j]</code> uses the *first <code>i</code>* characters, so the last one is <code>text1[i-1]</code>, not <code>text1[i]</code>. Off-by-one here is the classic bug.</li><li>Confusing <strong>subsequence</strong> (order kept, gaps allowed) with <strong>substring</strong> (contiguous). This is subsequence.</li><li>Forgetting the zero-filled first row and column; without those base cases the recurrence has nothing to stand on.</li></ul>
 <h2>Transfer</h2>
 <p>This &quot;compare the last characters of two prefixes&quot; grid is the template for a whole family: <a href="https://leetcode.com/problems/edit-distance/">Edit Distance / 72</a>, <a href="https://en.wikipedia.org/wiki/Longest_common_substring_problem">Longest Common Substring</a> (reset to 0 on mismatch instead of taking the max), and <a href="https://leetcode.com/problems/distinct-subsequences/">Distinct Subsequences / 115</a>. Any time two sequences are compared position by position, reach for the 2-D prefix table.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/1143-longest-common-subsequence/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;1143. Longest Common Subsequence — https://leetcode.com/problems/longest-common-subsequence/
 

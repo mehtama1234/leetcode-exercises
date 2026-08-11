@@ -16,31 +16,50 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">21. Subsets &amp; Combinatorial Backtracking</a> / <span>78</span></nav><article class="notes"><h1>78. Subsets</h1>
 <p><strong>Pattern:</strong> Backtracking (decision tree over include/exclude) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/subsets/</p>
 <h2>The problem in plain words</h2>
-<p>Given a list of distinct numbers, produce every subset — every way to pick some of them, from picking none (the empty set) to picking all of them. For <code>[1,2,3]</code> there are 8 such subsets. Order of the subsets, and order inside each subset, doesn&#x27;t matter.</p>
+<p>You get a list of distinct numbers. Give back every subset — every way to pick some of them, from picking nothing (the empty set) all the way up to picking all of them. For <code>[1,2,3]</code> there are 8. Order doesn&#x27;t matter, inside a subset or between subsets.</p>
+<pre class="diagram">   nums = [1, 2, 3]
+
+   pick nothing        -&gt; []
+   pick one            -&gt; [1]  [2]  [3]
+   pick two            -&gt; [1,2]  [1,3]  [2,3]
+   pick all            -&gt; [1,2,3]
+                          8 subsets total</pre>
 <h2>Why this matters</h2>
-<p>Under this puzzle is one primitive operation: *enumerate every combination of independent yes/no choices.* Each element is a switch that is on or off, and a subset is one setting of all the switches. Producing the power set is producing every configuration of <code>n</code> boolean flags — which is why there are exactly <code>2^n</code> of them.</p>
-<p>That enumeration is the honest core of real work. Feature-flag and A/B systems reason about the space of on/off combinations. A build system exploring which optional components to include, a query planner deciding which indexes to use, a test harness generating every combination of settings — all walk the same tree. Any &quot;try every possible selection&quot; search (knapsack, configuration solvers) has this shape at its base.</p>
-<p>What the backtracking solution buys is a way to visit all <code>2^n</code> outcomes using only <code>O(n)</code> working memory instead of building them all up in a giant list at once, and — crucially — it&#x27;s the reusable template (choose, recurse, un-choose) that every sibling problem in this chapter reshapes rather than reinvents.</p>
+<p>Look at what each element really is: a switch. For every number you make one yes/no call — take it or leave it. A subset is one setting of all the switches. So producing every subset is producing every way to flip <code>n</code> on/off switches, and that is why the count is exactly <code>2^n</code> — two choices, <code>n</code> times over.</p>
+<p>That &quot;walk every combination of independent yes/no choices&quot; is the honest core of real work. Feature-flag and A/B systems reason about which flags are on together. A build system deciding which optional parts to include, a query planner weighing which indexes to use, a test tool generating every combination of settings — all walk the same tree. Any &quot;try every possible selection&quot; search, like knapsack or a configuration solver, sits on this shape.</p>
+<p>What the backtracking version buys you is a way to visit all <code>2^n</code> outcomes while holding only one partial pick in memory at a time, and it&#x27;s the reusable template — choose, recurse, un-choose — that every other problem in this chapter bends rather than rewrites.</p>
 <h2>Start from the obvious</h2>
-<p>A subset is one yes/no choice per element. So the honest first thought is: walk the elements, and at each one branch into &quot;leave it out&quot; and &quot;take it&quot;.</p>
-<pre><code>backtrack(i):
-    if i == n: record a copy of path; return
-    backtrack(i+1)              # leave nums[i] out
-    path.push(nums[i])         # take nums[i]
-    backtrack(i+1)
-    path.pop()</code></pre>
-<p>That already *is* the optimal structure — subsets is the one problem where the brute force and the intended solution are the same shape. The whole point here is to make the template explicit before the harder variants bend it.</p>
+<p>A subset is one yes/no choice per element. So the honest first move is: walk the elements in order, and at each one split into two paths — &quot;leave it out&quot; and &quot;take it.&quot; Draw that splitting and you get a binary decision tree, <code>n</code> levels deep.</p>
+<pre class="diagram">   include/exclude tree for [1, 2, 3]     (L = leave out, T = take)
+
+                          start
+                   L /              \ T
+              (no 1)                  (1)
+             L /   \ T              L /   \ T
+        (--)      (2)          (1)        (1,2)
+       L / \T    L / \T       L / \T      L / \T
+     [] [3] [2][2,3]  [1][1,3][1,2][1,2,3]
+      ^  ^   ^   ^      ^    ^    ^     ^
+      the 8 leaves = the 8 subsets</pre>
+<p>Every leaf at the bottom is a finished subset. There are <code>n</code> levels and each node splits in two, so <code>2^n</code> leaves — one per subset. This is already the right shape. Subsets is the rare problem where the plain idea and the intended answer are the same tree; the job here is to make the template clear before the harder variants stretch it.</p>
 <h2>The insight</h2>
-<p>The three lines after the branch are the backtracking template you will reuse all chapter long:</p>
-<ol><li><strong>Choose</strong> — <code>path.append(nums[i])</code>.</li><li><strong>Explore</strong> — recurse deeper with that choice in place.</li><li><strong>Un-choose</strong> — <code>path.pop()</code>, restoring <code>path</code> so the *sibling* branch (and everything above) sees a clean slate.</li></ol>
-<p>The un-choose is the load-bearing step. <code>path</code> is one shared list mutated in place for speed; without the pop, a choice from one branch would leak into the next. And because <code>path</code> keeps changing, you must record a <strong>copy</strong> (<code>path[:]</code>) at a leaf, never the live list.</p>
-<p>The decision tree has depth <code>n</code> and branches 2 ways, so it has <code>2^n</code> leaves — one per subset. No pruning is possible or needed: every leaf is a valid answer.</p>
+<p>The three lines after the split are the backtracking template you will reuse all chapter long:</p>
+<ol><li><strong>Choose</strong> — <code>path.append(nums[i])</code>.</li><li><strong>Explore</strong> — recurse deeper with that choice in place.</li><li><strong>Un-choose</strong> — <code>path.pop()</code>, restoring <code>path</code> so the *sibling* branch (and everything above it) sees a clean slate.</li></ol>
+<p>The un-choose is the load-bearing step. <code>path</code> is one shared list, changed in place for speed. Skip the pop and a choice made in one branch leaks into the next. And because <code>path</code> keeps changing, at a leaf you must store a <strong>copy</strong> (<code>path[:]</code>), never the live list.</p>
+<pre class="diagram">   path as one shared list, walking take-1 then take-2 then back up:
+
+   choose 1   path=[1]          &lt;- Choose
+     choose 2 path=[1,2]        &lt;- Choose (deeper)
+       leaf   record [1,2]
+     pop      path=[1]          &lt;- Un-choose: sibling sees clean [1]
+   pop        path=[]           &lt;- Un-choose: back to the top</pre>
+<p>No pruning happens here and none is possible — every leaf is a valid answer, so there is no dead branch to cut. That&#x27;s what makes this the clean baseline: the later problems in the chapter are this same tree with a branch-cutting rule added.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n * 2^n)</code> — there are <code>2^n</code> subsets, and copying each one into the result costs up to <code>O(n)</code>. You cannot beat <code>2^n</code>; the output itself is that big.</li><li><strong>Space:</strong> <code>O(n)</code> extra beyond the output — the recursion is <code>n</code> deep and <code>path</code> holds at most <code>n</code> items. The returned list is <code>O(n * 2^n)</code>, but that&#x27;s the required answer, not overhead.</li></ul>
+<ul><li><strong>Time: about <code>n * 2^n</code>.</strong> There are <code>2^n</code> subsets, and copying each finished one into the result costs up to <code>n</code>. You cannot beat <code>2^n</code> — the output itself is that big.</li><li><strong>Extra memory: about <code>n</code>.</strong> The recursion goes <code>n</code> deep and <code>path</code> holds at most <code>n</code> items. The returned list is <code>n * 2^n</code>, but that&#x27;s the answer you were asked for, not overhead.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Appending the live <code>path</code></strong> instead of a copy — every entry in <code>result</code> then ends up as the same (empty, after all pops) list.</li><li><strong>Forgetting the <code>pop()</code></strong> — choices from one branch contaminate the next.</li><li>Thinking you need a separate rule to &quot;add the empty set&quot; — you don&#x27;t; the branch that leaves out every element reaches a leaf with an empty path for free.</li></ul>
+<ul><li><strong>Storing the live <code>path</code></strong> instead of a copy — every entry in <code>result</code> then points at the same list, which is empty after all the pops.</li><li><strong>Forgetting the <code>pop()</code></strong> — choices from one branch contaminate the next.</li><li>Thinking you need a special rule to &quot;add the empty set&quot; — you don&#x27;t; the branch that leaves out every element lands on a leaf with an empty path for free.</li></ul>
 <h2>Transfer</h2>
-<p>The include/exclude tree with choose–recurse–un-choose is the spine of this whole chapter. With duplicates you sort and skip repeats (<a href="../0090-subsets-ii/">Subsets II / 90</a>); with a fixed size you prune by depth (<a href="../0077-combinations/">Combinations / 77</a>); with a target you prune by a running sum (<a href="../../09-backtracking/0039-combination-sum/">Combination Sum / 39</a>). Learn this template once and the rest are edits to it.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0078-subsets/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;78. Subsets — https://leetcode.com/problems/subsets/
+<p>The include/exclude tree with choose–recurse–un-choose is the spine of this whole chapter. With duplicates you sort and skip repeats (<a href="../0090-subsets-ii/">Subsets II / 90</a>); with a fixed size you cut branches too short to finish (<a href="../0077-combinations/">Combinations / 77</a>); with a target you cut branches by a running sum (<a href="../../09-backtracking/0039-combination-sum/">Combination Sum / 39</a>). Learn this template once and the rest are edits to it.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0078-subsets/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;78. Subsets — https://leetcode.com/problems/subsets/
 
 Given a list of *distinct* numbers, return every possible subset (the power set),
 including the empty set and the full set, in any order.

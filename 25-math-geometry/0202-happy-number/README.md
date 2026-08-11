@@ -1,106 +1,118 @@
 # 202. Happy Number
 
-**Pattern:** Cycle detection (a sequence that either terminates or loops)
+**Pattern:** Cycle detection (a set, or two pointers at different speeds)
 **Difficulty:** Easy
 **Link:** https://leetcode.com/problems/happy-number/
 
 ## The problem in plain words
 
 Take a number. Replace it with the sum of the squares of its digits. Repeat. If
-you ever land on `1`, the number is "happy". If instead you keep going around
-the same handful of numbers forever, it's not. Return true or false.
+you ever land on `1`, the number is "happy." If you loop forever without hitting
+`1`, it isn't. Return whether the number is happy.
 
-Example: `19 → 1²+9² = 82 → 8²+2² = 68 → 6²+8² = 100 → 1²+0²+0² = 1`. Happy.
+```diagram
+   19  ->  1^2 + 9^2 = 1 + 81 = 82
+   82  ->  8^2 + 2^2 = 64 + 4 = 68
+   68  ->  6^2 + 8^2 = 36 + 64 = 100
+   100 ->  1^2 + 0^2 + 0^2 = 1        reached 1  ->  happy!
+```
 
 ## Why this matters
 
-Underneath the puzzle is a question that comes up constantly: *I'm following a
-chain of states one step at a time — how do I know when I'm stuck in a loop
-versus making progress?* The chain has no obvious length; the only way to know
-it's cyclic is to detect that you've returned somewhere you've been.
+The number-crunching part is a warm-up. The real question is hidden: this process
+either reaches `1` or *runs forever*. But "forever" can't mean forever producing
+new numbers — the digit-square-sum of anything quickly falls below about 810 and
+stays there. So a value must eventually repeat. The problem is really: **does this
+sequence enter a loop, and can you tell before you've gone around it?**
 
-That exact move runs real systems. Detecting infinite loops in a state machine
-or a config-resolution graph (does "environment A extends B extends A" cycle?)
-is this problem. Following a linked list and asking "is it corrupted into a
-loop?" is the identical algorithm. Garbage collectors and dependency resolvers
-must spot reference cycles. Even hash functions are studied for their cycle
-structure the same way.
-
-What the good solution buys is **constant memory**. The naive fix remembers
-every state it has seen; Floyd's two-pointer trick detects the loop while
-storing only two numbers — which matters when the chain is long or you're
-detecting cycles in a stream you can't afford to buffer.
+Detecting whether a walk revisits a state is a core problem. A garbage collector
+must notice cycles of references. A build system must catch circular dependencies.
+A network router must spot routing loops. The two techniques here — remember every
+state, or race two pointers — are the two standard answers, and they trade memory
+against cleverness.
 
 ## Start from the obvious
 
-A number is *not* happy exactly when the process repeats a value it has already
-produced (it's going in circles). So remember everything you've seen:
+Keep a set of every number you've seen. Each step, if the new number is `1` you're
+happy; if it's already in the set, you've looped and you're not.
 
+```diagram
+   n = 2      seen = { }
+
+   2   not 1, not seen  -> add 2       seen = {2}
+   4   not 1, not seen  -> add 4       seen = {2,4}
+   16  not 1, not seen  -> add 16      seen = {2,4,16}
+   37  ...              -> add 37
+   58 -> 89 -> 145 -> 42 -> 20 -> 4    4 is already in seen!
+                                       ^ loop found  ->  NOT happy
 ```
-seen = set()
-while n != 1 and n not in seen:
-    seen.add(n)
-    n = square_digit_sum(n)
-return n == 1
-```
 
-Why does this even terminate? Because `square_digit_sum` can't grow without
-bound: a 3-digit number maxes out at `9²·3 = 243`, so after a step or two every
-value is under ~810. In that bounded range the sequence *must* eventually repeat
-or hit 1. Correct and honest — but it stores a set.
-
-## Find the waste
-
-The set is only there to answer one yes/no question: "have I looped?" We're
-paying `O(k)` memory to detect a property — the existence of a cycle — that
-doesn't actually require remembering the values, only noticing that a fast
-traveler catches up to a slow one.
+This is correct and clear. The one cost: the set can grow to hold every distinct
+number in the chain. That's fine here (the range is bounded), but it raises the
+natural question — can we detect the loop *without* remembering everything?
 
 ## The insight
 
-Floyd's tortoise and hare. Run two positions through the same sequence:
+Yes — race two pointers through the sequence at different speeds. A slow pointer
+takes one step at a time; a fast pointer takes two. If the sequence funnels into a
+loop, the fast one is going around it faster and will eventually catch the slow one
+from behind — they'll land on the same value. If instead the sequence reaches `1`,
+the fast pointer gets there first.
 
-- `slow` takes one step per round: `n → f(n) → f(f(n)) → ...`
-- `fast` takes two steps per round.
+```diagram
+   step the sequence f(n) = square-digit-sum
 
-If the sequence reaches `1`, `fast` gets there first and we answer happy. If the
-sequence is a loop, `fast` goes around twice as fast and eventually meets `slow`
-*inside* the loop — a meeting proves a cycle, so we answer not happy. No set
-needed.
+   slow: one step      fast: two steps
 
+           slow          fast
+   start:   n            f(n)
+   step1:   f(n)         f(f(f(n)))
+   step2:   f(f(n))      ...
+
+   if they ever meet  ->  there's a cycle  ->  not happy
+   if fast reaches 1  ->  happy
 ```
-slow, fast = n, f(n)
-while fast != 1 and slow != fast:
-    slow = f(slow)
-    fast = f(f(fast))
-return fast == 1
+
+The reason this works: think of the sequence as a shape like the letter rho — a
+tail that leads into a circle. Once both pointers are on the circle, the fast one
+closes the gap by one position each step, so it's guaranteed to overtake the slow
+one. No set needed; just two running values.
+
+```diagram
+   the sequence has a "rho" shape:
+
+        start -> o -> o -> o
+                          |
+                          v
+                    o <---+  <- loop
+                    |     ^
+                    v     |
+                    o --> o
+
+   fast laps slow inside the loop; they collide
 ```
 
 ## Complexity
 
-- **Time:** `O(log n)` to add up the digit-squares the first time (a number has
-  `~log10(n)` digits), then a bounded number of steps because the sequence falls
-  into the range under ~810 almost immediately. Effectively constant iterations.
-- **Space:** `O(1)` for the two-pointer version — just `slow` and `fast`. The
-  set version is `O(k)` where `k` is the number of distinct values seen.
+- **Time: about constant** in practice — the sequence provably drops into a small
+  bounded range fast, so the number of steps to reach `1` or to loop is small.
+- **Extra memory:** the set version holds up to `k` seen values; the two-pointer
+  version uses **constant** memory — just `slow` and `fast`.
 
 ## Pitfalls
 
-- **`0` is not happy** — it maps to itself forever, never reaching 1.
-- Forgetting to advance `slow` and `fast` at *different* speeds — equal speeds
-  never meet inside a loop, so the loop never terminates.
-- Recomputing `square_digit_sum` incorrectly (e.g. summing digits instead of
-  their squares).
-- Assuming it could run forever — it can't; the bounded range guarantees a
-  cycle or a 1.
+- Assuming an unhappy number runs off to infinity. It can't — the values stay
+  bounded, so a repeat is guaranteed, which is what makes cycle detection valid.
+- With two pointers, advancing them by the wrong amounts. Slow moves one hop, fast
+  moves two hops per iteration.
+- Forgetting that `1` maps to `1` (a fixed point) — reaching it is the happy exit,
+  not a loop to reject.
 
 ## Transfer
 
-The tortoise-and-hare cycle detection is the reusable core. It's the standard
-way to find a loop in a
-[Linked List Cycle / 141](https://leetcode.com/problems/linked-list-cycle/),
-locate the loop's entry in
-[Linked List Cycle II / 142](https://leetcode.com/problems/linked-list-cycle-ii/),
-and spot the duplicate in
+The reusable move is **model a repeating process as a walk, then detect a cycle —
+either by remembering states in a set or by racing two pointers.** The two-pointer
+version is Floyd's cycle detection, the exact trick used in
+[Linked List Cycle / 141](https://leetcode.com/problems/linked-list-cycle/) and
 [Find the Duplicate Number / 287](https://leetcode.com/problems/find-the-duplicate-number/),
-where the array is read as a "next pointer" just like `square_digit_sum` is here.
+where the "next step" is a pointer instead of the digit-square-sum here.

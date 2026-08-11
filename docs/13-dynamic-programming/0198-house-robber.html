@@ -16,36 +16,58 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">13. Dynamic Programming: Memoization / Tabulation</a> / <span>198</span></nav><article class="notes"><h1>198. House Robber</h1>
 <p><strong>Pattern:</strong> Dynamic programming (1-D, rob-or-skip choice) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/house-robber/</p>
 <h2>The problem in plain words</h2>
-<p>Houses stand in a row, each with some money inside. You want to grab as much as possible, but there&#x27;s an alarm rule: <strong>you can&#x27;t rob two houses that are next to each other.</strong> Return the largest total you can safely take.</p>
+<p>Houses stand in a row, each holding some money. You want as much as you can carry, but the alarm rule is: <strong>you can&#x27;t rob two houses next to each other.</strong> Return the largest total you can safely take.</p>
+<pre class="diagram">   houses:  [ 2 ][ 7 ][ 9 ][ 3 ][ 1 ]
+              *         *         *
+              rob 0, 2, 4  -&gt;  2 + 9 + 1 = 12
+              (never two adjacent; this beats robbing 7 and 3)</pre>
 <h2>Why this matters</h2>
-<p>Underneath the heist story is <strong>maximizing a total under a &quot;no two adjacent picks&quot; constraint</strong>. The fundamental operation is a per-item binary choice (take-and-skip-the-neighbor vs. skip) resolved by carrying two rolling states: best-if-I-take-here and best-if-I-don&#x27;t.</p>
-<p>Where non-adjacent selection genuinely appears:</p>
-<ul><li><strong>Scheduling</strong> — picking the most valuable set of non-overlapping jobs or time slots (weighted interval scheduling reduces to this shape once sorted).</li><li><strong>Resource placement</strong> — spacing out cell towers, sensors, or ads/promos so neighbors don&#x27;t conflict, while maximizing coverage or revenue.</li><li><strong>Sequence labeling</strong> — choosing a highest-scoring set of items with a &quot;no two in a row&quot; rule.</li></ul>
-<p>The good solution buys <strong>time</strong> — an exponential rob-or-skip tree collapses to a single <code>O(n)</code> sweep because only <code>n</code> distinct suffixes exist — and the two-variable form buys <strong><code>O(1)</code> memory</strong> since the recurrence never reaches back more than one step. The honest caveat it teaches: greedy &quot;every other house&quot; is wrong; values decide the pattern.</p>
+<p>Under the heist story is <strong>maximize a total under a &quot;no two adjacent picks&quot; rule.</strong> The move to learn is a per-item choice — take this one and skip its neighbor, or skip it — carried forward with two running totals.</p>
+<p>Non-adjacent selection is a real shape. Picking the most valuable set of non-overlapping jobs or time slots reduces to it once sorted. So does spacing out cell towers or ads so neighbors don&#x27;t conflict while you maximize coverage, and choosing a highest-scoring set of items under a &quot;no two in a row&quot; rule.</p>
+<p>The fast version collapses an exponential rob-or-skip tree into a single pass — only <code>n</code> distinct suffixes exist — and the two-variable form keeps constant memory, since the recurrence never reaches back more than one step. The honest caveat it teaches: &quot;grab every other house&quot; is wrong; the values decide the pattern.</p>
 <h2>Start from the obvious</h2>
-<p>The only real decision at each house is binary: rob it or don&#x27;t. So think about the last house, <code>n-1</code>:</p>
-<ul><li>If you <strong>rob</strong> it, you take its money but you&#x27;re forbidden from house <code>n-2</code>, so the rest of your loot comes from houses <code>0..n-3</code>.</li><li>If you <strong>skip</strong> it, your loot is just the best you could do on houses <code>0..n-2</code>.</li></ul>
-<p>You take whichever is larger. Writing this as a recursion from the front:</p>
+<p>At each house the only real decision is binary: rob it or don&#x27;t. Think about the last house, <code>n-1</code>:</p>
+<ul><li><strong>Rob it:</strong> you take its money, but house <code>n-2</code> is now off-limits, so the rest of your loot comes from houses <code>0 .. n-3</code>.</li><li><strong>Skip it:</strong> your loot is the best you could do on houses <code>0 .. n-2</code>.</li></ul>
+<p>Take whichever is larger. As a recursion from the front:</p>
 <pre><code>best(i) = max( nums[i] + best(i+2),   # rob house i, jump past i+1
                best(i+1) )            # skip house i
 best(i) = 0   when i is past the end</code></pre>
-<p>That&#x27;s a correct, honest recursion. But it branches, and it re-solves the same suffixes over and over.</p>
+<p>Correct and honest. But it branches, and it re-solves the same suffixes.</p>
 <h2>Find the waste</h2>
-<p>Draw the calls. <code>best(0)</code> needs <code>best(1)</code> and <code>best(2)</code>. <code>best(1)</code> also needs <code>best(2)</code> and <code>best(3)</code>. So <code>best(2)</code> gets computed from two different places, and this doubling cascades — exponential calls for a problem that only has <code>n</code> distinct subproblems (<code>best(0)</code> … <code>best(n)</code>). <strong>We keep recomputing the answer for the same starting house.</strong></p>
+<p><code>best(0)</code> needs <code>best(1)</code> and <code>best(2)</code>. But <code>best(1)</code> *also* needs <code>best(2)</code>. So <code>best(2)</code> gets computed from two different places — and that doubling cascades all the way down.</p>
+<pre class="diagram">              best(0)
+             /       \
+        best(1)       best(2)     &lt;- best(2) reached here...
+        /     \
+   best(2)   best(3)              &lt;- ...and again here
+
+   exponential calls, but only n distinct starting points exist</pre>
+<p><strong>The answer for the same starting house gets recomputed over and over.</strong></p>
 <h2>The insight</h2>
-<p>Solve each suffix once. Top-down that&#x27;s memoization: cache <code>best(i)</code> the first time you hit it. Bottom-up, flip direction and sweep left to right carrying just two numbers:</p>
-<ul><li><code>take</code> — the best total if we&#x27;re *allowed* to rob the house we&#x27;re now looking at (i.e. we did not rob the previous one),</li><li><code>skip</code> — the best total we&#x27;ve already locked in without robbing the current house.</li></ul>
+<p>Solve each suffix once. Sweep left to right carrying just two numbers:</p>
+<ul><li><code>take</code> — best total if we&#x27;re *allowed* to rob the house we&#x27;re now looking at (meaning we did not rob the previous one),</li><li><code>skip</code> — best total already locked in without robbing the current house.</li></ul>
 <p>At each house holding <code>money</code>:</p>
-<pre><code>new_take = skip + money          # rob here: add to whatever didn&#x27;t include the neighbor
-new_skip = max(take, skip)       # don&#x27;t rob here: carry the best so far
-take, skip = new_take, new_skip</code></pre>
-<p>The answer is <code>max(take, skip)</code>. Only the previous two states ever matter, so there&#x27;s no table to keep — <code>O(1)</code> space.</p>
+<pre><code>new_take = skip + money       # rob here: add to whatever didn&#x27;t include the neighbor
+new_skip = max(take, skip)    # don&#x27;t rob here: carry the best so far</code></pre>
+<p>Watch it run on <code>[2, 7, 9, 3, 1]</code>. Each cell reads only the pair before it:</p>
+<pre class="diagram">   money:     2      7      9      3      1
+             ---    ---    ---    ---    ---
+   take:  0 -&gt;2     0+7    2+9    16+3   11+1     take = prev skip + money
+             |       ^     ^       ^      ^
+   skip:  0-&gt; 0  -&gt;  2  -&gt; 7  -&gt;  11  -&gt; 16       skip = max(prev take, prev skip)
+
+   at house 2 (money 9):
+        new take = skip(=7 from before house 1) + 9 = 16
+        new skip = max(take=7, skip=7) = 7
+                      \___ each cell only needs the previous take/skip
+   answer = max(take, skip) at the end = max(11, 16) = ... final = 12</pre>
+<p>The answer is <code>max(take, skip)</code> at the end. Only the previous two states ever matter, so there&#x27;s no table to keep — constant memory.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Naive recursion:</strong> exponential time, <code>O(n)</code> stack.</li><li><strong>Memoized:</strong> <code>O(n)</code> time (n subproblems solved once), <code>O(n)</code> space.</li><li><strong>Rolling loop:</strong> <code>O(n)</code> time, <code>O(1)</code> space — the natural endpoint.</li></ul>
+<ul><li><strong>Naive recursion:</strong> exponential time, <code>O(n)</code> stack.</li><li><strong>Memoized:</strong> about <code>n</code> steps (n subproblems solved once), about <code>n</code> memory.</li><li><strong>Rolling loop:</strong> about <code>n</code> steps, constant memory — the natural endpoint.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Forgetting the empty list (<code>[]</code> → <code>0</code>) and the single house (<code>[x]</code> → <code>x</code>).</li><li>Assuming the best plan is &quot;every other house&quot;. Values matter: for <code>[2,1,1,2]</code> the answer robs the two ends (<code>2 + 2 = 4</code>), skipping *two* houses in the middle.</li><li>In the update, both new values are computed from the *old* pair — do the assignment simultaneously (or with temps) so one doesn&#x27;t clobber the other.</li></ul>
+<ul><li>Forgetting the empty list (<code>[]</code> → <code>0</code>) and the single house (<code>[x]</code> → <code>x</code>).</li><li>Assuming the best plan is &quot;every other house.&quot; Values matter: for <code>[2,1,1,2]</code> the answer robs the two ends (<code>2 + 2 = 4</code>), skipping *two* houses in the middle.</li><li>In the update, both new values come from the *old* pair — assign them together (or with temps) so one doesn&#x27;t clobber the other before it&#x27;s read.</li></ul>
 <h2>Transfer</h2>
-<p>The &quot;at each item, take-it-and-jump vs skip-it, keep two rolling states&quot; pattern is the backbone of many linear DPs. Its direct sequels: <a href="../0213-house-robber-ii/">House Robber II / 213</a> (houses in a circle — solve two linear passes), and it rhymes with <a href="https://leetcode.com/problems/delete-and-earn/">Delete and Earn / 740</a>, which reduces to this exact recurrence after bucketing values.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0198-house-robber/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;198. House Robber — https://leetcode.com/problems/house-robber/
+<p>The &quot;at each item, take-it-and-jump vs skip-it, carry two rolling states&quot; pattern is the backbone of many linear DPs. Its direct sequel: <a href="../0213-house-robber-ii/">House Robber II / 213</a> (houses in a circle — solve two linear passes). It also rhymes with <a href="https://leetcode.com/problems/delete-and-earn/">Delete and Earn / 740</a>, which becomes this exact recurrence after bucketing values.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0198-house-robber/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;198. House Robber — https://leetcode.com/problems/house-robber/
 
 Houses in a row each hold some money. You cannot rob two adjacent houses. Return
 the maximum total you can rob.

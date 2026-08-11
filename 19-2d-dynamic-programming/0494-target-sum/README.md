@@ -6,89 +6,110 @@
 
 ## The problem in plain words
 
-You get a list of non-negative numbers. Put a `+` or a `-` in front of each one,
-then add them all up. Count how many of the `2^n` ways to choose those signs make
-the total equal a given target.
+You have a list of non-negative numbers and a target. Put a `+` or `-` in front of
+each number, then add them up. Count how many of the `+/-` choices land exactly on
+the target.
+
+```diagram
+   nums = [1, 1, 1, 1, 1]     target = 3
+
+   +1+1+1+1-1 = 3      +1+1+1-1+1 = 3      +1+1-1+1+1 = 3
+   +1-1+1+1+1 = 3      -1+1+1+1+1 = 3
+
+   -> 5 ways
+```
 
 ## Why this matters
 
-Underneath is a two-part idea: *count assignments over a boolean choice per item*
-where a huge branching space collapses because only the **running total** matters,
-not the path that produced it. Two different sign prefixes that reach the same sum
-are interchangeable from then on — recognizing that "the state is the sum" is the
-move that tames the explosion.
+There are two ideas worth taking. First: the state that matters is the *running sum*
+you've reached, not the exact path you took to get there. Many different sign
+choices reach the same partial sum, and from there the rest of the problem is
+identical — so remember the sum, not the history. Second: a little algebra turns a
+`+/-` problem into a plain "which numbers do I pick?" problem.
 
-The second half is a genuinely useful algebraic reduction: a `+/-` partition is
-the same as splitting the numbers into two groups, and that turns the problem into
-"how many subsets sum to a fixed value?" — subset-sum counting, which shows up in
-budget allocation (how many ways can these line items net to zero?), reconciling
-signed ledgers (which transactions cancel to a balance?), and load-balancing two
-bins.
+Split the numbers into the ones you make positive (call their total `P`) and the
+ones you make negative (total `N`). Then:
 
-What the good solution buys is collapsing an exponential enumeration into
-`O(n × sum)` work and `O(sum)` memory — the difference between a combinatorial
-blow-up and a table that fits comfortably in a request handler.
+```diagram
+   P - N = target          (the signs must hit the target)
+   P + N = total           (every number is in one group)
+   -------------------- add the two lines
+   2P = target + total  ->  P = (target + total) / 2
+```
+
+So the whole question becomes: *how many subsets of the numbers add up to `P`?*
+That's a clean counting problem, and it drops the running-sum axis entirely.
 
 ## Start from the obvious
 
-Every number gets a sign, so branch on both choices at every index and carry the
-running sum:
+Branch on every sign: for each number, recurse twice — once adding it, once
+subtracting it. When you run off the end, you scored a hit if the running sum equals
+the target. Correct, but it's a binary tree of depth `n`, so about 2ⁿ leaves.
+Doubling the count of numbers squares the work.
 
-```
-def go(i, running):
-    if i == n: return 1 if running == target else 0
-    return go(i+1, running + nums[i]) + go(i+1, running - nums[i])
-```
+```diagram
+   go(i, running):
+              (i, s)
+              /      \
+        +nums[i]    -nums[i]
+        (i+1, s+x)  (i+1, s-x)
 
-Correct, and clearly `O(2^n)` — it walks the full binary tree of sign choices.
-
-## Find the waste
-
-The tree has `2^n` leaves but the *state* at any node is just `(i, running)`, and
-the running sum ranges only over `-total .. +total`. So there are at most
-`n × (2·total + 1)` distinct states, and the exponential tree revisits them
-constantly. Memoizing on `(i, running)` alone drops it to `O(n × sum)`.
-
-## The insight
-
-You can do better than caching by removing the signs with algebra. Let `P` be the
-numbers you mark `+` and `N` the ones you mark `-`:
-
-```
-sum(P) - sum(N) = target
-sum(P) + sum(N) = total          (every number is in exactly one group)
+   two different prefixes can reach the SAME running sum,
+   yet each re-explores its whole subtree -> wasted repeats
 ```
 
-Adding the two lines: `2·sum(P) = target + total`, so
-`sum(P) = (target + total) / 2`. The sign problem is now **"how many subsets of
-nums sum to `need = (target + total) / 2`?"** — plain 0/1 subset-sum counting:
+## The insight — a counting grid
 
-```
-dp[0] = 1                        # empty subset makes 0
-for x in nums:
-    for s in range(need, x - 1, -1):
-        dp[s] += dp[s - x]
+After the algebra, count subsets summing to `P`. Build `dp[i][sum]` = number of
+subsets of the first `i` numbers that total `sum`. Each number is either left out or
+put in.
+
+```diagram
+   nums = [1, 1, 1]    want subsets summing to some target sum
+
+              sum:  0    1    2    3
+        {}         | 1 |  0 |  0 |  0 |   only the empty subset makes 0
+        +num1      | 1 |  1 |  0 |  0 |
+        +num2      | 1 |  2 |  1 |  0 |
+        +num3      | 1 |  3 |  3 |  1 |
 ```
 
-`dp[s]` = number of subsets so far that total `s`. Iterating `s` **downward** is
-what enforces "use each number at most once" — it stops `x` from being counted
-into a sum that already includes `x`.
+Each cell reads two neighbors in the row above — the cell straight **up** (skip this
+number, same sum) and the cell **up and to the left** by this number's value (put it
+in, so before adding it you needed `sum - value`):
+
+```diagram
+   filling dp[i][sum], number value = x
+
+        up = dp[i-1][sum]        up-left = dp[i-1][sum - x]
+        "skip x"                 "include x"
+             \                      /
+              \                    /
+               v                  v
+                 dp[i][sum] = up + up-left
+
+   example: dp[+num2][1] = dp[+num1][1] + dp[+num1][0] = 1 + 1 = 2
+```
+
+Because each row only needs the row above and cells to its left, roll it to one
+array and sweep `sum` downward so each number is used at most once — that's the
+version in `solution.py`. First, two gates: if `target + total` is odd or `|target|`
+exceeds `total`, no split exists, so the answer is 0.
 
 ## Complexity
 
-- **Time:** `O(n × need)` — n numbers, each sweeping the `need`-sized row once.
-- **Space:** `O(need)` — a single row. The `(i, running)` memo is `O(n × sum)`;
-  the reduction shrinks both dimensions and drops one.
+- **Time: about n × S steps**, where `S = (target + total)/2` is the needed subset
+  sum. One add per grid cell.
+- **Extra memory: about S** in the rolled 1-D version — one row across sums.
 
 ## Pitfalls
 
-- **Zeros.** `0` can be `+0` or `-0`, so every zero *doubles* the count. The
-  subset-sum formulation handles this automatically (a 0 lets `dp[s] += dp[s]`),
-  but ad-hoc solutions often miss it.
-- If `target + total` is **odd**, or `|target| > total`, there's no valid split —
-  return 0 before dividing.
-- Iterating `s` upward instead of downward turns each number into an unbounded
-  coin (Coin Change II), which is the wrong count here.
+- Skipping the parity/range check. If `target + total` is odd, `P` isn't a whole
+  number and the answer is 0; likewise if `|target| > total`.
+- Sweeping `sum` upward in the 1-D roll. That reuses a number multiple times — this
+  is 0/1 (each number once), so sweep downward.
+- Zeros. A `0` can take `+` or `-`, so each zero doubles the count; the subset-sum
+  form handles this correctly as long as you include zeros in `total`.
 
 ## Transfer
 

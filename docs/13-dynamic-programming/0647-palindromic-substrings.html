@@ -16,35 +16,64 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">13. Dynamic Programming: Memoization / Tabulation</a> / <span>647</span></nav><article class="notes"><h1>647. Palindromic Substrings</h1>
 <p><strong>Pattern:</strong> Dynamic programming (interval / substring table) → expand-around-center <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/palindromic-substrings/</p>
 <h2>The problem in plain words</h2>
-<p>Count how many substrings of <code>s</code> read the same forwards and backwards. A substring is any contiguous slice, and each different start/end pair counts on its own — so in <code>&quot;aaa&quot;</code> the three single <code>a</code>s are three separate palindromes, not one. <code>&quot;aaa&quot;</code> has 6 in total: <code>a</code>, <code>a</code>, <code>a</code>, <code>aa</code>, <code>aa</code>, <code>aaa</code>.</p>
+<p>Count how many substrings of <code>s</code> read the same forwards and backwards. A substring is any contiguous slice, and each different start/end pair counts on its own — so in <code>&quot;aaa&quot;</code> the three single <code>a</code>s are three separate palindromes.</p>
+<pre class="diagram">   s = &quot;aaa&quot;      6 palindromic substrings:
+
+   a . .   -&gt; &quot;a&quot;        . a .   -&gt; &quot;a&quot;        . . a   -&gt; &quot;a&quot;
+   a a .   -&gt; &quot;aa&quot;       . a a   -&gt; &quot;aa&quot;
+   a a a   -&gt; &quot;aaa&quot;
+
+   (three singles + two pairs + one triple = 6)</pre>
 <h2>Why this matters</h2>
-<p>The deeper operation is <strong>counting all mirror-symmetric regions in a sequence while reusing already-decided interiors</strong> — the recurrence &quot;a span is a palindrome iff its ends match and the inside already is&quot; lets each larger palindrome grow from a smaller one instead of being re-verified from scratch.</p>
-<p>Where counting/enumerating symmetric regions genuinely appears:</p>
-<ul><li><strong>Bioinformatics</strong> — tallying inverted repeats and palindromic sites in DNA/RNA (restriction-enzyme recognition sites are palindromic), which signal structure and binding regions.</li><li><strong>Pattern and anomaly detection</strong> — counting mirrored motifs in text, logs, or signals as a structural feature.</li><li><strong>String-processing features</strong> — palindrome density feeding into ML text features or data-quality checks.</li></ul>
-<p>The good solution buys <strong>time</strong>: brute force is <code>O(n³)</code> because each substring&#x27;s check re-walks overlapping interiors, while the DP (or the expand-around-center form) reuses those interiors to reach <code>O(n²)</code> time — and expand-around-center does it in <code>O(1)</code> extra space by riding one growing window instead of storing the whole table.</p>
+<p>The deeper move is <strong>counting all mirror-symmetric regions in a sequence while reusing already-decided interiors.</strong> The recurrence — a span is a palindrome only when its ends match and its inside already is — lets each larger palindrome grow from a smaller one instead of being re-checked from scratch.</p>
+<p>Counting symmetric regions is a real task. In DNA and RNA, palindromic sites mark restriction-enzyme recognition points and binding regions, so tallying inverted repeats is routine. Counting mirrored motifs in text, logs, or signals feeds anomaly detection, and palindrome density can be a text feature for ML or a data-quality check.</p>
+<p>The fast version buys time: brute force is about <code>n³</code> because each substring&#x27;s check re-walks overlapping interiors, while reusing those interiors reaches about <code>n²</code> — and expand-around-center does it in constant extra space by riding one growing window instead of storing the whole table.</p>
 <h2>Start from the obvious</h2>
-<p>There are about <code>n^2 / 2</code> substrings. Generate every one and check each for being a palindrome:</p>
+<p>There are about <code>n² / 2</code> substrings. Generate every one and check each for being a palindrome:</p>
 <pre><code>count = 0
 for i in range(n):
     for j in range(i, n):
         if s[i:j+1] == s[i:j+1][::-1]:
             count += 1</code></pre>
-<p>Correct, and the honest first move. But there are <code>O(n^2)</code> substrings and checking each palindrome takes <code>O(n)</code>, giving <code>O(n^3)</code>. Staring at *why* the check is slow shows the fix.</p>
+<p>Correct, and the honest first move. But there are about <code>n²</code> substrings and checking each palindrome takes about <code>n</code> work, giving about <code>n³</code>. Look at *why* the check is slow.</p>
 <h2>Find the waste</h2>
-<p>When we test whether <code>s[i..j]</code> is a palindrome, we compare its ends and then walk inward — re-examining <code>s[i+1..j-1]</code>, which we may have already judged on an earlier iteration. We keep re-deciding the same inner stretches.</p>
-<p>The insight that removes that: a stretch of text is a palindrome exactly when</p>
-<blockquote>its <strong>two ends match</strong> *and* <strong>the part strictly inside is also a palindrome</strong>.</blockquote>
-<p>That&#x27;s a recurrence. Name it:</p>
+<p>To test whether <code>s[i..j]</code> is a palindrome, you compare its ends and then walk inward — re-examining <code>s[i+1..j-1]</code>, which you may have already judged on an earlier pass. The same inner stretches get re-decided again and again.</p>
+<p>The escape is a recurrence. A stretch of text is a palindrome exactly when</p>
+<blockquote>its <strong>two ends match</strong> *and* the part <strong>strictly inside</strong> is also a palindrome.</blockquote>
 <pre><code>dp[i][j] = (s[i] == s[j]) and (j - i &lt; 2 or dp[i+1][j-1])</code></pre>
 <p>The <code>j - i &lt; 2</code> clause is the base case: a single character or an adjacent pair has no interior to check, so matching ends alone make it a palindrome.</p>
 <h2>The insight</h2>
-<p>Two ways to use that recurrence:</p>
-<p><strong>Tabulation (the teaching form).</strong> Fill a boolean table <code>dp[i][j]</code>. Each cell depends on the cell diagonally inside it, <code>dp[i+1][j-1]</code>, so fill by increasing length — in code, let <code>i</code> descend and <code>j</code> ascend so the inner answer is always ready. Count every <code>True</code>. <code>O(n^2)</code> time, <code>O(n^2)</code> space.</p>
-<p><strong>Expand around center (the optimal form).</strong> Read the recurrence from the inside out. Every palindrome grows outward from a center — either a single character (odd length) or the gap between two characters (even length). There are <code>2n - 1</code> possible centers. From each, push two pointers outward while the characters still match; every successful step *is* one more palindrome (<code>dp[i+1][j-1] -&gt; dp[i][j]</code>). This rides one expanding window instead of storing the whole table, so it&#x27;s still <code>O(n^2)</code> time but only <code>O(1)</code> space.</p>
+<p>Two ways to use that recurrence.</p>
+<p><strong>Tabulation (the teaching form).</strong> Fill a boolean table <code>dp[i][j]</code> where <code>i</code> is the start and <code>j</code> the end. Each cell depends on the cell <strong>diagonally inside</strong> it, <code>dp[i+1][j-1]</code> — one row down, one column left. So fill short spans before long ones (in code: <code>i</code> descending, <code>j</code> ascending), and the inner answer is always ready. Count every <code>True</code>.</p>
+<pre class="diagram">   s = &quot;aba&quot;     dp[i][j] = is s[i..j] a palindrome?
+   rows = i (start), cols = j (end); only j &gt;= i is used
+
+          j=0   j=1   j=2
+        +-----+-----+-----+
+   i=0  |  T  |  F  |  ?  |     dp[0][2] depends on dp[1][1]
+        +-----+-----+-----+          (diagonally inside: down 1, left 1)
+   i=1  |     |  T  |  F  |
+        +-----+-----+-----+
+   i=2  |     |     |  T  |
+        +-----+-----+-----+
+
+   dp[0][2]:  s[0]==&#x27;a&#x27; == s[2]==&#x27;a&#x27;  AND  dp[1][1] is T
+              so dp[0][2] = T  -&gt;  &quot;aba&quot; counts</pre>
+<p>The diagonal is the whole trick — each longer palindrome reads exactly one already-solved shorter one:</p>
+<pre class="diagram">   the dependency arrow, drawn on the grid:
+
+        dp[i+1][j-1]  ----&gt;  dp[i][j]
+             ^                  |
+        inner span          outer span (one wider on each side)
+        (down 1, left 1)    reads its ends s[i], s[j]
+
+   fill order: shortest spans first, so the inner cell is always ready</pre>
+<p>Count all four <code>True</code> cells (three singles + <code>&quot;aba&quot;</code>) → answer 4. This is about <code>n²</code> time and about <code>n²</code> space.</p>
+<p><strong>Expand around center (the optimal form).</strong> Read the recurrence from the inside out. Every palindrome grows outward from a center — either a single character (odd length) or the gap between two characters (even length), <code>2n - 1</code> centers in all. From each, push two pointers outward while the characters still match; every successful step *is* one more palindrome (that&#x27;s the same <code>dp[i+1][j-1] -&gt; dp[i][j]</code> growth). This rides one expanding window instead of storing the table, so it&#x27;s about <code>n²</code> time but only constant space.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Brute force:</strong> <code>O(n^3)</code> time — <code>O(n^2)</code> substrings times an <code>O(n)</code> check.</li><li><strong>DP table:</strong> <code>O(n^2)</code> time, <code>O(n^2)</code> space.</li><li><strong>Expand around center:</strong> <code>O(n^2)</code> time, <code>O(1)</code> space — the natural endpoint.</li></ul>
+<ul><li><strong>Brute force:</strong> about <code>n³</code> time — about <code>n²</code> substrings times an about-<code>n</code> check.</li><li><strong>DP table:</strong> about <code>n²</code> time, about <code>n²</code> space.</li><li><strong>Expand around center:</strong> about <code>n²</code> time, constant space — the natural endpoint.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Forgetting the even-length centers. You need both <code>expand(i, i)</code> and <code>expand(i, i+1)</code>; missing the second undercounts palindromes like <code>&quot;aa&quot;</code>.</li><li>In the table version, filling in the wrong order so <code>dp[i+1][j-1]</code> isn&#x27;t computed yet. Fill by length (or <code>i</code> descending).</li><li>Counting each substring once by *value* instead of by *position* — the problem wants every start/end pair, so <code>&quot;aaa&quot;</code> is 6, not 3.</li></ul>
+<ul><li>Forgetting the even-length centers. You need both <code>expand(i, i)</code> and <code>expand(i, i+1)</code>; missing the second undercounts palindromes like <code>&quot;aa&quot;</code>.</li><li>In the table version, filling in the wrong order so <code>dp[i+1][j-1]</code> isn&#x27;t ready yet. Fill by length (or <code>i</code> descending).</li><li>Counting each substring once by *value* instead of by *position* — the problem wants every start/end pair, so <code>&quot;aaa&quot;</code> is 6, not 3.</li></ul>
 <h2>Transfer</h2>
 <p>The &quot;ends match + inner is already solved&quot; recurrence and the expand-around-center trick carry straight over to <a href="../0005-longest-palindromic-substring/">Longest Palindromic Substring / 5</a> — same centers, but you track the widest instead of counting. The interval-DP shape (<code>dp[i][j]</code> built from a smaller interval inside it) also underlies problems like Longest Palindromic Subsequence and matrix-chain-style DPs.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0647-palindromic-substrings/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;647. Palindromic Substrings — https://leetcode.com/problems/palindromic-substrings/
 

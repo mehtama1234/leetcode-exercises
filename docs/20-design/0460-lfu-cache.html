@@ -16,32 +16,51 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">20. Design</a> / <span>460</span></nav><article class="notes"><h1>460. LFU Cache</h1>
 <p><strong>Pattern:</strong> Hash maps + per-frequency ordered buckets (O(1) LFU with LRU tie-break) <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/lfu-cache/</p>
 <h2>The problem in plain words</h2>
-<p>A fixed-size key/value cache. <code>get</code> and <code>put</code> work as usual, but when the cache is full and a new key arrives, evict the key that has been used the *fewest* times — the &quot;least frequently used.&quot; If several keys tie for fewest uses, evict the one among them that was used longest ago (least recently used). Both operations must run in O(1).</p>
+<p>A fixed-size key/value cache. <code>get</code> and <code>put</code> work as usual, but when the cache is full and a new key arrives, evict the key that has been used the *fewest* times — the &quot;least frequently used.&quot; If several keys tie for fewest uses, evict the one among them that was touched longest ago (least recently used). Both operations must take a fixed amount of time.</p>
+<pre class="diagram">   capacity = 2
+
+   put(1,A)  put(2,B)   -&gt;   counts: 1-&gt;1, 2-&gt;1
+   get(1)               -&gt;   counts: 1-&gt;2, 2-&gt;1     (using 1 bumps its count)
+   put(3,C)             -&gt;   full; evict the fewest-used = key 2
+                            ^ key 1 was used twice, so it survives</pre>
 <h2>Why this matters</h2>
-<p>LFU asks a subtler question than LRU: not &quot;what&#x27;s cold *right now*,&quot; but &quot;what&#x27;s been cold *the whole time*.&quot; Tracking usage frequency and evicting the rarest resists a one-off burst that would wrongly promote an item under pure recency.</p>
-<p>This is a real caching policy. Database buffer pools and storage tiers use LFU (and LFU/LRU hybrids like ARC and W-TinyLFU, which power Caffeine, the JVM cache behind many services) to keep genuinely hot pages. CDNs weigh how *often* an object is requested, not just how recently. Memory allocators and page- replacement research lean on frequency counts.</p>
-<p>The hard part — and what the good solution buys — is doing all this in <strong>O(1)</strong>. The obvious frequency cache scans for the minimum count on every eviction, which is O(n). Getting eviction, frequency bumps, and tie-breaking all to constant time is what makes LFU usable in a hot path with a strict latency budget.</p>
+<p>LFU asks a subtler question than LRU: not &quot;what&#x27;s cold *right now*,&quot; but &quot;what&#x27;s been cold *the whole time*.&quot; Tracking how often each item is used, and evicting the rarest, resists a one-off burst that would wrongly promote an item under pure recency.</p>
+<p>This is a real caching policy. Database buffer pools and storage tiers use LFU, and LFU/LRU hybrids like ARC and W-TinyLFU (which powers Caffeine, the JVM cache behind many services) to keep genuinely hot pages. CDNs weigh how *often* an object is requested, not just how recently. Memory allocators and page-replacement research lean on frequency counts.</p>
+<p>The hard part — and what the good solution buys — is doing all this in <strong>fixed time</strong>. The obvious frequency cache scans for the smallest count on every eviction, a full pass. Getting eviction, count bumps, and tie-breaking all down to a fixed cost is what makes LFU usable in a hot path with a strict latency budget.</p>
 <h2>Start from the obvious</h2>
-<p>Keep a <code>key -&gt; value</code> map and a <code>key -&gt; count</code> map. On eviction, scan the counts for the smallest, breaking ties somehow, and drop that key.</p>
-<pre><code>def evict(self):
-    victim = min(self.counts, key=self.counts.get)   # O(n) scan
-    del self.values[victim]; del self.counts[victim]</code></pre>
-<p><code>get</code>/<code>put</code> are O(1), but every eviction scans all keys for the minimum count — O(n) — and the tie-break (which of the min-count keys is least recent?) needs even more bookkeeping. Correct, but misses the required complexity.</p>
+<p>Keep a <code>key -&gt; value</code> map and a <code>key -&gt; count</code> map. On eviction, scan the counts for the smallest, break ties somehow, and drop that key.</p>
+<pre class="diagram">   counts = { 1:5, 2:1, 3:9, 4:1 }
+              scan all of them to find the min (1)  -&gt; a full pass
+              then scan again among the 1s to pick the oldest -&gt; another pass</pre>
+<p><code>get</code>/<code>put</code> are fixed-cost, but every eviction scans all keys for the minimum count, and the tie-break (which of the min-count keys is least recent?) needs even more bookkeeping. Correct, but it misses the required speed.</p>
 <h2>Find the waste</h2>
-<p>Two things are being recomputed. First, we rescan for the minimum count each eviction, though it changes in small, predictable steps. Second, we have no structure that remembers *recency within a count*, so ties force another scan.</p>
-<p>Both point to the same fix: <strong>group keys by their count</strong>, and within each group keep them in recency order.</p>
+<p>Two things get recomputed. First, the scan for the minimum count on each eviction, even though that minimum changes in small, predictable steps. Second, nothing remembers *recency within a count*, so ties force another scan.</p>
+<p>Both point to the same fix: <strong>group keys by their count</strong>, and inside each group keep them in recency order.</p>
 <h2>The insight</h2>
 <p>Maintain three maps plus one integer:</p>
-<ul><li><code>key_val</code>: <code>key -&gt; value</code>.</li><li><code>key_freq</code>: <code>key -&gt; use count</code>.</li><li><code>freq_keys</code>: <code>freq -&gt; ordered collection of keys at that frequency</code>, oldest at the front, newest at the back.</li><li><code>min_freq</code>: the smallest frequency any live key currently has.</li></ul>
-<p>Use an <code>OrderedDict</code> for each bucket: it gives O(1) append-to-end (newest) and O(1) pop-from-front (oldest) — a ready-made LRU list.</p>
-<ul><li><strong>Touch a key</strong> (<code>get</code>, or <code>put</code> on an existing key): remove it from its current freq bucket, increment its freq, append it to the next freq&#x27;s bucket. If that emptied the <code>min_freq</code> bucket, <code>min_freq</code> rises by exactly one (the bucket the key just moved into).</li><li><strong>Insert a new key</strong>: it starts at frequency 1, so <code>min_freq</code> resets to 1.</li><li><strong>Evict</strong>: pop the *front* (oldest) key of the <code>min_freq</code> bucket. That key is the least frequent, and among those the least recent — both rules satisfied, no scan.</li></ul>
-<p>Because <code>min_freq</code> only ever moves in single steps we can track directly, and every bucket operation is O(1), the whole cache is O(1).</p>
+<ul><li><code>key_val</code>: <code>key -&gt; value</code>.</li><li><code>key_freq</code>: <code>key -&gt; use count</code>.</li><li><code>freq_keys</code>: <code>count -&gt; ordered list of keys at that count</code>, oldest at the front, newest at the back.</li><li><code>min_freq</code>: the smallest count any live key currently has.</li></ul>
+<p>Use an ordered dict for each bucket: it gives a fast append-to-end (newest) and a fast pop-from-front (oldest) — a ready-made recency list.</p>
+<pre class="diagram">   min_freq = 1
+
+   count 1:  [ 2, 4 ]        (oldest .. newest)
+   count 2:  [ 1 ]
+
+   touch key 4  (get or update):
+     lift 4 out of bucket 1, bump its count to 2, append to bucket 2:
+       count 1:  [ 2 ]
+       count 2:  [ 1, 4 ]
+     bucket 1 still has key 2, so min_freq stays 1
+
+   now evict:  pop the FRONT of the min_freq (=1) bucket -&gt; key 2
+       count 1:  [ ]  -&gt; delete empty bucket, min_freq rises to 2</pre>
+<ul><li><strong>Touch a key</strong> (<code>get</code>, or <code>put</code> on an existing key): pull it from its count bucket, add one to its count, append it to the next count&#x27;s bucket. If that emptied the <code>min_freq</code> bucket, <code>min_freq</code> rises by exactly one — the bucket the key just moved into.</li><li><strong>Insert a new key</strong>: it starts at count 1, so <code>min_freq</code> resets to 1.</li><li><strong>Evict</strong>: pop the *front* (oldest) key of the <code>min_freq</code> bucket. That key is the least frequent, and among those the least recent — both rules met, no scan.</li></ul>
+<p>Because <code>min_freq</code> only ever moves in single steps you can track directly, and every bucket operation is a fixed cost, the whole cache stays fixed-cost.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(1)</code> for both <code>get</code> and <code>put</code>. Finding the eviction victim is O(1) (front of the <code>min_freq</code> bucket); frequency bumps are O(1) OrderedDict moves.</li><li><strong>Space:</strong> <code>O(capacity)</code> — three entries per key across the maps, plus the bucket structure.</li></ul>
+<ul><li><strong>Time: fixed cost</strong> for both <code>get</code> and <code>put</code>. Finding the eviction victim is one step (front of the <code>min_freq</code> bucket); count bumps are fixed-cost ordered-dict moves.</li><li><strong>Space: about <code>capacity</code>.</strong> Three entries per key across the maps, plus the bucket structure.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Getting <code>min_freq</code> maintenance wrong. It only needs updating in two places: set to 1 on any new insertion, and bumped by one when a touch empties the current min bucket. Rescanning for it defeats the purpose.</li><li>Forgetting that <strong>updating an existing key&#x27;s value is a use</strong> — it must bump frequency, just like a <code>get</code>.</li><li>Not deleting a bucket when it empties, leaving stale empty structures that confuse <code>min_freq</code> logic.</li><li>The <code>capacity == 0</code> case — the cache should store nothing and every <code>get</code> returns -1.</li><li>Wrong tie-break: evicting the newest instead of the oldest within the min bucket. Pop the front, not the back.</li></ul>
+<ul><li>Getting <code>min_freq</code> maintenance wrong. It only changes in two places: set to 1 on any new insertion, and bumped by one when a touch empties the current min bucket. Rescanning for it defeats the purpose.</li><li>Forgetting that <strong>updating an existing key&#x27;s value is a use</strong> — it must bump the count, just like a <code>get</code>.</li><li>Not deleting a bucket when it empties, leaving stale empty structures that confuse the <code>min_freq</code> logic.</li><li>The <code>capacity == 0</code> case — the cache should store nothing and every <code>get</code> returns -1.</li><li>Wrong tie-break: evicting the newest instead of the oldest within the min bucket. Pop the front, not the back.</li></ul>
 <h2>Transfer</h2>
-<p>LFU is <a href="../0146-lru-cache/">LRU Cache / 146</a> with an extra frequency dimension — the same &quot;hash map for lookup + linked structure for ordered eviction&quot; skeleton, layered per count. The bucket-by-a-key idea also shows up in <a href="https://leetcode.com/problems/all-oone-data-structure/">All O`one Data Structure / 432</a>, where counts are bucketed to get O(1) min/max. When you need &quot;constant-time access to the extreme of a changing multiset,&quot; bucket by the key you rank on.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0460-lfu-cache/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;460. LFU Cache — https://leetcode.com/problems/lfu-cache/
+<p>LFU is <a href="../0146-lru-cache/">LRU Cache / 146</a> with an extra frequency dimension — the same &quot;hash map for lookup + linked structure for ordered eviction&quot; skeleton, layered per count. The bucket-by-a-key idea also shows up in <a href="https://leetcode.com/problems/all-oone-data-structure/">All O`one Data Structure / 432</a>, where counts are bucketed to get fast min/max. When you need &quot;fixed-cost access to the extreme of a changing multiset,&quot; bucket by the key you rank on.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0460-lfu-cache/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;460. LFU Cache — https://leetcode.com/problems/lfu-cache/
 
 Fixed-size key-&gt;value cache. When full, evict the *least frequently used* key.
 Break ties by evicting the least recently used among the least frequent. Both

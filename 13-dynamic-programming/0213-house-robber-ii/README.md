@@ -8,91 +8,116 @@
 
 Exactly [House Robber / 198](../0198-house-robber/) — houses in a row, each with
 money, no robbing two neighbors — with one twist: the houses form a **circle**.
-That means the first house and the last house are neighbors too, so you can't rob
-both of them. Return the most money you can safely take.
+Now the first house and the last house are neighbors too, so you can't rob both of
+them. Return the most money you can safely take.
+
+```diagram
+             [0]---[1]
+            /         \
+          [4]         [2]
+            \         /
+             [3]-----.
+
+   0 and 4 are now neighbors (the ends touch).
+   robbing both is illegal, even though in a straight row it was fine.
+```
 
 ## Why this matters
 
-The real lesson here is a general move: **when a constraint couples the two ends of a sequence, don't tangle it into the recurrence — fix one boundary decision and solve the rest as an ordinary line, once per choice, then combine.** The fundamental operation is *case-splitting on a wrap-around* to reduce a circular problem to linear ones you already know how to solve.
+The real lesson is a general move: **when a constraint ties the two ends of a
+sequence together, don't try to weave it into the recurrence — fix one boundary
+decision, solve the rest as an ordinary line, once per choice, then combine.** You
+split on the wrap-around to turn a circular problem into linear ones you already
+know how to solve.
 
-Where "break the wrap-around by fixing an endpoint" shows up:
+That "break the wrap-around by fixing an endpoint" move shows up in round-robin
+shift schedules and ring buffers where the first and last slots touch, in placing
+items around a ring under a no-adjacent rule, and in circular-array DPs like the
+maximum circular subarray sum.
 
-- **Circular scheduling** — round-robin shifts, ring buffers, or a rotating on-call rota where the first and last slots are adjacent.
-- **Layout on a loop** — placing items around a ring (fixtures on a circular track, seating at a round table) under a no-adjacent rule.
-- **Any circular-array DP** — max circular subarray sums and similar problems all use this fix-a-boundary trick.
-
-The good solution buys **simplicity and correctness at the same cost**: two linear `O(n)` sweeps and `O(1)` state, instead of a fiddly, bug-prone recurrence that tries to remember whether the first house was robbed.
+The clean version buys correctness at no extra cost: two linear passes and
+constant state, instead of a fiddly recurrence that has to remember whether the
+first house was robbed so it can forbid the last.
 
 ## Start from the obvious
 
 Your instinct is to reuse the linear solution. But the wrap-around breaks it: the
-linear DP is perfectly happy to rob both house `0` and house `n-1`, and in a
-circle that's illegal. You could try to bolt the "ends touch" rule directly into
-the recurrence, tracking whether you robbed the first house so you can forbid the
-last — doable, but fiddly and easy to get wrong.
+straight-line DP is perfectly happy to rob both house `0` and house `n-1`, and in a
+circle that's illegal. You could bolt the "ends touch" rule directly into the
+recurrence — tracking whether you robbed the first house so you can forbid the
+last — but that's fiddly and easy to get wrong.
 
-## Find the waste — and the cleaner framing
+## The insight
 
-Step back and look at what the circle actually adds: **a single extra
-constraint**, "not both end houses". Instead of encoding that inside the DP, use
-it to *split* the problem.
+Step back and look at what the circle actually adds: **one extra constraint**,
+"not both end houses." Instead of encoding that inside the DP, use it to *split*
+the problem in two.
 
-Any valid circular plan falls into one of two buckets, because it can never
-contain both ends:
+Any legal circular plan must fall into one of these buckets, since it can never
+hold both ends:
 
-- **It doesn't rob the last house.** Then houses `0 .. n-2` behave like a plain
-  straight row — the wrap-around neighbor of house 0 (the last house) is out of
-  play.
-- **It doesn't rob the first house.** Then houses `1 .. n-1` behave like a plain
+- **It doesn't rob the last house** → houses `0 .. n-2` behave like a plain
+  straight row.
+- **It doesn't rob the first house** → houses `1 .. n-1` behave like a plain
   straight row.
 
+```diagram
+   nums = [ 2 ][ 3 ][ 2 ]     (a circle; ends 0 and 2 touch)
+
+   bucket A: drop the LAST house -> run robber on [ 2 ][ 3 ]      = 3
+             ^^^^^^^^^^^^^^^^^^^^                  0    1
+
+   bucket B: drop the FIRST house -> run robber on      [ 3 ][ 2 ] = 3
+             ^^^^^^^^^^^^^^^^^^^^^                        1    2
+
+   answer = max(A, B) = max(3, 3) = 3     (can't take both 2s)
+```
+
 Every legal circular plan lives in at least one bucket (a plan that skips both
-ends is counted in both, which is fine — we're taking a max, not a sum). So:
+ends lands in both — fine, we take a max, not a sum). So:
 
 ```
 answer = max( rob_line(nums[0 .. n-2]),
               rob_line(nums[1 .. n-1]) )
 ```
 
-We reuse the already-solved linear robber twice and pick the better run. The
+We reuse the already-solved linear robber twice and keep the better run. The
 circular difficulty dissolves into two ordinary problems.
-
-## The insight
-
-**When a constraint couples the two ends of a sequence, fix one end's decision and
-solve the rest as a normal line — once per choice, then combine.** Here the
-decision is "which end do I leave untouched", giving two linear passes.
 
 `rob_line` is the same two-rolling-variable House Robber:
 
-```
-take, skip = 0, 0
-for money in row:
-    take, skip = skip + money, max(take, skip)
-return max(take, skip)
+```diagram
+   run rob_line on [ 1 ][ 3 ][ 1 ][ 3 ][ 100 ]  (bucket B of a bigger example)
+
+   money:     1      3      1      3     100
+   take:  0 ->1     0+3    3+1    4+3   6+100
+   skip:  0-> 0  -> 1  ->  3  ->  4  ->  103
+              \____ take = prev skip + money;  skip = max(prev take, prev skip)
+
+   answer for this line = max(take, skip) = 103   (rob the 3 and the 100)
 ```
 
 ## Complexity
 
-- **Time:** `O(n)` — two linear sweeps, each `O(n)`.
-- **Space:** `O(1)` for the DP itself. (Slicing `nums[:-1]` / `nums[1:]` copies,
-  which is `O(n)` memory; iterate over index ranges instead if you want strict
-  `O(1)`.)
+- **Time:** about `n` steps — two linear sweeps, each about `n`.
+- **Space:** constant for the DP itself. (Slicing `nums[:-1]` / `nums[1:]` copies,
+  which costs `O(n)` memory; iterate over index ranges instead if you want strictly
+  constant memory.)
 
 ## Pitfalls
 
-- **The `n == 1` case.** With one house there is no "other end", and both slices
-  `nums[:-1]` and `nums[1:]` are empty, giving `0`. Handle single-house directly and
-  return `nums[0]`.
-- Trying to drop *just the first* or *just the last* house isn't enough on its own —
-  you need **both** runs and the max; each alone misses plans that the other allows.
-- Don't double-count: it's tempting to think the two buckets must be disjoint. They
-  aren't (a plan robbing neither end is in both), but `max` handles that correctly.
+- **The `n == 1` case.** With one house there is no "other end," and both slices
+  `nums[:-1]` and `nums[1:]` come out empty, giving `0`. Handle a single house
+  directly and return `nums[0]`.
+- Dropping *just* the first or *just* the last house isn't enough on its own — you
+  need **both** runs and the max; each alone misses plans the other allows.
+- Don't assume the two buckets are disjoint. They aren't (a plan robbing neither
+  end sits in both), but `max` handles the overlap correctly.
 
 ## Transfer
 
 "Break a circular / wrap-around constraint by fixing one boundary choice and
-solving linear cases" is a reusable move. You'll see it whenever a problem is a
+solving the linear cases" is a reusable move — reach for it whenever a problem is a
 known linear DP made circular. The underlying line solver is
 [House Robber / 198](../0198-house-robber/); the same reduce-to-cases instinct
 shows up in circular-array problems like

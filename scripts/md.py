@@ -58,10 +58,14 @@ def render(md: str) -> str:
                 code.append(lines[i])
                 i += 1
             i += 1  # skip closing fence
-            cls = f' class="lang-{html.escape(lang)}"' if lang else ""
-            out.append(
-                f"<pre><code{cls}>" + html.escape("\n".join(code)) + "</code></pre>"
-            )
+            text = html.escape("\n".join(code))
+            if lang in ("diagram", "viz", "trace"):
+                # A "whiteboard" panel for ASCII drawings/traces, styled apart
+                # from source code so the visual explanation stands out.
+                out.append(f'<pre class="diagram">{text}</pre>')
+            else:
+                cls = f' class="lang-{html.escape(lang)}"' if lang else ""
+                out.append(f"<pre><code{cls}>{text}</code></pre>")
             continue
 
         stripped = line.strip()

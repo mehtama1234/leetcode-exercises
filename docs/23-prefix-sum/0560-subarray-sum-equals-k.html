@@ -17,40 +17,56 @@
 <p><strong>Pattern:</strong> Prefix sum + hash map (count subarrays with a property) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/subarray-sum-equals-k/</p>
 <h2>The problem in plain words</h2>
 <p>Count how many contiguous stretches of the array add up to exactly <code>k</code>. The numbers can be negative and zero, so a stretch can hit <code>k</code>, overshoot, then come back — you have to consider all of them.</p>
+<pre class="diagram">   nums = [ 1, 1, 1 ]   k = 2
+
+   stretches that sum to 2:
+       [1,1] at indices 0..1
+       [1,1] at indices 1..2
+   answer = 2</pre>
 <h2>Why this matters</h2>
-<p>This is the moment prefix sums stop being about *range queries* and become a way to answer *&quot;how many subarrays have this property?&quot;* in a single pass. The core realization: a subarray&#x27;s sum is the difference of two prefix sums, so &quot;does some subarray ending here sum to <code>k</code>?&quot; turns into &quot;have I seen a prefix sum equal to <code>current − k</code> before?&quot; — a hash-map membership question, exactly like Two Sum.</p>
-<p>Concretely, this shows up in ledgers and streams. &quot;Find a run of daily cash-flows that nets to zero&quot; (or to a target) is this problem. Detecting a window of sensor deltas that sum to a threshold, or spans of a request log whose signed counts balance out, are the same shape. Because values can be negative, the greedy sliding window doesn&#x27;t apply — which is precisely why the prefix-sum map is the right tool.</p>
-<p>What the good solution buys is one pass over data you often can&#x27;t rewind, at <code>O(n)</code> instead of <code>O(n²)</code>. On a large log or an unbounded stream, that&#x27;s the difference between keeping up in real time and falling behind.</p>
+<p>This is the moment prefix sums stop being about *range queries* and become a way to answer *&quot;how many subarrays have this property?&quot;* in a single pass. The core realization: a subarray&#x27;s sum is the difference of two running totals, so &quot;does some subarray ending here sum to <code>k</code>?&quot; turns into &quot;have I seen a running total equal to <code>current − k</code> before?&quot; — a hash-map lookup, exactly like Two Sum.</p>
+<p>Concretely, this shows up in ledgers and streams. &quot;Find a run of daily cash-flows that nets to a target&quot; is this problem. Detecting a window of sensor deltas that sum to a threshold, or spans of a request log whose signed counts balance out, are the same shape. Because values can be negative, the greedy sliding window doesn&#x27;t apply — which is exactly why the running-total map is the right tool.</p>
+<p>What the good solution buys is one pass over data you often can&#x27;t rewind, at about <code>n</code> steps instead of <code>n²</code>. On a large log or an unbounded stream, that is the difference between keeping up in real time and falling behind.</p>
 <h2>Start from the obvious</h2>
 <p>Try every subarray and add it up.</p>
-<pre><code>count = 0
-for start in range(n):
-    running = 0
-    for end in range(start, n):
-        running += nums[end]
-        if running == k:
-            count += 1</code></pre>
-<p><code>O(n²)</code>. Correct, and the right first thought. Now look at what it repeats.</p>
+<pre class="diagram">   count = 0
+   for start in 0..n-1:
+       running = 0
+       for end in start..n-1:
+           running += nums[end]
+           if running == k:
+               count += 1</pre>
+<p>About <code>n²</code>. Correct, and the right first thought. Now look at what it repeats.</p>
 <h2>Find the waste</h2>
-<p>Every <code>start</code> re-walks the tail from scratch, recomputing sums that overlap heavily with the previous <code>start</code>. The sum of <code>nums[i..j]</code> is really just <code>prefix[j+1] - prefix[i]</code>, where <code>prefix[m]</code> is the sum of the first <code>m</code> elements. So a subarray <code>(i..j)</code> sums to <code>k</code> exactly when:</p>
-<pre><code>prefix[j+1] - prefix[i] == k
-    &lt;=&gt;   prefix[i] == prefix[j+1] - k</code></pre>
-<p>We don&#x27;t need to *search* for the matching start — like Two Sum, the value we need is fully determined. We only need to know <strong>how many</strong> earlier prefixes had that value.</p>
+<p>Every <code>start</code> re-walks the tail from scratch, recomputing sums that overlap heavily with the previous <code>start</code>. The sum of <code>nums[i..j]</code> is really just <code>prefix[j+1] - prefix[i]</code>, where <code>prefix[m]</code> is the sum of the first <code>m</code> elements. So a subarray <code>(i..j)</code> sums to <code>k</code> exactly when their two running totals differ by <code>k</code>.</p>
+<pre class="diagram">   prefix[j+1] - prefix[i] == k
+       &lt;=&gt;   prefix[i] == prefix[j+1] - k
+
+   like Two Sum: the running total we need is FIXED, not searched.
+   we only need to know HOW MANY earlier running totals had that value.</pre>
 <h2>The insight</h2>
-<p>Sweep once, keeping the running prefix sum. At each position, the number of subarrays ending here that sum to <code>k</code> is the number of times we&#x27;ve already seen the prefix <code>running − k</code>. Keep a dict <code>prefix_sum -&gt; count</code>:</p>
-<pre><code>count, running = 0, 0
-seen = {0: 1}                      # empty prefix seen once, before we start
-for x in nums:
-    running += x
-    count += seen.get(running - k, 0)   # each earlier match is one subarray
-    seen[running] = seen.get(running, 0) + 1</code></pre>
-<p>The seed <code>{0: 1}</code> is what lets subarrays starting at index 0 be counted: a prefix of <code>k</code> then matches <code>running − k == 0</code>, which we&#x27;ve &quot;seen&quot; once (the empty prefix). We count *before* inserting the current prefix so a subarray can&#x27;t be empty.</p>
+<p>Sweep once, keeping the running total. At each position, the number of subarrays ending here that sum to <code>k</code> is the number of times we have already seen the running total <code>running − k</code>. Keep a dict <code>running total -&gt; how many times seen</code>.</p>
+<pre class="diagram">   nums = [ 1, -1, 0 ]   k = 0     seen = {0: 1}   (empty prefix, before we start)
+
+   x    running   need running-k = running-0   seen.get -&gt; add   update seen
+   1    1         need 1   seen has 1? no  -&gt; +0    seen={0:1, 1:1}
+  -1    0         need 0   seen has 0? YES x1 -&gt; +1  seen={0:2, 1:1}
+   0    0         need 0   seen has 0? YES x2 -&gt; +2  seen={0:3, 1:1}
+
+   count = 0 + 1 + 2 = 3
+   the three runs: [1,-1]  [0]  [1,-1,0]</pre>
+<p>The seed <code>{0: 1}</code> is what lets subarrays starting at index 0 be counted: a prefix of <code>k</code> then matches <code>running − k == 0</code>, which we have &quot;seen&quot; once (the empty prefix). We count *before* inserting the current running total so a subarray can&#x27;t be empty.</p>
+<pre class="diagram">   why count-before-insert matters (k=0 case above):
+
+   at x=-1 running becomes 0.  if we inserted seen[0] FIRST (making it 2),
+   then looked up need=0, we&#x27;d count the just-added entry -&gt; an EMPTY subarray.
+   look up first, then insert:  each match is a real, non-empty run.</pre>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n)</code> — one pass; each map lookup/update is <code>O(1)</code> average.</li><li><strong>Space:</strong> <code>O(n)</code> — the map may hold up to <code>n</code> distinct prefix sums.</li></ul>
+<ul><li><strong>Time: about n</strong> — one pass; each map lookup/update is constant on average.</li><li><strong>Extra memory: about n</strong> — the map may hold up to <code>n</code> distinct running totals.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Don&#x27;t use a sliding window.</strong> Negatives break the monotonic assumption a window relies on; you must consider all start points, which the prefix map does implicitly.</li><li>Forgetting the <code>{0: 1}</code> seed — you&#x27;ll miss every subarray that starts at index 0.</li><li>Counting *after* inserting the current prefix, which can let <code>running - k == running</code> match the just-inserted entry and count an empty subarray.</li><li>We want the <strong>count</strong>, not existence — accumulate <code>seen[running - k]</code>, not a boolean.</li></ul>
+<ul><li><strong>Don&#x27;t use a sliding window.</strong> Negatives break the up-only assumption a window relies on; you must consider all start points, which the running-total map does for you.</li><li>Forgetting the <code>{0: 1}</code> seed — you&#x27;ll miss every subarray that starts at index 0.</li><li>Counting *after* inserting the current running total, which can let <code>running - k == running</code> match the just-inserted entry and count an empty subarray.</li><li>We want the <strong>count</strong>, not just existence — add up <code>seen[running - k]</code>, not a yes/no.</li></ul>
 <h2>Transfer</h2>
-<p>This &quot;prefix sum + hash map to count/find subarrays with a property&quot; template is the heart of the pattern. Its close siblings: <a href="../0525-contiguous-array/">Contiguous Array / 525</a> (map 0→−1 to hit &quot;equal counts&quot;), subarray-divisible-by-k (bucket prefixes by remainder), and it&#x27;s literally Two Sum on prefix sums — same membership check, different key.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/23-prefix-sum/0560-subarray-sum-equals-k/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;560. Subarray Sum Equals K — https://leetcode.com/problems/subarray-sum-equals-k/
+<p>This &quot;prefix sum + hash map to count/find subarrays with a property&quot; template is the heart of the pattern. Its close siblings: <a href="../0525-contiguous-array/">Contiguous Array / 525</a> (map <code>0</code> to <code>−1</code> to hit &quot;equal counts&quot;), subarray-sum-divisible-by-k (bucket running totals by remainder), and it is literally Two Sum on running totals — same lookup, different key.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/23-prefix-sum/0560-subarray-sum-equals-k/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;560. Subarray Sum Equals K — https://leetcode.com/problems/subarray-sum-equals-k/
 
 Count how many contiguous subarrays of `nums` add up to exactly `k`. Numbers can
 be negative, so you can&#x27;t use a sliding window — but prefix sums + a hash map do

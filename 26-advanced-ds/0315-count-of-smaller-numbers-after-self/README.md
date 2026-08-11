@@ -1,115 +1,125 @@
 # 315. Count of Smaller Numbers After Self
 
-**Pattern:** Binary Indexed Tree over ranks (or count-during-merge-sort) — inversions
+**Pattern:** Fenwick tree as a running frequency counter over value-ranks
 **Difficulty:** Hard
 **Link:** https://leetcode.com/problems/count-of-smaller-numbers-after-self/
 
 ## The problem in plain words
 
-For every element in the array, look only at the elements to its **right** and
-count how many of them are strictly smaller than it. Return one such count per
-position. Example: in `[5, 2, 6, 1]` the answer is `[2, 1, 1, 0]` — the `5` has two
-smaller numbers after it (`2` and `1`), the `2` has one (`1`), the `6` has one
-(`1`), and the last element has none.
+For each element, count how many elements to its *right* are strictly smaller than
+it. Return that list of counts, one per position.
+
+```diagram
+   nums  = [ 5, 2, 6, 1 ]
+
+   5 -> to its right: 2,6,1 ; smaller than 5: {2,1}    -> 2
+   2 -> to its right: 6,1   ; smaller than 2: {1}      -> 1
+   6 -> to its right: 1     ; smaller than 6: {1}      -> 1
+   1 -> to its right: (none)                           -> 0
+
+   answer = [2, 1, 1, 0]
+```
 
 ## Why this matters
 
-This is the **inversion count**, reported per element — "how out of order is each
-item relative to what comes after it?" Inversions are the standard formal measure
-of *disorder* in a sequence, and counting them efficiently is a recurring need.
+The plain definition is "for each element, scan its whole right side." That
+re-scans the same suffix again and again. The real question underneath is: *as I
+move leftward through the array, how many of the values I've already passed are
+smaller than the one I'm on now?* If you could answer "how many seen-so-far values
+are below `v`" in one cheap step, the whole thing collapses to one pass.
 
-Concrete places it shows up: **rank-correlation statistics** — Kendall's tau, used
-to measure how well a ranking model agrees with ground truth, is built directly on
-inversion counts. **"How far from sorted" diagnostics** — near-sorted data lets you
-pick a cheaper algorithm; the inversion count quantifies exactly that. **Sorting-
-network and comparison-cost analysis** counts the swaps a sort must make.
-**Sequence-similarity / edit-distance-flavored tasks** measure how much two
-orderings disagree.
-
-The engineering lesson is sharper than the application list, though. The brute
-force is `O(n²)` and dies on large inputs. Two different `O(n log n)` structures
-fix it — a **Fenwick tree used as a running counter**, and **merge sort that counts
-while it merges**. What the good solution buys is the classic `n²`→`n log n`
-collapse: at `n = 100,000`, that's ~10 billion operations down to ~1.7 million.
+Counting how many earlier items fall below a threshold is the shape of many
+problems: how many trades cleared under a price, how many events landed before a
+cutoff, how many inversions a list has (a measure of how unsorted it is). A Fenwick
+tree used as a live tally answers "how many values so far are <= v" in about
+`log n`, which is what makes the one-pass solution possible.
 
 ## Start from the obvious
 
-The definition is a nested loop:
+For each element, walk everything to its right and tally the strictly smaller ones.
 
-```
-for i in range(n):
-    for j in range(i+1, n):
-        if nums[j] < nums[i]:
-            result[i] += 1
-```
+```diagram
+   [5, 2, 6, 1]
 
-Honest and obviously correct. But for each `i` it re-scans the entire suffix, and
-those suffixes overlap enormously — `O(n²)` total. That repeated re-scanning of the
-same tail is the waste.
-
-## Find the waste
-
-Reframe the question. Sweep the array from **right to left**. By the time you reach
-position `i`, the set of elements you've *already visited* is exactly the set of
-elements to the right of `i`. So the per-element question collapses to:
-
-> Of the values I've seen so far, how many are **strictly smaller** than `nums[i]`?
-
-That's not a search — it's a **count over a growing multiset**: insert values as you
-go, and each step ask "how many currently-inserted values are `< x`?" If you can
-insert and count-less-than in `O(log n)`, the whole thing is `O(n log n)`.
-
-## The insight — a BIT as a running "count of smaller" oracle
-
-A **Binary Indexed Tree (Fenwick)** is a frequency table that supports a *prefix
-sum* in `O(log n)`. Put value-frequencies in it: `add(rank)` records that a value
-appeared; `prefix(rank)` returns how many recorded values have rank `≤ that`.
-
-The values can be huge or negative, so first **coordinate-compress**: sort the
-distinct values and map each to a small rank `1..m`. Now:
-
-```
-for i from right to left:
-    r = rank[nums[i]]
-    result[i] = bit.prefix(r - 1)   # inserted values strictly smaller than nums[i]
-    bit.add(r)                       # record nums[i] as now "seen to the right"
+   i=0 (5): scan 2,6,1  -> 2 smaller
+   i=1 (2): scan 6,1    -> 1 smaller
+   i=2 (6): scan 1      -> 1 smaller
+   i=3 (1): scan (none) -> 0
+            ^ each i re-walks its entire suffix
 ```
 
-The BIT's speed comes from storing sums over power-of-two-sized blocks, indexed by
-binary: `prefix` peels off blocks via `i -= i & -i`, `add` climbs covering blocks
-via `i += i & -i`. Each touches one node per bit of the index — `O(log n)`. Query
-*before* insert so an element never counts itself.
+Correct and obvious — and about `n x n` steps, because every element re-scans the
+tail to its right. That repeated scanning is the waste.
 
-The **merge-sort** approach reaches the same bound differently: sort indices by
-value, and during each merge, when you pull a left-half element out, add the number
-of right-half elements already taken — those are elements originally to its right
-yet smaller. Both are in the solution file.
+## The insight
+
+Process the array from **right to left**, and keep a running tally of the values
+you've inserted so far in a Fenwick tree. When you reach `nums[i]`, everything
+already in the tree lies to its right — so "how many smaller values are to my
+right?" becomes "how many already-inserted values are strictly less than
+`nums[i]`?" That's a prefix-count query.
+
+Values can be huge or negative, so first squash them to small ranks: sort the
+distinct values and map each to its position (1, 2, 3, ...). Now the tree is
+indexed by rank, and each slot counts how many times a rank has been inserted.
+
+```diagram
+   nums = [5, 2, 6, 1]
+   sorted distinct = [1, 2, 5, 6]
+   ranks:  1->1   2->2   5->3   6->4
+
+   Fenwick counts inserted ranks; query prefix(rank-1) = how many smaller so far.
+   Walk RIGHT to LEFT:
+
+   i=3, val=1 (rank 1): prefix(0) = 0        result[3]=0 ; insert rank 1
+   i=2, val=6 (rank 4): prefix(3) = 1        result[2]=1 ; insert rank 4
+   i=1, val=2 (rank 2): prefix(1) = 1        result[1]=1 ; insert rank 2
+   i=0, val=5 (rank 3): prefix(2) = 2        result[0]=2 ; insert rank 3
+
+   answer = [2, 1, 1, 0]
+```
+
+The Fenwick tree makes both the insert and the prefix-count run in about `log n`
+by walking the lowest-set-bit chain. Each rank sits in a chain of power-of-two
+blocks; inserting climbs the blocks that cover it, counting peels blocks off to
+sum ranks `1..r`.
+
+```diagram
+   Fenwick over ranks 1..4, after inserting ranks {1, 4}:
+
+   tree buckets (each covers a block ending at its index):
+     node 1 (001): counts rank {1}          -> 1
+     node 2 (010): counts ranks {1,2}       -> 1
+     node 3 (011): counts rank {3}          -> 0
+     node 4 (100): counts ranks {1,2,3,4}   -> 2
+
+   prefix(2) = "how many inserted with rank <= 2"
+     i=2 (010): add tree[2]=1   strip low bit -> 0   -> total 1
+```
+
+The kept merge-sort version is the other classic answer: sort indices by value and,
+during each merge, count how many right-half elements slip in front of a left-half
+element — those are exactly the smaller-and-to-the-right ones.
 
 ## Complexity
 
-- **Time:** `O(n log n)`. BIT: `n` inserts + `n` queries, each `O(log n)`; compression
-  is one `O(n log n)` sort. Merge sort: the recurrence `T(n) = 2T(n/2) + O(n)`.
-- **Space:** `O(n)` — the BIT array and the rank map (or the merge buffers).
+- **Time: about n log n.** One pass right-to-left; each step does a `log n` insert
+  and a `log n` prefix-count in the Fenwick tree. Compression is a one-time sort.
+- **Extra memory: about n.** The rank map, the result array, and the tree.
 
 ## Pitfalls
 
-- **Insert-then-query order.** Query the count *before* inserting the current value,
-  or an element counts itself as smaller-than-itself (it isn't).
-- **Strict vs. non-strict.** "Strictly smaller" means `prefix(rank - 1)`, not
-  `prefix(rank)`. Off by one here silently miscounts every duplicate.
-- **Skipping coordinate compression.** Raw values may be up to ±10⁴ here but the
-  pattern generalizes to arbitrary ints; without compression the BIT would need a
-  slot per possible value. Compress to distinct ranks `1..m`.
-- **Merge sort must be stable and sort indices, not values.** You need each original
-  index to accumulate its own count; sorting the raw values loses that identity.
-- **`n = 0`.** Return `[]` cleanly — empty sorted set, empty BIT, no loop iterations.
+- Querying `prefix(rank)` instead of `prefix(rank - 1)` — you want *strictly*
+  smaller, so exclude the current value's own rank.
+- Forgetting to coordinate-compress: raw values can be enormous or negative, which
+  would blow up the tree size.
+- Walking left-to-right by mistake. The right-to-left order is what makes
+  "already inserted" mean "to my right."
 
 ## Transfer
 
-The reusable trick is a **BIT (or merge sort) as a "how many earlier/later items are
-less than this one" counter** — the general inversion-counting toolkit. Sweep in one
-direction, keep a running frequency structure, and turn a per-element `O(n)` scan
-into an `O(log n)` prefix query. Siblings: [Range Sum Query - Mutable /
-307](../0307-range-sum-query-mutable/) is the same BIT machinery for range sums;
-[Reverse Pairs / 493] and [Count of Range Sum / 327] are inversion-counting cousins
-solved by the very same merge-sort-with-a-counter or BIT-over-ranks technique.
+The reusable move is **use a Fenwick tree as a live frequency counter, so
+"how many values seen so far are below v" is a log-n prefix query.** It shares its
+machinery with [Range Sum Query - Mutable / 307](../0307-range-sum-query-mutable/),
+and the counting-during-merge alternative is the same inversion count behind
+[Reverse Pairs / 493](https://leetcode.com/problems/reverse-pairs/).

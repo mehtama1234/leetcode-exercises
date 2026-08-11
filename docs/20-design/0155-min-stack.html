@@ -16,31 +16,44 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">20. Design</a> / <span>155</span></nav><article class="notes"><h1>155. Min Stack</h1>
 <p><strong>Pattern:</strong> Augmented stack (carry a running answer alongside the data) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/min-stack/</p>
 <h2>The problem in plain words</h2>
-<p>Build a stack with the usual <code>push</code>, <code>pop</code>, and <code>top</code>, plus one extra: <code>getMin()</code> returns the smallest value currently in the stack. All four operations must run in O(1) time.</p>
+<p>Build a stack with the usual <code>push</code>, <code>pop</code>, and <code>top</code>, plus one extra: <code>getMin()</code> returns the smallest value currently in the stack. All four operations must take the same tiny amount of time, no matter how tall the stack gets.</p>
+<pre class="diagram">   push -2      push 0       push -3
+   [ -2 ]       [  0 ]       [ -3 ]  &lt;- top
+                [ -2 ]       [  0 ]
+                             [ -2 ]
+
+   getMin() must say -3 here, without looking through the pile.</pre>
 <h2>Why this matters</h2>
-<p>The real lesson here is a general trick: *when a query over a structure is expensive to compute from scratch, maintain the answer incrementally as the structure changes.* Instead of recomputing the minimum on demand, you carry it forward with every push and unwind it with every pop.</p>
-<p>This shows up whenever a system needs a &quot;cheap summary&quot; of a changing stack or window. Undo/redo stacks that must report a running aggregate, streaming metrics that track a rolling minimum/maximum, and expression evaluators that keep auxiliary state per frame all use it. The same &quot;keep a companion stack of partial answers&quot; idea powers monotonic-stack problems like the largest rectangle in a histogram and stock-span calculations.</p>
-<p>What the good solution buys is <strong>avoiding a costly recompute</strong>: <code>getMin</code> never scans. You pay a tiny, constant amount of bookkeeping on each push/pop so that the query is free, turning a potential O(n)-per-call hotspot into O(1).</p>
+<p>The lesson is a general trick: *when a query over a structure is slow to compute from scratch, keep the answer up to date as the structure changes instead.* Rather than recompute the minimum on demand, you carry it forward on every push and unwind it on every pop.</p>
+<p>This shows up whenever a system needs a cheap summary of a changing stack or window. Undo/redo stacks that report a running total, streaming metrics tracking a rolling minimum or maximum, and expression evaluators that hold extra state per frame all use it. The same &quot;keep a companion stack of partial answers&quot; idea drives monotonic-stack problems like the largest rectangle in a histogram.</p>
+<p>What the good solution buys is skipping a costly recompute: <code>getMin</code> never scans. You pay a tiny, fixed bit of bookkeeping on each push and pop so the query is free — turning what could be a slow-per-call hotspot into a single read.</p>
 <h2>Start from the obvious</h2>
-<p>Keep one normal stack. For <code>getMin</code>, walk it and return the smallest.</p>
-<pre><code>def getMin(self):
-    return min(self.stack)   # O(n) every call</code></pre>
-<p>Correct, but <code>getMin</code> is O(n). If a caller queries the minimum after every push (common in the problems this pattern feeds), the whole thing becomes O(n^2).</p>
+<p>Keep one normal stack. For <code>getMin</code>, walk the whole thing and return the smallest.</p>
+<pre class="diagram">   stack = [ -2, 0, -3, 5, -1 ]
+             ^    ^   ^   ^   ^
+             look at every element, track the smallest  -&gt; -3
+
+   n elements means n steps, every single time getMin is called.</pre>
+<p>Correct, but <code>getMin</code> costs a full pass. If a caller asks for the minimum after every push — common in the problems this pattern feeds — the whole thing balloons to about n-squared work.</p>
 <h2>Find the waste</h2>
-<p>Scanning re-derives something we already knew a moment ago. Before the latest push, we already knew the minimum of everything below. Pushing <code>x</code> can only change the minimum to <code>min(x, old_min)</code> — a single comparison. We are throwing that away and rebuilding it from scratch each query.</p>
-<p>So *remember* it. At every level, store the minimum of the stack up to that level.</p>
+<p>Scanning re-derives something you already knew a moment ago. Before the latest push, you already knew the minimum of everything below. Pushing <code>x</code> can only change the minimum to <code>min(x, old_min)</code> — one comparison. The scan throws that away and rebuilds it from nothing on every query.</p>
+<p>So *remember* it. At every level, store the minimum of the stack up to and including that level.</p>
 <h2>The insight</h2>
-<p>Keep a second, parallel stack <code>mins</code>. When you push <code>x</code>, push <code>min(x, mins[-1])</code> onto <code>mins</code> (or just <code>x</code> if empty). When you pop the value stack, pop <code>mins</code> too. Now <code>mins[-1]</code> is always the current minimum.</p>
-<pre><code>push(x):  stack.push(x); mins.push(min(x, mins.top() if mins else x))
-pop():    stack.pop();  mins.pop()
-getMin(): return mins.top()</code></pre>
-<p>Every level carries its own answer, so the current minimum is always sitting on top — no search.</p>
+<p>Keep a second, parallel stack <code>mins</code>. When you push <code>x</code>, push <code>min(x, mins[-1])</code> onto <code>mins</code> (or just <code>x</code> if <code>mins</code> is empty). When you pop the value stack, pop <code>mins</code> in the same beat. Now <code>mins[-1]</code> is always the current minimum.</p>
+<pre class="diagram">   op        stack           mins            getMin
+   push -2   [-2]            [-2]            -2
+   push 0    [-2, 0]         [-2, -2]        -2   (min(0,-2) = -2)
+   push -3   [-2, 0, -3]     [-2, -2, -3]    -3   (min(-3,-2) = -3)
+   pop       [-2, 0]         [-2, -2]        -2   (top of mins is the answer)
+
+   Each level in `mins` remembers the smallest at or below it,
+   so the current minimum is always sitting on top -- no search.</pre>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(1)</code> for every operation. Push/pop do a constant amount of extra work; <code>getMin</code> and <code>top</code> are direct reads.</li><li><strong>Space:</strong> <code>O(n)</code> — the <code>mins</code> stack mirrors the value stack. (A common optimization stores only *strictly decreasing* minimums to save space, at the cost of slightly trickier pop logic.)</li></ul>
+<ul><li><strong>Time: constant per operation.</strong> Push and pop do a fixed bit of extra work; <code>getMin</code> and <code>top</code> are direct reads of the top slot.</li><li><strong>Space: about n.</strong> The <code>mins</code> stack mirrors the value stack. (A common space-saver stores only *strictly decreasing* minimums, at the cost of slightly trickier pop logic.)</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Storing only the single global minimum in one variable. When you pop it, you have no idea what the *next* minimum is — you&#x27;d have to scan. The per-level companion stack is what avoids this.</li><li>Duplicate minimums. If two equal minimums are pushed, popping one must leave the other as the min. Pushing <code>min(x, prev)</code> each time handles this naturally.</li><li>Forgetting to pop <code>mins</code> in lockstep with the value stack.</li></ul>
+<ul><li>Storing only the single global minimum in one variable. When you pop it, you have no idea what the *next* minimum is — you&#x27;d have to scan. The per-level companion stack is what avoids this.</li><li>Duplicate minimums. If two equal minimums are pushed, popping one must leave the other as the min. Pushing <code>min(x, prev)</code> each time handles this on its own.</li><li>Forgetting to pop <code>mins</code> in lockstep with the value stack.</li></ul>
 <h2>Transfer</h2>
-<p>The core idea — <strong>augment a stack with a companion stack of partial answers</strong> — generalizes far beyond minimums. See <a href="../0232-implement-queue-using-stacks/">Implement Queue using Stacks / 232</a> for the sibling &quot;compose a structure out of stacks,&quot; and the monotonic-stack family: <a href="https://leetcode.com/problems/daily-temperatures/">Daily Temperatures / 739</a>, <a href="https://leetcode.com/problems/largest-rectangle-in-histogram/">Largest Rectangle in Histogram / 84</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0155-min-stack/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;155. Min Stack — https://leetcode.com/problems/min-stack/
+<p>The core idea — <strong>augment a stack with a companion stack of partial answers</strong> — reaches past minimums. See <a href="../0232-implement-queue-using-stacks/">Implement Queue using Stacks / 232</a> for the sibling &quot;compose a structure out of stacks,&quot; and the monotonic-stack family: <a href="https://leetcode.com/problems/daily-temperatures/">Daily Temperatures / 739</a>, <a href="https://leetcode.com/problems/largest-rectangle-in-histogram/">Largest Rectangle in Histogram / 84</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0155-min-stack/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;155. Min Stack — https://leetcode.com/problems/min-stack/
 
 A normal stack (push/pop/top) that also answers `getMin()` — the smallest value
 currently in the stack — in O(1) time.

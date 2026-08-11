@@ -16,25 +16,50 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">21. Subsets &amp; Combinatorial Backtracking</a> / <span>47</span></nav><article class="notes"><h1>47. Permutations II</h1>
 <p><strong>Pattern:</strong> Backtracking with duplicate skipping (sort, then fix an order among equal copies) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/permutations-ii/</p>
 <h2>The problem in plain words</h2>
-<p>Same as <a href="../0046-permutations/">Permutations</a>, but the input can repeat, like <code>[1,1,2]</code>. Return every *distinct* ordering. <code>[1,1,2]</code> has only 3 unique permutations, not 6, because swapping the two identical 1s produces the same arrangement.</p>
+<p>Same as <a href="../0046-permutations/">Permutations</a>, but the input can repeat, like <code>[1,1,2]</code>. Return every *distinct* ordering. <code>[1,1,2]</code> has only 3 unique permutations, not 6, because swapping the two identical 1s gives back the same arrangement.</p>
+<pre class="diagram">   nums = [1, 1, 2]
+
+   distinct orderings we want:
+     [1,1,2]   [1,2,1]   [2,1,1]
+
+   plain Permutations would list each twice
+   (once per way of assigning the two 1s) -&gt; 6, half of them repeats</pre>
 <h2>Why this matters</h2>
-<p>This is duplicate handling for *orderings*, the sibling of Subsets II&#x27;s duplicate handling for *selections*. The naive route — permute as if all elements were distinct, then dedupe — does real, wasted work: for <code>k</code> identical copies it builds each true arrangement <code>k!</code> times before merging. With several repeated values that overcount is huge.</p>
-<p>The pattern is everywhere interchangeable items get arranged. Scheduling jobs where several are identical, seating arrangements with indistinguishable guests, dealing distinct hands from a deck with repeated ranks, generating test sequences over events where some are the same — all need &quot;these two orderings are literally the same, produce it once.&quot;</p>
-<p>What the good solution buys is the same as Subsets II: prune the duplicate branches *before entering them*, so the running time follows the number of *distinct* permutations rather than the number of ways to build them.</p>
+<p>This is duplicate handling for *orderings*, the sibling of Subsets II&#x27;s duplicate handling for *selections*. The lazy route — permute as if every element were distinct, then dedupe — does real wasted work: for <code>k</code> identical copies it builds each true arrangement <code>k!</code> times before merging. With several repeated values that overcount is large.</p>
+<p>The pattern shows up wherever interchangeable items get arranged. Scheduling jobs when several are identical, seating with indistinguishable guests, dealing hands from a deck with repeated ranks, generating test sequences over events where some are the same — all need &quot;these two orderings are literally the same, produce it once.&quot;</p>
+<p>What the good solution buys is the same as Subsets II: cut the duplicate branches *before entering them*, so the running time follows the number of *distinct* permutations rather than the number of ways to build them.</p>
 <h2>Start from the obvious</h2>
 <p>Run plain Permutations, then filter out repeats:</p>
-<pre><code>all = every ordering treating positions as distinct   # overcounts
-answer = dedupe(all)</code></pre>
-<p>Correct, and it lays the waste bare: with two 1s, every arrangement is generated twice — once for each way of assigning the two identical 1s to their two slots. We want to emit each arrangement exactly once.</p>
+<pre class="diagram">   all = every ordering of [1a, 1b, 2] treating the two 1s as different
+
+     1a 1b 2   1b 1a 2      both spell [1,1,2]
+     1a 2 1b   1b 2 1a      both spell [1,2,1]
+     2 1a 1b   2 1b 1a      both spell [2,1,1]
+
+   dedupe -&gt; [1,1,2] [1,2,1] [2,1,1]   (each built twice, half thrown away)</pre>
+<p>Correct, and it lays the waste bare: with two 1s, every arrangement is generated twice, once per way of assigning the two identical 1s to their two slots. We want each arrangement exactly once.</p>
 <h2>The insight</h2>
-<p>Sort so equal values are adjacent, then impose a <strong>fixed placement order on equal copies</strong>: among identical values, you may only place a copy *after* its identical left-neighbor has already been placed. That collapses the <code>k!</code> interchangeable orderings of <code>k</code> equal items into exactly one.</p>
+<p>Sort so equal values are adjacent, then set a <strong>fixed placement order on equal copies</strong>: among identical values, you may only place a copy *after* its identical left-neighbor has already been placed. That collapses the <code>k!</code> interchangeable orderings of <code>k</code> equal items down to exactly one.</p>
 <p>The rule, when filling the current slot:</p>
 <pre><code>if nums[i] == nums[i-1] and used[i-1] is False:
     skip nums[i]</code></pre>
-<p>Read it carefully: we skip a duplicate value only when its earlier equal copy is <strong>not currently in use</strong>. If the earlier copy *is* placed (used[i-1] is True), then placing this copy next is the one legal way to use both — allowed. If the earlier copy is free, then using this later copy first would just re-create an arrangement the earlier copy will (or already did) produce — forbidden.</p>
-<p>Everything else is the ordinary permutation template: choose (mark <code>used</code>, push), explore (recurse), un-choose (pop, clear <code>used</code>), recording a copy at a full-length leaf.</p>
+<p>Read it slowly: we skip a duplicate value only when its earlier equal copy is <strong>not currently in use</strong>. If that earlier copy *is* placed, then placing this copy next is the one legal way to use both — allowed. If the earlier copy is free, then using this later copy first would only re-create an arrangement the earlier copy will (or already did) make — forbidden.</p>
+<pre class="diagram">   filling slot 0 from sorted [1, 1, 2]  (the two 1s at index 0 and 1)
+
+              slot 0 choices
+         /          |           \
+   take 1(i=0)  take 1(i=1)   take 2(i=2)
+       |            X            |
+       |     PRUNED: nums[1]==nums[0]
+       |     and used[0]==False -&gt; its twin
+       |     isn&#x27;t placed yet, so this is a
+       |     re-run of the i=0 branch
+       v
+   later, DEEPER, once index 0 is used, index 1 IS allowed:
+     path=[1(i0)] , now slot 1: take 1(i=1) ok because used[0]==True</pre>
+<p>Everything else is the ordinary permutation template: choose (mark <code>used</code>, push), explore, un-choose (pop, clear <code>used</code>), recording a copy at a full-length leaf.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n * n!)</code> worst case (all distinct — degenerates to Permutations), but with repeats it drops toward <code>O(n * n! / (k1! k2! ...))</code>, the count of distinct permutations, since duplicate branches are never entered.</li><li><strong>Space:</strong> <code>O(n)</code> extra — recursion depth, <code>path</code>, and <code>used</code>, each <code>O(n)</code>. Sorting adds <code>O(n log n)</code>.</li></ul>
+<ul><li><strong>Time: about <code>n * n!</code> worst case</strong> (all distinct — becomes plain Permutations), but with repeats it drops toward <code>n * n! / (k1! k2! ...)</code>, the count of distinct permutations, since duplicate branches are never entered.</li><li><strong>Extra memory: about <code>n</code></strong> — recursion depth, <code>path</code>, and <code>used</code>, each <code>n</code>. Sorting adds <code>n log n</code>.</li></ul>
 <h2>Pitfalls</h2>
 <ul><li><strong>The subtle <code>used[i-1]</code> direction.</strong> <code>not used[i-1]</code> is correct here; flipping it to <code>used[i-1]</code> still runs but produces wrong counts. The mnemonic: *place a duplicate only right after its twin.*</li><li><strong>Not sorting</strong> — adjacency is what makes the neighbor check valid.</li><li><strong>Deduping with a global set</strong> instead — works, but does the wasteful work the skip is meant to avoid.</li></ul>
 <h2>Transfer</h2>

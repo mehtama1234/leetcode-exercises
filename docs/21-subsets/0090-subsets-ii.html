@@ -16,30 +16,52 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">21. Subsets &amp; Combinatorial Backtracking</a> / <span>90</span></nav><article class="notes"><h1>90. Subsets II</h1>
 <p><strong>Pattern:</strong> Backtracking with duplicate skipping (sort, then skip equal siblings) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/subsets-ii/</p>
 <h2>The problem in plain words</h2>
-<p>Same as <a href="../0078-subsets/">Subsets</a>, but the input can repeat values, like <code>[1,2,2]</code>. Return every *distinct* subset. Here <code>[2]</code> must appear once even though there are two 2s, and <code>[1,2]</code> must appear once even though it could be built two ways. The answer is a set of subsets, not a list that happens to have repeats.</p>
+<p>Same as <a href="../0078-subsets/">Subsets</a>, but the input can repeat, like <code>[1,2,2]</code>. Return every *distinct* subset. <code>[2]</code> should appear once even though there are two 2s, and <code>[1,2]</code> should appear once even though you could build it two ways. The answer is a set of subsets, not a list that happens to have repeats.</p>
+<pre class="diagram">   nums = [1, 2, 2]
+
+   distinct subsets we want:
+     []   [1]   [1,2]   [1,2,2]   [2]   [2,2]
+
+   the trap: [2] can be built from the first 2 OR the second 2
+             -&gt; plain Subsets would emit it twice</pre>
 <h2>Why this matters</h2>
-<p>The new operation this teaches is <strong>de-duplicating a search without a hash set</strong>. The naive fix — generate everything, then throw the answers into a set — works but is wasteful: you do full work producing identical results just to discard them, and hashing <code>2^n</code> lists costs real time and memory. The interesting question is: can you *avoid generating* the duplicate in the first place?</p>
-<p>This exact problem shows up whenever a search space has interchangeable items. Picking a team from a roster where several players share a role, choosing toppings where you have three identical slices of the same thing, enumerating distinct multiset selections in a configuration solver — all have &quot;these two choices are indistinguishable, don&#x27;t explore both&quot; at their heart.</p>
-<p>What the good solution buys is pruning *at the source*: entire duplicate branches of the decision tree are never entered, so runtime tracks the number of *distinct* answers, not the number of ways to reach them. That gap can be enormous when a value repeats many times.</p>
+<p>The new move this teaches is <strong>de-duplicating a search without a hash set</strong>. The lazy fix — generate everything, then dump the answers into a set — works but throws away real work: you build identical results just to discard them, and hashing <code>2^n</code> lists costs time and memory. The better question is: can you avoid *making* the duplicate in the first place?</p>
+<p>This shows up wherever a search space has interchangeable items. Picking a team from a roster where several players share a role, choosing toppings when three slices are identical, listing distinct multiset selections in a config solver — all have &quot;these two choices are the same, don&#x27;t explore both&quot; at their heart.</p>
+<p>What the good solution buys is cutting the branch *at the source*: whole duplicate subtrees are never entered, so runtime tracks the number of *distinct* answers, not the number of ways to reach them. That gap can be large when a value repeats a lot.</p>
 <h2>Start from the obvious</h2>
 <p>Run plain Subsets, then filter:</p>
-<pre><code>all = every subset of nums          # includes duplicates
-answer = dedupe(all)                # e.g. put sorted tuples in a set</code></pre>
-<p>Honest, correct, and it makes the redundancy obvious: for <code>[2,2]</code> it builds <code>[2]</code> twice (once from each 2) before merging them. We&#x27;re paying to make garbage. The goal is to never emit the second <code>[2]</code>.</p>
+<pre class="diagram">   all = every subset of [2,2]           includes duplicates
+       -&gt; []  [2]  [2]  [2,2]
+                 ^    ^
+                 built twice, once per 2
+
+   answer = dedupe(all)  -&gt;  []  [2]  [2,2]</pre>
+<p>Honest and correct, and it makes the waste obvious: <code>[2]</code> gets built twice before the merge. We&#x27;re paying to make garbage. The goal is to never emit the second <code>[2]</code> at all.</p>
 <h2>The insight</h2>
 <p>Two moves together kill duplicates at the source.</p>
-<p><strong>1. Sort the array.</strong> Now equal values sit next to each other, so &quot;is this a repeat?&quot; becomes &quot;is it equal to my left neighbor?&quot; — a local, O(1) check.</p>
-<p><strong>2. Skip equal siblings at the same depth.</strong> Build subsets by position: at each recursion, a loop picks the next number to append from the tail <code>start..n</code>. The rule:</p>
+<p><strong>1. Sort the array.</strong> Now equal values sit next to each other, so &quot;is this a repeat?&quot; becomes &quot;is it the same as my left neighbor?&quot; — a one-step check.</p>
+<p><strong>2. Skip equal siblings at the same level.</strong> Build subsets by position: at each recursion a loop picks the next number to add from the tail <code>start..n</code>. The rule:</p>
 <pre><code>for i from start to n-1:
     if i &gt; start and nums[i] == nums[i-1]: continue   # &lt;-- the skip
     choose nums[i]; recurse(i+1); un-choose</code></pre>
-<p>The condition <code>i &gt; start</code> is the subtle part. Two equal values *may* both be used when they&#x27;re chosen at <strong>different depths</strong> (that&#x27;s how <code>[2,2]</code> gets built — the first 2 at this level, the second 2 one level deeper via <code>recurse(i+1)</code>). What we forbid is picking the *same value twice as alternatives at the same level*, because the branch that used the earlier copy already generated every subset the later copy could. Every node in this tree is itself a valid subset, so we record <code>path</code> on entry, not only at leaves.</p>
+<p>The <code>i &gt; start</code> part is the subtle bit. Two equal values *may* both be used — but only when they&#x27;re chosen at <strong>different levels</strong>, one nested under the other. What we forbid is choosing the same value twice as *alternatives at the same level*, because the branch that used the earlier copy already produced every subset the later copy could.</p>
+<pre class="diagram">   choice tree from start=1 on sorted [1, 2, 2]   (index in parens)
+
+              start=1
+          /              \
+     take 2 (i=1)      take 2 (i=2)  &lt;-- i&gt;start AND nums[2]==nums[1]
+        |                   X  PRUNED: this whole branch is a
+     recurse start=2            re-run of the branch on the left
+        |
+     take 2 (i=2)  &lt;-- i==start here, so allowed
+        -&gt; this is how [2,2] still gets built (deeper level, not sibling)</pre>
+<p>Every node in this tree is itself a valid subset (not only the leaves), so we record <code>path</code> on entry to each call, not just at the bottom.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n * 2^n)</code> worst case (all distinct — degenerates to Subsets), but far less when values repeat, since duplicate branches are pruned. Copying each emitted subset is the <code>O(n)</code> factor.</li><li><strong>Space:</strong> <code>O(n)</code> extra — recursion depth plus <code>path</code>. Sorting is <code>O(n log n)</code>, dominated by the enumeration.</li></ul>
+<ul><li><strong>Time: about <code>n * 2^n</code> worst case</strong> (all distinct — this becomes plain Subsets), but far less when values repeat, since duplicate branches are cut. Copying each emitted subset is the extra factor of <code>n</code>.</li><li><strong>Extra memory: about <code>n</code></strong> — recursion depth plus <code>path</code>. Sorting is <code>n log n</code>, smaller than the enumeration.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Not sorting first.</strong> The skip check relies on equal values being adjacent; on unsorted input it silently misses duplicates.</li><li><strong>Writing <code>if nums[i] == nums[i-1]</code> without <code>i &gt; start</code>.</strong> That wrongly blocks the legitimate deeper use of the second copy, so you lose subsets like <code>[2,2]</code>.</li><li>Reaching for a global <code>set</code> to dedupe — it works but defeats the lesson and costs extra memory; the local skip is cheaper.</li></ul>
+<ul><li><strong>Not sorting first.</strong> The skip relies on equal values being adjacent; on unsorted input it quietly misses duplicates.</li><li><strong>Writing <code>if nums[i] == nums[i-1]</code> without <code>i &gt; start</code>.</strong> That wrongly blocks the legitimate deeper use of the second copy, so you lose subsets like <code>[2,2]</code>.</li><li>Reaching for a global <code>set</code> to dedupe — it works but defeats the lesson and costs extra memory; the local skip is cheaper.</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Sort, then skip a value equal to the previous sibling at this depth&quot; is the canonical duplicate-handling move for backtracking. It&#x27;s the exact change that turns <a href="../0046-permutations/">Permutations / 46</a> into <a href="../0047-permutations-ii/">Permutations II / 47</a>, and it reappears in Combination Sum II. Whenever a search has interchangeable elements, sort and skip equal siblings.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0090-subsets-ii/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;90. Subsets II — https://leetcode.com/problems/subsets-ii/
+<p>&quot;Sort, then skip a value equal to the previous sibling at this level&quot; is the canonical duplicate-handling move for backtracking. It&#x27;s the exact change that turns <a href="../0046-permutations/">Permutations / 46</a> into <a href="../0047-permutations-ii/">Permutations II / 47</a>, and it reappears in Combination Sum II. Whenever a search has interchangeable items, sort and skip equal siblings.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0090-subsets-ii/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;90. Subsets II — https://leetcode.com/problems/subsets-ii/
 
 Like Subsets, but the input may contain duplicate numbers. Return all *unique*
 subsets — no two subsets in the answer may be equal as multisets.

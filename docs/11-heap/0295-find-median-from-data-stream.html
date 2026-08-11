@@ -16,45 +16,70 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">11. Heap / Priority Queue</a> / <span>295</span></nav><article class="notes"><h1>295. Find Median from Data Stream</h1>
 <p><strong>Pattern:</strong> Two heaps (keep the middle reachable, not the whole order) <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/find-median-from-data-stream/</p>
 <h2>The problem in plain words</h2>
-<p>Numbers arrive one at a time, forever. At any moment someone can ask &quot;what&#x27;s the median of everything so far?&quot; The median is the middle value once the numbers are sorted — and if there&#x27;s an even count, it&#x27;s the average of the two middle values.</p>
-<p>So you need two operations, both fast, and both can be called any number of times: <code>addNum(x)</code> to feed in a number, and <code>findMedian()</code> to answer.</p>
+<p>Numbers arrive one at a time, forever. At any moment someone can ask &quot;what&#x27;s the median of everything so far?&quot; The median is the middle value once the numbers are sorted — and if the count is even, it&#x27;s the average of the two middle values.</p>
+<p>So you need two operations, both fast, both callable any number of times: <code>addNum(x)</code> to feed in a number, and <code>findMedian()</code> to answer.</p>
+<pre class="diagram">   sorted so far:  1  2  4  7  9
+                         ^ middle -&gt; median = 4
+
+   sorted so far:  1  2  4  7        (even count)
+                      ^  ^ two middles -&gt; median = (2+4)/2 = 3</pre>
 <h2>Why this matters</h2>
-<p>The deeper problem is maintaining a *running order statistic* over an endless stream — a value at a moving position in the sorted order — without ever holding the whole thing in sorted form. The fundamental operation is keeping just the boundary reachable: split the data at the point you care about and store each side so its edge is instantly on top.</p>
-<p>This is exactly what real streaming systems need. Monitoring and observability tools report running medians and percentiles (p50/p95/p99) of latency as requests pour in, and can&#x27;t re-sort millions of samples per second. Databases and analytics engines maintain streaming order statistics for query planning and dashboards. Load balancers and autoscalers watch a moving-median signal to smooth out spikes; finance systems track rolling medians of prices or volume.</p>
-<p>What you&#x27;re solving for is time and a single-pass constraint: the stream never stops and you can&#x27;t rewind it, so each insert must be cheap. The two-heap trick drops per-add cost from <code>O(n)</code> (re-sorting) to <code>O(log n)</code>, and answers in <code>O(1)</code> — keeping only the middle ordered instead of everything, which is all the question ever reads.</p>
+<p>The real problem is keeping a *running middle value* over an endless stream without ever holding the whole thing in sorted form. The move that makes it work: keep just the boundary reachable — split the data at the point you care about and store each side so its edge is always on top.</p>
+<p>This is what streaming systems need. Monitoring tools report running medians and percentiles (p50/p95/p99) of latency as requests pour in, and can&#x27;t re-sort millions of samples per second. Load balancers watch a moving-median signal to smooth out spikes; finance systems track rolling medians of prices.</p>
+<p>What you buy is speed under a single-pass constraint: the stream never stops and you can&#x27;t rewind it, so each insert must be cheap. The two-heap trick drops per-add cost from about <code>n</code> (re-sorting) to about <code>log n</code>, and answers in one step — keeping only the middle ordered instead of everything.</p>
 <h2>Start from the obvious</h2>
-<p>The median is defined in terms of sorted order, so the honest first move is to just keep the numbers sorted:</p>
+<p>The median is defined by sorted order, so the honest first move is to keep the numbers sorted:</p>
 <pre><code>addNum(x):     insert x into a sorted list   # find spot, then shift the tail
 findMedian():  return the middle element(s) by index</code></pre>
-<p><code>findMedian</code> is now trivial and O(1). The trouble is <code>addNum</code>: finding *where* x goes is a fast binary search, but actually making room shifts every element after it. That&#x27;s <code>O(n)</code> per insert, so a stream of <code>n</code> numbers costs <code>O(n^2)</code> overall.</p>
-<p>That&#x27;s correct — and staring at *what it does too much* points straight at the fix.</p>
+<p><code>findMedian</code> is now one step. The trouble is <code>addNum</code>: finding *where* x goes is a fast binary search, but actually making room shifts every element after it. That&#x27;s about <code>n</code> per insert, so a stream of <code>n</code> numbers costs about <code>n·n</code> overall.</p>
 <h2>Find the waste</h2>
-<p>To answer <code>findMedian</code> we only ever touch the one or two values sitting at the <strong>center</strong>. Everything to the left of the middle and everything to the right is just... there. Keeping the entire stream in perfect sorted order is far more work than the question needs. We are paying <code>O(n)</code> per insert to maintain order we never read.</p>
+<p>To answer <code>findMedian</code> we only ever touch the one or two values sitting at the <strong>center</strong>. Everything to the left of the middle and everything to the right is just... there. Keeping the entire stream in perfect sorted order is far more work than the question needs.</p>
+<pre class="diagram">   sorted:  1  2  4 | 7  9        we only ever read around the cut
+            left half  right half
+                    ^ ^
+                    the median lives here; the rest is dead weight</pre>
 <p>So the real requirement is narrower:</p>
 <blockquote>Keep the value(s) <strong>at the middle</strong> reachable — nothing more.</blockquote>
 <h2>The insight</h2>
 <p>Split the numbers into two halves and store each half in a heap so its boundary value is instantly available:</p>
-<ul><li><strong><code>low</code></strong> — the smaller half, stored as a <strong>max-heap</strong> so its *largest* value (the top of the lower half) is at the top.</li><li><strong><code>high</code></strong> — the larger half, stored as a <strong>min-heap</strong> so its *smallest* value (the bottom of the upper half) is at the top.</li></ul>
-<p>Picture the sorted stream cut down the middle: <code>low</code>&#x27;s max and <code>high</code>&#x27;s min are exactly the two numbers straddling that cut — the ones the median is made of.</p>
-<p>Keep two invariants after every add:</p>
+<ul><li><strong><code>low</code></strong> — the smaller half, stored as a <strong>max-heap</strong> (biggest on top) so its *largest* value (the top of the lower half) is on top.</li><li><strong><code>high</code></strong> — the larger half, stored as a <strong>min-heap</strong> (smallest on top) so its *smallest* value (the bottom of the upper half) is on top.</li></ul>
+<p>Picture the sorted stream cut down the middle: <code>low</code>&#x27;s max and <code>high</code>&#x27;s min are the two numbers straddling that cut — the ones the median is made of.</p>
+<pre class="diagram">   stream 1,2,3,4,5 split at the middle:
+
+        low (max-heap)        high (min-heap)
+        biggest on top        smallest on top
+
+              3                     4
+             / \                     \
+            1   2                     5
+
+   low.max = 3, high.min = 4
+   odd total (5 numbers) -&gt; low holds the extra -&gt; median = low.max = 3</pre>
+<p>Keep two invariants (rules held true after every add):</p>
 <ol><li><strong>Everything in <code>low</code> &lt;= everything in <code>high</code>.</strong> The cut sits at the median.</li><li><strong>Sizes differ by at most 1</strong>, and when they differ <code>low</code> holds the extra one.</li></ol>
-<p>Then answering is O(1):</p>
+<p>Then answering is one step:</p>
 <pre><code>if low is bigger:  median = low.max                # odd count -&gt; the true middle
 else:              median = (low.max + high.min)/2  # even count -&gt; average the two</code></pre>
-<p>Adding is where the cleverness lives. A neat trick keeps invariant 1 automatic — push the new number onto <code>low</code>, immediately move <code>low</code>&#x27;s max over to <code>high</code>, then if <code>high</code> grew too big hand its min back:</p>
-<pre><code>addNum(x):
-    push x onto low
-    move low.max -&gt; high        # forces &quot;low &lt;= high&quot;
-    if high larger than low:
-        move high.min -&gt; low    # fix the sizes</code></pre>
-<p>The middle round-trip guarantees the value ending up in <code>high</code> is at least as big as everything left in <code>low</code>, so the two halves never overlap. (Python&#x27;s <code>heapq</code> is min-only, so <code>low</code> stores <strong>negated</strong> numbers — the smallest negation is the largest real value.)</p>
+<p>Adding is where the care goes. A neat trick keeps invariant 1 automatic — push the new number onto <code>low</code>, immediately move <code>low</code>&#x27;s max over to <code>high</code>, then if <code>high</code> grew too big hand its min back:</p>
+<pre class="diagram">   addNum(x):
+     1. push x onto low
+     2. move low.max  -&gt;  high     (forces low &lt;= high)
+     3. if high larger than low:
+           move high.min -&gt; low    (fix the sizes)
+
+   trace, adding 1 then 2:
+     add 1: low={1}, move max 1 -&gt; high={1}, high bigger -&gt; move back low={1} high={}
+            -&gt; low={1} high={}          median = 1
+     add 2: low={1,2}, move max 2 -&gt; high={2}, sizes 1/1 ok
+            -&gt; low={1} high={2}          median = (1+2)/2 = 1.5</pre>
+<p>The middle round-trip guarantees the value ending up in <code>high</code> is at least as big as everything left in <code>low</code>, so the halves never overlap. (Python&#x27;s <code>heapq</code> is min-only, so <code>low</code> stores <strong>negated</strong> numbers — the smallest negation is the largest real value.)</p>
 <h2>Complexity</h2>
-<ul><li><strong><code>addNum</code>:</strong> <code>O(log n)</code> — a constant number of heap pushes/pops, each <code>O(log n)</code>.</li><li><strong><code>findMedian</code>:</strong> <code>O(1)</code> — just read the one or two heap tops.</li><li><strong>Space:</strong> <code>O(n)</code> — every number is held in one of the two heaps.</li></ul>
-<p>Compared to the sorted list&#x27;s <code>O(n)</code> insert, we traded &quot;keep everything ordered&quot; for &quot;keep only the boundary ordered&quot;, and the per-add cost drops from <code>O(n)</code> to <code>O(log n)</code>.</p>
+<ul><li><strong><code>addNum</code>:</strong> about <code>log n</code> — a constant number of heap pushes/pops, each about <code>log n</code>.</li><li><strong><code>findMedian</code>:</strong> one step — read the one or two heap tops.</li><li><strong>Space:</strong> <code>n</code> — every number is held in one of the two heaps.</li></ul>
+<p>Compared to the sorted list&#x27;s <code>n</code> insert, we traded &quot;keep everything ordered&quot; for &quot;keep only the boundary ordered&quot;, and the per-add cost drops from about <code>n</code> to about <code>log n</code>.</p>
 <h2>Pitfalls</h2>
 <ul><li><strong>Max-heap in a min-heap language.</strong> <code>heapq</code> only does min-heaps; negate on the way in and negate again on the way out for <code>low</code>. Forgetting one negation flips the whole split.</li><li><strong>Which heap holds the extra element.</strong> Pick a rule (here: <code>low</code> &gt;= <code>high</code> in size) and apply it *identically* in both <code>addNum</code>&#x27;s rebalance and <code>findMedian</code>, or the odd-count case reads the wrong heap.</li><li><strong>Even-count division.</strong> Return a float — <code>(a + b) / 2</code>, not integer <code>//</code> — or <code>[2, 3]</code> reports <code>2</code> instead of <code>2.5</code>.</li><li><strong>Skipping the cross-over push in <code>addNum</code>.</strong> Just pushing x onto whichever heap &quot;looks right&quot; by value can break invariant 1 on later inserts; routing every new number through <code>low -&gt; high</code> is what keeps the two halves cleanly separated.</li></ul>
 <h2>Transfer</h2>
-<p>The move is: **when you only need the extreme(s) of a set, don&#x27;t sort it — hold it in a heap; and when you need a value at a *moving boundary*, hold each side in its own heap so the boundary is always at a top.** This &quot;balanced two-heap&quot; idea shows up in <a href="https://leetcode.com/problems/sliding-window-median/">Sliding Window Median / 480</a> and <a href="https://leetcode.com/problems/ipo/">IPO / 502</a>, and the plain single-heap version powers <a href="https://leetcode.com/problems/kth-largest-element-in-a-stream/">Kth Largest Element in a Stream / 703</a> and <a href="https://leetcode.com/problems/last-stone-weight/">Last Stone Weight / 1046</a>. Whenever a brute force keeps re-sorting or re-scanning for &quot;the top / the middle&quot;, reach for a heap first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0295-find-median-from-data-stream/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;295. Find Median from Data Stream — https://leetcode.com/problems/find-median-from-data-stream/
+<p>The move is: **when you only need the extreme(s) of a set, hold it in a heap; and when you need a value at a *moving boundary*, hold each side in its own heap so the boundary is always at a top.** This &quot;balanced two-heap&quot; idea shows up in <a href="https://leetcode.com/problems/sliding-window-median/">Sliding Window Median / 480</a> and <a href="https://leetcode.com/problems/ipo/">IPO / 502</a>, and the single-heap version powers <a href="../0703-kth-largest-element-in-a-stream/">Kth Largest Element in a Stream / 703</a> and <a href="../1046-last-stone-weight/">Last Stone Weight / 1046</a>. Whenever a brute force keeps re-sorting or re-scanning for &quot;the top / the middle&quot;, reach for a heap first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0295-find-median-from-data-stream/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;295. Find Median from Data Stream — https://leetcode.com/problems/find-median-from-data-stream/
 
 Design a structure that accepts numbers one at a time and can report the median
 of everything seen so far at any moment. The median is the middle value of the

@@ -16,30 +16,46 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">20. Design</a> / <span>355</span></nav><article class="notes"><h1>355. Design Twitter</h1>
 <p><strong>Pattern:</strong> Composed data model + k-way merge with a heap <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/design-twitter/</p>
 <h2>The problem in plain words</h2>
-<p>Model a tiny social network. Users can post tweets, follow and unfollow each other, and ask for their news feed: the 10 most recent tweets from themselves and everyone they follow, newest first.</p>
+<p>Model a tiny social network. Users post tweets, follow and unfollow each other, and ask for their news feed: the 10 most recent tweets from themselves and everyone they follow, newest first.</p>
+<pre class="diagram">   user 1 follows user 2
+
+   user 1 tweets:  [ 5 ]                         (time 0)
+   user 2 tweets:  [ 6 ]                         (time 1)
+
+   feed(1) merges both, newest first  -&gt;  [ 6, 5 ]</pre>
 <h2>Why this matters</h2>
-<p>Two real ideas hide in here. First, <strong>choosing a data model</strong> so each operation is cheap: users hold their own tweet lists, follows are a set per user. Second, the feed is a <strong>k-way merge of sorted streams</strong> — you have several lists already in time order and want the globally newest few, merged. A heap does that without sorting everything.</p>
-<p>This is the actual shape of a timeline/feed service. A &quot;fan-out on read&quot; feed (pull each followee&#x27;s recent posts and merge them at request time) is exactly this heap merge — Twitter, Instagram, and Reddit-style feeds all wrestle with the read-vs-write-fanout tradeoff. The same k-way merge powers external sorting, merging sorted log files, and combining results from database shards.</p>
-<p>What the good solution buys is <strong>not doing more work than the answer needs</strong>. We want only 10 tweets, so the heap lets us pull the newest, then advance just that one user&#x27;s pointer — touching a handful of tweets instead of sorting every followee&#x27;s entire history on every feed request.</p>
+<p>Two real ideas hide in here. First, <strong>picking a data model</strong> so each operation is cheap: users hold their own tweet lists, follows are a set per user. Second, the feed is a <strong>k-way merge of sorted streams</strong> — you have several lists already in time order and want the newest few across all of them. A heap does that without sorting everything.</p>
+<p>This is the actual shape of a timeline service. A &quot;fan-out on read&quot; feed — pull each followee&#x27;s recent posts and merge them at request time — is exactly this heap merge. Twitter, Instagram, and Reddit-style feeds all wrestle with the read-versus-write-fanout tradeoff. The same k-way merge powers external sorting, merging sorted log files, and combining results from database shards.</p>
+<p>What the good solution buys is <strong>not doing more work than the answer needs</strong>. You want only 10 tweets, so the heap lets you pull the newest, then step just that one user&#x27;s pointer back — touching a handful of tweets instead of sorting every followee&#x27;s whole history on every feed request.</p>
 <h2>Start from the obvious</h2>
-<p>To build a feed, gather every tweet from the user and all followees into one big list, sort by timestamp descending, and take the first 10.</p>
-<pre><code>all_tweets = []
-for u in followees + [me]:
-    all_tweets += tweets[u]
-all_tweets.sort(key=lambda t: -t.time)
-return [t.id for t in all_tweets[:10]]</code></pre>
-<p>Correct and simple. But it collects and sorts *everything* — O(N log N) over the total tweet count — even though we only ever want 10. That&#x27;s the waste.</p>
+<p>To build a feed, gather every tweet from the user and all followees into one big pile, sort by timestamp newest-first, and take the first 10.</p>
+<pre class="diagram">   pile = user1&#x27;s tweets + user2&#x27;s + user3&#x27;s + ...     (everything)
+   sort the whole pile by time
+   take the first 10
+        ^ sorting N tweets to keep 10 -- most of that work is thrown away</pre>
+<p>Correct and plain. But it collects and sorts *everything* even though you only ever want 10. That is the waste.</p>
 <h2>Find the waste</h2>
-<p>Each user&#x27;s own tweet list is *already* sorted by time (they were appended in order). We&#x27;re throwing that ordering away and re-sorting from scratch. Merging already-sorted lists shouldn&#x27;t need a full sort — and we only want the top 10, so we shouldn&#x27;t even fully merge.</p>
+<p>Each user&#x27;s own tweet list is *already* sorted by time — they were appended in order. The naive version throws that ordering away and re-sorts from scratch. Merging already-sorted lists shouldn&#x27;t need a full sort, and since you only want the top 10, you shouldn&#x27;t even fully merge.</p>
 <h2>The insight</h2>
-<p>Stamp every tweet with a strictly increasing global counter, so &quot;newest&quot; means &quot;largest timestamp.&quot; Store each user&#x27;s tweets in post order. To build a feed:</p>
-<ol><li>Seed a <strong>max-heap</strong> with the *newest* tweet from the user and each followee — at most one entry per source.</li><li>Pop the heap: that&#x27;s the globally newest unseen tweet. Add it to the feed.</li><li>Push that same user&#x27;s *next* tweet (one step older) back onto the heap.</li><li>Repeat until you have 10 tweets or the heap empties.</li></ol>
-<p>Because each list is sorted, the heap always holds the current front of every stream, and popping ten times gives the ten newest overall.</p>
+<p>Stamp every tweet with a strictly increasing global counter, so &quot;newest&quot; means &quot;largest timestamp.&quot; Store each user&#x27;s tweets in post order. To build a feed, keep a <strong>max-heap</strong> — a bucket that always hands you its largest item — holding the current newest tweet from each source.</p>
+<pre class="diagram">   user1: [ (0,A) ]                 &lt;- newest for user1
+   user2: [ (1,B), (3,D) ]          &lt;- newest is (3,D)
+   user3: [ (2,C) ]                 &lt;- newest for user3
+
+   heap seeded with each list&#x27;s newest:  { (3,D), (2,C), (0,A) }
+
+   pop (3,D) -&gt; feed=[D];  user2 has (1,B) left -&gt; push it
+       heap: { (2,C), (1,B), (0,A) }
+   pop (2,C) -&gt; feed=[D,C]; user3 has none left
+       heap: { (1,B), (0,A) }
+   pop (1,B) -&gt; feed=[D,C,B]
+   pop (0,A) -&gt; feed=[D,C,B,A]      done (or stop at 10)</pre>
+<p>Each list is sorted, so the heap always holds the current front of every stream. Pop ten times and you have the ten newest overall — and you only ever push a followee&#x27;s *next* tweet after popping their current one.</p>
 <h2>Complexity</h2>
 <p>Let <code>k</code> = number of followees, <code>f</code> = feed size (10 here).</p>
-<ul><li><strong>Feed:</strong> <code>O(k + f log k)</code> — seed the heap with up to <code>k</code> entries, then do <code>f</code> pop/push operations each <code>O(log k)</code>. Independent of total tweets posted.</li><li><strong>post / follow / unfollow:</strong> <code>O(1)</code>.</li><li><strong>Space:</strong> <code>O(total tweets + total follows)</code> for storage; the heap holds at most <code>k</code> entries at a time.</li></ul>
+<ul><li><strong>Feed:</strong> seed the heap with up to <code>k</code> entries, then do <code>f</code> pop/push pairs, each costing about <code>log k</code>. So roughly <code>k + f log k</code> — independent of how many tweets exist in total.</li><li><strong>post / follow / unfollow:</strong> a single step each.</li><li><strong>Space:</strong> proportional to total tweets plus total follows for storage; the heap holds at most <code>k</code> entries at once.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Using wall-clock time for ordering. Two tweets can share a millisecond; a monotonic counter gives a strict, tie-free order.</li><li>Letting a user follow themselves and then double-counting their tweets. Guard the self-follow, and always include the user as a source explicitly.</li><li>Sorting all tweets on every feed call — fine for tests, wrong at scale. The heap merge is the point.</li><li>Forgetting to advance only the popped user&#x27;s pointer (pushing the *next* tweet from the same list).</li></ul>
+<ul><li>Using wall-clock time for ordering. Two tweets can share a millisecond; a monotonic counter gives a strict, tie-free order.</li><li>Letting a user follow themselves and then double-counting their tweets. Guard the self-follow, and always include the user as a source explicitly.</li><li>Sorting all tweets on every feed call — fine for tests, wrong at scale. The heap merge is the point.</li><li>Forgetting to push only the popped user&#x27;s *next* tweet, from the same list.</li></ul>
 <h2>Transfer</h2>
 <p>The k-way heap merge is the reusable core. See <a href="https://leetcode.com/problems/merge-k-sorted-lists/">Merge k Sorted Lists / 23</a> and <a href="https://leetcode.com/problems/find-k-pairs-with-smallest-sums/">Find K Pairs with Smallest Sums / 373</a>. The &quot;pick the right containers per operation&quot; modeling skill carries to <a href="../0146-lru-cache/">LRU Cache / 146</a> and <a href="../0981-time-based-key-value-store/">Time Based Key-Value Store / 981</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0355-design-twitter/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;355. Design Twitter — https://leetcode.com/problems/design-twitter/
 

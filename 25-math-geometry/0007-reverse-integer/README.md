@@ -1,93 +1,104 @@
 # 7. Reverse Integer
 
-**Pattern:** Digit manipulation with fixed-width overflow guarding
+**Pattern:** Digit-by-digit math with an overflow guard
 **Difficulty:** Medium
 **Link:** https://leetcode.com/problems/reverse-integer/
 
 ## The problem in plain words
 
-Take a signed integer and reverse its digits: `123 → 321`, `-123 → -321`,
-`120 → 21` (the trailing zero vanishes). But the result must fit in a signed
-32-bit integer — the range `-2147483648 … 2147483647`. If reversing pushes it
-outside that range, return `0`.
+Take a whole number, possibly negative, and flip its digits end to end. `123`
+becomes `321`; `-123` becomes `-321`; `120` becomes `21` (the leading zero of the
+reversed form just vanishes). One catch: pretend you are on a machine where
+numbers only hold 32 bits, so they can't go past about 2.1 billion. If the
+flipped number would blow past that limit, return `0`.
+
+```diagram
+     123                 -123               120
+   [1][2][3]           -[1][2][3]         [1][2][0]
+        |  flip             |  flip            |  flip
+        v                   v                  v
+   [3][2][1] = 321     -[3][2][1] = -321   [0][2][1] = 21
+                                            ^ leading 0 drops off
+```
 
 ## Why this matters
 
-Underneath the puzzle is a truth every systems programmer lives with: *machine
-integers have a fixed width, and arithmetic that steps past the top wraps around
-silently into a wrong (often negative) answer.* The skill being tested is
-detecting overflow **before** it corrupts your value, not after.
+The real lesson here isn't "reverse a number." It's *how do you catch a number
+growing too big before it actually does?* On a fixed-width machine, once a value
+crosses its ceiling it silently wraps to garbage. You can't check the result
+after the fact — the result is already wrong. You have to look one step ahead.
 
-That exact concern runs real systems. C, Java, Go, and Rust all have fixed-width
-ints; a bounds check that comes one operation too late is a genuine bug class —
-the Ariane 5 rocket was lost to an integer overflow, and signed-overflow
-undefined behavior is a perennial source of security holes. Parsing untrusted
-numeric input (a length field, a price, a timestamp) means validating the range
-as you build the number. Hashing and checksums deliberately let ints wrap, so
-you have to know exactly when it happens.
-
-What the good solution buys is a **pre-emptive check** — comparing against
-`INT_MAX / 10` before you multiply — so you never actually compute the
-out-of-range value. In a real fixed-width language, computing it first is
-already too late; the bits are gone.
+That "test before you commit" habit runs real systems. A bank ledger checks
+whether an add would overflow the account field before writing it. A network
+counter guards against wrapping a sequence number. Any time a value has a hard
+ceiling and passing it corrupts data instead of raising an error, the fix is the
+same: predict the overflow from the current state, not from the broken result.
 
 ## Start from the obvious
 
-In a language with big integers (like Python) the naive idea is: flip it to a
-string, reverse, parse back, reattach the sign, then check the range at the end:
+The easy idea: turn the number into text, flip the text, turn it back.
 
-```
-r = int(str(abs(x))[::-1]) * sign
-return r if INT_MIN <= r <= INT_MAX else 0
+```diagram
+   123  ->  "123"  ->  "321"  ->  321
 ```
 
-This *works in Python* only because Python ints never overflow, so the
-"compute then check" is safe. It's the honest first thought — but it dodges the
-actual lesson, because in C or Java that intermediate result would already have
-wrapped before your check ran.
+This works in a language like Python where integers grow without limit. But it
+sidesteps the whole point of the exercise — the 32-bit ceiling. On a real
+fixed-width machine you can't lean on unlimited integers, and the text trick also
+hides *where* the overflow would happen. We want to build the answer with plain
+arithmetic so the danger is out in the open.
 
 ## The insight
 
-Build the reversed number digit by digit, and check for overflow *before* each
-multiply. Peel the last digit with `divmod(x, 10)`, then push it:
-`result = result * 10 + digit`. The dangerous step is `result * 10 + digit`, so
-guard it:
+Peel digits off the back of the number one at a time, and glue each onto the back
+of a growing answer. Pull the last digit with divide-and-remainder by 10; push it
+on with `answer * 10 + digit`.
 
-```
-if result > LIMIT // 10 or (result == LIMIT // 10 and digit > LIMIT % 10):
-    return 0
-result = result * 10 + digit
+```diagram
+   x = 123        answer = 0
+
+   x=123  ->  x=12,  digit=3   ->  answer = 0*10 + 3  =   3
+   x=12   ->  x=1,   digit=2   ->  answer = 3*10 + 2  =  32
+   x=1    ->  x=0,   digit=1   ->  answer = 32*10 + 1 = 321
+                                            ^ each step shifts left, drops in digit
 ```
 
-If `result` already exceeds `LIMIT // 10`, then `result * 10` alone blows the
-limit. If it *equals* `LIMIT // 10`, only the final digit decides it — compare
-against `LIMIT % 10` (the last digit of the limit, `7` for `2147483647`). We
-work with the magnitude and reapply the sign at the end, using `2**31` as the
-limit for negatives and `2**31 - 1` for positives.
+Now the overflow guard. The reversed value can spill past the ceiling even when
+the input fit fine: reversing `1000000003` gives `3000000001`, past the ~2.1
+billion limit. The trick is to check *before* the `answer * 10 + digit` step
+whether that step would cross the line. The ceiling is `2147483647`, so:
+
+```diagram
+   about to do:  answer * 10 + digit
+   ceiling // 10 = 214748364   (its last digit is 7)
+
+   if answer  >  214748364              -> *10 already overflows -> return 0
+   if answer == 214748364 and digit > 7 -> tie, and this digit pushes over -> 0
+   otherwise                            -> safe, do answer = answer*10 + digit
+```
+
+You handle the sign by working on the positive size of the number and reattaching
+the minus at the end, so the digit math stays uniform.
 
 ## Complexity
 
-- **Time:** `O(d)` where `d` is the digit count — at most 10 for a 32-bit int.
-- **Space:** `O(1)` — just the running `result` and the sign.
+- **Time: about d steps**, where d is the number of digits (at most 10 for a
+  32-bit number). One pass, one cheap check per digit.
+- **Extra memory: constant.** A couple of integers, nothing that grows with the
+  input.
 
 ## Pitfalls
 
-- **Checking overflow after the fact** — in a fixed-width language the value has
-  already wrapped, so the check must come *before* the multiply.
-- **The asymmetric range** — `INT_MIN` (`-2147483648`) has a larger magnitude
-  than `INT_MAX` (`2147483647`), so `abs(INT_MIN)` itself overflows in C/Java.
-  Use the correct limit per sign.
-- **Trailing zeros** — `divmod`/`* 10` handles them for free (`120 → 21`); don't
-  special-case them.
-- **The tie case** — when `result == LIMIT // 10`, you must compare the incoming
-  digit against `LIMIT % 10`, not just bail or just proceed.
+- Checking for overflow *after* building the too-big number. On a real
+  fixed-width machine that number is already corrupt — you must look ahead.
+- Forgetting that the negative range reaches one further (`-2147483648`) than the
+  positive range (`2147483647`).
+- Losing the sign. Reverse the magnitude, then put the minus back.
 
 ## Transfer
 
-The pre-multiply overflow guard is the reusable core, and it's exactly what a
-safe string-to-int parser needs:
-[String to Integer (atoi) / 8](https://leetcode.com/problems/string-to-integer-atoi/)
-uses the identical `result > LIMIT/10` check. Digit-peeling by `divmod(_, 10)`
-also drives
-[Palindrome Number / 9](../0009-palindrome-number/) and
-[Add Digits / 258](https://leetcode.com/problems/add-digits/).
+The reusable move is **peel a digit with `divmod` by 10, and guard a
+fixed-width limit by predicting the overflow one step early.** The same
+digit-peeling drives [Palindrome Number / 9](../0009-palindrome-number/) and
+[Happy Number / 202](../0202-happy-number/), and the "check before you commit"
+guard shows up anywhere a counter or accumulator has a hard ceiling.

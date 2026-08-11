@@ -1,98 +1,121 @@
 # 11. Container With Most Water
 
-**Pattern:** Two pointers (greedy shrink from both ends)
+**Pattern:** Two pointers (start wide, drop the weaker side)
 **Difficulty:** Medium
 **Link:** https://leetcode.com/problems/container-with-most-water/
 
 ## The problem in plain words
 
-Each number is the height of a vertical wall standing at that position. Pick two
-walls; they form a container, and the water it holds is its **width** (distance
-between the walls) times the **height of the shorter wall** (water spills over the
-lower one). Find the largest amount of water any pair can hold.
+Each number is the height of a vertical wall. Pick two walls; they hold water
+between them. The amount is the **distance between the walls** times the **height
+of the shorter wall** — water spills over the lower one. Find the most water any
+pair can hold.
 
-For two walls `i` and `j`, area is `(j - i) * min(height[i], height[j])`.
+```diagram
+   height:  1  8  6  2  5  4  8  3  7
+            |  |  |  |  |  |  |  |  |
+   pick walls at index 1 (h=8) and index 8 (h=7):
+            width = 8 - 1 = 7
+            height = min(8, 7) = 7
+            water = 7 * 7 = 49
+```
 
 ## Why this matters
 
-Underneath the water imagery this is an **optimization over a two-ended range** where the value depends on the *weaker* of two boundaries and a *width* between them. The fundamental move is: start at the widest configuration and, at each step, retire the boundary that provably can't improve the answer — so you never re-examine a dominated pair.
+The value of a pair depends on the *weaker* of two ends and the *width* between
+them. The one reusable move: start as wide as possible, and each step throw away
+the end that can never do better — so you never re-check a pair you've already
+beaten.
 
-That "shorter side caps the result, so shrink from the weaker end" logic shows up in real capacity and bottleneck problems. Network throughput along a path is set by the slowest link (the weak wall), so tuning walks the ends of a range looking for a wider-yet-still-strong span. Load balancers and resource packing reason the same way: the tightest constraint limits the whole allocation. Time-series and geometry queries — finding the widest interval whose min height clears a threshold — reduce to this shape.
+That "the shorter side caps the result, so give it up" logic runs real capacity
+problems. The speed of a network path is set by its slowest link — the weak wall.
+A load balancer's throughput is set by its tightest resource. Anywhere the answer
+is pinned by a bottleneck and you're hunting for the best span, this is the shape.
 
-What the good solution buys is **linear time and constant memory**: one inward sweep instead of testing all `O(n^2)` pairs, which is the difference between a query that finishes and one that stalls on large inputs.
+What the good version buys you is one sweep instead of testing every pair. On a
+big input that is the difference between a query that returns and one that stalls.
 
 ## Start from the obvious
 
-Try every pair and keep the best:
+The problem talks about pairs, so try every pair and keep the best.
 
-```
-best = 0
-for i:
-  for j after i:
-    best = max(best, (j - i) * min(height[i], height[j]))
+```diagram
+   for each i:
+     for each j after i:
+       water = (j - i) * min(height[i], height[j])
+       keep the largest
 ```
 
-`O(n^2)`, correct, done. But it dutifully checks pairs that obviously can't win.
-Understanding *which* pairs are hopeless is what collapses this to linear time.
+Correct, done. But on a list of length n that is about n × n steps — double the
+input and the work roughly quadruples. And most of those pairs are hopeless. The
+question is: which ones can we skip without checking?
 
 ## Find the waste
 
-Two things fight to make the area big: **width** and **the shorter wall's height**.
-Start with the maximum possible width — the leftmost and rightmost walls. From
-here, any other pair is narrower, because the only way to move is inward.
+Two things make water: **width** and the **shorter wall**. Start at the widest
+possible container — the leftmost and rightmost walls. From here you can only move
+*inward*, so width can only shrink from now on.
 
-So width can only shrink. The single question that matters at each step is: which
-pointer do we move to have a shot at a *taller* short wall?
+So the only way a later pair beats this one is a *taller short wall*. Now look at
+the current pair and the shorter of the two walls. If we keep that short wall and
+move the taller wall inward:
 
-Look at the current pair and consider the **shorter** wall. It is the one capping
-the area. If we keep it and move the taller wall inward instead:
+```diagram
+   left=0 (h=1)                          right=8 (h=7)
+     |                                     |
+     v                                     v
+     1   8   6   2   5   4   8   3   7
+     ^ the short wall (h=1) caps this pair at width*1
 
-- width goes down (we moved inward), and
-- the height is *still* limited by that same short wall.
+   keep the short wall, move the tall wall in ->
+     width goes DOWN, height still capped by that same h=1
+     -> strictly worse. no point checking it.
+```
 
-That's strictly worse — smaller width, same height. So there is no point pairing
-the shorter wall with anything closer; every such container is beaten by the one
-we already measured. We can safely discard the shorter wall and move its pointer
-inward, hoping the next wall is taller.
+So the short wall is done — every container that keeps it is narrower and no
+taller. Drop it: move the shorter wall's pointer inward and hope the next wall is
+taller.
 
 ## The insight
 
-Two pointers at the ends. Measure the area, then **move whichever wall is shorter**
-one step inward. Repeat until they meet, tracking the best area seen.
+Two pointers at the ends. Measure the water, then move whichever wall is **shorter**
+one step inward. Repeat until they meet, remembering the best.
 
-```
-left, right = 0, len(height) - 1
-best = 0
-while left < right:
-    best = max(best, (right - left) * min(height[left], height[right]))
-    if height[left] < height[right]: left += 1
-    else: right -= 1
+```diagram
+   1  8  6  2  5  4  8  3  7      best = 0
+   L                       R   water=(8)*min(1,7)=8    L is shorter -> L++   best=8
+      L                    R   water=(7)*min(8,7)=49   R is shorter -> R--   best=49
+      L                 R      water=(6)*min(8,3)=18   R is shorter -> R--
+      L              R         water=(5)*min(8,8)=40   tie -> move either
+      L           R            water=(4)*min(8,4)=16   R -> R--
+      ... pointers keep closing in ...
+   answer: 49
 ```
 
-Because each move provably eliminates only containers that can't beat the current
-best, one inward sweep is enough. No pair worth checking is skipped.
+Each move drops only containers that can't beat what we've measured, so one inward
+sweep is enough. Nothing worth checking is skipped.
 
 ## Complexity
 
-- **Time:** `O(n)` — the two pointers only move inward and meet after `n` steps.
-- **Space:** `O(1)` — two indices and a running max.
+- **Time: about n steps.** The two pointers only move inward and meet after n
+  moves total.
+- **Extra memory: constant.** Two indices and a running best.
 
 ## Pitfalls
 
-- **Moving the taller wall** (or always moving one fixed side): that can step past
-  the real answer. You must move the *shorter* one.
-- Height is `min(left, right)`, not the sum or the max — water pours over the
-  lower wall.
-- Ties (`height[left] == height[right]`): moving either side is fine; the pair
-  you'd get by keeping one and moving the other is no taller and strictly
-  narrower.
-- Off-by-one on width — it's `right - left` (indices), not `right - left + 1`.
+- **Moving the taller wall** (or always moving one fixed side) can step right past
+  the real answer. Move the *shorter* one.
+- Height is `min(left, right)`, not the sum or the max — water pours over the lower
+  wall.
+- Ties (`height[left] == height[right]`): move either side; the pair you'd get by
+  keeping one is no taller and strictly narrower.
+- Width is `right - left` (indices), not `right - left + 1`.
 
 ## Transfer
 
-This is the "start at the widest/extreme configuration and greedily shrink the
-provably-worse side" flavor of two pointers — different from the
-[Two Sum II / 167](../0167-two-sum-ii-input-array-is-sorted/) sum-target sweep, but
-the same converging-pointer skeleton. The key transferable habit is proving *why*
-an end can be discarded, which also underlies harder greedy-pointer problems like
+This is the "start at the widest setup and give up the provably-worse end" flavor
+of two pointers — different from the sum-target sweep in
+[Two Sum II / 167](../0167-two-sum-ii-input-array-is-sorted/), but the same
+converging-pointer skeleton. The transferable habit is *proving why an end can be
+dropped*, which also underlies harder greedy-pointer problems like
 *Trapping Rain Water / 42*.

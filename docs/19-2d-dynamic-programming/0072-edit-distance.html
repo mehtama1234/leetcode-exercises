@@ -16,34 +16,54 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">19. 2-D Dynamic Programming</a> / <span>72</span></nav><article class="notes"><h1>72. Edit Distance</h1>
 <p><strong>Pattern:</strong> 2-D dynamic programming (two-prefix cost grid — Levenshtein) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/edit-distance/</p>
 <h2>The problem in plain words</h2>
-<p>Given two words, find the smallest number of one-character edits that turn the first into the second. An edit is: insert a character, delete a character, or replace one character with another. Return that minimum count (the *Levenshtein distance*).</p>
+<p>You have two words. You may change one into the other using three moves: insert a letter, delete a letter, or replace a letter with another. Each move costs one. Give back the smallest number of moves that turns <code>word1</code> into <code>word2</code>.</p>
+<pre class="diagram">   word1 = &quot;horse&quot;      word2 = &quot;ros&quot;
+
+   horse -&gt; rorse   (replace h with r)
+   rorse -&gt; rose    (delete r)
+   rose  -&gt; ros     (delete e)
+
+   3 moves.  Can we do it in fewer?  No.</pre>
 <h2>Why this matters</h2>
-<p>The underlying operation is *measuring how far apart two sequences are, allowing for insertions and gaps, not just position-by-position mismatch.* A naive comparison breaks the moment lengths differ or characters shift by one; edit distance is the principled answer to &quot;how similar are these, really?&quot; It&#x27;s the canonical example of DP over two prefixes, and the recurrence — match for free, else pay one and take the best of three moves — is worth knowing cold.</p>
-<p>It runs a lot of software you use daily. Spell-checkers and &quot;did you mean…?&quot; rank candidates by edit distance. <code>git diff</code>, <code>diff</code>, and merge tools compute edits (a close cousin, with only insert/delete) to show minimal changes. DNA/protein alignment in bioinformatics is a weighted edit distance. Fuzzy search, deduplicating near-identical records, and OCR post-correction all score matches this way.</p>
-<p>What the good solution buys is <code>O(m·n)</code> time instead of the exponential blow-up of trying every sequence of edits, and — rolled to one row — <code>O(min(m,n))</code> memory, so even long strings compare cheaply.</p>
+<p>This is the distance between two pieces of text: how far apart are they, measured in edits. That number is the quiet engine behind spell-check (&quot;did you mean…?&quot;), <code>git diff</code>, DNA comparison, and the &quot;fuzzy match&quot; in a search box. Any time a system asks *how similar are these two strings, really?*, it is computing some flavor of this.</p>
+<p>The reusable idea is bigger than strings. You have two things to line up, you look at their last pieces, and the answer to the whole problem is built from the answer to slightly smaller versions of the same problem. Solve the small overlaps once, write them down, and the big answer assembles itself.</p>
 <h2>Start from the obvious</h2>
-<p>Compare the two words from the end. State <code>(i, j)</code> = edits to turn <code>word1[:i]</code> into <code>word2[:j]</code>. If the last characters match, they cost nothing; otherwise pay 1 and try the three edits, each shrinking the problem:</p>
-<pre><code>def dist(i, j):
-    if i == 0: return j                 # insert j chars
-    if j == 0: return i                 # delete i chars
-    if w1[i-1] == w2[j-1]: return dist(i-1, j-1)
-    return 1 + min(dist(i-1, j-1),      # replace
-                   dist(i-1, j),        # delete from w1
-                   dist(i,   j-1))      # insert into w1</code></pre>
-<p>Each call spawns up to three, so raw recursion is exponential.</p>
-<h2>Find the waste</h2>
-<p>There are only <code>(m+1)·(n+1)</code> distinct <code>(i, j)</code> states, but the three-way branching revisits them enormously. Memoize on <code>(i, j)</code> → <code>O(m·n)</code>. This is the standard Wagner–Fischer table.</p>
+<p>Look at the last letter of each word. Two cases:</p>
+<ul><li>They match. Then that letter is free — line them up and the cost is whatever it takes to fix the two shorter prefixes behind them.</li><li>They differ. Then you must pay one move, and you get to pick which:</li><li><strong>replace</strong> the last letter of <code>word1</code> — now both shrink by one.</li><li><strong>delete</strong> the last letter of <code>word1</code> — only <code>word1</code> shrinks.</li><li><strong>insert</strong> <code>word2</code>&#x27;s last letter onto <code>word1</code> — only <code>word2</code> shrinks.</li></ul>
+<p>So the cost of <code>(word1, word2)</code> depends on the cost of three slightly shorter pairs. Write that as recursion and it works — but the same shorter pairs get asked for again and again down different branches, so the plain recursion balloons.</p>
 <h2>The insight</h2>
-<p>Bottom-up, <code>dp[i][j]</code> fills a grid. Each cell reads only three neighbours — the cell above (<code>delete</code>), the cell left (<code>insert</code>), and the diagonal (<code>replace</code>/<code>match</code>):</p>
-<pre><code>dp[i][j] = dp[i-1][j-1]                     if w1[i-1] == w2[j-1]
-         = 1 + min(dp[i-1][j-1],            # replace
-                   dp[i-1][j],              # delete
-                   dp[i][j-1])              # insert   otherwise</code></pre>
-<p>Because a cell needs only the previous row plus the current row&#x27;s left neighbour, keep <strong>one row</strong> and stash the diagonal in a scalar <code>diag</code> before overwriting it — that old value is the <code>dp[i-1][j-1]</code> the next column&#x27;s replace needs.</p>
+<p>Index the smaller problems by *how much of each word is left to reconcile*: let <code>dp[i][j]</code> be the cost to turn the first <code>i</code> letters of <code>word1</code> into the first <code>j</code> letters of <code>word2</code>. That is a grid — one axis per word — and every cell reads three neighbors that are already filled.</p>
+<pre class="diagram">   dp[i][j] = edits( word1[:i] -&gt; word2[:j] )
+
+              j:  &quot;&quot;  r   o   s
+        i     +----+---+---+---+
+        &quot;&quot;    | 0  | 1 | 2 | 3 |   turn &quot;&quot; into &quot;ros&quot;: 3 inserts
+        h     | 1  |   |   |   |
+        o     | 2  |   |   |   |
+        r     | 3  |   |   |   |
+        s     | 4  |   |   |   |
+        e     | 5  |   |   |   |
+              +----+---+---+---+
+   row 0 / col 0 are free: turning something into &quot;&quot; is all deletes,
+   and turning &quot;&quot; into something is all inserts.</pre>
+<p>Now watch one cell fill. Each interior cell pulls from three already-known neighbors — the cell above (delete), the cell to the left (insert), and the cell on the diagonal (replace, or free if the letters match):</p>
+<pre class="diagram">   filling dp[i][j], comparing word1[i-1] vs word2[j-1]
+
+        diag        up
+      dp[i-1][j-1]  dp[i-1][j]
+              \      |
+               \     v
+       dp[i][j-1] -&gt; dp[i][j]
+        left
+
+   letters match  -&gt;  dp[i][j] = diag              (free ride)
+   letters differ -&gt;  dp[i][j] = 1 + min(diag, up, left)
+                                     replace delete insert</pre>
+<p>Fill the grid row by row, left to right, and the bottom-right cell is the answer. Because each cell only needs the row above and the cell just written, you can keep a single row plus one stashed diagonal value and drop the memory to one line — that is the rolled version in <code>solution.py</code>.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(m·n)</code> — fill each cell once, constant work.</li><li><strong>Space:</strong> <code>O(n)</code> rolled (<code>O(m·n)</code> full grid); iterate over the shorter word to make it <code>O(min(m,n))</code>.</li></ul>
+<ul><li><strong>Time: about m × n steps</strong> (m and n the two word lengths). One cheap decision per grid cell. Doubling both words roughly quadruples the work.</li><li><strong>Extra memory: about n</strong> in the rolled version — one row over the second word. The full-grid version uses about m × n.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Base rows/columns.</strong> Turning <code>&quot;&quot;</code> into a length-<code>j</code> string costs <code>j</code> inserts; the reverse costs <code>i</code> deletes. Initialize <code>dp[0][j]=j</code> and <code>dp[i][0]=i</code> or the recurrence has no floor.</li><li>In the 1-D roll, you need three values but only two survive per cell — forgetting to save the *pre-overwrite* diagonal is the classic bug.</li><li>On a character <strong>match</strong> the cost is the diagonal *unchanged* — don&#x27;t add 1.</li><li>Insert vs delete are symmetric here (both cost 1); if the problem weights them differently, keep the branches separate.</li></ul>
+<ul><li>Getting the three directions crossed. Fix them once: diagonal = replace, up = delete from <code>word1</code>, left = insert into <code>word1</code>. Draw it.</li><li>Forgetting the free row and column. Turning <code>&quot;&quot;</code> into a length-<code>j</code> word costs <code>j</code> inserts; that seeds row 0. The empty-vs-empty corner is 0.</li><li>On a match, don&#x27;t take <code>1 + min(...)</code>. The matched letters cost nothing — copy the diagonal straight across.</li></ul>
 <h2>Transfer</h2>
 <p>The reusable skeleton is *a two-prefix grid whose cell = &quot;free on match, else 1 + best of {replace-diagonal, delete-up, insert-left}.&quot;* Siblings: <a href="https://leetcode.com/problems/longest-common-subsequence/">Longest Common Subsequence / 1143</a> (same grid, max instead of min, only diagonal-on-match), <a href="https://leetcode.com/problems/delete-operation-for-two-strings/">Delete Operation for Two Strings / 583</a> (edit distance with no replace), <a href="../0115-distinct-subsequences/">Distinct Subsequences / 115</a> and <a href="../0097-interleaving-string/">Interleaving String / 97</a> share the grid shape.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0072-edit-distance/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;72. Edit Distance — https://leetcode.com/problems/edit-distance/
 

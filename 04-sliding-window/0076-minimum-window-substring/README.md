@@ -1,27 +1,44 @@
 # 76. Minimum Window Substring
 
-**Pattern:** Sliding window (variable size, "grow to satisfy, shrink to minimize")
+**Pattern:** Sliding window (variable size — grow to satisfy, shrink to minimize)
 **Difficulty:** Hard
 **Link:** https://leetcode.com/problems/minimum-window-substring/
 
 ## The problem in plain words
 
-You have a big string `s` and a small string `t`. Find the *shortest* piece of
-`s` (a contiguous chunk) that contains everything in `t` — and duplicates count.
-If `t` is `"AABC"`, your window must contain at least two `A`s, one `B`, one `C`.
-If no chunk works, return `""`.
+You have a big string `s` and a small string `t`. Find the *shortest* piece of `s`
+(a contiguous chunk) that contains everything in `t` — and duplicates count. If `t`
+is `"AABC"`, your chunk must hold at least two `A`s, one `B`, one `C`. If no chunk
+works, return `""`.
+
+```diagram
+   s = "A D O B E C O D E B A N C"      t = "A B C"
+
+   many chunks cover t; we want the SHORTEST one.
+
+   [A D O B E C]        covers, length 6
+              [C O D E B A N C]  covers, length 8
+                       [B A N C] covers, length 4   <- shortest
+```
 
 ## Why this matters
 
-The deeper problem is finding the **shortest span of a stream that satisfies a coverage requirement** — "contains at least this much of everything I need" — with the counts mattering. The fundamental operation is *expand until valid, then contract while still valid*, tracking closeness-to-satisfied as a single integer so you never recount a window from scratch.
+The deeper problem is: **the shortest span of a stream that meets a coverage
+requirement** — "contains at least this much of everything I need," with the counts
+mattering. The reusable move is *expand until valid, then contract while still
+valid*, tracking how close you are to satisfied as a single number so you never
+recount a window from scratch.
 
-This "smallest window that covers a requirement" pattern is genuinely useful:
+This "smallest window that covers a requirement" shape is useful. The shortest time
+span containing at least one of every event type — a full request, response, ack —
+is this. The tightest passage of a document that contains all the query terms is
+how a highlighted search snippet gets chosen. The minimal segment containing a
+required set of markers shows up in signal and sequence search.
 
-- **Log and monitoring queries** — the shortest time span containing at least one of every event type you care about (e.g., a full request→response→ack sequence).
-- **Search-result snippet generation** — the tightest passage of a document that contains all the query terms, which is how highlighted snippets are chosen.
-- **Bioinformatics and signal search** — the minimal segment containing a required set of markers.
-
-What we're solving for is **turning an `O(n^2)`-or-worse recount into `O(n)`**: the `formed`/`required` counter makes "is this window valid?" an O(1) check updated incrementally as characters enter and leave, so both edges only move forward and each character is touched a constant number of times.
+What the good version buys you is turning a re-count-everything approach into one
+forward pass. A `formed`/`required` counter makes "is this window valid?" a
+one-step check, updated as characters enter and leave, so both edges only move
+forward.
 
 ## Start from the obvious
 
@@ -37,9 +54,8 @@ for each start i:
 return best
 ```
 
-That's `O(n^2)` substrings, and each coverage check re-counts characters — roughly
-`O(n^2 * (n + m))`. It's correct and it pins down exactly what "covers" means. Now
-find the waste.
+That's about `n × n` substrings, and each coverage check re-counts characters. It's
+correct and it pins down exactly what "covers" means. Now find the waste.
 
 ## Find the waste
 
@@ -48,66 +64,75 @@ Two expensive things happen:
 1. **Coverage is recomputed from scratch** for every substring, even though
    neighboring windows differ by one character.
 2. Once a window covers `t`, making it *longer* can never help — so all that extra
-   scanning to the right is pointless. What we actually want, once covered, is to
-   pull the **left** edge in and see how small we can get while staying covered.
+   scanning to the right is pointless. Once covered, what you actually want is to
+   pull the **left** edge in and see how small you can get while staying covered.
 
-That's the two-move rhythm of a variable sliding window: **expand until valid,
-then contract while valid.**
+That's the two-move rhythm of a variable sliding window: **expand until valid, then
+contract while valid.**
 
 ## The insight
 
 Keep target counts `need` (from `t`) and live counts `window` (for the current
-chunk). The trick that makes coverage O(1) to check: a counter `formed` = how many
-*distinct* required characters have currently hit their full required count. When
-`formed` equals the number of distinct characters in `t`, the window covers `t`.
+chunk). The trick that makes coverage a one-step check: a counter `formed` = how
+many *distinct* required characters have currently hit their full required count.
+When `formed` equals the number of distinct characters in `t`, the window covers
+`t`.
 
-```
-expand right, adding s[right] to window
-    if that character just reached its needed count: formed += 1
-while formed == required:              # window is valid — try to shrink
-    record it if it's the smallest so far
-    remove s[left] from window
-    if that drops a character below its need: formed -= 1
-    left += 1
+```diagram
+   s = "A D O B E C ...      B A N C"     t = "A B C"   need={A:1,B:1,C:1}
+
+   EXPAND right until formed == 3 (all requirements met):
+
+   [A D O B E C]         window has A,B,C -> formed=3, VALID, len 6
+    L         R          record best = 6
+
+   now SHRINK left while still valid:
+    [D O B E C]          dropped A -> A missing, formed=2, STOP
+     L       R           (best stays 6)
+
+   keep expanding R, later reach the tail:
+
+              [B A N C]  window has A,B,C -> formed=3, VALID, len 4
+               L     R   record best = 4  (smaller!)
+
+   shrinking drops B -> formed=2, STOP.  answer = "BANC"
 ```
 
 - **Expanding** finds coverage.
-- **Shrinking** (the inner `while`) squeezes each valid window to its minimum, and
+- **Shrinking** (the inner loop) squeezes each valid window to its smallest and
   stops the moment removing one more character would break coverage.
 
-`formed` turns "is the window valid?" from a full recount into a single integer
-comparison, updated as characters enter and leave. Both `left` and `right` only
-move forward.
+`formed` turns "is the window valid?" from a full recount into a single comparison,
+updated as characters enter and leave. Both `left` and `right` only move forward.
 
 ## Complexity
 
-- **Time:** `O(n + m)` — building `need` is `O(m)`; then each character of `s` is
-  added by `right` once and removed by `left` at most once.
-- **Space:** `O(m)` — the `need` and `window` maps hold at most the distinct
-  characters of `t` (window may briefly hold more, bounded by the alphabet).
+- **Time: about n + m steps.** Building `need` is about `m`; then each character of
+  `s` is added by `right` once and removed by `left` at most once.
+- **Extra memory: about m.** The `need` and `window` maps hold at most the distinct
+  characters of `t`.
 
 ## Pitfalls
 
 - **Counting duplicates wrong.** `t = "AA"` needs *two* A's; a set-based "have I
   seen A?" check silently accepts one. Track counts, and only bump `formed` when a
-  character reaches *exactly* its needed count (using `==`, not `>=`, so it fires
+  character reaches *exactly* its needed count (use `==`, not `>=`, so it fires
   once).
-- **Shrinking too far or not enough.** Decrement `formed` only when a removed
-  character drops *below* its requirement — an over-supplied character leaving
-  keeps the window valid.
+- **Shrinking too far.** Drop `formed` only when a removed character falls *below*
+  its requirement — an over-supplied character leaving keeps the window valid.
 - Forgetting to record the best window *before* you shrink past validity — capture
-  it at the top of the `while`.
-- Edge cases: empty `s` or `t`, or `t` longer than what `s` can supply → return
-  `""`. Guard `best_len == infinity` at the end.
-- Returning the length instead of the actual substring — save `best_start` too.
+  it at the top of the shrink loop.
+- Empty `s` or `t`, or `t` longer than what `s` can supply → return `""`. Guard the
+  "no window ever found" case at the end.
+- Returning the length instead of the actual substring — save the best start too.
 
 ## Transfer
 
 This is the canonical "grow to satisfy a constraint, then shrink to optimize"
-window, and the `formed`/`required` counter trick — tracking *how close to valid*
-you are as an O(1) number — reappears widely:
+window, and the `formed`/`required` counter — tracking *how close to valid* you are
+as a single number — reappears widely:
 [Longest Substring Without Repeating Characters / 3](../0003-longest-substring-without-repeating-characters/),
 [Longest Repeating Character Replacement / 424](../0424-longest-repeating-character-replacement/),
-"smallest subarray with sum ≥ target", and "permutation in string". Whenever you
-need the *shortest* window meeting a coverage condition, reach for expand-then-
-contract with a satisfaction counter.
+"smallest subarray with sum at least target," and "permutation in string." Whenever
+you need the *shortest* window meeting a coverage condition, reach for
+expand-then-contract with a satisfaction counter.

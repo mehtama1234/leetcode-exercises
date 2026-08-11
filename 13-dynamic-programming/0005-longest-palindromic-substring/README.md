@@ -10,21 +10,36 @@ Find the longest contiguous slice of `s` that reads the same both ways. In
 `"babad"` the answer is `"bab"` (or `"aba"` — ties are fine). In `"cbbd"` it's
 `"bb"`.
 
+```diagram
+   s = "babad"
+        b a b a d
+        \___/          "bab" reads the same both ways, length 3
+          \___/        "aba" also length 3 -> either is accepted
+
+   answer: "bab" (or "aba")
+```
+
 ## Why this matters
 
-Underneath the puzzle is a core string operation: **find the largest region with a mirror symmetry**, reusing sub-results so you never re-verify the same interior twice. The recurrence "a span is symmetric iff its ends match and the inside already is" is the reusable idea.
+Underneath the puzzle is a core string operation: **find the largest region with a
+mirror symmetry**, reusing sub-results so you never re-verify the same interior
+twice. The reusable idea is the recurrence — a span is symmetric only when its ends
+match and its inside already is.
 
-Where symmetry-detection-with-reuse actually shows up:
+Symmetry-detection-with-reuse is a real task. DNA hairpins and inverted repeats are
+reverse-complement palindromes, so finding the longest one flags secondary
+structure in RNA and DNA. Detecting mirrored or repeated patterns in text and logs
+uses the same expand-from-center idea, and spotting the longest reusable structure
+inside data underlies compression and diffing.
 
-- **Bioinformatics** — DNA hairpins and inverted repeats are reverse-complement palindromes; finding the longest one flags secondary structure in RNA/DNA.
-- **Text and log analysis** — detecting mirrored or repeated patterns, and the same expand-from-center idea drives fuzzy substring matching.
-- **Compression and diffing** — spotting the longest reusable structure inside data.
-
-What the good solution buys is **time and memory**: brute force is `O(n^3)` because it re-checks overlapping interiors; the DP recurrence (and the expand-around-center form) reuses those already-decided interiors to drop to `O(n^2)` time and `O(1)` space — the difference between "hangs on a long genome read" and "returns instantly."
+The fast version buys time and memory: brute force is about `n³` because it
+re-checks overlapping interiors; reusing those already-decided interiors drops it
+to about `n²` time and constant space — the difference between "hangs on a long
+genome read" and "returns at once."
 
 ## Start from the obvious
 
-Every substring, checked for being a palindrome, keep the longest:
+Check every substring for being a palindrome, keep the longest:
 
 ```
 best = ""
@@ -35,14 +50,14 @@ for i in range(n):
             best = sub
 ```
 
-Correct, but `O(n^2)` substrings times an `O(n)` palindrome check is `O(n^3)`.
-The check is where the waste hides.
+Correct, but about `n²` substrings times an about-`n` palindrome check is about
+`n³`. The check is where the waste hides.
 
 ## Find the waste
 
 Testing whether `s[i..j]` is a palindrome compares the two ends and then walks
-inward — re-checking `s[i+1..j-1]`, a stretch we may already have judged. The same
-inner regions get re-examined again and again. The escape is the recurrence:
+inward — re-checking `s[i+1..j-1]`, a stretch you may already have judged. The same
+inner regions get re-examined again and again. The escape is a recurrence:
 
 > a stretch is a palindrome iff its **ends match** and the part **strictly inside**
 > is also a palindrome.
@@ -56,30 +71,65 @@ interior, so matching ends make it a palindrome outright.
 
 ## The insight
 
-**Tabulation (teaching form).** Fill boolean `dp[i][j]`. Each cell depends on the
-one diagonally inside it, `dp[i+1][j-1]`, so fill by increasing length (`i`
-descending, `j` ascending). Track the widest `True` span. `O(n^2)` time and space.
+**Tabulation (teaching form).** Fill a boolean table `dp[i][j]` (`i` = start, `j` =
+end). Each cell depends on the one **diagonally inside** it, `dp[i+1][j-1]` — down
+one row, left one column — so fill short spans before long ones (`i` descending,
+`j` ascending) and track the widest `True` span as you go.
+
+```diagram
+   s = "cbbd"     dp[i][j] = is s[i..j] a palindrome?
+   rows = i (start), cols = j (end)
+
+          j=0   j=1   j=2   j=3
+        +-----+-----+-----+-----+
+   i=0  |  T  |  F  |  F  |  F  |   c
+        +-----+-----+-----+-----+
+   i=1  |     |  T  |  T  |  F  |   b   dp[1][2] = "bb"  <- widest True
+        +-----+-----+-----+-----+
+   i=2  |     |     |  T  |  F  |   b
+        +-----+-----+-----+-----+
+   i=3  |     |     |     |  T  |   d
+        +-----+-----+-----+-----+
+
+   dp[1][2] ("bb"): ends s[1]=='b' == s[2]=='b', and j-i < 2 (adjacent pair,
+   no interior) -> T. Length 2 beats every single char, so best = "bb".
+```
+
+The dependency is always that one diagonal step inward:
+
+```diagram
+        dp[i+1][j-1]  ---->  dp[i][j]
+             ^                  |
+        inner span          add s[i] on the left, s[j] on the right;
+        (down 1, left 1)    if those two match and the inside was T, this is T
+
+   e.g. dp[0][4] would read dp[1][3]; you can't know the outer span
+   until the inner one is filled -> fill shortest spans first
+```
+
+This is about `n²` time and about `n²` space.
 
 **Expand around center (optimal).** Read the recurrence from the inside out. Every
-palindrome grows outward from a center — a single character (odd length) or the
-gap between two characters (even length), `2n - 1` centers total. From each center
-push two pointers outward while the ends match; the widest window any center
-reaches is the answer. This is the same `dp[i+1][j-1] -> dp[i][j]` growth, but on
-one sliding window instead of a stored table — `O(n^2)` time, `O(1)` space.
+palindrome grows outward from a center — a single character (odd length) or the gap
+between two characters (even length), `2n - 1` centers total. From each, push two
+pointers outward while the ends match; the widest window any center reaches is the
+answer. Same `dp[i+1][j-1] -> dp[i][j]` growth, but on one sliding window instead
+of a stored table — about `n²` time, constant space.
 
-(There is an `O(n)` method, Manacher's algorithm, but it's an intricate special
+(There is an about-`n` method, Manacher's algorithm, but it's an intricate special
 case; expand-around-center is the honest, general DP-derived answer.)
 
 ## Complexity
 
-- **Brute force:** `O(n^3)` time.
-- **DP table:** `O(n^2)` time, `O(n^2)` space.
-- **Expand around center:** `O(n^2)` time, `O(1)` space — the natural endpoint.
+- **Brute force:** about `n³` time.
+- **DP table:** about `n²` time, about `n²` space.
+- **Expand around center:** about `n²` time, constant space — the natural
+  endpoint.
 
 ## Pitfalls
 
-- Handle the empty string and length-1 strings up front so index math doesn't
-  reach out of bounds.
+- Handle the empty string and length-1 strings up front so index math doesn't reach
+  out of bounds.
 - When expanding, the `while` loop overshoots by one step on both sides before it
   stops — pull `left` and `right` back in by one before measuring the window.
 - Both odd and even centers are required; skipping even centers misses answers like
@@ -89,6 +139,6 @@ case; expand-around-center is the honest, general DP-derived answer.)
 ## Transfer
 
 This is [Palindromic Substrings / 647](../0647-palindromic-substrings/) with the
-counter swapped for a "widest so far" tracker — same recurrence, same centers.
-The substring-DP shape (`dp[i][j]` from a smaller interval inside it) recurs in
-Longest Palindromic Subsequence and other interval DPs.
+counter swapped for a "widest so far" tracker — same recurrence, same centers. The
+substring-DP shape (`dp[i][j]` from a smaller interval inside it) recurs in Longest
+Palindromic Subsequence and other interval DPs.

@@ -6,84 +6,109 @@
 
 ## The problem in plain words
 
-A row of balloons, each with a number. When you burst balloon `i` you earn
-`nums[left] × nums[i] × nums[right]`, where `left` and `right` are its neighbours
-*at that moment* (a missing edge counts as 1). After bursting, the gap closes and
-neighbours change. Choose an order to burst all of them that earns the most coins.
+Each balloon holds a number. When you burst balloon `i`, you earn
+`nums[left] * nums[i] * nums[right]`, where left and right are its neighbors *at that
+moment* (a missing end counts as 1). After it pops, its neighbors become adjacent.
+Pop every balloon in some order to earn the most coins.
+
+```diagram
+   nums = [3, 1, 5, 8]   (pad ends with virtual 1's: [1, 3, 1, 5, 8, 1])
+
+   burst 1: 3*1*5 = 15   -> [1, 3, 5, 8, 1]
+   burst 5: 3*5*8 = 120  -> [1, 3, 8, 1]
+   burst 3: 1*3*8 = 24   -> [1, 8, 1]
+   burst 8: 1*8*1 = 8
+   total = 167   (this order is optimal)
+```
 
 ## Why this matters
 
-The teachable idea is *interval DP with a reversal of intuition: don't ask what
-happens first, ask what happens last.* The naive "which balloon do I pop first?"
-framing is a trap — popping first rewires everyone's neighbours, so subproblems
-overlap in a tangled, non-independent way. Flipping to "which balloon pops **last**
-in this range?" is what makes the two sides independent, and that "split on the final
-operation" trick is the reusable jewel here.
+The natural instinct — decide which balloon to pop *first* — is a trap. The moment
+you pop one, everyone's neighbors shift, so the subproblems overlap in a tangled way
+you can't cleanly separate. The fix is to think backwards: in a range of balloons,
+decide which one pops **last**. When balloon `k` is last, everything else in the
+range is already gone, so its neighbors are exactly the fixed walls on either side of
+the range. That pins down its score and cleanly splits the range into two
+independent pieces — the balloons left of `k` and the balloons right of `k`.
 
-The pattern generalizes to any "combine a range in the best order, where each merge's
-cost depends on the pieces at its edges." Matrix-chain multiplication (parenthesize
-to minimize multiplications) is the classic industrial version. Optimal file/segment
-merging, building an optimal binary search tree, and cost-of-joining problems in
-query planners are all interval DPs with this same "pick the last/topmost split"
-structure.
-
-What the good solution buys is `O(n³)` time — polynomial — versus the `n!` of trying
-every burst order, which is intractable past a dozen balloons.
+"Split on the last (or top-level) operation so the two sides stop interfering" is the
+signature move of *interval DP*, and it recurs in matrix-chain multiplication,
+optimal parenthesization, and parsing.
 
 ## Start from the obvious
 
-Try every possible next balloon to burst, recurse on what's left, take the max.
-But "what's left" isn't two clean halves — bursting a middle balloon merges its
-neighbours, so the remaining balloons don't split into independent groups. The
-subproblems overlap in a way you can't cleanly memoize by "set of remaining
-balloons" without exponential state. This framing fights you.
+Try every possible burst order. That's `n!` orders — hopeless past a handful of
+balloons. Worse, popping first makes overlapping subproblems messy to reuse.
 
-## Find the waste — flip first to last
+The reframing: pad the array with a `1` on each end, and think about *open* ranges
+`(l, r)` — the balloons strictly between walls `l` and `r`. For that range, try each
+`k` inside it as the last balloon to pop. When `k` is last, its neighbors are the
+walls `l` and `r`, and the two sides `(l, k)` and `(k, r)` are solved independently.
 
-Pad the array with virtual `1`s at both ends. Consider the open interval strictly
-between walls `l` and `r`. Ask: **which balloon `k` in this interval is the *last* to
-burst?** When `k` is last, every other balloon in the interval is already gone, so at
-that instant `k`'s neighbours are exactly the fixed walls `l` and `r`. It earns
-`nums[l] × nums[k] × nums[r]` — and, crucially, the balloons to `k`'s left and right
-were burst *within their own subintervals*, `(l, k)` and `(k, r)`, which are now
-**independent** because `l`, `k`, `r` are permanent walls for them.
+```diagram
+   range (l ......... r), pick k as the LAST to burst inside it
 
-```
-best(l, r) = max over k in (l, r) of
-             nums[l]*nums[k]*nums[r] + best(l, k) + best(k, r)
+     l   [ ... left side ... ]   k   [ ... right side ... ]   r
+
+   k is last, so left side and right side are already empty when k pops:
+   score(k as last) = nums[l]*nums[k]*nums[r] + best(l, k) + best(k, r)
+                       \_____ walls are l and r _____/   \____ two subranges ____/
 ```
 
-## The insight (tabulate)
+## The insight — an interval grid
 
-`dp[l][r]` = most coins from bursting everything strictly between walls `l` and `r`.
-Fill by increasing gap `r - l`, so both `dp[l][k]` and `dp[k][r]` (shorter intervals)
-are ready:
+Let `dp[l][r]` = most coins from bursting every balloon strictly between walls `l`
+and `r`. Fill it by **increasing gap** (the distance `r - l`), so short ranges are
+solved before the longer ranges that depend on them.
 
+```diagram
+   balloons padded: index 0..5 = [1, 3, 1, 5, 8, 1]
+   dp[l][r], only l < r used (upper triangle)
+
+            r:  1    2    3    4    5
+       l=0  |  0 |  3 | 30 |159 |167 |    grow along diagonals (gap = r-l)
+       l=1  |    |  0 | 15 |135 |159 |
+       l=2  |    |    |  0 | 40 | 48 |
+       l=3  |    |    |    |  0 | 40 |
+       l=4  |    |    |    |    |  0 |
+   adjacent-wall ranges (gap 1) hold no balloons = 0;
+   the gap grows outward toward dp[0][5] = 167.
 ```
-for gap in 2..n-1:
-    for l in 0..n-1-gap:
-        r = l + gap
-        dp[l][r] = max(nums[l]*nums[k]*nums[r] + dp[l][k] + dp[k][r]
-                       for k in l+1..r-1)
+
+Now watch cell `dp[l][r]` fill. It scans every `k` between the walls, and for each
+`k` it reads two already-finished cells — one to its **left** in the row
+(`dp[l][k]`) and one **below** in the column (`dp[k][r]`) — then keeps the best:
+
+```diagram
+   filling dp[l][r]: try each k in (l, r) as last
+
+        dp[l][k]   (same row, shorter range on the left)
+             \
+              \         dp[k][r]   (same column, shorter range on the right)
+               \       /
+                v     v
+        dp[l][r] = max over k of  nums[l]*nums[k]*nums[r] + dp[l][k] + dp[k][r]
+
+   both dp[l][k] and dp[k][r] are shorter ranges, already filled -> safe to read
 ```
 
-Answer is `dp[0][n-1]` over the fully padded array.
+The bottom-line answer is `dp[0][n-1]` over the padded array — the whole span
+between the two virtual walls.
 
 ## Complexity
 
-- **Time:** `O(n³)` — `O(n²)` intervals, each scanning up to `n` choices of last
-  balloon.
-- **Space:** `O(n²)` for the interval table.
+- **Time: about n³ steps.** There are about n² ranges, and each scans up to n choices
+  of `k`. Doubling n multiplies the work by roughly eight.
+- **Extra memory: about n²** for the range grid.
 
 ## Pitfalls
 
-- **Thinking "first" instead of "last."** First-to-burst does not give independent
-  subproblems; last-to-burst does. This single flip is the whole problem.
-- The multiplication uses the **walls** `l` and `r`, not `k-1`/`k+1` — because when
-  `k` is last, the walls *are* its neighbours.
-- Pad with `1`s on both ends so edge balloons have a defined neighbour, and treat
-  `(l, r)` as the *open* interval (base case `r - l < 2` earns 0).
-- Empty input returns 0.
+- Splitting on the *first* balloon to pop. Then neighbors keep shifting and the two
+  sides aren't independent. Split on the *last* one.
+- Forgetting the padding `1`s. They give the edge balloons a well-defined neighbor
+  and let you use fixed walls `l` and `r`.
+- Filling in the wrong order. A range needs its sub-ranges done first, so iterate by
+  increasing gap, not by row.
 
 ## Transfer
 

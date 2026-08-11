@@ -17,31 +17,61 @@
 <p><strong>Pattern:</strong> Dynamic programming (substring table) → expand-around-center <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/longest-palindromic-substring/</p>
 <h2>The problem in plain words</h2>
 <p>Find the longest contiguous slice of <code>s</code> that reads the same both ways. In <code>&quot;babad&quot;</code> the answer is <code>&quot;bab&quot;</code> (or <code>&quot;aba&quot;</code> — ties are fine). In <code>&quot;cbbd&quot;</code> it&#x27;s <code>&quot;bb&quot;</code>.</p>
+<pre class="diagram">   s = &quot;babad&quot;
+        b a b a d
+        \___/          &quot;bab&quot; reads the same both ways, length 3
+          \___/        &quot;aba&quot; also length 3 -&gt; either is accepted
+
+   answer: &quot;bab&quot; (or &quot;aba&quot;)</pre>
 <h2>Why this matters</h2>
-<p>Underneath the puzzle is a core string operation: <strong>find the largest region with a mirror symmetry</strong>, reusing sub-results so you never re-verify the same interior twice. The recurrence &quot;a span is symmetric iff its ends match and the inside already is&quot; is the reusable idea.</p>
-<p>Where symmetry-detection-with-reuse actually shows up:</p>
-<ul><li><strong>Bioinformatics</strong> — DNA hairpins and inverted repeats are reverse-complement palindromes; finding the longest one flags secondary structure in RNA/DNA.</li><li><strong>Text and log analysis</strong> — detecting mirrored or repeated patterns, and the same expand-from-center idea drives fuzzy substring matching.</li><li><strong>Compression and diffing</strong> — spotting the longest reusable structure inside data.</li></ul>
-<p>What the good solution buys is <strong>time and memory</strong>: brute force is <code>O(n^3)</code> because it re-checks overlapping interiors; the DP recurrence (and the expand-around-center form) reuses those already-decided interiors to drop to <code>O(n^2)</code> time and <code>O(1)</code> space — the difference between &quot;hangs on a long genome read&quot; and &quot;returns instantly.&quot;</p>
+<p>Underneath the puzzle is a core string operation: <strong>find the largest region with a mirror symmetry</strong>, reusing sub-results so you never re-verify the same interior twice. The reusable idea is the recurrence — a span is symmetric only when its ends match and its inside already is.</p>
+<p>Symmetry-detection-with-reuse is a real task. DNA hairpins and inverted repeats are reverse-complement palindromes, so finding the longest one flags secondary structure in RNA and DNA. Detecting mirrored or repeated patterns in text and logs uses the same expand-from-center idea, and spotting the longest reusable structure inside data underlies compression and diffing.</p>
+<p>The fast version buys time and memory: brute force is about <code>n³</code> because it re-checks overlapping interiors; reusing those already-decided interiors drops it to about <code>n²</code> time and constant space — the difference between &quot;hangs on a long genome read&quot; and &quot;returns at once.&quot;</p>
 <h2>Start from the obvious</h2>
-<p>Every substring, checked for being a palindrome, keep the longest:</p>
+<p>Check every substring for being a palindrome, keep the longest:</p>
 <pre><code>best = &quot;&quot;
 for i in range(n):
     for j in range(i, n):
         sub = s[i:j+1]
         if sub == sub[::-1] and len(sub) &gt; len(best):
             best = sub</code></pre>
-<p>Correct, but <code>O(n^2)</code> substrings times an <code>O(n)</code> palindrome check is <code>O(n^3)</code>. The check is where the waste hides.</p>
+<p>Correct, but about <code>n²</code> substrings times an about-<code>n</code> palindrome check is about <code>n³</code>. The check is where the waste hides.</p>
 <h2>Find the waste</h2>
-<p>Testing whether <code>s[i..j]</code> is a palindrome compares the two ends and then walks inward — re-checking <code>s[i+1..j-1]</code>, a stretch we may already have judged. The same inner regions get re-examined again and again. The escape is the recurrence:</p>
+<p>Testing whether <code>s[i..j]</code> is a palindrome compares the two ends and then walks inward — re-checking <code>s[i+1..j-1]</code>, a stretch you may already have judged. The same inner regions get re-examined again and again. The escape is a recurrence:</p>
 <blockquote>a stretch is a palindrome iff its <strong>ends match</strong> and the part <strong>strictly inside</strong> is also a palindrome.</blockquote>
 <pre><code>dp[i][j] = (s[i] == s[j]) and (j - i &lt; 2 or dp[i+1][j-1])</code></pre>
 <p><code>j - i &lt; 2</code> is the base case: a single character or an adjacent pair has no interior, so matching ends make it a palindrome outright.</p>
 <h2>The insight</h2>
-<p><strong>Tabulation (teaching form).</strong> Fill boolean <code>dp[i][j]</code>. Each cell depends on the one diagonally inside it, <code>dp[i+1][j-1]</code>, so fill by increasing length (<code>i</code> descending, <code>j</code> ascending). Track the widest <code>True</code> span. <code>O(n^2)</code> time and space.</p>
-<p><strong>Expand around center (optimal).</strong> Read the recurrence from the inside out. Every palindrome grows outward from a center — a single character (odd length) or the gap between two characters (even length), <code>2n - 1</code> centers total. From each center push two pointers outward while the ends match; the widest window any center reaches is the answer. This is the same <code>dp[i+1][j-1] -&gt; dp[i][j]</code> growth, but on one sliding window instead of a stored table — <code>O(n^2)</code> time, <code>O(1)</code> space.</p>
-<p>(There is an <code>O(n)</code> method, Manacher&#x27;s algorithm, but it&#x27;s an intricate special case; expand-around-center is the honest, general DP-derived answer.)</p>
+<p><strong>Tabulation (teaching form).</strong> Fill a boolean table <code>dp[i][j]</code> (<code>i</code> = start, <code>j</code> = end). Each cell depends on the one <strong>diagonally inside</strong> it, <code>dp[i+1][j-1]</code> — down one row, left one column — so fill short spans before long ones (<code>i</code> descending, <code>j</code> ascending) and track the widest <code>True</code> span as you go.</p>
+<pre class="diagram">   s = &quot;cbbd&quot;     dp[i][j] = is s[i..j] a palindrome?
+   rows = i (start), cols = j (end)
+
+          j=0   j=1   j=2   j=3
+        +-----+-----+-----+-----+
+   i=0  |  T  |  F  |  F  |  F  |   c
+        +-----+-----+-----+-----+
+   i=1  |     |  T  |  T  |  F  |   b   dp[1][2] = &quot;bb&quot;  &lt;- widest True
+        +-----+-----+-----+-----+
+   i=2  |     |     |  T  |  F  |   b
+        +-----+-----+-----+-----+
+   i=3  |     |     |     |  T  |   d
+        +-----+-----+-----+-----+
+
+   dp[1][2] (&quot;bb&quot;): ends s[1]==&#x27;b&#x27; == s[2]==&#x27;b&#x27;, and j-i &lt; 2 (adjacent pair,
+   no interior) -&gt; T. Length 2 beats every single char, so best = &quot;bb&quot;.</pre>
+<p>The dependency is always that one diagonal step inward:</p>
+<pre class="diagram">        dp[i+1][j-1]  ----&gt;  dp[i][j]
+             ^                  |
+        inner span          add s[i] on the left, s[j] on the right;
+        (down 1, left 1)    if those two match and the inside was T, this is T
+
+   e.g. dp[0][4] would read dp[1][3]; you can&#x27;t know the outer span
+   until the inner one is filled -&gt; fill shortest spans first</pre>
+<p>This is about <code>n²</code> time and about <code>n²</code> space.</p>
+<p><strong>Expand around center (optimal).</strong> Read the recurrence from the inside out. Every palindrome grows outward from a center — a single character (odd length) or the gap between two characters (even length), <code>2n - 1</code> centers total. From each, push two pointers outward while the ends match; the widest window any center reaches is the answer. Same <code>dp[i+1][j-1] -&gt; dp[i][j]</code> growth, but on one sliding window instead of a stored table — about <code>n²</code> time, constant space.</p>
+<p>(There is an about-<code>n</code> method, Manacher&#x27;s algorithm, but it&#x27;s an intricate special case; expand-around-center is the honest, general DP-derived answer.)</p>
 <h2>Complexity</h2>
-<ul><li><strong>Brute force:</strong> <code>O(n^3)</code> time.</li><li><strong>DP table:</strong> <code>O(n^2)</code> time, <code>O(n^2)</code> space.</li><li><strong>Expand around center:</strong> <code>O(n^2)</code> time, <code>O(1)</code> space — the natural endpoint.</li></ul>
+<ul><li><strong>Brute force:</strong> about <code>n³</code> time.</li><li><strong>DP table:</strong> about <code>n²</code> time, about <code>n²</code> space.</li><li><strong>Expand around center:</strong> about <code>n²</code> time, constant space — the natural endpoint.</li></ul>
 <h2>Pitfalls</h2>
 <ul><li>Handle the empty string and length-1 strings up front so index math doesn&#x27;t reach out of bounds.</li><li>When expanding, the <code>while</code> loop overshoots by one step on both sides before it stops — pull <code>left</code> and <code>right</code> back in by one before measuring the window.</li><li>Both odd and even centers are required; skipping even centers misses answers like <code>&quot;bb&quot;</code>.</li><li>Ties are allowed — don&#x27;t over-engineer to return a *specific* one.</li></ul>
 <h2>Transfer</h2>

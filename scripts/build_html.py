@@ -220,6 +220,10 @@ code{background:var(--accent-soft);color:#7a3f12;padding:.1em .35em;border-radiu
 pre{background:var(--code-bg);color:var(--code-ink);padding:16px 18px;border-radius:10px;
   overflow-x:auto;margin:1em 0}
 pre code{background:none;color:inherit;padding:0;font-size:13px;line-height:1.6}
+pre.diagram{background:#fffdf8;color:#2b2620;border:1px solid #e0d6c4;
+  border-left:4px solid var(--accent);border-radius:8px;padding:14px 16px;
+  font:13px/1.5 "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  white-space:pre;box-shadow:0 1px 2px rgba(120,90,50,.06)}
 .solution{margin-top:40px}
 .solution h2{font-size:21px;border-top:1px solid var(--line);padding-top:1.2em}
 .srcnote{font-size:13px;color:var(--muted)}

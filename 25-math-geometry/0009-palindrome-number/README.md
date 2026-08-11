@@ -1,102 +1,115 @@
 # 9. Palindrome Number
 
-**Pattern:** Digit manipulation (reverse half to avoid overflow)
+**Pattern:** Reverse only half the digits and meet in the middle
 **Difficulty:** Easy
 **Link:** https://leetcode.com/problems/palindrome-number/
 
 ## The problem in plain words
 
-Does the number read the same forwards and backwards? `121` yes, `12321` yes,
-`123` no. Negative numbers are always "no" (the minus sign has nothing to pair
-with at the other end). And you're asked to do it *without* turning the number
-into a string.
+Does a number read the same forwards and backwards? `121` does. `-121` does not
+(the minus sign has no partner on the other end). `10` does not (backwards it
+would be `01`, which is just `1`). Answer yes or no — and do it without turning
+the number into text.
+
+```diagram
+    1 2 1                 1 2 3 2 1
+    ^   ^  same           ^       ^  same
+      ^   middle alone      ^   ^  same
+                              ^   middle alone
+    -> palindrome         -> palindrome
+
+    1 2                   1 0
+    ^ ^  differ           ^ ^  differ
+    -> no                 -> no
+```
 
 ## Why this matters
 
-Underneath the puzzle is a small but real discipline: *working with a number's
-digits using only arithmetic — `% 10` to read the last digit, `// 10` to drop
-it — instead of leaning on string conversion.* That matters when strings aren't
-available or cheap: embedded firmware, tight numeric kernels, or any place
-where allocating a string per check is wasteful.
+The plain question is symmetry: does the front half mirror the back half? The
+lazy way is to build the entire reversed number and compare. But that reversed
+number can overflow a fixed-width integer even when the original is fine — and it
+does twice the work you need. The real insight is that you only ever need *half*
+the digits to decide.
 
-The sharper lesson is the **overflow-avoidance** move. The obvious solution
-reverses the whole number and compares, but the reversed value can exceed a
-fixed-width integer even when the input fits — the same trap as Reverse Integer.
-The better solution reverses only the back half, so it never builds a number
-bigger than half the digits. That "only process half, meet in the middle" idea
-recurs whenever you compare a sequence to its mirror.
-
-What the good solution buys is **no risk of overflow** and an early stop: you're
-done after processing about half the digits, not all of them.
+Working from both ends toward the middle is a shape that shows up everywhere:
+checking a DNA strand reads the same both ways, validating that a message and its
+mirror match, comparing the start of a buffer against its reversed tail. Building
+half and stopping at the midpoint is the memory-cheap, overflow-safe version of
+that check.
 
 ## Start from the obvious
 
-Reverse the whole number and check if it equals the original:
+Reverse the whole number and compare to the original.
 
+```diagram
+   x = 1221        reversed = 0
+
+   pull 1 -> reversed = 1
+   pull 2 -> reversed = 12
+   pull 2 -> reversed = 122
+   pull 1 -> reversed = 1221
+
+   1221 == 1221  ->  palindrome
 ```
-if x < 0: return False
-rev = 0
-t = x
-while t > 0:
-    t, d = divmod(t, 10)
-    rev = rev * 10 + d
-return rev == x
-```
 
-Correct and clear. The honest first thought — and it exposes the weakness: in a
-fixed-width language `rev` can overflow for a large `x` whose reverse doesn't fit,
-even though `x` itself is fine.
-
-## Find the waste
-
-You don't need the *whole* reversed number to decide symmetry. A palindrome's
-front half mirrors its back half — so if you rebuild just the back half and
-compare it to what's left of the front, that's enough. Building only half the
-digits means the reversed value stays small: it can never overflow.
+This is correct and readable. Two costs, though. It touches every digit even
+though the two halves carry the same information. And the reversed value can grow
+past the machine's integer ceiling — for a wide number, the full reversal
+overflows while a half never would.
 
 ## The insight
 
-Peel digits off the **end** of `x` and grow `reversed_half`, while `x` shrinks
-from the front. Stop when `x <= reversed_half` — that's the moment they cross in
-the middle.
+Reverse only the *back* half while chopping digits off the *front*. When the
+shrinking front is no longer bigger than the growing back, the two have met in
+the middle — that's the moment to compare.
 
-```
-if x < 0 or (x % 10 == 0 and x != 0): return False   # negatives and trailing 0
-reversed_half = 0
-while x > reversed_half:
-    x, d = divmod(x, 10)
-    reversed_half = reversed_half * 10 + d
-return x == reversed_half or x == reversed_half // 10
+```diagram
+   x = 1221        back = 0        (loop while x > back)
+
+   x=1221, back=0   -> pull 1 -> x=122,  back=1
+   x=122,  back=1   -> pull 2 -> x=12,   back=12
+   x=12,   back=12  -> stop: x is no longer > back
+
+   even length: front (12) == back (12)  ->  palindrome
 ```
 
-- **Even digit count** (`1221`): the loop ends with `x == 12` and
-  `reversed_half == 12` → equal.
-- **Odd digit count** (`12321`): the middle digit ends up alone in
-  `reversed_half`; drop it with `reversed_half // 10` so `x == 12 == 123//... `.
-- The upfront guard rejects any number ending in `0` (except `0` itself), since
-  its reverse would have a leading zero and can't match.
+For an odd count of digits, the middle digit ends up stuck on the back half.
+Drop it by an integer divide by 10 before comparing:
+
+```diagram
+   x = 12321       back = 0
+
+   pull 1 -> x=1232, back=1
+   pull 2 -> x=123,  back=12
+   pull 3 -> x=12,   back=123     now x (12) <= back (123), stop
+                                  middle digit 3 is stuck on back
+   compare front to back//10:  12 == 123//10 == 12  ->  palindrome
+```
+
+Two quick pre-checks keep it clean: a negative number is never a palindrome, and
+any nonzero number ending in `0` can't be one either (its reverse would start
+with `0`).
 
 ## Complexity
 
-- **Time:** `O(d)` where `d` is the digit count — and we only process about
-  `d/2` of them.
-- **Space:** `O(1)` — two integers.
+- **Time: about d steps**, where d is the number of digits — and you only walk
+  half of them before the loop stops.
+- **Extra memory: constant.** A couple of integers. The half you build never
+  overflows the way a full reversal can.
 
 ## Pitfalls
 
-- **Negatives** — always false; the sign has no mirror.
-- **Trailing zero** — `10`, `120`, `1000021` are not palindromes; only `0`
-  itself ends in `0` and passes. Guard this up front.
-- **Odd vs even length** — forgetting the `reversed_half // 10` correction for
-  the lone middle digit is the classic bug.
-- **Full reversal overflow** — the whole-number reverse can overflow a
-  fixed-width int; reversing only half sidesteps it entirely.
+- Forgetting the odd-length case, where the lone middle digit must be dropped
+  with `back // 10` before comparing.
+- Not filtering out numbers that end in `0` (except `0` itself), like `10` or
+  `120`.
+- Reversing the whole number when half is enough — it works, but it can overflow
+  on a fixed-width machine.
 
 ## Transfer
 
-The "reverse via `% 10` / `// 10`" digit loop is shared with
-[Reverse Integer / 7](../0007-reverse-integer/). The "compare a sequence to its
-mirror, meeting in the middle" idea is the numeric cousin of the two-pointer
-string check in
-[Valid Palindrome / 125](https://leetcode.com/problems/valid-palindrome/) and
-[Palindrome Linked List / 234](https://leetcode.com/problems/palindrome-linked-list/).
+The reusable move is **process from both ends toward the middle, and stop once
+they meet instead of doing the full pass.** The same meeting-in-the-middle shape
+drives [Valid Palindrome / 125](https://leetcode.com/problems/valid-palindrome/)
+and any two-pointer symmetry check, and the digit-peeling shares its machinery
+with [Reverse Integer / 7](../0007-reverse-integer/).

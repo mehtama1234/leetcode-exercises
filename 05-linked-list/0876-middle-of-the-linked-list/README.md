@@ -1,85 +1,110 @@
 # 876. Middle of the Linked List
 
-**Pattern:** Fast/slow pointers (two pointers on a list)
+**Pattern:** Fast/slow pointers (two cursors at different speeds)
 **Difficulty:** Easy
 **Link:** https://leetcode.com/problems/middle-of-the-linked-list/
 
 ## The problem in plain words
 
 You have a singly linked list. Return the node in the middle. If the list has an
-even number of nodes there are two "middles" — return the second one.
+even number of nodes there are two middles — return the second one.
+
+```diagram
+   odd:   1 -> 2 -> 3 -> 4 -> 5        middle = 3
+                     ^
+   even:  1 -> 2 -> 3 -> 4             two middles: 2 and 3
+                     ^ return the second one -> 3
+```
 
 ## Why this matters
 
-The deeper problem is finding a *fractional position* in a sequence whose length
-you don't know up front and can't cheaply measure. The fundamental trick is the
-slow/fast pointer: advance one pointer twice as fast, and when it hits the end the
-slow one is at the middle — the length falls out for free, in a single pass.
+You want a spot halfway along a chain, but you don't know how long the chain is,
+and you can't cheaply measure it — a singly linked list only walks forward. So
+"the middle" sounds like it needs the length first.
 
-That "two cursors moving at different rates" idea is a reusable primitive. It's how
-you split a list in half for merge sort or the reorder problem, how streaming
-algorithms sample or bisect data whose size isn't known in advance, and the same
-family of tricks underlies reservoir sampling and single-pass median-ish estimates
-over a feed you can't rewind. Cycle detection (problems 141/142) is the same two-
-speed idea aimed at a different goal.
+It doesn't, and the way out is a reusable idea: run two cursors at different
+speeds. Move one twice as fast as the other. When the fast one reaches the end, it
+has covered the whole list while the slow one has covered exactly half — so the
+slow one is standing on the middle. The length falls out for free, in a single
+pass.
 
-What you're solving for is one pass and O(1) memory: no counting the length first
-and walking back, and no buffering nodes to index the middle. When the sequence is
-huge or arrives as a stream you get to read only once, "reach the middle by the
-time the fast pointer reaches the end" is what makes it cheap.
+That "two cursors, different rates" move is a primitive you'll reuse. It's how you
+split a list in half for merge sort or the reorder problem, how streaming code
+bisects a feed whose size isn't known ahead of time, and it's the same two-speed
+idea behind cycle detection (problems 141 and 142), aimed at a different goal.
+
+What you are buying is one pass and a fixed amount of memory: no counting the
+length and walking back, no buffering nodes to index the middle. When the list is
+huge or arrives as a stream you can read only once, "be at the middle by the time
+fast reaches the end" is what makes it cheap.
 
 ## Start from the obvious
 
-You can only find the middle *index* if you know the length. So count first,
-then walk halfway:
+You can only find the middle *index* if you know the length. So count first, then
+walk halfway.
 
-```
-n = number of nodes         # pass 1: walk the whole list counting
-node = head
-for _ in range(n // 2):     # pass 2: walk to the middle index
-    node = node.next
-return node
+```diagram
+   pass 1 (count):   1 -> 2 -> 3 -> 4 -> 5   ->  n = 5
+   pass 2 (walk):    step n/2 = 2 times from head
+                     head=1 -> 2 -> 3
+                                    ^ stop here, return 3
 ```
 
-That's correct and `O(n)`. It's the honest first thought — but notice it walks
-the list essentially twice.
+Correct, and it touches about n nodes — but notice it walks the list essentially
+twice.
 
 ## Find the waste
 
 The two passes exist only because we insisted on knowing `n` before moving. But
-"middle" has a cheaper definition: it is the point you reach when you've gone
+"the middle" has a cheaper meaning: it's the point you reach when you've gone
 *half* as far as the end. If something could measure "half the distance to the
-end" while walking, we'd never need a separate counting pass.
+end" while walking, the separate counting pass would never be needed.
 
 ## The insight
 
-Move two pointers at different speeds. `slow` takes one step per turn, `fast`
-takes two. By the time `fast` reaches the end of the list, it has travelled
-twice as far — so `slow` sits at exactly the halfway point.
+Move two pointers at different speeds from the head. `slow` takes one step per
+turn; `fast` takes two. By the time `fast` reaches the end, it has gone twice as
+far — so `slow` sits at the halfway point.
 
-```
-while fast and fast.next:
-    slow = slow.next
-    fast = fast.next.next
-return slow          # slow is now the middle
+```diagram
+   1 -> 2 -> 3 -> 4 -> 5 -> None
+   walk fast (2 steps) and slow (1 step) together:
+
+   start:  slow=1        fast=1
+   turn1:  slow=2        fast=3
+   turn2:  slow=3        fast=5
+   turn3:  fast.next is None -> stop
+           slow=3  <- the middle
 ```
 
-The loop condition does the work of choosing the correct middle for even
-lengths: `fast` stops when it or its `next` is `None`, and that leaves `slow`
-on the *second* of the two middles — exactly what the problem wants.
+For an even length, the loop stops one step earlier and leaves `slow` on the
+*second* of the two middles — exactly what the problem asks for.
+
+```diagram
+   1 -> 2 -> 3 -> 4 -> None
+
+   start:  slow=1        fast=1
+   turn1:  slow=2        fast=3
+   turn2:  slow=3        fast=None    (fast.next.next walked off)
+           fast is None -> stop
+           slow=3   <- the SECOND of the two middles
+```
+
+The loop condition `while fast and fast.next` is what picks the correct middle for
+even lengths.
 
 ## Complexity
 
-- **Time:** `O(n)` — one pass; `fast` covers the list once.
-- **Space:** `O(1)` — two pointers, nothing allocated.
+- **Time: about n steps.** One pass; `fast` covers the list once.
+- **Extra memory: fixed.** Two pointers, nothing allocated.
 
 ## Pitfalls
 
-- Loop guard must be `while fast and fast.next`. Drop the `fast.next` check and
-  `fast.next.next` blows up with a `NoneType` error on even-length lists.
+- The loop guard must be `while fast and fast.next`. Drop the `fast.next` check and
+  `fast.next.next` crashes on even-length lists.
 - Off-by-one: starting both pointers at `head` (not one at `head.next`) is what
-  gives the *second* middle. If a problem wanted the first middle, you'd start
-  `fast` one node ahead.
+  gives the *second* middle. To get the first middle instead, start `fast` one node
+  ahead.
 - Empty list: the loop never runs and `slow` stays `None`, which is correct.
 
 ## Transfer
@@ -87,7 +112,6 @@ on the *second* of the two middles — exactly what the problem wants.
 Fast/slow pointers are the backbone of many list problems: cycle detection
 ([141](../0141-linked-list-cycle/), [142](../0142-linked-list-cycle-ii/)),
 finding the nth-from-end node ([19](../0019-remove-nth-node-from-end-of-list/)),
-and splitting a list in half for
-[reorder](../0143-reorder-list/). Whenever you need a position defined
-*relative to the end* without knowing the length up front, reach for two
-pointers at different speeds.
+and splitting a list in half for [reorder / 143](../0143-reorder-list/). Whenever
+you need a position defined *relative to the end* without knowing the length up
+front, reach for two pointers moving at different speeds.

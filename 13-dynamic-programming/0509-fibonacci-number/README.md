@@ -6,99 +6,137 @@
 
 ## The problem in plain words
 
-The Fibonacci numbers start `0, 1` and every number after that is the sum of the
-two before it: `0, 1, 1, 2, 3, 5, 8, ...`. Given `n`, return `F(n)`.
+The Fibonacci numbers start `0, 1`, and every number after that is the sum of the
+two before it. Given `n`, hand back `F(n)`.
 
-This problem is the "hello world" of dynamic programming — it's the smallest
-place where you can watch the whole DP idea appear.
+```diagram
+   index:   0   1   2   3   4   5   6   7
+   F:       0   1   1   2   3   5   8  13
+                        ^
+              F(4) = F(3) + F(2) = 2 + 1 = 3
+              each number is fed by the two on its left
+```
+
+This is the smallest place where the whole dynamic-programming idea shows up, so
+it's worth slowing down here — the move you learn carries to every harder DP.
 
 ## Why this matters
 
-Fibonacci itself is a toy, but the operation it teaches is the whole of dynamic programming: **find the repeated subproblem, solve it once, reuse the answer.** The recurrence "each value depends on a fixed number of earlier values" is the smallest possible instance of memoization and of look-back rolling state.
+Fibonacci itself is a toy. The move it teaches is not: **find the subproblem you
+keep re-solving, solve it once, reuse the answer.** The recurrence "each value
+depends on a fixed number of earlier values" is the smallest possible case of
+remembering-instead-of-recomputing.
 
-Where the *method* (and this exact look-back-a-few-steps shape) really shows up:
+The same shape runs real systems. Build tools cache compiled results instead of
+rebuilding from scratch; a spreadsheet recomputes only the cells that changed;
+population and growth models, and audio filters, all reference the last few states
+to produce the next one. Counting problems — tilings, constrained-string counts —
+obey this exact recurrence too.
 
-- **Any DP-solved system** — build tools memoizing recomputed results, incremental compilers, spreadsheet recalculation, and query planners all rest on "cache the subproblem."
-- **Linear recurrences** — population/growth models, signal filters (IIR), and amortization schedules that reference the last few states.
-- **Counting problems** — tilings and constrained-string counts share Fibonacci's recurrence exactly.
-
-The good solution buys the canonical DP win: **exponential recomputation → `O(n)` time** by solving each subproblem once, and then the rolling-two-variables squeeze buys **`O(1)` memory** because the recurrence never reaches back more than two steps. Learn it here and you carry it to every harder DP.
+What the fast version buys you is the jump from redoing exponential amounts of
+work to touching each value once. That is the line between a program that answers
+for `n = 50` and one that hangs.
 
 ## Start from the obvious
 
-The definition *is* an algorithm. Turn it straight into recursion:
+The definition *is* an algorithm. Write it as recursion:
 
 ```
 F(n) = n                    if n < 2
 F(n) = F(n-1) + F(n-2)      otherwise
 ```
 
-That's correct. It's also the honest first thing to write. But run it for `n=40`
-and it crawls.
+Correct, and the honest first thing to reach for. But run it for `n = 40` and it
+crawls. Look at *why*.
 
 ## Find the waste
 
-Draw the call tree for `F(5)`:
+Draw the call tree for `F(5)` and watch the same values reappear:
 
-```
-                F(5)
-             /        \
-          F(4)         F(3)
-         /    \       /    \
-      F(3)   F(2)  F(2)   F(1)
-      ...
+```diagram
+                 F(5)
+              /        \
+           F(4)         F(3)      <- F(3) shows up here...
+          /    \        /   \
+       F(3)   F(2)   F(2)  F(1)   <- ...and again here, from scratch
+       / \
+    F(2) F(1)
+
+   F(3) computed twice.  F(2) three times.  F(1) five times.
 ```
 
-`F(3)` gets computed twice. `F(2)` three times. `F(1)` five times. Every branch
-re-derives values that some other branch already found. The number of calls
-itself grows like Fibonacci — exponential. The waste is obvious: **we keep
-solving the same subproblem from scratch.**
+Every branch re-derives values another branch already found. The number of calls
+grows like Fibonacci itself — exponential. The waste is plain: **the same
+subproblem gets solved from scratch again and again.**
 
 ## The insight
 
-There are only `n + 1` distinct subproblems here: `F(0)` through `F(n)`. If we
-solve each one *once* and remember the answer, the exponential tree collapses to
-a line. Two equivalent ways to do it:
+There are only `n + 1` distinct subproblems in the whole tree: `F(0)` through
+`F(n)`. Solve each *once*, remember it, and the branching tree collapses into a
+straight line.
 
-**Top-down (memoized recursion):** keep the recursion, but cache each answer the
-first time you compute it. Later requests are a dictionary lookup.
+**Top-down (memoized — cache each answer once):** keep the recursion, but the
+first time you compute a value, write it down. Later requests are a lookup.
 
-**Bottom-up (tabulation):** fill the answers in order, smallest first, so every
-value you need is already known when you reach it.
+**Bottom-up (fill a table in order):** compute `F(0)`, `F(1)`, `F(2)`, ... in
+sequence, so every value you need is already sitting there when you reach it.
 
-And here's the last squeeze: the recurrence only ever reaches back **two** steps.
-So you don't need the whole table — just the last two numbers. Slide a window
+```diagram
+   fill left to right; each new cell reads the two before it
+
+   idx:   0   1   2   3   4   5
+   F:   [ 0 ][ 1 ][ . ][   ][   ][   ]
+                    ^
+          F(2) = F(1) + F(0) = 1 + 0 = 1
+                    |    \____ reads idx 0
+                    \_________ reads idx 1
+
+   F:   [ 0 ][ 1 ][ 1 ][ . ][   ][   ]
+                         ^
+          F(3) = F(2) + F(1) = 1 + 1 = 2
+```
+
+Now the last squeeze. The recurrence only ever reaches back **two** steps, so you
+never need the whole row — only the last two numbers. Slide a two-cell window
 forward:
 
-```
-prev, curr = 0, 1
-repeat n-1 times:
-    prev, curr = curr, prev + curr
+```diagram
+   keep just (prev, curr); step it n-1 times
+
+   prev curr
+   [ 0 ][ 1 ]                start: F(0), F(1)
+        \____ +
+   [ 1 ][ 1 ]                curr becomes 0+1 = 1  -> F(2)
+        \____ +
+   [ 1 ][ 2 ]                curr becomes 1+1 = 2  -> F(3)
+        \____ +
+   [ 2 ][ 3 ]                curr becomes 1+2 = 3  -> F(4)
 ```
 
-That's `O(1)` space.
+That's `O(1)` space — constant memory, no table at all.
 
 ## Complexity
 
-- **Naive recursion:** `O(phi^n)` time (exponential), `O(n)` stack space.
-- **Memoized:** `O(n)` time (each of n subproblems solved once), `O(n)` space.
-- **Rolling loop:** `O(n)` time, `O(1)` space — the natural endpoint.
+- **Naive recursion:** exponential time (calls grow like Fibonacci), `O(n)` stack
+  from the recursion depth.
+- **Memoized:** about `n` steps (each of `n + 1` subproblems solved once), about
+  `n` memory for the cache.
+- **Rolling loop:** about `n` steps, constant memory — the natural endpoint.
 
 ## Pitfalls
 
-- Off-by-one in the base cases: `F(0)=0`, `F(1)=1`. Getting these wrong shifts the
-  whole sequence.
-- The naive version is genuinely too slow for large `n` on LeetCode — don't submit
-  it.
-- In the swap `prev, curr = curr, prev + curr`, both right-hand values are read
-  *before* either assignment happens; doing it in two separate statements without a
-  temp would corrupt one of them.
+- Off-by-one in the base cases: `F(0) = 0`, `F(1) = 1`. Get these wrong and the
+  whole sequence shifts.
+- The naive version is genuinely too slow for large `n` — don't submit it.
+- In `prev, curr = curr, prev + curr`, both right-hand values are read *before*
+  either assignment lands. Splitting it into two statements without a temp would
+  overwrite one value before the other could use it.
 
 ## Transfer
 
 "Only look back a fixed number of steps, so keep a few rolling variables" is the
-core of many easy DP problems:
+core of many easy DPs:
 [Climbing Stairs / 70](../0070-climbing-stairs/) (same recurrence, different
-story), [House Robber / 198](../0198-house-robber/) (look back two with a choice).
-The bigger transfer is the DP method itself: *find the repeated subproblem, solve
-it once, reuse it.*
+story) and [House Robber / 198](../0198-house-robber/) (look back with a choice
+attached). The bigger transfer is the method itself: *find the repeated
+subproblem, solve it once, reuse it.*

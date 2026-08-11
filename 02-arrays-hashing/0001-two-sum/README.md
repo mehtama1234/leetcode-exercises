@@ -1,89 +1,113 @@
 # 1. Two Sum
 
-**Pattern:** Hashing (trade space for time)
+**Pattern:** Hashing (remember what you've seen so you never look twice)
 **Difficulty:** Easy
 **Link:** https://leetcode.com/problems/two-sum/
 
 ## The problem in plain words
 
-You have a list of numbers and a target. Somewhere in the list, exactly two of
-them add up to the target. Return *where* they are (their indices), not the
-numbers themselves.
+You get a list of numbers and a target. Two of the numbers add up to the target.
+Give back *where* those two sit — their positions, not the numbers.
+
+```diagram
+        index:   0    1    2    3
+        nums:  [ 2 ,  7 , 11 , 15 ]     target = 9
+                 └────┘
+                 2 + 7 = 9   ->  answer: [0, 1]
+```
 
 ## Why this matters
 
-Underneath the puzzle is one fundamental operation: *as data streams past you,
-can you ask "have I already seen the thing that completes this one?" in constant
-time?* You're not searching — you're remembering, then checking membership. A
-hash map turns that check into O(1).
+Strip the story away and one question is left: *as things go by one at a time,
+can I instantly tell whether the piece that completes the current one has already
+gone by?* You are not really searching. You are **remembering**, then asking a
+yes/no question about your memory.
 
-That exact move runs real systems. A database join matching rows on a key builds
-a hash table of one side and probes it with the other. Deduplication and
-"have-I-processed-this-event" checks in stream pipelines are the same lookup.
-Detecting a transaction that pairs with an earlier one (matching a debit to a
-credit, a request to its response) is Two Sum with business names.
+That single move runs real systems. When a database joins two tables on a shared
+key, it puts one side into a lookup table and checks each row of the other side
+against it — the same "have I seen the match?" question. Removing duplicate
+events in a data pipeline, or pairing a payment to the invoice it settles, is the
+same lookup wearing different clothes.
 
-What the good solution buys is a single pass over data you often can't rewind,
-and it replaces an O(n) rescan-per-element with an O(1) lookup — the difference
-between a query that finishes and one that times out as the input grows.
+What the good version buys you is one walk through data you often cannot rewind,
+and it swaps a slow "re-scan everything each time" for an instant check. As the
+list grows, that is the line between a program that answers and one that hangs.
 
 ## Start from the obvious
 
-The definition itself hands you an algorithm: a "pair that sums to target"
-means take every possible pair and test it.
+The problem describes pairs, so try every pair. For each number, look at every
+number after it and see if they add up.
 
-```
-for each i:
-    for each j after i:
-        if nums[i] + nums[j] == target: return [i, j]
+```diagram
+   i=0 (2): 2+7=9  found!            <- got lucky early here
+   i=1 (7): 7+11, 7+15
+   i=2 (11): 11+15
+            ^ for each i, we re-walk the whole rest of the list
 ```
 
-That's `O(n^2)`. It's correct, and it's the right thing to write first — because
-staring at *why* it's slow tells you what to fix.
+This works. But look at the shape of the work: for every number you sweep the
+rest of the list again. On a list of length n that is about n × n steps. Double
+the input and the work roughly quadruples. The waste is the repeated sweeping.
 
 ## Find the waste
 
-For each element `x`, the inner loop scans the rest of the array looking for one
-specific value: `target - x`. That value is not a mystery we have to search for
-— it is completely determined by `x`. So the real question isn't "which of the
-remaining numbers pairs with x?" It is the much cheaper yes/no question:
+Here is the thing the slow version keeps ignoring. When you stand on a number `x`,
+its partner is not a mystery you have to hunt for. It is forced: the partner must
+be `target - x`. There is exactly one value that works.
 
-> **Have I already seen the number `target - x`?**
+```diagram
+   standing on x = 7,  target = 9
+   partner MUST be  9 - 7 = 2      (nothing to search — it's decided)
+   real question:  "have I already walked past a 2?"
+```
 
-Answering "have I seen this value?" in `O(1)` is exactly what a hash map is for.
+So the job is not "find a matching number." It is "check whether one exact number
+showed up earlier." Checking *did I already see this value?* in one step is the
+whole reason hash maps exist.
 
 ## The insight
 
-Walk the array once. As you arrive at each number `x`:
+Walk the list once. Keep a map of every number you've passed and where it sat. At
+each new number, first ask the map for its partner; only then file the number away.
 
-1. Compute the partner it *needs*: `need = target - x`.
-2. If `need` is already in the map, you're done — return its stored index and the
-   current index.
-3. Otherwise, record `x -> its index` and move on.
+```diagram
+   target = 9        map = {}           (value -> index seen)
 
-You look **before** you insert. That ordering is what stops an element from
-pairing with itself, and it correctly handles duplicates like `[3, 3], target 6`.
+   i=0  x=2   need 9-2=7   7 in map? no    ->  file 2:  {2:0}
+   i=1  x=7   need 9-7=2   2 in map? YES!   ->  answer [ map[2], 1 ] = [0, 1]
+                                  ▲
+                        the partner was remembered two steps ago
+```
+
+Checking *before* filing is what stops a number from pairing with itself, and it
+handles a repeat like `[3, 3], target 6` correctly — the first `3` gets filed, the
+second `3` finds it.
+
+The big-picture idea: you spent a little memory to buy a lot of speed. Instead of
+looking again and again, you wrote down what you saw so the answer is one glance
+away. That trade — remember now, skip the re-search later — is everywhere in
+computing.
 
 ## Complexity
 
-- **Time:** `O(n)` — one pass, each lookup/insert is `O(1)` average.
-- **Space:** `O(n)` — the map may hold up to `n-1` entries.
-
-This is the canonical space-for-time trade: we spend `O(n)` memory to erase the
-inner loop.
+- **Time: about n steps.** You touch each number once, and each map check is a
+  single step on average.
+- **Extra memory: about n.** In the worst case the map holds nearly the whole list
+  before the answer appears.
 
 ## Pitfalls
 
-- Returning the values instead of the **indices**.
-- Inserting into the map *before* checking — an element can then match itself.
-- Assuming the array is sorted (it isn't; that's a different problem — see
-  [Two Sum II / 167](../../03-two-pointers/0167-two-sum-ii-input-array-is-sorted/)).
+- Returning the two **numbers** instead of their **positions**.
+- Filing a number into the map *before* checking — then it can match itself.
+- Assuming the list is sorted. It isn't. (Sorted is a different, pointer-based
+  problem — see [Two Sum II / 167](../../03-two-pointers/0167-two-sum-ii-input-array-is-sorted/).)
 
 ## Transfer
 
-The move "replace an inner search with a hash-map membership test" reappears
-constantly: [Contains Duplicate / 217](../0217-contains-duplicate/),
-[Valid Anagram / 242](../0242-valid-anagram/),
+The reusable move is: **replace an inner search with a one-step "have I seen it?"
+check backed by a set or map.** The same move powers
+[Contains Duplicate / 217](../0217-contains-duplicate/),
+[Valid Anagram / 242](../0242-valid-anagram/), and
 [Longest Consecutive Sequence / 128](../0128-longest-consecutive-sequence/).
-Whenever a brute force keeps re-scanning for "is value V present?", reach for a
-set or dict first.
+Any time a slow solution keeps re-scanning to ask "is this value here?", reach for
+a hash set or map first.

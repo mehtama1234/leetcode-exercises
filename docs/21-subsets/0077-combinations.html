@@ -16,34 +16,47 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">21. Subsets &amp; Combinatorial Backtracking</a> / <span>77</span></nav><article class="notes"><h1>77. Combinations</h1>
 <p><strong>Pattern:</strong> Backtracking with a forward-only index and depth pruning <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/combinations/</p>
 <h2>The problem in plain words</h2>
-<p>Given <code>n</code> and <code>k</code>, list every way to choose <code>k</code> numbers from <code>1..n</code>, where order of the chosen numbers doesn&#x27;t matter. For <code>n=4, k=2</code>: <code>[1,2]</code>, <code>[1,3]</code>, <code>[1,4]</code>, <code>[2,3]</code>, <code>[2,4]</code>, <code>[3,4]</code> — six of them. <code>[1,2]</code> and <code>[2,1]</code> are the *same* combination, so only one appears.</p>
+<p>Given <code>n</code> and <code>k</code>, list every way to choose <code>k</code> numbers from <code>1..n</code>, where the order of the chosen numbers doesn&#x27;t matter. For <code>n=4, k=2</code>: <code>[1,2]</code>, <code>[1,3]</code>, <code>[1,4]</code>, <code>[2,3]</code>, <code>[2,4]</code>, <code>[3,4]</code> — six of them. <code>[1,2]</code> and <code>[2,1]</code> are the *same* combination, so only one appears.</p>
+<pre class="diagram">   n=4, k=2   pick 2 from {1,2,3,4}, order-free
+
+   [1,2] [1,3] [1,4] [2,3] [2,4] [3,4]     C(4,2) = 6</pre>
 <h2>Why this matters</h2>
-<p>This is <strong>choosing without order</strong> — the &quot;n choose k&quot; of counting made concrete. Subsets enumerated selections of *any* size; here the size is fixed, and that one constraint both shrinks the answer (<code>C(n,k)</code> instead of <code>2^n</code>) and opens the door to pruning.</p>
-<p>Fixed-size selection is the honest shape of real problems. Picking a committee or a starting lineup of exactly <code>k</code> from a pool, choosing <code>k</code> features to A/B test together, sampling <code>k</code>-item combinations for cross-validation folds, generating all <code>k</code>-of-<code>n</code> sensor placements to evaluate — each asks &quot;which groups of exactly <code>k</code>, order irrelevant?&quot;</p>
-<p>What the good solution buys is twofold: a <strong>canonical order</strong> (always ascending) so each combination is generated exactly once with no dedupe pass, and <strong>early pruning</strong> so branches too short to ever reach size <code>k</code> are abandoned before you waste recursion on them. On tight <code>k</code> relative to <code>n</code>, that pruning removes a large fraction of the tree.</p>
+<p>This is <strong>choosing without order</strong> — the &quot;n choose k&quot; of counting made concrete. Subsets listed selections of *any* size; here the size is fixed, and that one constraint both shrinks the answer (<code>C(n,k)</code> instead of <code>2^n</code>) and opens the door to cutting branches early.</p>
+<p>Fixed-size selection is the honest shape of real problems. Picking a committee or a starting lineup of exactly <code>k</code> from a pool, choosing <code>k</code> features to A/B test together, sampling <code>k</code>-item combinations for cross-validation folds, generating all <code>k</code>-of-<code>n</code> sensor placements — each asks &quot;which groups of exactly <code>k</code>, order irrelevant?&quot;</p>
+<p>The good solution buys two things: a <strong>canonical order</strong> (always ascending) so each combination is generated exactly once with no dedupe pass, and an <strong>early cut</strong> so branches too short to ever reach size <code>k</code> are dropped before you waste recursion on them.</p>
 <h2>Start from the obvious</h2>
-<p>A combination is a size-<code>k</code> subset. So the honest first idea reuses the subset template but stops at depth <code>k</code>, and — to avoid <code>[1,2]</code>/<code>[2,1]</code> duplicates — only ever picks numbers larger than the last one chosen:</p>
-<pre><code>backtrack(start):
-    if path has k numbers: record a copy; return
-    for i from start to n:
-        path.push(i)
-        backtrack(i+1)      # strictly larger next
-        path.pop()</code></pre>
-<p>Correct. The forward-only <code>start</code> is what enforces &quot;order doesn&#x27;t matter&quot;: by always ascending, each set of <code>k</code> values has exactly one increasing arrangement, which is the one we build.</p>
+<p>A combination is a size-<code>k</code> subset. So the honest first idea reuses the subset tree but stops at depth <code>k</code>, and — to avoid <code>[1,2]</code>/<code>[2,1]</code> duplicates — only ever picks numbers larger than the last one chosen:</p>
+<pre class="diagram">   forward-only tree, n=4, k=2   (only ascending picks)
+
+                  start=1
+        /        |        |       \
+     1(-&gt;2..)  2(-&gt;3..)  3(-&gt;4)   4  &lt;- 4 alone can&#x27;t reach k=2
+     / | \      / \       |
+   2  3  4     3   4      4
+   |  |  |     |   |      |
+ [1,2][1,3][1,4][2,3][2,4][3,4]        6 leaves at depth k=2</pre>
+<p>Correct. The forward-only <code>start</code> is what enforces &quot;order doesn&#x27;t matter&quot;: by always ascending, each set of <code>k</code> values has exactly one increasing arrangement, and that&#x27;s the one we build.</p>
 <h2>Find the waste</h2>
-<p>The version above still walks into branches that can&#x27;t finish. Suppose <code>n=4, k=3</code> and you&#x27;ve chosen <code>[3]</code>. The only larger numbers are <code>4</code> — one number for two remaining slots. There&#x27;s no way to reach size 3, yet the loop still recurses on <code>4</code>, discovers the dead end, and backtracks. Multiply that across the tree and it&#x27;s a lot of pointless descent.</p>
+<p>The version above still walks into branches that can&#x27;t finish. Take <code>n=4, k=3</code> and say you&#x27;ve chosen <code>[3]</code>. The only larger number is <code>4</code> — one number for two empty slots. There&#x27;s no way to reach size 3, yet the loop still recurses on <code>4</code>, discovers the dead end, and backs out. Multiply that across the tree and it&#x27;s a lot of pointless descent.</p>
+<pre class="diagram">   n=4, k=3, already chose [3], need 2 more from {4}
+
+   [3] -&gt; take 4 -&gt; [3,4]  need 1 more from {}   X dead end
+                    ^ only 1 number left but 2 slots to fill
+   we should never have entered this branch</pre>
 <h2>The insight</h2>
-<p>Count before you recurse. If you still need <code>need = k - len(path)</code> numbers, the *smallest* start value that leaves enough room is bounded: you must be able to pick <code>need</code> values from <code>start..n</code>, so <code>start</code> can be at most <code>n - need + 1</code>. Cap the loop there:</p>
-<pre><code>need = k - len(path)
-for i from start to (n - need + 1):
-    choose i; backtrack(i+1); un-choose</code></pre>
-<p>Now every branch you enter is guaranteed to have enough numbers left to complete a combination — no dead-end descents. The choose / recurse / un-choose template is untouched; we only tightened the loop&#x27;s upper bound.</p>
+<p>Count before you recurse. If you still need <code>need = k - len(path)</code> numbers, the *largest* start value worth trying is bounded: you must fit <code>need</code> values into <code>start..n</code>, so <code>start</code> can be at most <code>n - need + 1</code>. Cap the loop there.</p>
+<pre class="diagram">   need = k - len(path)   last usable start = n - need + 1
+
+   n=4, k=3, path=[3]: need=2, last_ok = 4-2+1 = 3
+     loop start..3  -&gt; start is already 4 &gt; 3  -&gt; loop is EMPTY
+     the dead branch is PRUNED before it&#x27;s ever entered</pre>
+<p>Now every branch you step into is guaranteed to have enough numbers left to finish a combination — no dead-end descents. The choose / recurse / un-choose template is untouched; we only tightened the loop&#x27;s upper bound.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(k * C(n,k))</code> — there are <code>C(n,k)</code> combinations and copying each into the result costs <code>O(k)</code>. The pruning removes wasted internal descent but not the output size, which is the true lower bound.</li><li><strong>Space:</strong> <code>O(k)</code> extra — recursion is at most <code>k</code> deep and <code>path</code> holds <code>k</code> items. The result is <code>O(k * C(n,k))</code>, the required answer.</li></ul>
+<ul><li><strong>Time: about <code>k * C(n,k)</code></strong> — there are <code>C(n,k)</code> combinations and copying each into the result costs about <code>k</code>. The cut removes wasted internal descent but not the output size, which is the true floor.</li><li><strong>Extra memory: about <code>k</code></strong> — recursion is at most <code>k</code> deep and <code>path</code> holds <code>k</code> items. The result is <code>k * C(n,k)</code>, the answer itself.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Recursing from <code>start</code> instead of <code>i+1</code></strong> — you&#x27;d revisit numbers and produce order-permuted or repeated combinations.</li><li><strong>Off-by-one in the prune bound.</strong> <code>n - need + 1</code> is inclusive; get it wrong and you either miss valid combinations or lose the pruning benefit.</li><li>Forgetting the copy at the leaf, or the <code>pop()</code> on the way back — the usual backtracking traps.</li></ul>
+<ul><li><strong>Recursing from <code>start</code> instead of <code>i+1</code></strong> — you&#x27;d revisit numbers and produce order-permuted or repeated combinations.</li><li><strong>Off-by-one in the cut bound.</strong> <code>n - need + 1</code> is inclusive; get it wrong and you either miss valid combinations or lose the cut&#x27;s benefit.</li><li>Forgetting the copy at the leaf, or the <code>pop()</code> on the way back — the usual backtracking traps.</li></ul>
 <h2>Transfer</h2>
-<p>Combinations is Subsets with a depth cap plus a completion-feasibility prune. The same forward-only index appears in <a href="../../09-backtracking/0039-combination-sum/">Combination Sum / 39</a> (prune by a running total instead of a count) and in every &quot;choose exactly k, order-free&quot; enumeration. The prune idea — *stop when the remaining choices can&#x27;t satisfy the remaining requirement* — generalizes far beyond this problem.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0077-combinations/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;77. Combinations — https://leetcode.com/problems/combinations/
+<p>Combinations is Subsets with a depth cap plus a &quot;can this branch still finish?&quot; cut. The same forward-only index appears in <a href="../../09-backtracking/0039-combination-sum/">Combination Sum / 39</a> (cut by a running total instead of a count) and in every &quot;choose exactly k, order-free&quot; enumeration. The cut idea — *stop when the remaining choices can&#x27;t satisfy the remaining requirement* — reaches far beyond this problem.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0077-combinations/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;77. Combinations — https://leetcode.com/problems/combinations/
 
 Return every way to choose k numbers from 1..n, ignoring order. For n=4, k=2 the
 answer has C(4,2) = 6 combinations.

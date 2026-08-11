@@ -16,32 +16,56 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">19. 2-D Dynamic Programming</a> / <span>329</span></nav><article class="notes"><h1>329. Longest Increasing Path in a Matrix</h1>
 <p><strong>Pattern:</strong> 2-D dynamic programming (memoized DFS on an implicit DAG) <strong>Difficulty:</strong> Hard <strong>Link:</strong> https://leetcode.com/problems/longest-increasing-path-in-a-matrix/</p>
 <h2>The problem in plain words</h2>
-<p>You have a grid of numbers. Starting anywhere, you may step to a neighbouring cell (up, down, left, or right) only if its value is strictly larger. Find the length of the longest such strictly-increasing walk you can take.</p>
+<p>You have a grid of numbers. A move goes to a neighbor up, down, left, or right, but only if that neighbor&#x27;s value is *strictly greater*. Find the length of the longest path you can walk under that rule.</p>
+<pre class="diagram">   matrix        one longest increasing walk:
+
+     9  9  4        1 -&gt; 2 -&gt; 6 -&gt; 9     (length 4)
+     6  6  8        going up the values, one step at a time
+     2  1  1</pre>
 <h2>Why this matters</h2>
-<p>The real lesson is *recognizing that a grid with a &quot;strictly increasing&quot; rule is secretly a DAG (directed acyclic graph), and that longest-path on a DAG is a clean DP.* The &quot;strictly greater&quot; constraint is doing heavy lifting: it guarantees no cycles, which is exactly why the recursion terminates and why memoization is even valid. Spotting &quot;this constraint makes it acyclic&quot; is the transferable insight.</p>
-<p>The pattern shows up wherever you trace the longest chain of monotonically changing states over a 2-D field. Terrain and hydrology: water flows downhill, so the longest descending flow path on an elevation grid is this problem. Dependency or version chains laid out on a grid, &quot;longest run of increasing brightness&quot; in image processing, and gradient-following on a heightmap all reduce to longest path on the uphill/downhill DAG.</p>
-<p>What the good solution buys is turning an exponential re-exploration of overlapping paths into <code>O(rows × cols)</code> work: each cell&#x27;s answer is computed once and reused, because a cell&#x27;s best onward path doesn&#x27;t depend on how you arrived.</p>
+<p>Two ideas make this click. First: because every step goes strictly *uphill* in value, you can never return to a cell you&#x27;ve left — there are no loops. A graph with directed edges and no cycles is a *DAG* (a one-way graph you can&#x27;t walk in a circle), and a DAG is exactly the setting where &quot;longest path&quot; is a well-behaved question with a clean answer. Second: the best path length starting at a cell depends only on the cell, never on how you arrived there — so compute it once and remember it.</p>
+<p>&quot;Turn a constraint into a direction, notice there are no cycles, then solve each node once and cache it&quot; is a reusable pattern: it handles task scheduling with prerequisites, longest chains, and any problem shaped like &quot;follow the arrows as far as you can.&quot;</p>
 <h2>Start from the obvious</h2>
-<p>From a cell, the longest increasing path is <code>1 + </code> the best over its larger neighbours. DFS it directly:</p>
-<pre><code>def dfs(r, c):
-    best = 1
-    for each neighbour (nr, nc) with matrix[nr][nc] &gt; matrix[r][c]:
-        best = max(best, 1 + dfs(nr, nc))
-    return best
-answer = max(dfs(r, c) over all cells)</code></pre>
-<p>Correct — and exponential, because a cell reachable from many predecessors has its entire downstream recomputed every time.</p>
-<h2>Find the waste</h2>
-<p>Here&#x27;s the key observation: <strong><code>dfs(r, c)</code> depends only on <code>(r, c)</code></strong>, never on the path taken to reach it. And because every edge goes to a *strictly larger* value, the &quot;points to a larger neighbour&quot; graph has no cycles — it&#x27;s a DAG. So each cell has one well-defined answer. Cache it:</p>
-<pre><code>@lru_cache
-def best(r, c):
-    ...same body, calling best(nr, nc)...</code></pre>
-<p>Now each cell is expanded once. This memoized DFS *is* the DP — the topological order is the value order, handled implicitly by recursion.</p>
-<h2>The insight</h2>
-<p>You could make the order explicit instead: sort all cells by value ascending and relax them (a Kahn-style / peeling-outer-layers approach), which removes recursion depth risk. But the memoized DFS already captures the DP essence — solve each DAG node once, reuse everywhere. There is no rectangular row-by-row sweep here because the dependency order follows the *values*, not the grid coordinates.</p>
+<p>From each cell, walk every uphill path and take the longest. The best length at a cell is <code>1 + the best over its larger neighbors</code>. Do that with plain recursion from every cell.</p>
+<pre class="diagram">   best(r, c) = 1 + max( best(neighbor) )  over neighbors with a bigger value
+              = 1  if no neighbor is bigger (a local peak)
+
+              from cell 1 (bottom middle):
+                 1 -&gt; 2 (left)  -&gt; 6 -&gt; 9
+                 1 -&gt; 2 (?)
+              re-walks the same uphill tails again and again</pre>
+<p>This is correct but explosive: a cell reachable from many places has its whole uphill tail recomputed each time it&#x27;s visited. That repeated recomputation is the waste.</p>
+<h2>The insight — cache each cell once</h2>
+<p>Store <code>best[r][c]</code> = length of the longest increasing path *starting* at that cell. Since there are no cycles, this value is well defined, and once you compute a cell you never need to compute it again. This is a DP over the grid; the fill order is the value order itself (small cells depend on bigger neighbors), so memoized recursion is the natural form.</p>
+<pre class="diagram">   matrix                best[r][c]  (longest increasing path starting here)
+
+     9  9  4               1  1  2
+     6  6  8               2  2  1
+     2  1  1               3  4  2
+                              ^ start at value 1 -&gt; 2 -&gt; 6 -&gt; 9, length 4</pre>
+<p>Watch a cell fill from its neighbors. A cell reads only the neighbors whose value is *larger* (the ones it can step to); each already holds its own best length:</p>
+<pre class="diagram">   filling best[r][c], comparing to the four neighbors
+
+                    up
+                    ^ (only if bigger)
+                    |
+        left  &lt;-- (r,c) --&gt; right
+                    |
+                    v
+                   down
+
+   best[r][c] = 1 + max( best of each STRICTLY-bigger neighbor )
+              = 1  if none is bigger
+
+   e.g. cell &quot;6&quot; (value 6): its only bigger neighbor is &quot;8&quot;
+        best(6) = 1 + best(8) = 1 + 1 = 2
+        cell &quot;2&quot;: bigger neighbor is &quot;6&quot;  -&gt; best(2) = 1 + best(6) = 3
+        cell &quot;1&quot;: bigger neighbor is &quot;2&quot;  -&gt; best(1) = 1 + best(2) = 4</pre>
+<p>The answer is the largest <code>best[r][c]</code> over the whole grid. Each cell is solved once and its result reused, so the total work is proportional to the number of cells plus the number of neighbor checks.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(rows × cols)</code> — each cell computed once; each of its ≤4 edges examined once. So <code>O(V + E)</code> on the DAG, and <code>E ≤ 4V</code>.</li><li><strong>Space:</strong> <code>O(rows × cols)</code> for the memo, plus recursion stack up to the path length in the worst case.</li></ul>
+<ul><li><strong>Time: about R × C steps</strong> (rows × columns). Each cell is computed once and cached; each looks at its four neighbors. Linear in the grid size.</li><li><strong>Extra memory: about R × C</strong> for the cache (plus the recursion depth, up to the length of the longest path).</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Strictly</strong> greater, not <code>≥</code>. Using <code>≥</code> would create equal-value cycles and hang the recursion; equal neighbours must not be an edge.</li><li>Forgetting to take the max over <strong>all</strong> start cells — the longest path can begin anywhere, not just the smallest cell.</li><li>Empty matrix / empty rows should return 0 before indexing.</li><li>Deep recursion on a large gradient grid can hit stack limits; the explicit sort-and-relax version avoids that.</li></ul>
+<ul><li>Using <code>&gt;=</code> instead of <code>&gt;</code>. The step must be *strictly* increasing; a plateau of equal values gives no move, so a grid of equal numbers has answer 1.</li><li>Adding a visited-set like ordinary DFS. You don&#x27;t need one — the strictly-uphill rule already forbids revisiting, and a visited-set would wrongly block valid paths.</li><li>Recomputing instead of caching. Without the cache this is exponential; the cache is the whole point.</li></ul>
 <h2>Transfer</h2>
 <p>The reusable move is *turn a monotonic-constraint grid into a DAG, then do longest-path via memoized DFS (solve each node once, ignore arrival path).* Siblings: <a href="https://leetcode.com/problems/course-schedule/">Course Schedule / 207</a> (DAG detection/topo order), <a href="https://leetcode.com/problems/word-break/">Word Break / 139</a> (memoized DFS over overlapping subproblems), and any &quot;longest chain of increasing X&quot; such as <a href="https://leetcode.com/problems/longest-increasing-subsequence/">Longest Increasing Subsequence / 300</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0329-longest-increasing-path-in-a-matrix/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;329. Longest Increasing Path in a Matrix —
 https://leetcode.com/problems/longest-increasing-path-in-a-matrix/

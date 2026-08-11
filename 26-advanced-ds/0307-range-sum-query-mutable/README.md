@@ -1,117 +1,136 @@
 # 307. Range Sum Query - Mutable
 
-**Pattern:** Fenwick tree (Binary Indexed Tree) / segment tree — partial sums
+**Pattern:** Fenwick tree (Binary Indexed Tree) — store partial sums, not raw values
 **Difficulty:** Medium
 **Link:** https://leetcode.com/problems/range-sum-query-mutable/
 
 ## The problem in plain words
 
-You get an array and then a long stream of two kinds of requests, mixed together:
-"change the value at position `i`" and "what's the sum of everything from `l` to
-`r`?". You must answer both quickly, over and over, while the array keeps changing
-underneath you. No request is known in advance, so you can't precompute one answer
-and stop.
+You have an array. Two operations arrive in any order, over and over:
+`update(i, val)` changes one element, and `sumRange(l, r)` asks for the sum of the
+slice from `l` to `r` inclusive. Both have to stay fast even as the array keeps
+changing.
+
+```diagram
+   nums = [1, 3, 5]
+
+   sumRange(0, 2)  ->  1 + 3 + 5 = 9
+   update(1, 2)    ->  nums = [1, 2, 5]
+   sumRange(0, 2)  ->  1 + 2 + 5 = 8
+```
 
 ## Why this matters
 
-The real subject here is a **running aggregate over data that mutates**. Not "sum
-this array once" — anyone can do that in a loop — but "keep a sum queryable while
-edits keep arriving." The moment updates and range queries interleave, the two
-naive tools fight each other: a raw array makes edits free but sums slow; a prefix
-table makes sums free but edits slow. You need one structure good at *both*.
+The whole problem is a tug-of-war between the two operations. A plain array makes
+`update` instant but `sumRange` slow (you add up the whole slice each time). A
+prefix-sum array flips it: `sumRange` is instant, but a single `update` forces you
+to rewrite every prefix after it. You can make one fast only by making the other
+slow — unless you store something cleverer than either.
 
-That tension is everywhere real. A leaderboard or analytics dashboard shows
-"points scored in rows 10–50" while individual scores tick up live. A spreadsheet
-recomputes `SUM(B2:B900)` after you edit one cell, without re-adding 898 numbers.
-Time-series and monitoring systems roll up "requests in this window" as new events
-stream in. Database engines keep aggregate indexes fresh under writes. All of these
-are update-then-range-query on a changing sequence.
-
-What the Fenwick tree buys is a **latency budget that holds as the array grows**:
-both operations become `O(log n)` instead of one of them being `O(n)`. At a
-million elements that's ~20 steps versus a million — the difference between a
-dashboard that stays live and one that stalls every time someone edits a cell.
+That tension — fast reads *and* fast writes over a range — is everywhere: a
+running leaderboard where scores change and you query totals, a spreadsheet
+recomputing column sums as cells edit, a database index over a mutable column. The
+Fenwick tree is the compact answer: store *partial* sums arranged so both
+operations touch only about `log n` of them.
 
 ## Start from the obvious
 
-Two honest first tries, each optimal for *one* operation:
+A prefix-sum array. `prefix[k]` holds the sum of the first `k` elements, so any
+range sum is one subtraction.
 
+```diagram
+   nums   =  [1,  3,  5]
+   prefix = [0, 1,  4,  9]     prefix[k] = sum of first k
+
+   sumRange(0,2) = prefix[3] - prefix[0] = 9 - 0 = 9   (instant)
+
+   now update(1, 2):  nums -> [1, 2, 5]
+   prefix[2], prefix[3] are BOTH wrong now, must be rewritten
+   prefix = [0, 1, 3, 8]
+            ^^^^^^^^^^^ every prefix at/after the change shifts
 ```
-# Raw array
-update(i, v):      nums[i] = v            # O(1)
-sumRange(l, r):    return sum(nums[l:r+1]) # O(n)  <- slow
 
-# Prefix sums: prefix[k] = nums[0]+...+nums[k-1]
-sumRange(l, r):    return prefix[r+1] - prefix[l]   # O(1)
-update(i, v):      # every prefix from i+1 on is now wrong -> rebuild  O(n)
-```
-
-Each is great until you mix in the *other* operation. With both happening
-frequently, whichever one is `O(n)` dominates and the whole thing crawls.
-
-## Find the waste
-
-The prefix array is *too coarse*: one edit invalidates a huge suffix because each
-prefix bundles a sum "from the very start." The raw array is *too fine*: a range
-sum has to touch every element because nothing is precomputed.
-
-The waste in both is the same missing idea: **precompute sums of the right-sized
-chunks so that no single edit spoils too many of them, and no single query has to
-visit too many of them.** If a chunk covers a power-of-two-sized block, then any
-index sits inside only `log n` chunks, and any prefix is the sum of only `log n`
-chunks. Editing one element touches `log n` chunks; reading a prefix reads `log n`
-chunks. Balance achieved.
+Range queries are instant, but every update rewrites the whole tail — slow once
+updates are frequent. The waste: one small change forces a full rebuild of half
+the prefix array.
 
 ## The insight
 
-A **Fenwick tree** is exactly that set of chunks, packed cleverly using binary. Use
-1-indexing. Node `i` stores the sum of the block of `i & (-i)` elements ending at
-`i` — where `i & (-i)` is i's lowest set bit. So node `0110` (6) covers 2 elements,
-node `1000` (8) covers 8, node `0101` (5) covers 1. The bits of an index are
-literally the sizes of the disjoint blocks that tile the prefix up to it.
+Store *partial* sums, each covering a block of the array whose length is a power
+of two. The tree is 1-indexed, and node `i` is responsible for the sum of a block
+ending at `i` whose length equals `i`'s lowest set bit (`i & -i`).
 
+```diagram
+   values (1-indexed):  a1  a2  a3  a4  a5  a6  a7  a8
+
+   which block does each Fenwick node cover?  (length = lowest set bit)
+
+   node 1 (0001): [a1]                 len 1
+   node 2 (0010): [a1 a2]              len 2
+   node 3 (0011): [a3]                 len 1
+   node 4 (0100): [a1 a2 a3 a4]        len 4
+   node 5 (0101): [a5]                 len 1
+   node 6 (0110): [a5 a6]              len 2
+   node 7 (0111): [a7]                 len 1
+   node 8 (1000): [a1 a2 a3 a4 ... a8] len 8
 ```
-prefix sum up to i:   s = 0; while i>0: s += tree[i]; i -= i & -i
-point update at i:     while i<=n: tree[i] += delta; i += i & -i
+
+Every position is covered by a chain of these blocks whose lengths are distinct
+powers of two — exactly the `1` bits of the index. To sum the first `i` elements,
+add `tree[i]`, then strip the lowest set bit to jump to the block before it, and
+repeat.
+
+```diagram
+   prefix sum up to index 7  (7 = 0111):
+
+   i=7 (0111): add tree[7]  = [a7]           strip low bit -> 6
+   i=6 (0110): add tree[6]  = [a5 a6]        strip low bit -> 4
+   i=4 (0100): add tree[4]  = [a1 a2 a3 a4]  strip low bit -> 0
+   i=0: stop
+
+   total = a1+a2+a3+a4 + a5+a6 + a7   = sum of first 7
+   ^ three blocks, one per 1-bit of 7 -> about log n additions
 ```
 
-Reading walks *down* by clearing the lowest bit each step (jump to the previous
-block). Updating walks *up* by adding the lowest bit (jump to the next block that
-also contains `i`). Both loops run once per bit — `O(log n)`. A range sum is
-`prefix(r) - prefix(l-1)`. Because the tree stores sums, an update applies the
-*difference* `val - old`, not the new value.
+An update walks the *other* way: add the change to `tree[i]`, then move to the
+next node that also covers `i` by *adding* the lowest set bit (`i += i & -i`).
+Again about `log n` nodes. A range sum is `prefix(r) - prefix(l-1)`.
 
-A **segment tree** reaches the same `O(log n)` differently: a binary tree of range
-sums, update fixes a leaf and walks to the root, a query stitches together whole
-subtrees that fall inside `[l, r]`. It costs ~2× memory and more code but generalizes
-to any associative operation (min, max, gcd), where subtraction-based Fenwick can't.
-Both are in the solution file.
+```diagram
+   update(index 5, +delta):  (1-indexed node 5)
+
+   i=5 (0101): tree[5] += delta   add low bit -> 6
+   i=6 (0110): tree[6] += delta   add low bit -> 8
+   i=8 (1000): tree[8] += delta   add low bit -> past end, stop
+              ^ only the nodes whose block covers position 5
+```
+
+The kept segment-tree version is the other standard answer: a binary tree of range
+sums flattened into an array, also `log n` for both operations and more general
+(it works for min, max, gcd — any way of combining two ranges), at the cost of
+about twice the memory.
 
 ## Complexity
 
-- **Time:** `update` and `sumRange` are each `O(log n)` — every loop advances by at
-  least one binary digit of the index, and there are `⌊log₂ n⌋ + 1` digits. Building
-  the Fenwick tree by `n` point-updates is `O(n log n)` (an `O(n)` build exists but
-  the simple version is plenty fast).
-- **Space:** `O(n)` — one array of size `n+1` (Fenwick) or `2n` (segment tree).
+- **Time: about log n per operation.** Both `update` and `sumRange` touch one node
+  per set bit of the index — at most the number of bits.
+- **Extra memory: about n.** One tree array the size of the input (plus one).
+  Building it is `n` point-updates, about `n log n` up front.
 
 ## Pitfalls
 
-- **Off-by-one from 1-indexing.** The Fenwick array must be 1-based; the `i & -i`
-  trick fails at index 0 (it loops forever adding 0). Convert once at the boundary.
-- **Storing values instead of deltas.** `update` must add `val - nums[i]` and then
-  save the new value, or repeated updates to the same cell corrupt the sums.
-- **`sumRange(0, r)`.** `prefix(l-1)` with `l == 0` would read index `-1`; special-case
-  it (or make prefix handle an empty range cleanly).
-- **Forgetting the tree is not the array.** `tree[i]` is a block sum, not `nums[i]`.
-  Keep a separate copy of current values if you need them for deltas.
+- Off-by-one from mixing 0-indexed array positions with the 1-indexed tree. The
+  `+1` shift into tree space is easy to drop.
+- On `update`, applying the raw new value instead of the *difference* from the old
+  one — the tree stores sums, so it needs the delta.
+- Confusing the two walks: `i -= i & -i` sums a prefix (moving down), `i += i & -i`
+  updates (moving up).
 
 ## Transfer
 
-The reusable idea is **maintain an aggregate over a mutable sequence in
-sub-linear time by precomputing power-of-two-sized partial sums**. Once you can do
-prefix sums under updates, you can do range sums, and (with a second BIT) range
-*updates* too. Siblings: [Count of Smaller Numbers After Self /
-315](../0315-count-of-smaller-numbers-after-self/) uses a BIT over value-ranks as a
-"how many seen so far are less than x" counter; range-min/range-max problems use the
-segment-tree variant; 2D versions extend the same bit trick to a grid.
+The reusable move is **keep partial aggregates in a tree so a point change and a
+range query each touch only about log n of them.** The same Fenwick tree, used as
+a frequency counter, powers
+[Count of Smaller Numbers After Self / 315](../0315-count-of-smaller-numbers-after-self/),
+and the segment-tree cousin generalizes to range-min or range-max queries over a
+mutable array.

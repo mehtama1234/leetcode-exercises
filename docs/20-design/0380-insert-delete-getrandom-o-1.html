@@ -16,28 +16,42 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">20. Design</a> / <span>380</span></nav><article class="notes"><h1>380. Insert Delete GetRandom O(1)</h1>
 <p><strong>Pattern:</strong> Hash map + array (swap-with-last for O(1) delete) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/insert-delete-getrandom-o-1/</p>
 <h2>The problem in plain words</h2>
-<p>Build a set of integers with three operations, each averaging O(1): <code>insert(val)</code> (add if absent), <code>remove(val)</code> (drop if present), and <code>getRandom()</code> (return one current element, each equally likely). <code>insert</code> and <code>remove</code> return whether they actually changed the set.</p>
+<p>Build a set of integers with three operations, each averaging a fixed cost: <code>insert(val)</code> adds if absent, <code>remove(val)</code> drops if present, and <code>getRandom()</code> returns one current element with every element equally likely. <code>insert</code> and <code>remove</code> also report whether they actually changed the set.</p>
+<pre class="diagram">   insert(1) -&gt; {1}        insert(2) -&gt; {1,2}
+   remove(1) -&gt; {2}        getRandom() -&gt; pick uniformly from {2}</pre>
 <h2>Why this matters</h2>
-<p>The lesson is that <strong>no single structure gives you everything</strong>, so you combine two whose strengths cover each other&#x27;s weaknesses. A hash set nails O(1) membership, insert, and delete — but has no notion of &quot;the i-th element,&quot; so you can&#x27;t pick a uniform random one without walking it. An array nails O(1) random indexing — but deleting a middle element is O(n) because everything shifts. Put them together and all three operations are O(1).</p>
-<p>Uniform random sampling from a live, changing set is a real need. Load balancers and schedulers pick a random healthy backend. A/B testing and reservoir-style sampling draw random members from a mutating population. Randomized algorithms (random pivots, Monte Carlo methods), fair matchmaking, and cache eviction with a random policy all want &quot;give me a random current element, fast.&quot;</p>
-<p>What the good solution buys is keeping <strong>all three operations O(1)</strong> as the set grows — no operation degrades to a scan, which is what a latency budget demands when the set is hot.</p>
+<p>The lesson is that <strong>no single structure gives you everything</strong>, so you combine two whose strengths cover each other&#x27;s weak spots. A hash set nails membership, insert, and delete in fixed time — but has no notion of &quot;the i-th element,&quot; so you can&#x27;t pick a uniform random one without walking it. An array nails random indexing in fixed time — but deleting a middle element is slow because everything after it shifts. Put them together and all three operations become fixed-cost.</p>
+<p>Drawing a uniform random member from a live, changing set is a real need. Load balancers and schedulers pick a random healthy backend. A/B testing and reservoir-style sampling draw random members from a shifting population. Randomized algorithms with random pivots, fair matchmaking, and random-policy cache eviction all want &quot;give me a random current element, fast.&quot;</p>
+<p>What the good solution buys is keeping <strong>all three operations fixed-cost</strong> as the set grows — no operation quietly degrades to a full scan, which is what a latency budget demands when the set is hot.</p>
 <h2>Start from the obvious</h2>
-<p>Use a hash set. Insert and remove are O(1). But <code>getRandom</code>?</p>
-<pre><code>def getRandom(self):
-    return random.choice(list(self.s))   # O(n): materializes the whole set</code></pre>
-<p>A hash set has no positional index, so to pick uniformly you convert it to a list first — O(n) every call. Alternatively, use a plain array: <code>getRandom</code> is easy, but <code>remove(val)</code> must find <code>val</code> (O(n)) and shift everything after it (O(n)). Either way one operation is O(n).</p>
+<p>Use a hash set. Insert and remove are fixed-cost. But <code>getRandom</code>?</p>
+<pre class="diagram">   set = { 4, 9, 2, 7 }   (no positions inside a hash set)
+
+   getRandom must copy it out to a list first:
+       list(set) = [4, 9, 2, 7]  -&gt;  pick an index
+       ^ that copy is a full pass, every call</pre>
+<p>A hash set has no positional index, so to pick uniformly you convert it to a list first — a full pass every call. The other option, a plain array, makes <code>getRandom</code> easy but <code>remove(val)</code> must find <code>val</code> and then shift everything after it. Either way one operation is slow.</p>
 <h2>Find the waste</h2>
-<p>The array&#x27;s remove is slow only because it insists on keeping order — it shifts to close the gap. But this is a <strong>set</strong>: order doesn&#x27;t matter. If order is irrelevant, we don&#x27;t have to preserve it. We can fill the hole with *any* element, and the cheapest one to grab is the last.</p>
+<p>The array&#x27;s remove is slow only because it insists on keeping order — it shifts to close the gap. But this is a <strong>set</strong>: order carries no meaning. If order doesn&#x27;t matter, don&#x27;t preserve it. You can fill the hole with *any* element, and the cheapest one to grab is the last.</p>
 <h2>The insight</h2>
-<p>Keep both structures, synchronized:</p>
-<ul><li><code>vals</code> — an array of the current elements, in arbitrary order.</li><li><code>pos</code> — a dict mapping <code>value -&gt; its index in vals</code>.</li></ul>
-<p>Now each operation is O(1):</p>
-<ul><li><strong>insert:</strong> append to <code>vals</code>, record its index in <code>pos</code>.</li><li><strong>remove:</strong> look up the value&#x27;s index in <code>pos</code>. Copy the *last* element of <code>vals</code> into that slot, fix that moved element&#x27;s index in <code>pos</code>, then <code>pop</code> the last slot and delete the value from <code>pos</code>. Removing from the end is O(1), so no shifting.</li><li><strong>getRandom:</strong> a random index into <code>vals</code> — uniform and O(1).</li></ul>
-<p>The swap-with-last trick is the whole game: it turns an O(n) middle deletion into an O(1) end deletion, because a set lets us reorder freely.</p>
+<p>Keep both structures in sync:</p>
+<ul><li><code>vals</code> — an array of the current elements, in whatever order.</li><li><code>pos</code> — a dict mapping <code>value -&gt; its index in vals</code>.</li></ul>
+<pre class="diagram">   vals = [ 10, 20, 30, 40 ]        pos = { 10:0, 20:1, 30:2, 40:3 }
+                    ^
+   remove(20): idx = pos[20] = 1
+
+   1) copy the LAST element (40) into the hole at index 1:
+        vals = [ 10, 40, 30, 40 ]   pos[40] = 1   (40&#x27;s index updated)
+   2) pop the now-duplicated last slot, drop 20 from pos:
+        vals = [ 10, 40, 30 ]       pos = { 10:0, 40:1, 30:2 }
+                                          ^ no shifting -- fixed cost</pre>
+<p>Now each operation is fixed-cost:</p>
+<ul><li><strong>insert:</strong> append to <code>vals</code>, record its index in <code>pos</code>.</li><li><strong>remove:</strong> look up the index in <code>pos</code>, copy the last element into that slot, fix the moved element&#x27;s index in <code>pos</code>, then pop the last slot and delete the value.</li><li><strong>getRandom:</strong> a random index into <code>vals</code> — uniform and one step.</li></ul>
+<p>The swap-with-last trick is the whole game: it turns a slow middle deletion into a fast end deletion, because a set lets you reorder freely.</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(1)</code> average for insert, remove, and getRandom (hash operations are O(1) average; array append/pop-from-end and index are O(1)).</li><li><strong>Space:</strong> <code>O(n)</code> — the array and the dict each hold one entry per element.</li></ul>
+<ul><li><strong>Time: fixed cost on average</strong> for insert, remove, and getRandom. Hash operations are fixed on average; array append, pop-from-end, and indexing are all one step.</li><li><strong>Space: about n.</strong> The array and the dict each hold one entry per element.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li>Forgetting to update <code>pos</code> for the element you moved from the end into the hole. Its index changed; skip this and the dict lies.</li><li>Removing the element that *is* the last one. The swap becomes a no-op — make sure the code still pops and deletes correctly (it does, since it swaps with itself).</li><li>Returning values or booleans inconsistently — <code>insert</code>/<code>remove</code> must report whether they changed the set.</li><li>Trying to keep <code>vals</code> sorted or ordered. It must be free-form for O(1) delete.</li></ul>
+<ul><li>Forgetting to update <code>pos</code> for the element you moved from the end into the hole. Its index changed; skip this and the dict lies.</li><li>Removing the element that *is* the last one. The swap becomes a no-op — make sure the code still pops and deletes correctly (it does, since it swaps with itself).</li><li>Returning values or booleans inconsistently — <code>insert</code>/<code>remove</code> must report whether they changed the set.</li><li>Trying to keep <code>vals</code> sorted or ordered. It must be free-form for a fast delete.</li></ul>
 <h2>Transfer</h2>
 <p>The &quot;hash map for lookup + array for indexing, swap-with-last to delete&quot; combo reappears in <a href="https://leetcode.com/problems/insert-delete-getrandom-o1-duplicates-allowed/">Insert Delete GetRandom O(1) - Duplicates allowed / 381</a> (store a set of indices per value). The broader &quot;pair two structures so each covers the other&#x27;s weak operation&quot; idea also drives <a href="../0146-lru-cache/">LRU Cache / 146</a> and <a href="../0460-lfu-cache/">LFU Cache / 460</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0380-insert-delete-getrandom-o-1/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;380. Insert Delete GetRandom O(1) — https://leetcode.com/problems/insert-delete-getrandom-o-1/
 

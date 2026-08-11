@@ -1,85 +1,116 @@
 # 200. Number of Islands
 
-**Pattern:** Grid as a graph / flood fill (connected components)
+**Pattern:** Grid as a graph / flood fill (paint every connected blob at once)
 **Difficulty:** Medium
 **Link:** https://leetcode.com/problems/number-of-islands/
 
 ## The problem in plain words
 
 You have a rectangle of `1`s (land) and `0`s (water). Land cells that touch
-side-by-side (up/down/left/right — never diagonally) form one island. Count how
-many separate islands there are.
+side-by-side — up, down, left, right, never diagonally — belong to the same
+island. Count how many separate islands there are.
+
+```diagram
+   grid:        1 1 0 0 0
+                1 1 0 0 0
+                0 0 1 0 0
+                0 0 0 1 1
+
+   the top-left 1s all touch  -> island A
+   the lone 1 in the middle   -> island B
+   the two 1s at bottom-right -> island C
+                                          answer: 3
+```
 
 ## Why this matters
 
-The real problem is **finding connected components in a grid** — the fundamental operation is flood fill: from a seed, reach everything transitively linked to it, mark it, and never touch it twice.
+A grid like this is a graph in disguise. Each land cell is a dot, and it has a
+line to each land cell right next to it. "How many islands?" is really "how many
+separate clumps does this graph split into?"
 
-This is a workhorse, not a toy. Image editing tools use it for the paint-bucket fill and the magic-wand selection (a region of similar pixels). Image processing and computer vision use connected-component labeling to count and measure blobs — cells under a microscope, defects on a manufacturing line, segmented objects in a photo. Games use flood fill to reveal the empty area in Minesweeper and to compute reachable territory or fog-of-war. Even `mkfs`/disk tools reason about connected free regions this way.
+The reusable move is **flood fill**: pick a starting cell, then spread out to
+everything connected to it, marking each cell as you go so you never touch it
+twice. This is the paint-bucket tool in an image editor — click one pixel and the
+whole matching region fills. It counts blobs under a microscope, defects on a
+factory line, and the empty area that opens up when you click a blank square in
+Minesweeper. Same spreading, different clothes.
 
-What you're solving for is **doing it in one linear pass with no double-counting**. The key resource trick — "sink the land" by overwriting visited cells instead of keeping a separate `visited` set — buys you the visited-marker for free, keeping memory to the traversal stack. Every cell is entered once, so the whole scan is linear in the grid.
+What you are solving for is doing it in **one pass with no double-counting**. Get
+that right and the work grows in step with the grid instead of exploding.
 
 ## Start from the obvious
 
-The honest first thought: "an island is a blob of connected land, so let me find
-the blobs." A grid *is* a graph in disguise — each land cell is a node, and it
-has an edge to each land cell directly above, below, left, or right of it.
-Counting islands is then just counting connected components of that graph.
+The honest first thought: an island is a clump of connected land, so go find the
+clumps. Walk the grid cell by cell. Most cells you skip — they are water, or a
+clump you already dealt with. But the moment you step onto a `1` you have not seen
+yet, that has to be a **brand-new** island. If it belonged to an island you
+already counted, that island's fill would have reached it and marked it.
 
-```
-count = 0
-for each cell:
-    if cell is land and not yet visited:
-        count += 1
-        visit the whole blob it belongs to   # so we don't recount it
+```diagram
+   count = 0
+   for each cell:
+       if cell is land AND not yet visited:
+           count += 1              <- a fresh clump starts here
+           flood-fill the whole clump so we never recount it
 ```
 
-The only real work is "visit the whole blob."
+The only real work is that last line: visit the whole clump.
 
 ## The insight
 
-Walk the grid cell by cell. Most cells you either skip (water) or have already
-been swallowed by a previous blob. The moment you land on a `1` you haven't seen
-before, you *know* it starts a brand-new island — if it belonged to an island you
-already counted, that island's flood fill would have reached it. So:
+Here is the neat part. You do not need a separate "visited" notebook. When you
+step onto a land cell, **sink it** — overwrite the `1` with a `0`. A sunk cell is
+now water, so it can never start a new island or get pulled into another one. The
+grid itself becomes your record of what you have seen.
 
-1. Bump the island counter by one.
-2. Flood-fill outward from this cell — DFS/BFS through connected land — and mark
-   every cell you reach as visited.
+```diagram
+   land at (0,0)?  yes -> count=1, start sinking
 
-The neat trick: instead of a separate `visited` set, just **sink the land** —
-overwrite each `1` with `0` as you visit it. A sunk cell is water, so it can
-never restart or rejoin an island. The grid itself becomes the visited marker.
+   1 1 0        0 1 0        0 0 0        0 0 0
+   1 1 0   ->   1 1 0   ->   0 0 0   ->   0 0 0
+   0 0 0        0 0 0        0 0 0        0 0 0
+   ^sink here   spread to    neighbors    whole clump
+                touching 1s  sink too     is now water
+
+   the outer scan moves on; every cell here is 0, so nothing restarts
+```
+
+The spread itself is a walk through connected land. You can use a stack (go deep
+first) or a queue (spread in rings) — both reach the same cells. The moment the
+walk runs dry, that island is fully sunk.
 
 ## Find the waste
 
-If you used a plain recursive DFS, a single giant island (say a 300×300 grid of
-all land) recurses ~90,000 deep and blows Python's recursion limit. Swapping to
-an **explicit stack** removes that ceiling for free — same algorithm, no crash.
+One trap sits in the spread. If you write it as a plain recursive function that
+calls itself for each neighbor, a single huge island — picture a 300×300 grid of
+all land — nests 90,000 calls deep and blows Python's recursion limit. Swap the
+recursion for an **explicit stack** (a list you push neighbors onto and pop from)
+and the ceiling is gone. Same algorithm, no crash.
 
 ## Complexity
 
-- **Time:** `O(rows × cols)`. The outer scan touches each cell once; the flood
-  fill also touches each cell at most once total (a sunk cell is never re-entered),
-  so the whole thing is linear in the number of cells.
-- **Space:** `O(rows × cols)` worst case — the DFS stack can hold most of the grid
-  when it's one big island (e.g. a snake-shaped blob).
+- **Time: about rows × cols steps.** The outer scan touches each cell once. The
+  flood fill also touches each cell at most once total, because a sunk cell is
+  never re-entered. So the whole thing grows in step with the number of cells.
+- **Extra memory: about rows × cols in the worst case.** The stack can hold most
+  of the grid when it is one big snake-shaped island.
 
 ## Pitfalls
 
-- **Diagonals don't connect.** `[["1","0"],["0","1"]]` is *two* islands, not one.
-  Only the 4 orthogonal neighbors are edges.
-- **Recursion depth.** Recursive DFS overflows on large single islands — use an
-  explicit stack (or BFS with a queue).
+- **Diagonals don't connect.** `[["1","0"],["0","1"]]` is *two* islands. Only the
+  4 straight neighbors count as edges.
+- **Recursion depth.** Recursive flood fill overflows on one large island — use an
+  explicit stack (or a queue).
 - **Mutating the caller's grid.** Sinking edits the input in place. In tests we
-  pass a deep copy so the original grid survives for the next assertion.
+  pass a copy so the original survives for the next check.
 - **Empty input.** An empty grid, or an empty first row, must return `0` — check
-  before indexing.
+  before you index.
 
 ## Transfer
 
 "Scan the grid, and every time you hit an unvisited region, flood-fill it and
-count/measure it" is the reusable move. It powers
+count or measure it" is the reusable move. It powers
 [Max Area of Island / 695](https://leetcode.com/problems/max-area-of-island/),
 [Surrounded Regions / 130](https://leetcode.com/problems/surrounded-regions/),
 and [Number of Connected Components / 323](../0323-number-of-connected-components-in-an-undirected-graph/)
-— the same connected-components idea on an explicit graph instead of a grid.
+— the same connected-clump idea on an explicit graph instead of a grid.

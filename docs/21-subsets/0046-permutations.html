@@ -16,29 +16,46 @@
 <main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">21. Subsets &amp; Combinatorial Backtracking</a> / <span>46</span></nav><article class="notes"><h1>46. Permutations</h1>
 <p><strong>Pattern:</strong> Backtracking (order matters — track what&#x27;s still available) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/permutations/</p>
 <h2>The problem in plain words</h2>
-<p>Given distinct numbers, return every possible ordering of *all* of them. For <code>[1,2,3]</code> that&#x27;s the 6 arrangements <code>[1,2,3]</code>, <code>[1,3,2]</code>, <code>[2,1,3]</code>, and so on. Every number appears in every permutation; what changes is the order.</p>
+<p>Given distinct numbers, return every ordering of *all* of them. For <code>[1,2,3]</code> that&#x27;s the 6 arrangements <code>[1,2,3]</code>, <code>[1,3,2]</code>, <code>[2,1,3]</code>, and so on. Every number appears in every answer; what changes is the order they sit in.</p>
+<pre class="diagram">   nums = [1, 2, 3]
+
+   [1,2,3]  [1,3,2]  [2,1,3]  [2,3,1]  [3,1,2]  [3,2,1]
+   3 choices for the first slot x 2 for the second x 1 for the last = 6</pre>
 <h2>Why this matters</h2>
-<p>The primitive here is <strong>arranging</strong> rather than <strong>selecting</strong>. Subsets asked &quot;which items?&quot;; permutations ask &quot;in what order?&quot;. Those are different explosions: <code>n</code> items have <code>2^n</code> subsets but <code>n!</code> orderings, and <code>n!</code> grows far faster. Knowing which one your problem is keeps you from accidentally exploring the wrong, much larger space.</p>
-<p>Ordering search is the honest core of real tasks. A scheduler deciding the order to run jobs, a router evaluating tours through delivery stops (the brute-force heart of the Traveling Salesman Problem), a compiler trying orderings of independent optimization passes, a test tool exercising every sequence of events to shake out order-dependent bugs — all enumerate permutations. Ranking and tie-breaking logic is &quot;which arrangement is best&quot; over this same space.</p>
-<p>What the backtracking template buys is generating all <code>n!</code> orderings with only <code>O(n)</code> working memory and no duplicated arrangements, plus a clean place to prune (you can reject a partial order the instant it violates a constraint, before committing to the tail).</p>
+<p>The move here is <strong>arranging</strong> rather than <strong>selecting</strong>. Subsets asked &quot;which items?&quot;; permutations ask &quot;in what order?&quot;. Those are different explosions: <code>n</code> items have <code>2^n</code> subsets but <code>n!</code> orderings, and <code>n!</code> grows far faster. Knowing which one your problem is keeps you from wandering into the much larger space by mistake.</p>
+<p>Ordering search is the honest core of real tasks. A scheduler deciding the order to run jobs, a router weighing tours through delivery stops (the brute-force heart of the Traveling Salesman Problem), a compiler trying orders of independent optimization passes, a test tool exercising every sequence of events to shake out order-dependent bugs — all enumerate permutations.</p>
+<p>What the template buys is generating all <code>n!</code> orderings while holding one partial order in memory, with no duplicate arrangements, plus a clean place to cut a branch (you can reject a partial order the instant it breaks a rule, before filling the rest).</p>
 <h2>Start from the obvious</h2>
-<p>An ordering is &quot;pick a first element, then a second from what&#x27;s left, then a third...&quot; So the honest recursion is: try each unused number in this slot, recurse to fill the rest, then undo.</p>
-<pre><code>backtrack():
-    if path has all n numbers: record a copy; return
-    for each i not yet used:
-        used[i] = true; path.push(nums[i])
-        backtrack()
-        path.pop(); used[i] = false</code></pre>
-<p>That already is the intended solution — like subsets, the natural recursion is the right one. The new ingredient is the <code>used[]</code> bookkeeping.</p>
+<p>An ordering is &quot;pick a first number, then a second from what&#x27;s left, then a third...&quot; So the honest recursion is: try each unused number in this slot, recurse to fill the rest, then undo.</p>
+<pre class="diagram">   choice tree for [1,2,3]  (each branch = &quot;which unused number goes next&quot;)
+
+                      _  _  _
+          1 /          2 |          \ 3
+        1 _ _         2 _ _          3 _ _
+       2 / \ 3       1 / \ 3        1 / \ 2
+     1 2 _ 1 3 _   2 1 _ 2 3 _    3 1 _ 3 2 _
+       |     |       |     |        |     |
+    [1,2,3][1,3,2][2,1,3][2,3,1] [3,1,2][3,2,1]
+
+   fan-out shrinks 3 -&gt; 2 -&gt; 1 down the levels, giving 3! = 6 leaves</pre>
+<p>That already is the intended solution — like subsets, the natural recursion is the right one. The new ingredient is a way to remember which numbers are still free.</p>
 <h2>The insight</h2>
-<p>The difference from subsets is a single idea: <strong>an element, once placed, is off the table for the rest of this branch.</strong> A subset chooses each element at most once by *walking forward* through indices; a permutation must be free to place index 5 before index 2, so we can&#x27;t rely on position — we need an explicit record of what&#x27;s still available.</p>
-<p>That record is <code>used[]</code> (a boolean per index). The template is otherwise identical:</p>
+<p>The one difference from subsets: <strong>an element, once placed, is off the table for the rest of this branch.</strong> Subsets picked each element at most once by *walking forward* through indices. A permutation must be free to place index 5 before index 2, so position can&#x27;t carry that information — you need an explicit record of what&#x27;s still available.</p>
+<p>That record is <code>used[]</code>, one boolean per index. The template is otherwise the same:</p>
 <ol><li><strong>Choose</strong> — mark <code>used[i]</code>, push <code>nums[i]</code>.</li><li><strong>Explore</strong> — recurse to fill the next slot.</li><li><strong>Un-choose</strong> — pop and clear <code>used[i]</code>, so the sibling branch can use <code>i</code> too.</li></ol>
-<p>A leaf is reached when <code>path</code> has all <code>n</code> numbers — that&#x27;s a full ordering, so record a <strong>copy</strong>. The tree has <code>n</code> choices at the top, <code>n-1</code> at the next level, down to 1, giving <code>n!</code> leaves.</p>
+<pre class="diagram">   used[] walking the branch that builds [2,1,3], then unwinding:
+
+   pick 2   path=[2]     used=[_,T,_]     &lt;- Choose
+     pick 1 path=[2,1]   used=[T,T,_]     &lt;- Choose
+       pick 3 path=[2,1,3] used=[T,T,T]   -&gt; leaf: record [2,1,3]
+       pop   path=[2,1]   used=[T,T,_]    &lt;- Un-choose (clear 3)
+     pop     path=[2]     used=[_,T,_]    &lt;- Un-choose (clear 1)
+   pop       path=[]      used=[_,_,_]    &lt;- Un-choose (clear 2)</pre>
+<p>A leaf is reached when <code>path</code> holds all <code>n</code> numbers — a full ordering, so record a <strong>copy</strong>. There&#x27;s no pruning in the plain version: every complete path is a valid permutation. (Permutations II adds the first real cut.)</p>
 <h2>Complexity</h2>
-<ul><li><strong>Time:</strong> <code>O(n * n!)</code> — there are <code>n!</code> permutations and copying each into the result costs <code>O(n)</code>. This is optimal: the output alone is that large.</li><li><strong>Space:</strong> <code>O(n)</code> extra — recursion depth <code>n</code>, plus <code>path</code> and <code>used</code> of size <code>n</code>. The result list is <code>O(n * n!)</code>, which is the required answer.</li></ul>
+<ul><li><strong>Time: about <code>n * n!</code>.</strong> There are <code>n!</code> permutations and copying each into the result costs about <code>n</code>. This is the best possible: the output alone is that big.</li><li><strong>Extra memory: about <code>n</code></strong> — recursion depth <code>n</code>, plus <code>path</code> and <code>used</code>, each of size <code>n</code>. The result list is <code>n * n!</code>, the answer itself.</li></ul>
 <h2>Pitfalls</h2>
-<ul><li><strong>Forgetting to clear <code>used[i]</code> on the way back up</strong> — later branches then think a freed number is still taken, and you lose whole permutations.</li><li><strong>Recording the live <code>path</code></strong> instead of <code>path[:]</code> — all entries alias one list.</li><li>Confusing this with subsets and iterating from a <code>start</code> index — that would produce combinations (order-insensitive), not orderings.</li></ul>
+<ul><li><strong>Forgetting to clear <code>used[i]</code> on the way back up</strong> — later branches then think a freed number is still taken, and you lose whole permutations.</li><li><strong>Storing the live <code>path</code></strong> instead of <code>path[:]</code> — every entry points at one shared list.</li><li>Confusing this with subsets and looping from a <code>start</code> index — that produces combinations (order-blind), not orderings.</li></ul>
 <h2>Transfer</h2>
 <p>The &quot;for each unused item&quot; loop with a <code>used[]</code> mask is the ordering template. Add sort-and-skip-equal-siblings to handle repeats (<a href="../0047-permutations-ii/">Permutations II / 47</a>); swap the &quot;all n&quot; leaf test for a fixed depth and you&#x27;re back to <a href="../0077-combinations/">Combinations / 77</a>. Any &quot;try every sequence / arrangement&quot; problem reduces to this loop.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0046-permutations/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;46. Permutations — https://leetcode.com/problems/permutations/
 

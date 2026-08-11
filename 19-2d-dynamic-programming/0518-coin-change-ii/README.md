@@ -6,89 +6,92 @@
 
 ## The problem in plain words
 
-You have coin denominations (e.g. 1, 2, 5) and a target amount. Count how many
-*different combinations* of coins add up to that amount. A combination is a
-multiset — how many of each coin — so 1+2 and 2+1 are the **same** answer, not
-two. You can use each denomination as many times as you like.
+You have coin values and a target amount. Count how many different *combinations* of
+coins add up to the amount. Order doesn't matter — 1+2 and 2+1 are the same
+combination — and you can use each coin as many times as you like.
+
+```diagram
+   amount = 5     coins = [1, 2, 5]
+
+   5           1+1+1+1+1
+   2+1+1+1     2+2+1     5
+
+   -> 4 combinations
+```
 
 ## Why this matters
 
-The underlying operation is *counting the ways to hit a total from repeatable
-parts, without double-counting reorderings.* That "order doesn't matter" clause
-is the whole difficulty: the moment you count arrangements instead of
-combinations you have a different (and usually easier) problem, and getting the
-distinction right is a recurring source of real bugs.
+The subtle part is *combinations, not orderings*. The natural recursion, "at each
+step pick any coin," would count 1+2 and 2+1 as two — wrong. The fix is to pin an
+order: decide coins in a fixed sequence and never go back to an earlier coin. Once
+you've moved past the 1-coins, you never add another 1. That single rule turns an
+overcount into an exact count.
 
-This shape shows up wherever you tally the ways to compose a fixed quantity from
-reusable units. Making exact change at a vending machine or a bank teller drawer
-is the literal case. A billing or pricing engine asking "how many ways can these
-plan tiers sum to this invoice total?" is the same count. Scoring systems (how
-many ways to reach N points from moves worth fixed values) and certain
-resource-packing quotes reduce to it too.
-
-What the good solution buys is turning an exponential enumeration of every
-possible pile of coins into an `O(coins × amount)` table — and a one-dimensional
-version that uses only `O(amount)` memory, small enough to run inside a tight
-request budget.
+Controlling for order by processing items in a fixed sequence is the standard cure
+for double-counting in any counting-by-choices problem. And "each item available in
+unlimited quantity, fill a capacity" is the unbounded-knapsack shape that shows up
+in change-making, cutting problems, and resource packing.
 
 ## Start from the obvious
 
-Recurse on two things: which coin type you're allowed to start using, and how
-much amount is left. At each coin you either skip it forever or take one more of
-it.
+Build a grid `dp[i][a]` = number of ways to make amount `a` using only the first `i`
+coin types. Two moves for coin `i`: **skip** it (use only earlier coins for amount
+`a`) or **take one more** of it (subtract its value, but stay allowed to take it
+again). Add the two counts.
 
+```diagram
+   coins = [1, 2, 5]  (rows added one at a time)   amount across
+
+              a:  0    1    2    3    4    5
+        {}       | 1 |  0 |  0 |  0 |  0 |  0 |   no coins: only amount 0 works
+        +1       | 1 |  1 |  1 |  1 |  1 |  1 |   all 1's
+        +2       | 1 |  1 |  2 |  2 |  3 |  3 |
+        +5       | 1 |  1 |  2 |  2 |  3 |  4 |   <- answer at amount 5
 ```
-def count(i, remaining):
-    if remaining == 0: return 1          # made exact change
-    if remaining < 0 or i == len(coins): return 0
-    return count(i + 1, remaining)               # skip coin i
-         + count(i, remaining - coins[i])        # use coin i once more
-```
 
-Pinning a coin **index** and only ever moving it forward is the trick that stops
-reordering: once you've moved past coin `i` you can never come back to it, so
-each combination is generated in exactly one canonical order.
-
-## Find the waste
-
-That recursion re-solves the same `(i, remaining)` pair over and over — every
-different path that leaves the same coins and the same amount recomputes an
-identical subtree. There are only `len(coins) × (amount+1)` distinct states, so
-cache them. Memoizing `count` turns exponential into `O(coins × amount)`.
+Each new row is "everything the row above could do, plus the ways that use at least
+one of the new coin."
 
 ## The insight
 
-Read the memo table bottom-up and one dimension collapses. Let `dp[a]` = ways to
-make amount `a` using the coins seen so far. Start with `dp[0] = 1` (one way to
-make nothing: take nothing). Then fold in coins **one at a time**:
+Look at how a single cell fills. It reads two places: the cell directly **above**
+(ways that skip this coin) and the cell to its **left** by exactly the coin's value
+in the *current* row (ways that use this coin at least once, then still need the
+rest):
 
-```
-for coin in coins:
-    for a in range(coin, amount + 1):
-        dp[a] += dp[a - coin]
+```diagram
+   filling dp[coin][a], coin value = c
+
+        above = dp[prev][a]        "don't use this coin"
+             |
+             v
+        dp[coin][a] = above  +  dp[coin][a - c]
+                                    ^
+                        same row, c to the left
+                        "use one of this coin, keep going"
+
+   example: dp[+2][4] = dp[+1][4]  +  dp[+2][2]
+                        = 1 (1+1+1+1) + 2 (2+2, 2+1+1) = 3
 ```
 
-Two orderings carry all the meaning. The coin loop is *outside* — a coin's
-entire contribution is absorbed before the next coin exists, so no combination
-can interleave coins in two orders. The amount loop goes *upward*, so `dp[a-coin]`
-may already include this same coin — that's what lets a coin repeat.
+Reading `dp[coin][a-c]` from the *same* row (not the row above) is what allows
+reusing a coin many times. Because each row only needs the row above and cells to
+its own left, you can collapse the grid to a single array and add coins one at a
+time, sweeping amount upward — that's the version in `solution.py`.
 
 ## Complexity
 
-- **Time:** `O(coins × amount)` — each cell of the conceptual table is touched
-  once.
-- **Space:** `O(amount)` — one rolling row. The naive 2-D table is
-  `O(coins × amount)`; the outer-coin ordering is exactly what makes the row
-  reusable.
+- **Time: about (number of coins) × amount steps.** One add per grid cell.
+- **Extra memory: about amount** in the rolled 1-D version — one row across
+  amounts. The full grid uses coins × amount.
 
 ## Pitfalls
 
-- **Swapping the loops.** Amount-outer, coin-inner counts *sequences* (permutations)
-  and gives Coin Change II's evil twin, [Combination Sum IV / 377](https://leetcode.com/problems/combination-sum-iv/).
-- Iterating amount **downward** would make each coin usable at most once — that's
-  the 0/1 knapsack, not this unbounded one.
-- Forgetting `dp[0] = 1`; the empty combination is a real way to make 0.
-- `amount == 0` should return 1, not 0.
+- Looping amount on the outside and coins on the inside. That counts orderings, not
+  combinations (it'd return the wrong, larger number). Coins outside, amount inside.
+- Sweeping amount downward. Downward forbids reusing a coin — that's the *0/1*
+  knapsack. For unlimited coins, sweep upward so the just-updated cell feeds itself.
+- Forgetting `dp[0] = 1`: there is exactly one way to make amount 0 — take no coins.
 
 ## Transfer
 

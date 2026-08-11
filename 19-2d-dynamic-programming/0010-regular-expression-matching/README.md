@@ -6,86 +6,109 @@
 
 ## The problem in plain words
 
-Match a string `s` against a pattern `p`. In the pattern, `.` matches any one
-character, and `*` means "zero or more of the character right before it" (so `a*` is
-any run of `a`s, including none). The whole string must be consumed — a prefix match
-doesn't count. Return whether they match.
+You have a string `s` and a pattern `p`. In the pattern, `.` matches any single
+character, and `*` means "zero or more of the character right before it." Decide
+whether the pattern matches the *entire* string — not a piece of it, the whole
+thing.
+
+```diagram
+   s = "aab"     p = "c*a*b"
+
+   c*  -> zero c's   (used 0 times)
+   a*  -> two a's    (used 2 times)
+   b   -> one b
+
+   "aab" fully consumed  ->  match
+```
 
 ## Why this matters
 
-The deep operation is *matching against a pattern where one construct (`*`) can
-expand to many lengths, so a single position offers a fork you can't resolve
-greedily.* Greedy "eat as many as possible" fails — sometimes `a*` must give back
-characters so the rest of the pattern can fit. That backtracking is exactly what DP
-replaces with a clean two-suffix table, and it's a miniature version of how real
-regex engines reason about ambiguity.
+The whole difficulty lives in the `*`, because `x*` can stand for any number of
+copies — zero, one, five. You can't decide up front how many to use. The move that
+untangles it is: don't count copies, offer a binary choice at each step — *skip the
+`x*` entirely* or *eat one character and keep the `x*` around for more*. Every count
+you could have chosen is reachable by repeating that second option.
 
-This is not a toy: it's the heart of every regex library, `grep`, and lexer/tokenizer.
-Log filtering, input validation, search-and-replace, syntax highlighting, and route
-matching in web frameworks all run a pattern matcher with this zero-or-more
-branching. Understanding the `*` recurrence is understanding why a badly written
-pattern can blow up (catastrophic backtracking) — and why the DP form doesn't.
-
-What the good solution buys is `O(m·n)` time, turning the exponential backtracking of
-naive `*`-expansion into one pass over a grid — a bounded, predictable cost.
+This "let a repeated choice cover an unknown quantity" idea is exactly how regex
+engines, glob matching, and simple parsers work. And the two-string grid it lives on
+is the same grid behind edit distance and subsequence counting — one axis per
+string, cells reading nearby cells.
 
 ## Start from the obvious
 
-Compare the fronts of `s[i:]` and `p[j:]`. A plain character or `.` must match, then
-both advance. The only branch is when the pattern char is followed by `*`:
+Compare the fronts of the two suffixes (`s[i:]` and `p[j:]`). If the next pattern
+piece is a plain character or `.`, it either matches the next `s` character or it
+doesn't — advance both, or fail. The one real fork is `x*`:
 
+```diagram
+   pattern piece is  x*  (x is a letter or '.')
+
+     option A: use it ZERO times   ->  skip "x*", keep same s
+     option B: if x matches s[i]   ->  eat s[i], KEEP "x*" for reuse
+
+   answer = A  OR  B
 ```
-def match(i, j):
-    if j == len(p): return i == len(s)
-    first = i < len(s) and (p[j] == s[i] or p[j] == '.')
-    if j+1 < len(p) and p[j+1] == '*':
-        return match(i, j+2)                    # use x* ZERO times: skip 'x*'
-            or (first and match(i+1, j))        # use x* once more: eat s[i], keep 'x*'
-    return first and match(i+1, j+1)            # plain single-char match
-```
 
-The `x*` fork — skip the pair, or consume one `s` char and *stay* on `x*` — is the
-whole trick. Naively this re-explores overlapping `(i, j)` states exponentially.
-
-## Find the waste
-
-There are only `(m+1)·(n+1)` distinct `(i, j)` suffix pairs. The branching recursion
-revisits them constantly (many expansions of `*` land on the same state). Memoize on
-`(i, j)` → `O(m·n)`.
+Write that as recursion on `(i, j)` and it's correct. But the same `(i, j)` suffix
+pair gets asked about repeatedly through different chains of `*` choices, so plain
+recursion re-solves the same states.
 
 ## The insight
 
-Bottom-up, `dp[i][j]` = "does `s[i:]` match `p[j:]`?" Fill from the bottom-right
-(empty suffixes) back to `(0,0)`, exactly mirroring the recurrence:
+Let `dp[i][j]` mean *does `s[i:]` match `p[j:]`?* — one axis per string, a grid of
+yes/no answers. Fill it from the bottom-right corner (both suffixes empty, which is
+a match) back toward `(0, 0)`.
 
-```
-dp[m][n] = True
-if p[j+1] == '*':
-    dp[i][j] = dp[i][j+2]                      # zero copies
-            or (first and dp[i+1][j])          # one+ copy
-else:
-    dp[i][j] = first and dp[i+1][j+1]
+```diagram
+   dp[i][j] = does s[i:] match p[j:]
+
+   s = "aa"        p = "a*"
+            j:  a    *    ""
+       i    +----+----+----+
+       a    |    |    |  F |
+       a    |    |    |  F |
+       ""   |    |    |  T |   empty vs empty = match
+            +----+----+----+
+   bottom-right seeded True; everything else reads cells below/right of it.
 ```
 
-`dp[i][j+2]` is the "star matches nothing" jump over `x*`; `dp[i+1][j]` is "star ate
-one `s` char, keep the star." No backtracking — every state is decided once.
+Now watch a cell fill. A plain character reads one neighbor (down-and-right on the
+diagonal). A `x*` reads two: the cell two columns right (skip the pair) and the cell
+directly below (consumed one `s` char, kept the `*`):
+
+```diagram
+   filling dp[i][j]
+
+   plain char / '.' :         '  x* '  case:
+                              skip pair        consume via *
+     dp[i+1][j+1]             dp[i][j+2]       dp[i+1][j]
+          ^                        \              |
+          |                         \             v
+        dp[i][j]                     +---> dp[i][j] = skip OR (x~s[i] AND consume)
+
+   plain:  dp[i][j] = (p[j] matches s[i])  AND  dp[i+1][j+1]
+```
+
+Sweep `i` from bottom, `j` from right; the top-left cell `dp[0][0]` is the answer.
+The recursion and this table are the same computation — the table just fills the
+grid in a safe order instead of recursing.
 
 ## Complexity
 
-- **Time:** `O(m·n)` — one pass over the grid, constant work per cell.
-- **Space:** `O(m·n)` for the table (reducible to `O(n)` with two rolling rows).
+- **Time: about m × n steps** (m = len `s`, n = len `p`). One cheap decision per
+  grid cell. Doubling both roughly quadruples the work.
+- **Extra memory: about m × n** for the grid (or the memo cache in the top-down
+  version).
 
 ## Pitfalls
 
-- `*` binds to the character **before** it and always comes as a pair — read
-  `p[j], p[j+1]` together; never treat a lone `*` as a normal char.
-- **Empty string, non-empty pattern can still match:** `""` matches `"a*"`, `".*"`,
-  `"a*b*"`. The base row/`dp[i][j+2]` path handles this — don't early-return false
-  just because `s` is empty.
-- The `first` guard must check `i < m` *before* indexing `s[i]`.
-- Whole-string match: `dp[m][n]` is the only true base; a prefix match is not a match.
-- Order matters: for `x*`, evaluate the zero-use skip AND the consume branch — a
-  greedy "consume as long as it matches" is wrong (see `"aaa"` vs `"a*a"`).
+- Reading `*` as "match anything." It matches zero-or-more of *the one character
+  before it*, not any run of any characters.
+- Forgetting the zero-copies branch. `x*` must be allowed to vanish — `dp[i][j+2]`
+  — even when `x` could match, because using it zero times is often the only path.
+- Requiring a partial match. The pattern must cover the whole string; that's why the
+  base case is "both suffixes empty," not "`s` empty."
+- Peeking at `p[j+1]` without a bounds check before deciding it's a `*`.
 
 ## Transfer
 
