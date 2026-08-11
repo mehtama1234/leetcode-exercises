@@ -1,0 +1,529 @@
+[
+  {
+    "chapter": 2,
+    "title": "Arrays & Strings: Manipulation & Hashing",
+    "slug": "02-arrays-hashing",
+    "problems": [
+      {
+        "number": 1,
+        "title": "Two Sum",
+        "path": "02-arrays-hashing/0001-two-sum"
+      },
+      {
+        "number": 217,
+        "title": "Contains Duplicate",
+        "path": "02-arrays-hashing/0217-contains-duplicate"
+      },
+      {
+        "number": 242,
+        "title": "Valid Anagram",
+        "path": "02-arrays-hashing/0242-valid-anagram"
+      },
+      {
+        "number": 49,
+        "title": "Group Anagrams",
+        "path": "02-arrays-hashing/0049-group-anagrams"
+      },
+      {
+        "number": 347,
+        "title": "Top K Frequent Elements",
+        "path": "02-arrays-hashing/0347-top-k-frequent-elements"
+      },
+      {
+        "number": 392,
+        "title": "Is Subsequence",
+        "path": "02-arrays-hashing/0392-is-subsequence"
+      },
+      {
+        "number": 128,
+        "title": "Longest Consecutive Sequence",
+        "path": "02-arrays-hashing/0128-longest-consecutive-sequence"
+      },
+      {
+        "number": 238,
+        "title": "Product of Array Except Self",
+        "path": "02-arrays-hashing/0238-product-of-array-except-self"
+      }
+    ]
+  },
+  {
+    "chapter": 3,
+    "title": "Arrays & Strings: Two Pointers",
+    "slug": "03-two-pointers",
+    "problems": [
+      {
+        "number": 125,
+        "title": "Valid Palindrome",
+        "path": "03-two-pointers/0125-valid-palindrome"
+      },
+      {
+        "number": 167,
+        "title": "Two Sum II - Input Array Is Sorted",
+        "path": "03-two-pointers/0167-two-sum-ii-input-array-is-sorted"
+      },
+      {
+        "number": 15,
+        "title": "3Sum",
+        "path": "03-two-pointers/0015-3sum"
+      },
+      {
+        "number": 11,
+        "title": "Container With Most Water",
+        "path": "03-two-pointers/0011-container-with-most-water"
+      }
+    ]
+  },
+  {
+    "chapter": 4,
+    "title": "Arrays & Strings: Sliding Window",
+    "slug": "04-sliding-window",
+    "problems": [
+      {
+        "number": 643,
+        "title": "Maximum Average Subarray I",
+        "path": "04-sliding-window/0643-maximum-average-subarray-i"
+      },
+      {
+        "number": 121,
+        "title": "Best Time to Buy and Sell Stock",
+        "path": "04-sliding-window/0121-best-time-to-buy-and-sell-stock"
+      },
+      {
+        "number": 424,
+        "title": "Longest Repeating Character Replacement",
+        "path": "04-sliding-window/0424-longest-repeating-character-replacement"
+      },
+      {
+        "number": 3,
+        "title": "Longest Substring Without Repeating Characters",
+        "path": "04-sliding-window/0003-longest-substring-without-repeating-characters"
+      },
+      {
+        "number": 76,
+        "title": "Minimum Window Substring",
+        "path": "04-sliding-window/0076-minimum-window-substring"
+      }
+    ]
+  },
+  {
+    "chapter": 5,
+    "title": "Linked List: Fast & Slow Pointers",
+    "slug": "05-linked-list",
+    "problems": [
+      {
+        "number": 876,
+        "title": "Middle of the Linked List",
+        "path": "05-linked-list/0876-middle-of-the-linked-list"
+      },
+      {
+        "number": 141,
+        "title": "Linked List Cycle",
+        "path": "05-linked-list/0141-linked-list-cycle"
+      },
+      {
+        "number": 142,
+        "title": "Linked List Cycle II",
+        "path": "05-linked-list/0142-linked-list-cycle-ii"
+      },
+      {
+        "number": 206,
+        "title": "Reverse Linked List",
+        "path": "05-linked-list/0206-reverse-linked-list"
+      },
+      {
+        "number": 143,
+        "title": "Reorder List",
+        "path": "05-linked-list/0143-reorder-list"
+      },
+      {
+        "number": 19,
+        "title": "Remove Nth Node From End of List",
+        "path": "05-linked-list/0019-remove-nth-node-from-end-of-list"
+      },
+      {
+        "number": 21,
+        "title": "Merge Two Sorted Lists",
+        "path": "05-linked-list/0021-merge-two-sorted-lists"
+      },
+      {
+        "number": 23,
+        "title": "Merge k Sorted Lists",
+        "path": "05-linked-list/0023-merge-k-sorted-lists"
+      }
+    ]
+  },
+  {
+    "chapter": 6,
+    "title": "Stack",
+    "slug": "06-stack",
+    "problems": [
+      {
+        "number": 20,
+        "title": "Valid Parentheses",
+        "path": "06-stack/0020-valid-parentheses"
+      },
+      {
+        "number": 739,
+        "title": "Daily Temperatures",
+        "path": "06-stack/0739-daily-temperatures"
+      }
+    ]
+  },
+  {
+    "chapter": 7,
+    "title": "Binary Search",
+    "slug": "07-binary-search",
+    "problems": [
+      {
+        "number": 704,
+        "title": "Binary Search",
+        "path": "07-binary-search/0704-binary-search"
+      },
+      {
+        "number": 153,
+        "title": "Find Minimum In Rotated Sorted Array",
+        "path": "07-binary-search/0153-find-minimum-in-rotated-sorted-array"
+      },
+      {
+        "number": 33,
+        "title": "Search In Rotated Sorted Array",
+        "path": "07-binary-search/0033-search-in-rotated-sorted-array"
+      }
+    ]
+  },
+  {
+    "chapter": 8,
+    "title": "Trees: DFS / BFS",
+    "slug": "08-trees",
+    "problems": [
+      {
+        "number": 226,
+        "title": "Invert Binary Tree",
+        "path": "08-trees/0226-invert-binary-tree"
+      },
+      {
+        "number": 104,
+        "title": "Maximum Depth of Binary Tree",
+        "path": "08-trees/0104-maximum-depth-of-binary-tree"
+      },
+      {
+        "number": 100,
+        "title": "Same Tree",
+        "path": "08-trees/0100-same-tree"
+      },
+      {
+        "number": 572,
+        "title": "Subtree of Another Tree",
+        "path": "08-trees/0572-subtree-of-another-tree"
+      },
+      {
+        "number": 235,
+        "title": "Lowest Common Ancestor of a Binary Search Tree",
+        "path": "08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree"
+      },
+      {
+        "number": 102,
+        "title": "Binary Tree Level Order Traversal",
+        "path": "08-trees/0102-binary-tree-level-order-traversal"
+      },
+      {
+        "number": 98,
+        "title": "Validate Binary Search Tree",
+        "path": "08-trees/0098-validate-binary-search-tree"
+      },
+      {
+        "number": 230,
+        "title": "Kth Smallest Element in a BST",
+        "path": "08-trees/0230-kth-smallest-element-in-a-bst"
+      },
+      {
+        "number": 105,
+        "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+        "path": "08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal"
+      },
+      {
+        "number": 124,
+        "title": "Binary Tree Maximum Path Sum",
+        "path": "08-trees/0124-binary-tree-maximum-path-sum"
+      },
+      {
+        "number": 297,
+        "title": "Serialize and Deserialize Binary Tree",
+        "path": "08-trees/0297-serialize-and-deserialize-binary-tree"
+      }
+    ]
+  },
+  {
+    "chapter": 9,
+    "title": "Backtracking",
+    "slug": "09-backtracking",
+    "problems": [
+      {
+        "number": 39,
+        "title": "Combination Sum",
+        "path": "09-backtracking/0039-combination-sum"
+      },
+      {
+        "number": 79,
+        "title": "Word Search",
+        "path": "09-backtracking/0079-word-search"
+      }
+    ]
+  },
+  {
+    "chapter": 10,
+    "title": "Tries",
+    "slug": "10-tries",
+    "problems": [
+      {
+        "number": 208,
+        "title": "Implement Trie (Prefix Tree)",
+        "path": "10-tries/0208-implement-trie-prefix-tree"
+      },
+      {
+        "number": 211,
+        "title": "Design Add and Search Words Data Structure",
+        "path": "10-tries/0211-design-add-and-search-words-data-structure"
+      },
+      {
+        "number": 212,
+        "title": "Word Search II",
+        "path": "10-tries/0212-word-search-ii"
+      }
+    ]
+  },
+  {
+    "chapter": 11,
+    "title": "Heap / Priority Queue",
+    "slug": "11-heap",
+    "problems": [
+      {
+        "number": 295,
+        "title": "Find Median from Data Stream",
+        "path": "11-heap/0295-find-median-from-data-stream"
+      }
+    ]
+  },
+  {
+    "chapter": 12,
+    "title": "Graphs: DFS / BFS / Union Find",
+    "slug": "12-graphs",
+    "problems": [
+      {
+        "number": 200,
+        "title": "Number of Islands",
+        "path": "12-graphs/0200-number-of-islands"
+      },
+      {
+        "number": 133,
+        "title": "Clone Graph",
+        "path": "12-graphs/0133-clone-graph"
+      },
+      {
+        "number": 417,
+        "title": "Pacific Atlantic Water Flow",
+        "path": "12-graphs/0417-pacific-atlantic-water-flow"
+      },
+      {
+        "number": 261,
+        "title": "Graph Valid Tree",
+        "path": "12-graphs/0261-graph-valid-tree"
+      },
+      {
+        "number": 323,
+        "title": "Number of Connected Components In An Undirected Graph",
+        "path": "12-graphs/0323-number-of-connected-components-in-an-undirected-graph"
+      },
+      {
+        "number": 207,
+        "title": "Course Schedule",
+        "path": "12-graphs/0207-course-schedule"
+      },
+      {
+        "number": 269,
+        "title": "Alien Dictionary",
+        "path": "12-graphs/0269-alien-dictionary"
+      }
+    ]
+  },
+  {
+    "chapter": 13,
+    "title": "Dynamic Programming: Memoization / Tabulation",
+    "slug": "13-dynamic-programming",
+    "problems": [
+      {
+        "number": 509,
+        "title": "Fibonacci Number",
+        "path": "13-dynamic-programming/0509-fibonacci-number"
+      },
+      {
+        "number": 322,
+        "title": "Coin Change",
+        "path": "13-dynamic-programming/0322-coin-change"
+      },
+      {
+        "number": 70,
+        "title": "Climbing Stairs",
+        "path": "13-dynamic-programming/0070-climbing-stairs"
+      },
+      {
+        "number": 198,
+        "title": "House Robber",
+        "path": "13-dynamic-programming/0198-house-robber"
+      },
+      {
+        "number": 213,
+        "title": "House Robber II",
+        "path": "13-dynamic-programming/0213-house-robber-ii"
+      },
+      {
+        "number": 647,
+        "title": "Palindromic Substrings",
+        "path": "13-dynamic-programming/0647-palindromic-substrings"
+      },
+      {
+        "number": 5,
+        "title": "Longest Palindromic Substring",
+        "path": "13-dynamic-programming/0005-longest-palindromic-substring"
+      },
+      {
+        "number": 152,
+        "title": "Maximum Product Subarray",
+        "path": "13-dynamic-programming/0152-maximum-product-subarray"
+      },
+      {
+        "number": 91,
+        "title": "Decode Ways",
+        "path": "13-dynamic-programming/0091-decode-ways"
+      },
+      {
+        "number": 139,
+        "title": "Word Break",
+        "path": "13-dynamic-programming/0139-word-break"
+      },
+      {
+        "number": 300,
+        "title": "Longest Increasing Subsequence",
+        "path": "13-dynamic-programming/0300-longest-increasing-subsequence"
+      },
+      {
+        "number": 1143,
+        "title": "Longest Common Subsequence",
+        "path": "13-dynamic-programming/1143-longest-common-subsequence"
+      },
+      {
+        "number": 62,
+        "title": "Unique Paths",
+        "path": "13-dynamic-programming/0062-unique-paths"
+      }
+    ]
+  },
+  {
+    "chapter": 14,
+    "title": "Greedy",
+    "slug": "14-greedy",
+    "problems": [
+      {
+        "number": 881,
+        "title": "Boats to Save People",
+        "path": "14-greedy/0881-boats-to-save-people"
+      },
+      {
+        "number": 53,
+        "title": "Maximum Subarray",
+        "path": "14-greedy/0053-maximum-subarray"
+      },
+      {
+        "number": 55,
+        "title": "Jump Game",
+        "path": "14-greedy/0055-jump-game"
+      }
+    ]
+  },
+  {
+    "chapter": 15,
+    "title": "Merge Intervals",
+    "slug": "15-intervals",
+    "problems": [
+      {
+        "number": 56,
+        "title": "Merge Intervals",
+        "path": "15-intervals/0056-merge-intervals"
+      },
+      {
+        "number": 57,
+        "title": "Insert Interval",
+        "path": "15-intervals/0057-insert-interval"
+      },
+      {
+        "number": 435,
+        "title": "Non-overlapping Intervals",
+        "path": "15-intervals/0435-non-overlapping-intervals"
+      },
+      {
+        "number": 252,
+        "title": "Meeting Rooms",
+        "path": "15-intervals/0252-meeting-rooms"
+      },
+      {
+        "number": 253,
+        "title": "Meeting Rooms II",
+        "path": "15-intervals/0253-meeting-rooms-ii"
+      }
+    ]
+  },
+  {
+    "chapter": 16,
+    "title": "Matrix",
+    "slug": "16-matrix",
+    "problems": [
+      {
+        "number": 48,
+        "title": "Rotate Image",
+        "path": "16-matrix/0048-rotate-image"
+      },
+      {
+        "number": 54,
+        "title": "Spiral Matrix",
+        "path": "16-matrix/0054-spiral-matrix"
+      },
+      {
+        "number": 73,
+        "title": "Set Matrix Zeroes",
+        "path": "16-matrix/0073-set-matrix-zeroes"
+      }
+    ]
+  },
+  {
+    "chapter": 17,
+    "title": "Binary: Bit Manipulation",
+    "slug": "17-bit-manipulation",
+    "problems": [
+      {
+        "number": 338,
+        "title": "Counting Bits",
+        "path": "17-bit-manipulation/0338-counting-bits"
+      },
+      {
+        "number": 268,
+        "title": "Missing Number",
+        "path": "17-bit-manipulation/0268-missing-number"
+      },
+      {
+        "number": 191,
+        "title": "Number of 1 Bits",
+        "path": "17-bit-manipulation/0191-number-of-1-bits"
+      },
+      {
+        "number": 190,
+        "title": "Reverse Bits",
+        "path": "17-bit-manipulation/0190-reverse-bits"
+      },
+      {
+        "number": 371,
+        "title": "Sum of Two Integers",
+        "path": "17-bit-manipulation/0371-sum-of-two-integers"
+      }
+    ]
+  }
+]
