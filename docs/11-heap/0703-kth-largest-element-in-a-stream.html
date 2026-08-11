@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>703. Kth Largest Element in a Stream</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details open><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li><li class="active"><a href="../11-heap/0703-kth-largest-element-in-a-stream.html">703 · Kth Largest Element in a Stream</a></li><li><a href="../11-heap/1046-last-stone-weight.html">1046 · Last Stone Weight</a></li><li><a href="../11-heap/0973-k-closest-points-to-origin.html">973 · K Closest Points to Origin</a></li><li><a href="../11-heap/0215-kth-largest-element-in-an-array.html">215 · Kth Largest Element in an Array</a></li><li><a href="../11-heap/0621-task-scheduler.html">621 · Task Scheduler</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details><details><summary>18. Advanced Graphs: Shortest Paths &amp; MST</summary><ul><li><a href="../18-advanced-graphs/0743-network-delay-time.html">743 · Network Delay Time</a></li><li><a href="../18-advanced-graphs/1584-min-cost-to-connect-all-points.html">1584 · Min Cost to Connect All Points</a></li><li><a href="../18-advanced-graphs/0787-cheapest-flights-within-k-stops.html">787 · Cheapest Flights Within K Stops</a></li><li><a href="../18-advanced-graphs/0778-swim-in-rising-water.html">778 · Swim in Rising Water</a></li><li><a href="../18-advanced-graphs/0332-reconstruct-itinerary.html">332 · Reconstruct Itinerary</a></li></ul></details><details><summary>19. 2-D Dynamic Programming</summary><ul><li><a href="../19-2d-dynamic-programming/0309-best-time-to-buy-and-sell-stock-with-cooldown.html">309 · Best Time to Buy and Sell Stock with Cooldown</a></li><li><a href="../19-2d-dynamic-programming/0518-coin-change-ii.html">518 · Coin Change II</a></li><li><a href="../19-2d-dynamic-programming/0494-target-sum.html">494 · Target Sum</a></li><li><a href="../19-2d-dynamic-programming/0097-interleaving-string.html">97 · Interleaving String</a></li><li><a href="../19-2d-dynamic-programming/0329-longest-increasing-path-in-a-matrix.html">329 · Longest Increasing Path in a Matrix</a></li><li><a href="../19-2d-dynamic-programming/0115-distinct-subsequences.html">115 · Distinct Subsequences</a></li><li><a href="../19-2d-dynamic-programming/0072-edit-distance.html">72 · Edit Distance</a></li><li><a href="../19-2d-dynamic-programming/0312-burst-balloons.html">312 · Burst Balloons</a></li><li><a href="../19-2d-dynamic-programming/0010-regular-expression-matching.html">10 · Regular Expression Matching</a></li></ul></details><details><summary>20. Design</summary><ul><li><a href="../20-design/0146-lru-cache.html">146 · LRU Cache</a></li><li><a href="../20-design/0155-min-stack.html">155 · Min Stack</a></li><li><a href="../20-design/0232-implement-queue-using-stacks.html">232 · Implement Queue using Stacks</a></li><li><a href="../20-design/0355-design-twitter.html">355 · Design Twitter</a></li><li><a href="../20-design/0981-time-based-key-value-store.html">981 · Time Based Key-Value Store</a></li><li><a href="../20-design/0380-insert-delete-getrandom-o-1.html">380 · Insert Delete GetRandom O(1)</a></li><li><a href="../20-design/0460-lfu-cache.html">460 · LFU Cache</a></li></ul></details><details><summary>21. Subsets &amp; Combinatorial Backtracking</summary><ul><li><a href="../21-subsets/0078-subsets.html">78 · Subsets</a></li><li><a href="../21-subsets/0090-subsets-ii.html">90 · Subsets II</a></li><li><a href="../21-subsets/0046-permutations.html">46 · Permutations</a></li><li><a href="../21-subsets/0047-permutations-ii.html">47 · Permutations II</a></li><li><a href="../21-subsets/0077-combinations.html">77 · Combinations</a></li><li><a href="../21-subsets/0017-letter-combinations-of-a-phone-number.html">17 · Letter Combinations of a Phone Number</a></li><li><a href="../21-subsets/0131-palindrome-partitioning.html">131 · Palindrome Partitioning</a></li><li><a href="../21-subsets/0051-n-queens.html">51 · N-Queens</a></li></ul></details><details><summary>22. Monotonic Stack</summary><ul><li><a href="../22-monotonic-stack/0084-largest-rectangle-in-histogram.html">84 · Largest Rectangle in Histogram</a></li><li><a href="../22-monotonic-stack/0042-trapping-rain-water.html">42 · Trapping Rain Water</a></li><li><a href="../22-monotonic-stack/0853-car-fleet.html">853 · Car Fleet</a></li><li><a href="../22-monotonic-stack/0496-next-greater-element-i.html">496 · Next Greater Element I</a></li><li><a href="../22-monotonic-stack/0901-online-stock-span.html">901 · Online Stock Span</a></li></ul></details><details><summary>23. Prefix Sum</summary><ul><li><a href="../23-prefix-sum/0303-range-sum-query-immutable.html">303 · Range Sum Query - Immutable</a></li><li><a href="../23-prefix-sum/0304-range-sum-query-2d-immutable.html">304 · Range Sum Query 2D - Immutable</a></li><li><a href="../23-prefix-sum/0560-subarray-sum-equals-k.html">560 · Subarray Sum Equals K</a></li><li><a href="../23-prefix-sum/0525-contiguous-array.html">525 · Contiguous Array</a></li></ul></details><details><summary>24. Cyclic Sort &amp; Index Tricks</summary><ul><li><a href="../24-cyclic-sort/0041-first-missing-positive.html">41 · First Missing Positive</a></li><li><a href="../24-cyclic-sort/0442-find-all-duplicates-in-an-array.html">442 · Find All Duplicates in an Array</a></li><li><a href="../24-cyclic-sort/0448-find-all-numbers-disappeared-in-an-array.html">448 · Find All Numbers Disappeared in an Array</a></li><li><a href="../24-cyclic-sort/0287-find-the-duplicate-number.html">287 · Find the Duplicate Number</a></li></ul></details><details><summary>25. Math &amp; Geometry</summary><ul><li><a href="../25-math-geometry/0050-pow-x-n.html">50 · Pow(x, n)</a></li><li><a href="../25-math-geometry/0202-happy-number.html">202 · Happy Number</a></li><li><a href="../25-math-geometry/0066-plus-one.html">66 · Plus One</a></li><li><a href="../25-math-geometry/0043-multiply-strings.html">43 · Multiply Strings</a></li><li><a href="../25-math-geometry/0007-reverse-integer.html">7 · Reverse Integer</a></li><li><a href="../25-math-geometry/0009-palindrome-number.html">9 · Palindrome Number</a></li></ul></details><details><summary>26. Advanced Data Structures: Segment Tree, BIT, Union-Find</summary><ul><li><a href="../26-advanced-ds/0307-range-sum-query-mutable.html">307 · Range Sum Query - Mutable</a></li><li><a href="../26-advanced-ds/0684-redundant-connection.html">684 · Redundant Connection</a></li><li><a href="../26-advanced-ds/0547-number-of-provinces.html">547 · Number of Provinces</a></li><li><a href="../26-advanced-ds/0315-count-of-smaller-numbers-after-self.html">315 · Count of Smaller Numbers After Self</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">11. Heap / Priority Queue</a> / <span>703</span></nav><article class="notes"><h1>703. Kth Largest Element in a Stream</h1>
+<p><strong>Pattern:</strong> Fixed-size min-heap (keep only the k biggest) <strong>Difficulty:</strong> Easy <strong>Link:</strong> https://leetcode.com/problems/kth-largest-element-in-a-stream/</p>
+<h2>The problem in plain words</h2>
+<p>You&#x27;re told a number <code>k</code> up front and given a starting list of numbers. Then numbers keep arriving one at a time. Every time one arrives, you must answer: &quot;among *everything* seen so far, what is the kth largest value?&quot;</p>
+<p>Note it&#x27;s the kth *largest*, not the kth *distinct* — duplicates each take a position. So with <code>k = 2</code> and numbers <code>5, 5</code>, the 2nd largest is <code>5</code>.</p>
+<h2>Why this matters</h2>
+<p>The deeper operation is maintaining a *top-k* set over a stream you can&#x27;t rewind: you don&#x27;t care about the whole ranking, only about a value at one fixed position near the top, kept current as data flows past. The trick is to remember exactly the k items that could matter and forget the rest the instant they can&#x27;t.</p>
+<p>This is how real &quot;leaderboard&quot; and threshold systems work. A monitoring service that alerts on your kth-worst latency, a game keeping the top-k high scores as matches finish, a search or ads pipeline holding the k best candidates while scoring a stream of documents, a &quot;top 10 trending&quot; panel updated as events pour in — all keep a small bounded structure instead of re-ranking the full history.</p>
+<p>What the good solution buys is bounded memory and a fixed per-update cost. You store <code>k</code> items, not <code>n</code>, and each new number costs <code>O(log k)</code> no matter how long the stream runs — the difference between a service that stays flat under load and one whose per-event work grows with everything it has ever seen.</p>
+<h2>Start from the obvious</h2>
+<p>The question mentions &quot;kth largest&quot;, which is defined by sorted order, so the honest first move is to keep every number and sort when asked:</p>
+<pre><code>add(x):
+    history.append(x)
+    return sorted(history, descending)[k - 1]</code></pre>
+<p>This is correct. But <code>add</code> re-sorts the entire history every single time — <code>O(n log n)</code> per call — even though the answer only ever depends on the few biggest numbers.</p>
+<h2>Find the waste</h2>
+<p>To name the kth largest, you need the top k numbers, and specifically the *smallest* of those k (everything above it is larger, so it sits at position k). Numbers ranked below the top k can never be the answer, and they can never climb back into the top k either — new arrivals only push the boundary *up*. So keeping them, and re-sorting them, is pure waste.</p>
+<p>That narrows the requirement:</p>
+<blockquote>Keep only the k largest numbers, and keep their smallest instantly reachable.</blockquote>
+<h2>The insight</h2>
+<p>Hold the k largest values in a <strong>min-heap</strong> of fixed size <code>k</code>. A min-heap keeps its *smallest* element on top — and the smallest of the top k is precisely the kth largest overall. So the answer is always <code>heap[0]</code>, read in O(1).</p>
+<p>On each add:</p>
+<pre><code>add(x):
+    push x onto the heap
+    if heap has more than k items:
+        pop the smallest        # it fell out of the top k, discard it
+    return heap[0]              # smallest of the top k = kth largest</code></pre>
+<p>The heap never grows past <code>k</code>. Pushing and popping are <code>O(log k)</code>, and the membership rule is automatic: if a new number is big, it stays and bumps out the old minimum; if it&#x27;s small, it becomes the new minimum and gets popped right back out. Either way the heap holds exactly the current top k afterward.</p>
+<h2>Complexity</h2>
+<ul><li><strong><code>add</code>:</strong> <code>O(log k)</code> — one push and at most one pop on a heap of size ≤ k.</li><li><strong>Constructor:</strong> <code>O(n)</code> to <code>heapify</code> the initial list, then trimming excess with pops is <code>O((n − k) log n)</code> in the worst case.</li><li><strong>Space:</strong> <code>O(k)</code> — the heap never holds more than k numbers.</li></ul>
+<p>Against the sorted-list version&#x27;s <code>O(n log n)</code> per add and <code>O(n)</code> memory, we traded &quot;keep all of it ordered&quot; for &quot;keep only the k that matter&quot;.</p>
+<h2>Pitfalls</h2>
+<ul><li><strong>Wrong heap direction.</strong> You want a <strong>min</strong>-heap (smallest of the top k on top), not a max-heap. A max-heap would surface the *largest* number, which is the 1st largest, not the kth.</li><li><strong>Forgetting to cap the size.</strong> If you never pop, the heap becomes the whole stream and <code>heap[0]</code> is the global minimum, not the kth largest.</li><li><strong>The initial list can be shorter than k.</strong> The heap simply holds fewer than k items until enough numbers arrive; <code>heap[0]</code> still works, and LeetCode guarantees a valid kth largest exists whenever <code>add</code> is called.</li><li><strong>Kth largest ≠ kth distinct.</strong> Don&#x27;t dedupe; duplicates each occupy a slot.</li></ul>
+<h2>Transfer</h2>
+<p>The move is: <strong>when you only need a fixed number of the biggest (or smallest) items from a stream, keep a bounded heap of exactly that many and pop the loser on each insert.</strong> The same size-k heap solves <a href="../0973-k-closest-points-to-origin/">K Closest Points to Origin / 973</a> and <a href="../0215-kth-largest-element-in-an-array/">Kth Largest Element in an Array / 215</a>, and the balanced two-heap cousin powers <a href="../0295-find-median-from-data-stream/">Find Median from Data Stream / 295</a>. Whenever a brute force keeps re-sorting to read &quot;the top k&quot;, reach for a capped heap first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0703-kth-largest-element-in-a-stream/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;703. Kth Largest Element in a Stream — https://leetcode.com/problems/kth-largest-element-in-a-stream/
+
+Design a class that, given a fixed `k`, accepts numbers one at a time and after
+every add reports the kth largest value among everything seen so far.
+
+The naive class (re-sort the whole history each add) is kept next to the optimal
+one (a min-heap capped at size k) so the reason the fast version exists is
+visible: to know the kth largest you only ever need to remember the k biggest
+numbers, not the entire stream.
+&quot;&quot;&quot;
+from typing import List
+import heapq
+
+
+class KthLargestSorted:
+    &quot;&quot;&quot;Naive: keep every number, re-sort on demand. O(n log n) per query.
+
+    `add` just appends (O(1)), but `add` must also return the answer, so we sort
+    the whole history and index to the kth largest. Sorting n numbers is
+    O(n log n), repeated on every add — and we throw away almost all of that
+    order, since only the top k ever matter. That waste is what the capped heap
+    below removes.
+    &quot;&quot;&quot;
+
+    def __init__(self, k: int, nums: List[int]) -&gt; None:
+        self._k = k
+        self._nums = list(nums)
+
+    def add(self, val: int) -&gt; int:
+        self._nums.append(val)
+        # sorted descending; the kth largest sits at index k-1
+        return sorted(self._nums, reverse=True)[self._k - 1]
+
+
+class KthLargest:
+    &quot;&quot;&quot;Optimal: a min-heap holding only the k largest values. O(log k) per add.
+
+    Insight: the kth largest number is the *smallest* of the top k numbers. So we
+    never need the whole stream — just the k biggest so far, and specifically the
+    smallest among them, which is the answer.
+
+    Keep those k values in a MIN-heap of fixed size k. Its top (`heap[0]`) is the
+    smallest of the k, i.e. the kth largest overall. On each add:
+
+      - push the new number;
+      - if the heap now holds more than k, pop the smallest — it can&#x27;t be in the
+        top k, so discard it.
+
+    The top is then the current answer, read in O(1). Each add is O(log k), not
+    O(n log n), because the heap never grows past k.
+    &quot;&quot;&quot;
+
+    def __init__(self, k: int, nums: List[int]) -&gt; None:
+        self._k = k
+        self._heap: List[int] = list(nums)
+        heapq.heapify(self._heap)                 # O(n) once
+        while len(self._heap) &gt; k:
+            heapq.heappop(self._heap)             # trim down to the k largest
+
+    def add(self, val: int) -&gt; int:
+        heapq.heappush(self._heap, val)
+        if len(self._heap) &gt; self._k:
+            heapq.heappop(self._heap)             # drop the smallest, keep top k
+        return self._heap[0]                       # smallest of top k = kth largest
+
+
+def _test() -&gt; None:
+    # Official LeetCode example: k = 3, stream starts [4, 5, 8, 2]
+    #   add(3) -&gt; 4, add(5) -&gt; 5, add(10) -&gt; 5, add(9) -&gt; 8, add(4) -&gt; 8
+    for cls in (KthLargest, KthLargestSorted):
+        kth = cls(3, [4, 5, 8, 2])
+        assert kth.add(3) == 4, cls.__name__
+        assert kth.add(5) == 5, cls.__name__
+        assert kth.add(10) == 5, cls.__name__
+        assert kth.add(9) == 8, cls.__name__
+        assert kth.add(4) == 8, cls.__name__
+
+        # Edge: fewer than k numbers to start; the kth exists only after adds.
+        empty = cls(1, [])
+        assert empty.add(-1) == -1, cls.__name__   # k=1 -&gt; the maximum so far
+        assert empty.add(-2) == -1, cls.__name__
+        assert empty.add(0) == 0, cls.__name__
+
+        # Edge: duplicates count as distinct positions.
+        dup = cls(2, [5, 5])
+        assert dup.add(5) == 5, cls.__name__       # top two are both 5
+        assert dup.add(6) == 5, cls.__name__       # top two now 6, 5
+
+    print(&quot;kth_largest_stream: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../11-heap/0295-find-median-from-data-stream.html">← 295 · Find Median from Data Stream</a><a class="pn next" href="../11-heap/1046-last-stone-weight.html">1046 · Last Stone Weight →</a></nav></main>
+</div>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>494. Target Sum</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">LeetCode · First Principles</a>
+  <a class="ghlink" href="https://github.com/mehtama1234/leetcode-exercises">GitHub</a>
+</header>
+<div class="layout with-sidebar">
+<aside class="sidebar"><nav class="side-nav"><details><summary>2. Arrays &amp; Strings: Manipulation &amp; Hashing</summary><ul><li><a href="../02-arrays-hashing/0001-two-sum.html">1 · Two Sum</a></li><li><a href="../02-arrays-hashing/0217-contains-duplicate.html">217 · Contains Duplicate</a></li><li><a href="../02-arrays-hashing/0242-valid-anagram.html">242 · Valid Anagram</a></li><li><a href="../02-arrays-hashing/0049-group-anagrams.html">49 · Group Anagrams</a></li><li><a href="../02-arrays-hashing/0347-top-k-frequent-elements.html">347 · Top K Frequent Elements</a></li><li><a href="../02-arrays-hashing/0392-is-subsequence.html">392 · Is Subsequence</a></li><li><a href="../02-arrays-hashing/0128-longest-consecutive-sequence.html">128 · Longest Consecutive Sequence</a></li><li><a href="../02-arrays-hashing/0238-product-of-array-except-self.html">238 · Product of Array Except Self</a></li></ul></details><details><summary>3. Arrays &amp; Strings: Two Pointers</summary><ul><li><a href="../03-two-pointers/0125-valid-palindrome.html">125 · Valid Palindrome</a></li><li><a href="../03-two-pointers/0167-two-sum-ii-input-array-is-sorted.html">167 · Two Sum II - Input Array Is Sorted</a></li><li><a href="../03-two-pointers/0015-3sum.html">15 · 3Sum</a></li><li><a href="../03-two-pointers/0011-container-with-most-water.html">11 · Container With Most Water</a></li></ul></details><details><summary>4. Arrays &amp; Strings: Sliding Window</summary><ul><li><a href="../04-sliding-window/0643-maximum-average-subarray-i.html">643 · Maximum Average Subarray I</a></li><li><a href="../04-sliding-window/0121-best-time-to-buy-and-sell-stock.html">121 · Best Time to Buy and Sell Stock</a></li><li><a href="../04-sliding-window/0424-longest-repeating-character-replacement.html">424 · Longest Repeating Character Replacement</a></li><li><a href="../04-sliding-window/0003-longest-substring-without-repeating-characters.html">3 · Longest Substring Without Repeating Characters</a></li><li><a href="../04-sliding-window/0076-minimum-window-substring.html">76 · Minimum Window Substring</a></li></ul></details><details><summary>5. Linked List: Fast &amp; Slow Pointers</summary><ul><li><a href="../05-linked-list/0876-middle-of-the-linked-list.html">876 · Middle of the Linked List</a></li><li><a href="../05-linked-list/0141-linked-list-cycle.html">141 · Linked List Cycle</a></li><li><a href="../05-linked-list/0142-linked-list-cycle-ii.html">142 · Linked List Cycle II</a></li><li><a href="../05-linked-list/0206-reverse-linked-list.html">206 · Reverse Linked List</a></li><li><a href="../05-linked-list/0143-reorder-list.html">143 · Reorder List</a></li><li><a href="../05-linked-list/0019-remove-nth-node-from-end-of-list.html">19 · Remove Nth Node From End of List</a></li><li><a href="../05-linked-list/0021-merge-two-sorted-lists.html">21 · Merge Two Sorted Lists</a></li><li><a href="../05-linked-list/0023-merge-k-sorted-lists.html">23 · Merge k Sorted Lists</a></li></ul></details><details><summary>6. Stack</summary><ul><li><a href="../06-stack/0020-valid-parentheses.html">20 · Valid Parentheses</a></li><li><a href="../06-stack/0739-daily-temperatures.html">739 · Daily Temperatures</a></li></ul></details><details><summary>7. Binary Search</summary><ul><li><a href="../07-binary-search/0704-binary-search.html">704 · Binary Search</a></li><li><a href="../07-binary-search/0153-find-minimum-in-rotated-sorted-array.html">153 · Find Minimum In Rotated Sorted Array</a></li><li><a href="../07-binary-search/0033-search-in-rotated-sorted-array.html">33 · Search In Rotated Sorted Array</a></li></ul></details><details><summary>8. Trees: DFS / BFS</summary><ul><li><a href="../08-trees/0226-invert-binary-tree.html">226 · Invert Binary Tree</a></li><li><a href="../08-trees/0104-maximum-depth-of-binary-tree.html">104 · Maximum Depth of Binary Tree</a></li><li><a href="../08-trees/0100-same-tree.html">100 · Same Tree</a></li><li><a href="../08-trees/0572-subtree-of-another-tree.html">572 · Subtree of Another Tree</a></li><li><a href="../08-trees/0235-lowest-common-ancestor-of-a-binary-search-tree.html">235 · Lowest Common Ancestor of a Binary Search Tree</a></li><li><a href="../08-trees/0102-binary-tree-level-order-traversal.html">102 · Binary Tree Level Order Traversal</a></li><li><a href="../08-trees/0098-validate-binary-search-tree.html">98 · Validate Binary Search Tree</a></li><li><a href="../08-trees/0230-kth-smallest-element-in-a-bst.html">230 · Kth Smallest Element in a BST</a></li><li><a href="../08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal.html">105 · Construct Binary Tree from Preorder and Inorder Traversal</a></li><li><a href="../08-trees/0124-binary-tree-maximum-path-sum.html">124 · Binary Tree Maximum Path Sum</a></li><li><a href="../08-trees/0297-serialize-and-deserialize-binary-tree.html">297 · Serialize and Deserialize Binary Tree</a></li></ul></details><details><summary>9. Backtracking</summary><ul><li><a href="../09-backtracking/0039-combination-sum.html">39 · Combination Sum</a></li><li><a href="../09-backtracking/0079-word-search.html">79 · Word Search</a></li></ul></details><details><summary>10. Tries</summary><ul><li><a href="../10-tries/0208-implement-trie-prefix-tree.html">208 · Implement Trie (Prefix Tree)</a></li><li><a href="../10-tries/0211-design-add-and-search-words-data-structure.html">211 · Design Add and Search Words Data Structure</a></li><li><a href="../10-tries/0212-word-search-ii.html">212 · Word Search II</a></li></ul></details><details><summary>11. Heap / Priority Queue</summary><ul><li><a href="../11-heap/0295-find-median-from-data-stream.html">295 · Find Median from Data Stream</a></li><li><a href="../11-heap/0703-kth-largest-element-in-a-stream.html">703 · Kth Largest Element in a Stream</a></li><li><a href="../11-heap/1046-last-stone-weight.html">1046 · Last Stone Weight</a></li><li><a href="../11-heap/0973-k-closest-points-to-origin.html">973 · K Closest Points to Origin</a></li><li><a href="../11-heap/0215-kth-largest-element-in-an-array.html">215 · Kth Largest Element in an Array</a></li><li><a href="../11-heap/0621-task-scheduler.html">621 · Task Scheduler</a></li></ul></details><details><summary>12. Graphs: DFS / BFS / Union Find</summary><ul><li><a href="../12-graphs/0200-number-of-islands.html">200 · Number of Islands</a></li><li><a href="../12-graphs/0133-clone-graph.html">133 · Clone Graph</a></li><li><a href="../12-graphs/0417-pacific-atlantic-water-flow.html">417 · Pacific Atlantic Water Flow</a></li><li><a href="../12-graphs/0261-graph-valid-tree.html">261 · Graph Valid Tree</a></li><li><a href="../12-graphs/0323-number-of-connected-components-in-an-undirected-graph.html">323 · Number of Connected Components In An Undirected Graph</a></li><li><a href="../12-graphs/0207-course-schedule.html">207 · Course Schedule</a></li><li><a href="../12-graphs/0269-alien-dictionary.html">269 · Alien Dictionary</a></li></ul></details><details><summary>13. Dynamic Programming: Memoization / Tabulation</summary><ul><li><a href="../13-dynamic-programming/0509-fibonacci-number.html">509 · Fibonacci Number</a></li><li><a href="../13-dynamic-programming/0322-coin-change.html">322 · Coin Change</a></li><li><a href="../13-dynamic-programming/0070-climbing-stairs.html">70 · Climbing Stairs</a></li><li><a href="../13-dynamic-programming/0198-house-robber.html">198 · House Robber</a></li><li><a href="../13-dynamic-programming/0213-house-robber-ii.html">213 · House Robber II</a></li><li><a href="../13-dynamic-programming/0647-palindromic-substrings.html">647 · Palindromic Substrings</a></li><li><a href="../13-dynamic-programming/0005-longest-palindromic-substring.html">5 · Longest Palindromic Substring</a></li><li><a href="../13-dynamic-programming/0152-maximum-product-subarray.html">152 · Maximum Product Subarray</a></li><li><a href="../13-dynamic-programming/0091-decode-ways.html">91 · Decode Ways</a></li><li><a href="../13-dynamic-programming/0139-word-break.html">139 · Word Break</a></li><li><a href="../13-dynamic-programming/0300-longest-increasing-subsequence.html">300 · Longest Increasing Subsequence</a></li><li><a href="../13-dynamic-programming/1143-longest-common-subsequence.html">1143 · Longest Common Subsequence</a></li><li><a href="../13-dynamic-programming/0062-unique-paths.html">62 · Unique Paths</a></li></ul></details><details><summary>14. Greedy</summary><ul><li><a href="../14-greedy/0881-boats-to-save-people.html">881 · Boats to Save People</a></li><li><a href="../14-greedy/0053-maximum-subarray.html">53 · Maximum Subarray</a></li><li><a href="../14-greedy/0055-jump-game.html">55 · Jump Game</a></li></ul></details><details><summary>15. Merge Intervals</summary><ul><li><a href="../15-intervals/0056-merge-intervals.html">56 · Merge Intervals</a></li><li><a href="../15-intervals/0057-insert-interval.html">57 · Insert Interval</a></li><li><a href="../15-intervals/0435-non-overlapping-intervals.html">435 · Non-overlapping Intervals</a></li><li><a href="../15-intervals/0252-meeting-rooms.html">252 · Meeting Rooms</a></li><li><a href="../15-intervals/0253-meeting-rooms-ii.html">253 · Meeting Rooms II</a></li></ul></details><details><summary>16. Matrix</summary><ul><li><a href="../16-matrix/0048-rotate-image.html">48 · Rotate Image</a></li><li><a href="../16-matrix/0054-spiral-matrix.html">54 · Spiral Matrix</a></li><li><a href="../16-matrix/0073-set-matrix-zeroes.html">73 · Set Matrix Zeroes</a></li></ul></details><details><summary>17. Binary: Bit Manipulation</summary><ul><li><a href="../17-bit-manipulation/0338-counting-bits.html">338 · Counting Bits</a></li><li><a href="../17-bit-manipulation/0268-missing-number.html">268 · Missing Number</a></li><li><a href="../17-bit-manipulation/0191-number-of-1-bits.html">191 · Number of 1 Bits</a></li><li><a href="../17-bit-manipulation/0190-reverse-bits.html">190 · Reverse Bits</a></li><li><a href="../17-bit-manipulation/0371-sum-of-two-integers.html">371 · Sum of Two Integers</a></li></ul></details><details><summary>18. Advanced Graphs: Shortest Paths &amp; MST</summary><ul><li><a href="../18-advanced-graphs/0743-network-delay-time.html">743 · Network Delay Time</a></li><li><a href="../18-advanced-graphs/1584-min-cost-to-connect-all-points.html">1584 · Min Cost to Connect All Points</a></li><li><a href="../18-advanced-graphs/0787-cheapest-flights-within-k-stops.html">787 · Cheapest Flights Within K Stops</a></li><li><a href="../18-advanced-graphs/0778-swim-in-rising-water.html">778 · Swim in Rising Water</a></li><li><a href="../18-advanced-graphs/0332-reconstruct-itinerary.html">332 · Reconstruct Itinerary</a></li></ul></details><details open><summary>19. 2-D Dynamic Programming</summary><ul><li><a href="../19-2d-dynamic-programming/0309-best-time-to-buy-and-sell-stock-with-cooldown.html">309 · Best Time to Buy and Sell Stock with Cooldown</a></li><li><a href="../19-2d-dynamic-programming/0518-coin-change-ii.html">518 · Coin Change II</a></li><li class="active"><a href="../19-2d-dynamic-programming/0494-target-sum.html">494 · Target Sum</a></li><li><a href="../19-2d-dynamic-programming/0097-interleaving-string.html">97 · Interleaving String</a></li><li><a href="../19-2d-dynamic-programming/0329-longest-increasing-path-in-a-matrix.html">329 · Longest Increasing Path in a Matrix</a></li><li><a href="../19-2d-dynamic-programming/0115-distinct-subsequences.html">115 · Distinct Subsequences</a></li><li><a href="../19-2d-dynamic-programming/0072-edit-distance.html">72 · Edit Distance</a></li><li><a href="../19-2d-dynamic-programming/0312-burst-balloons.html">312 · Burst Balloons</a></li><li><a href="../19-2d-dynamic-programming/0010-regular-expression-matching.html">10 · Regular Expression Matching</a></li></ul></details><details><summary>20. Design</summary><ul><li><a href="../20-design/0146-lru-cache.html">146 · LRU Cache</a></li><li><a href="../20-design/0155-min-stack.html">155 · Min Stack</a></li><li><a href="../20-design/0232-implement-queue-using-stacks.html">232 · Implement Queue using Stacks</a></li><li><a href="../20-design/0355-design-twitter.html">355 · Design Twitter</a></li><li><a href="../20-design/0981-time-based-key-value-store.html">981 · Time Based Key-Value Store</a></li><li><a href="../20-design/0380-insert-delete-getrandom-o-1.html">380 · Insert Delete GetRandom O(1)</a></li><li><a href="../20-design/0460-lfu-cache.html">460 · LFU Cache</a></li></ul></details><details><summary>21. Subsets &amp; Combinatorial Backtracking</summary><ul><li><a href="../21-subsets/0078-subsets.html">78 · Subsets</a></li><li><a href="../21-subsets/0090-subsets-ii.html">90 · Subsets II</a></li><li><a href="../21-subsets/0046-permutations.html">46 · Permutations</a></li><li><a href="../21-subsets/0047-permutations-ii.html">47 · Permutations II</a></li><li><a href="../21-subsets/0077-combinations.html">77 · Combinations</a></li><li><a href="../21-subsets/0017-letter-combinations-of-a-phone-number.html">17 · Letter Combinations of a Phone Number</a></li><li><a href="../21-subsets/0131-palindrome-partitioning.html">131 · Palindrome Partitioning</a></li><li><a href="../21-subsets/0051-n-queens.html">51 · N-Queens</a></li></ul></details><details><summary>22. Monotonic Stack</summary><ul><li><a href="../22-monotonic-stack/0084-largest-rectangle-in-histogram.html">84 · Largest Rectangle in Histogram</a></li><li><a href="../22-monotonic-stack/0042-trapping-rain-water.html">42 · Trapping Rain Water</a></li><li><a href="../22-monotonic-stack/0853-car-fleet.html">853 · Car Fleet</a></li><li><a href="../22-monotonic-stack/0496-next-greater-element-i.html">496 · Next Greater Element I</a></li><li><a href="../22-monotonic-stack/0901-online-stock-span.html">901 · Online Stock Span</a></li></ul></details><details><summary>23. Prefix Sum</summary><ul><li><a href="../23-prefix-sum/0303-range-sum-query-immutable.html">303 · Range Sum Query - Immutable</a></li><li><a href="../23-prefix-sum/0304-range-sum-query-2d-immutable.html">304 · Range Sum Query 2D - Immutable</a></li><li><a href="../23-prefix-sum/0560-subarray-sum-equals-k.html">560 · Subarray Sum Equals K</a></li><li><a href="../23-prefix-sum/0525-contiguous-array.html">525 · Contiguous Array</a></li></ul></details><details><summary>24. Cyclic Sort &amp; Index Tricks</summary><ul><li><a href="../24-cyclic-sort/0041-first-missing-positive.html">41 · First Missing Positive</a></li><li><a href="../24-cyclic-sort/0442-find-all-duplicates-in-an-array.html">442 · Find All Duplicates in an Array</a></li><li><a href="../24-cyclic-sort/0448-find-all-numbers-disappeared-in-an-array.html">448 · Find All Numbers Disappeared in an Array</a></li><li><a href="../24-cyclic-sort/0287-find-the-duplicate-number.html">287 · Find the Duplicate Number</a></li></ul></details><details><summary>25. Math &amp; Geometry</summary><ul><li><a href="../25-math-geometry/0050-pow-x-n.html">50 · Pow(x, n)</a></li><li><a href="../25-math-geometry/0202-happy-number.html">202 · Happy Number</a></li><li><a href="../25-math-geometry/0066-plus-one.html">66 · Plus One</a></li><li><a href="../25-math-geometry/0043-multiply-strings.html">43 · Multiply Strings</a></li><li><a href="../25-math-geometry/0007-reverse-integer.html">7 · Reverse Integer</a></li><li><a href="../25-math-geometry/0009-palindrome-number.html">9 · Palindrome Number</a></li></ul></details><details><summary>26. Advanced Data Structures: Segment Tree, BIT, Union-Find</summary><ul><li><a href="../26-advanced-ds/0307-range-sum-query-mutable.html">307 · Range Sum Query - Mutable</a></li><li><a href="../26-advanced-ds/0684-redundant-connection.html">684 · Redundant Connection</a></li><li><a href="../26-advanced-ds/0547-number-of-provinces.html">547 · Number of Provinces</a></li><li><a href="../26-advanced-ds/0315-count-of-smaller-numbers-after-self.html">315 · Count of Smaller Numbers After Self</a></li></ul></details></nav></aside>
+<main><nav class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">19. 2-D Dynamic Programming</a> / <span>494</span></nav><article class="notes"><h1>494. Target Sum</h1>
+<p><strong>Pattern:</strong> 2-D dynamic programming (subset-sum counting reduction) <strong>Difficulty:</strong> Medium <strong>Link:</strong> https://leetcode.com/problems/target-sum/</p>
+<h2>The problem in plain words</h2>
+<p>You get a list of non-negative numbers. Put a <code>+</code> or a <code>-</code> in front of each one, then add them all up. Count how many of the <code>2^n</code> ways to choose those signs make the total equal a given target.</p>
+<h2>Why this matters</h2>
+<p>Underneath is a two-part idea: *count assignments over a boolean choice per item* where a huge branching space collapses because only the <strong>running total</strong> matters, not the path that produced it. Two different sign prefixes that reach the same sum are interchangeable from then on — recognizing that &quot;the state is the sum&quot; is the move that tames the explosion.</p>
+<p>The second half is a genuinely useful algebraic reduction: a <code>+/-</code> partition is the same as splitting the numbers into two groups, and that turns the problem into &quot;how many subsets sum to a fixed value?&quot; — subset-sum counting, which shows up in budget allocation (how many ways can these line items net to zero?), reconciling signed ledgers (which transactions cancel to a balance?), and load-balancing two bins.</p>
+<p>What the good solution buys is collapsing an exponential enumeration into <code>O(n × sum)</code> work and <code>O(sum)</code> memory — the difference between a combinatorial blow-up and a table that fits comfortably in a request handler.</p>
+<h2>Start from the obvious</h2>
+<p>Every number gets a sign, so branch on both choices at every index and carry the running sum:</p>
+<pre><code>def go(i, running):
+    if i == n: return 1 if running == target else 0
+    return go(i+1, running + nums[i]) + go(i+1, running - nums[i])</code></pre>
+<p>Correct, and clearly <code>O(2^n)</code> — it walks the full binary tree of sign choices.</p>
+<h2>Find the waste</h2>
+<p>The tree has <code>2^n</code> leaves but the *state* at any node is just <code>(i, running)</code>, and the running sum ranges only over <code>-total .. +total</code>. So there are at most <code>n × (2·total + 1)</code> distinct states, and the exponential tree revisits them constantly. Memoizing on <code>(i, running)</code> alone drops it to <code>O(n × sum)</code>.</p>
+<h2>The insight</h2>
+<p>You can do better than caching by removing the signs with algebra. Let <code>P</code> be the numbers you mark <code>+</code> and <code>N</code> the ones you mark <code>-</code>:</p>
+<pre><code>sum(P) - sum(N) = target
+sum(P) + sum(N) = total          (every number is in exactly one group)</code></pre>
+<p>Adding the two lines: <code>2·sum(P) = target + total</code>, so <code>sum(P) = (target + total) / 2</code>. The sign problem is now <strong>&quot;how many subsets of nums sum to <code>need = (target + total) / 2</code>?&quot;</strong> — plain 0/1 subset-sum counting:</p>
+<pre><code>dp[0] = 1                        # empty subset makes 0
+for x in nums:
+    for s in range(need, x - 1, -1):
+        dp[s] += dp[s - x]</code></pre>
+<p><code>dp[s]</code> = number of subsets so far that total <code>s</code>. Iterating <code>s</code> <strong>downward</strong> is what enforces &quot;use each number at most once&quot; — it stops <code>x</code> from being counted into a sum that already includes <code>x</code>.</p>
+<h2>Complexity</h2>
+<ul><li><strong>Time:</strong> <code>O(n × need)</code> — n numbers, each sweeping the <code>need</code>-sized row once.</li><li><strong>Space:</strong> <code>O(need)</code> — a single row. The <code>(i, running)</code> memo is <code>O(n × sum)</code>; the reduction shrinks both dimensions and drops one.</li></ul>
+<h2>Pitfalls</h2>
+<ul><li><strong>Zeros.</strong> <code>0</code> can be <code>+0</code> or <code>-0</code>, so every zero *doubles* the count. The subset-sum formulation handles this automatically (a 0 lets <code>dp[s] += dp[s]</code>), but ad-hoc solutions often miss it.</li><li>If <code>target + total</code> is <strong>odd</strong>, or <code>|target| &gt; total</code>, there&#x27;s no valid split — return 0 before dividing.</li><li>Iterating <code>s</code> upward instead of downward turns each number into an unbounded coin (Coin Change II), which is the wrong count here.</li></ul>
+<h2>Transfer</h2>
+<p>The reusable moves are *(a) state = running aggregate, not path*, and *(b) turn a signed/partition problem into subset-sum by algebra*. Siblings: <a href="https://leetcode.com/problems/partition-equal-subset-sum/">Partition Equal Subset Sum / 416</a> (does a subset hit total/2?), <a href="../0518-coin-change-ii/">Coin Change II / 518</a> (the unbounded counting cousin), and <a href="https://leetcode.com/problems/last-stone-weight-ii/">Last Stone Weight II / 1049</a> (same <code>+/-</code> reduction, minimizing the leftover).</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0494-target-sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;494. Target Sum — https://leetcode.com/problems/target-sum/
+
+Given an array of non-negative integers and a target, put a `+` or `-` in front
+of each number and count how many sign assignments make the expression equal the
+target.
+
+Shown: the exponential branch-on-every-sign recursion, the memoized recurrence
+on (index, running sum), and the subset-sum reduction that shrinks it to a 1-D
+count.
+&quot;&quot;&quot;
+from functools import lru_cache
+from typing import List
+
+
+def find_target_sum_ways_naive(nums: List[int], target: int) -&gt; int:
+    &quot;&quot;&quot;Branch on the sign of each number. O(2^n) time.
+
+    For each index we recurse twice: once adding nums[i], once subtracting it.
+    When we run off the end, we scored one valid assignment iff the running sum
+    landed on the target. This is the literal definition — and it explores an
+    exponential tree because two different prefixes can reach the same running
+    sum yet each spawns its own subtree.
+    &quot;&quot;&quot;
+    n = len(nums)
+
+    def go(i: int, running: int) -&gt; int:
+        if i == n:
+            return 1 if running == target else 0
+        return go(i + 1, running + nums[i]) + go(i + 1, running - nums[i])
+
+    return go(0, 0)
+
+
+def find_target_sum_ways_memo(nums: List[int], target: int) -&gt; int:
+    &quot;&quot;&quot;Same recurrence, cached on (index, running sum). O(n * sum) states.&quot;&quot;&quot;
+    n = len(nums)
+
+    @lru_cache(maxsize=None)
+    def go(i: int, running: int) -&gt; int:
+        if i == n:
+            return 1 if running == target else 0
+        return go(i + 1, running + nums[i]) + go(i + 1, running - nums[i])
+
+    result = go(0, 0)
+    go.cache_clear()
+    return result
+
+
+def find_target_sum_ways(nums: List[int], target: int) -&gt; int:
+    &quot;&quot;&quot;Reduce to subset-sum counting, then 1-D tabulate. O(n * S) time, O(S) space.
+
+    Split the numbers into a positive group P and a negative group N.
+      sum(P) - sum(N) = target      and      sum(P) + sum(N) = total
+    Add them:  2*sum(P) = target + total, so sum(P) = (target + total) / 2.
+
+    So the question becomes: how many subsets of `nums` sum to that value?
+    That&#x27;s a classic 0/1 subset-sum *count*: dp[s] = number of subsets summing
+    to s. Iterate s downward so each number is used at most once.
+    &quot;&quot;&quot;
+    total = sum(nums)
+    # need = required positive-group sum; must be a non-negative even split
+    if (total + target) % 2 != 0 or abs(target) &gt; total:
+        return 0
+    need = (total + target) // 2
+
+    dp = [0] * (need + 1)
+    dp[0] = 1                       # one subset sums to 0: the empty subset
+    for x in nums:
+        for s in range(need, x - 1, -1):
+            dp[s] += dp[s - x]      # count subsets that include x
+    return dp[need]
+
+
+def _test() -&gt; None:
+    cases = [
+        (([1, 1, 1, 1, 1], 3), 5),
+        (([1], 1), 1),
+        (([1], 2), 0),
+        (([0, 0, 0, 0, 0, 0, 0, 0, 1], 1), 256),  # zeros each double the count
+        (([100], -200), 0),
+    ]
+    for (nums, target), expected in cases:
+        assert find_target_sum_ways(nums, target) == expected, (nums, target)
+        assert find_target_sum_ways_memo(nums, target) == expected, (nums, target)
+        assert find_target_sum_ways_naive(nums, target) == expected, (nums, target)
+    print(&quot;target_sum: all cases passed&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _test()
+</code></pre></section><nav class="prevnext"><a class="pn prev" href="../19-2d-dynamic-programming/0518-coin-change-ii.html">← 518 · Coin Change II</a><a class="pn next" href="../19-2d-dynamic-programming/0097-interleaving-string.html">97 · Interleaving String →</a></nav></main>
+</div>
+</body>
+</html>

@@ -9,7 +9,7 @@ Every problem gets two things:
 
 The full course outline is preserved verbatim in [`CURRICULUM.md`](CURRICULUM.md).
 
-**83 coding problems across 16 pattern chapters.**
+**140 coding problems across 25 pattern chapters.**
 
 ## Index
 
@@ -90,6 +90,11 @@ The full course outline is preserved verbatim in [`CURRICULUM.md`](CURRICULUM.md
 ### Chapter 11: Heap / Priority Queue
 
 - [295 · Find Median from Data Stream](11-heap/0295-find-median-from-data-stream/) — [solution](11-heap/0295-find-median-from-data-stream/solution.py) · [notes](11-heap/0295-find-median-from-data-stream/README.md)
+- [703 · Kth Largest Element in a Stream](11-heap/0703-kth-largest-element-in-a-stream/) — [solution](11-heap/0703-kth-largest-element-in-a-stream/solution.py) · [notes](11-heap/0703-kth-largest-element-in-a-stream/README.md)
+- [1046 · Last Stone Weight](11-heap/1046-last-stone-weight/) — [solution](11-heap/1046-last-stone-weight/solution.py) · [notes](11-heap/1046-last-stone-weight/README.md)
+- [973 · K Closest Points to Origin](11-heap/0973-k-closest-points-to-origin/) — [solution](11-heap/0973-k-closest-points-to-origin/solution.py) · [notes](11-heap/0973-k-closest-points-to-origin/README.md)
+- [215 · Kth Largest Element in an Array](11-heap/0215-kth-largest-element-in-an-array/) — [solution](11-heap/0215-kth-largest-element-in-an-array/solution.py) · [notes](11-heap/0215-kth-largest-element-in-an-array/README.md)
+- [621 · Task Scheduler](11-heap/0621-task-scheduler/) — [solution](11-heap/0621-task-scheduler/solution.py) · [notes](11-heap/0621-task-scheduler/README.md)
 
 ### Chapter 12: Graphs: DFS / BFS / Union Find
 
@@ -144,3 +149,82 @@ The full course outline is preserved verbatim in [`CURRICULUM.md`](CURRICULUM.md
 - [191 · Number of 1 Bits](17-bit-manipulation/0191-number-of-1-bits/) — [solution](17-bit-manipulation/0191-number-of-1-bits/solution.py) · [notes](17-bit-manipulation/0191-number-of-1-bits/README.md)
 - [190 · Reverse Bits](17-bit-manipulation/0190-reverse-bits/) — [solution](17-bit-manipulation/0190-reverse-bits/solution.py) · [notes](17-bit-manipulation/0190-reverse-bits/README.md)
 - [371 · Sum of Two Integers](17-bit-manipulation/0371-sum-of-two-integers/) — [solution](17-bit-manipulation/0371-sum-of-two-integers/solution.py) · [notes](17-bit-manipulation/0371-sum-of-two-integers/README.md)
+
+### Chapter 18: Advanced Graphs: Shortest Paths & MST
+
+- [743 · Network Delay Time](18-advanced-graphs/0743-network-delay-time/) — [solution](18-advanced-graphs/0743-network-delay-time/solution.py) · [notes](18-advanced-graphs/0743-network-delay-time/README.md)
+- [1584 · Min Cost to Connect All Points](18-advanced-graphs/1584-min-cost-to-connect-all-points/) — [solution](18-advanced-graphs/1584-min-cost-to-connect-all-points/solution.py) · [notes](18-advanced-graphs/1584-min-cost-to-connect-all-points/README.md)
+- [787 · Cheapest Flights Within K Stops](18-advanced-graphs/0787-cheapest-flights-within-k-stops/) — [solution](18-advanced-graphs/0787-cheapest-flights-within-k-stops/solution.py) · [notes](18-advanced-graphs/0787-cheapest-flights-within-k-stops/README.md)
+- [778 · Swim in Rising Water](18-advanced-graphs/0778-swim-in-rising-water/) — [solution](18-advanced-graphs/0778-swim-in-rising-water/solution.py) · [notes](18-advanced-graphs/0778-swim-in-rising-water/README.md)
+- [332 · Reconstruct Itinerary](18-advanced-graphs/0332-reconstruct-itinerary/) — [solution](18-advanced-graphs/0332-reconstruct-itinerary/solution.py) · [notes](18-advanced-graphs/0332-reconstruct-itinerary/README.md)
+
+### Chapter 19: 2-D Dynamic Programming
+
+- [309 · Best Time to Buy and Sell Stock with Cooldown](19-2d-dynamic-programming/0309-best-time-to-buy-and-sell-stock-with-cooldown/) — [solution](19-2d-dynamic-programming/0309-best-time-to-buy-and-sell-stock-with-cooldown/solution.py) · [notes](19-2d-dynamic-programming/0309-best-time-to-buy-and-sell-stock-with-cooldown/README.md)
+- [518 · Coin Change II](19-2d-dynamic-programming/0518-coin-change-ii/) — [solution](19-2d-dynamic-programming/0518-coin-change-ii/solution.py) · [notes](19-2d-dynamic-programming/0518-coin-change-ii/README.md)
+- [494 · Target Sum](19-2d-dynamic-programming/0494-target-sum/) — [solution](19-2d-dynamic-programming/0494-target-sum/solution.py) · [notes](19-2d-dynamic-programming/0494-target-sum/README.md)
+- [97 · Interleaving String](19-2d-dynamic-programming/0097-interleaving-string/) — [solution](19-2d-dynamic-programming/0097-interleaving-string/solution.py) · [notes](19-2d-dynamic-programming/0097-interleaving-string/README.md)
+- [329 · Longest Increasing Path in a Matrix](19-2d-dynamic-programming/0329-longest-increasing-path-in-a-matrix/) — [solution](19-2d-dynamic-programming/0329-longest-increasing-path-in-a-matrix/solution.py) · [notes](19-2d-dynamic-programming/0329-longest-increasing-path-in-a-matrix/README.md)
+- [115 · Distinct Subsequences](19-2d-dynamic-programming/0115-distinct-subsequences/) — [solution](19-2d-dynamic-programming/0115-distinct-subsequences/solution.py) · [notes](19-2d-dynamic-programming/0115-distinct-subsequences/README.md)
+- [72 · Edit Distance](19-2d-dynamic-programming/0072-edit-distance/) — [solution](19-2d-dynamic-programming/0072-edit-distance/solution.py) · [notes](19-2d-dynamic-programming/0072-edit-distance/README.md)
+- [312 · Burst Balloons](19-2d-dynamic-programming/0312-burst-balloons/) — [solution](19-2d-dynamic-programming/0312-burst-balloons/solution.py) · [notes](19-2d-dynamic-programming/0312-burst-balloons/README.md)
+- [10 · Regular Expression Matching](19-2d-dynamic-programming/0010-regular-expression-matching/) — [solution](19-2d-dynamic-programming/0010-regular-expression-matching/solution.py) · [notes](19-2d-dynamic-programming/0010-regular-expression-matching/README.md)
+
+### Chapter 20: Design
+
+- [146 · LRU Cache](20-design/0146-lru-cache/) — [solution](20-design/0146-lru-cache/solution.py) · [notes](20-design/0146-lru-cache/README.md)
+- [155 · Min Stack](20-design/0155-min-stack/) — [solution](20-design/0155-min-stack/solution.py) · [notes](20-design/0155-min-stack/README.md)
+- [232 · Implement Queue using Stacks](20-design/0232-implement-queue-using-stacks/) — [solution](20-design/0232-implement-queue-using-stacks/solution.py) · [notes](20-design/0232-implement-queue-using-stacks/README.md)
+- [355 · Design Twitter](20-design/0355-design-twitter/) — [solution](20-design/0355-design-twitter/solution.py) · [notes](20-design/0355-design-twitter/README.md)
+- [981 · Time Based Key-Value Store](20-design/0981-time-based-key-value-store/) — [solution](20-design/0981-time-based-key-value-store/solution.py) · [notes](20-design/0981-time-based-key-value-store/README.md)
+- [380 · Insert Delete GetRandom O(1)](20-design/0380-insert-delete-getrandom-o-1/) — [solution](20-design/0380-insert-delete-getrandom-o-1/solution.py) · [notes](20-design/0380-insert-delete-getrandom-o-1/README.md)
+- [460 · LFU Cache](20-design/0460-lfu-cache/) — [solution](20-design/0460-lfu-cache/solution.py) · [notes](20-design/0460-lfu-cache/README.md)
+
+### Chapter 21: Subsets & Combinatorial Backtracking
+
+- [78 · Subsets](21-subsets/0078-subsets/) — [solution](21-subsets/0078-subsets/solution.py) · [notes](21-subsets/0078-subsets/README.md)
+- [90 · Subsets II](21-subsets/0090-subsets-ii/) — [solution](21-subsets/0090-subsets-ii/solution.py) · [notes](21-subsets/0090-subsets-ii/README.md)
+- [46 · Permutations](21-subsets/0046-permutations/) — [solution](21-subsets/0046-permutations/solution.py) · [notes](21-subsets/0046-permutations/README.md)
+- [47 · Permutations II](21-subsets/0047-permutations-ii/) — [solution](21-subsets/0047-permutations-ii/solution.py) · [notes](21-subsets/0047-permutations-ii/README.md)
+- [77 · Combinations](21-subsets/0077-combinations/) — [solution](21-subsets/0077-combinations/solution.py) · [notes](21-subsets/0077-combinations/README.md)
+- [17 · Letter Combinations of a Phone Number](21-subsets/0017-letter-combinations-of-a-phone-number/) — [solution](21-subsets/0017-letter-combinations-of-a-phone-number/solution.py) · [notes](21-subsets/0017-letter-combinations-of-a-phone-number/README.md)
+- [131 · Palindrome Partitioning](21-subsets/0131-palindrome-partitioning/) — [solution](21-subsets/0131-palindrome-partitioning/solution.py) · [notes](21-subsets/0131-palindrome-partitioning/README.md)
+- [51 · N-Queens](21-subsets/0051-n-queens/) — [solution](21-subsets/0051-n-queens/solution.py) · [notes](21-subsets/0051-n-queens/README.md)
+
+### Chapter 22: Monotonic Stack
+
+- [84 · Largest Rectangle in Histogram](22-monotonic-stack/0084-largest-rectangle-in-histogram/) — [solution](22-monotonic-stack/0084-largest-rectangle-in-histogram/solution.py) · [notes](22-monotonic-stack/0084-largest-rectangle-in-histogram/README.md)
+- [42 · Trapping Rain Water](22-monotonic-stack/0042-trapping-rain-water/) — [solution](22-monotonic-stack/0042-trapping-rain-water/solution.py) · [notes](22-monotonic-stack/0042-trapping-rain-water/README.md)
+- [853 · Car Fleet](22-monotonic-stack/0853-car-fleet/) — [solution](22-monotonic-stack/0853-car-fleet/solution.py) · [notes](22-monotonic-stack/0853-car-fleet/README.md)
+- [496 · Next Greater Element I](22-monotonic-stack/0496-next-greater-element-i/) — [solution](22-monotonic-stack/0496-next-greater-element-i/solution.py) · [notes](22-monotonic-stack/0496-next-greater-element-i/README.md)
+- [901 · Online Stock Span](22-monotonic-stack/0901-online-stock-span/) — [solution](22-monotonic-stack/0901-online-stock-span/solution.py) · [notes](22-monotonic-stack/0901-online-stock-span/README.md)
+
+### Chapter 23: Prefix Sum
+
+- [303 · Range Sum Query - Immutable](23-prefix-sum/0303-range-sum-query-immutable/) — [solution](23-prefix-sum/0303-range-sum-query-immutable/solution.py) · [notes](23-prefix-sum/0303-range-sum-query-immutable/README.md)
+- [304 · Range Sum Query 2D - Immutable](23-prefix-sum/0304-range-sum-query-2d-immutable/) — [solution](23-prefix-sum/0304-range-sum-query-2d-immutable/solution.py) · [notes](23-prefix-sum/0304-range-sum-query-2d-immutable/README.md)
+- [560 · Subarray Sum Equals K](23-prefix-sum/0560-subarray-sum-equals-k/) — [solution](23-prefix-sum/0560-subarray-sum-equals-k/solution.py) · [notes](23-prefix-sum/0560-subarray-sum-equals-k/README.md)
+- [525 · Contiguous Array](23-prefix-sum/0525-contiguous-array/) — [solution](23-prefix-sum/0525-contiguous-array/solution.py) · [notes](23-prefix-sum/0525-contiguous-array/README.md)
+
+### Chapter 24: Cyclic Sort & Index Tricks
+
+- [41 · First Missing Positive](24-cyclic-sort/0041-first-missing-positive/) — [solution](24-cyclic-sort/0041-first-missing-positive/solution.py) · [notes](24-cyclic-sort/0041-first-missing-positive/README.md)
+- [442 · Find All Duplicates in an Array](24-cyclic-sort/0442-find-all-duplicates-in-an-array/) — [solution](24-cyclic-sort/0442-find-all-duplicates-in-an-array/solution.py) · [notes](24-cyclic-sort/0442-find-all-duplicates-in-an-array/README.md)
+- [448 · Find All Numbers Disappeared in an Array](24-cyclic-sort/0448-find-all-numbers-disappeared-in-an-array/) — [solution](24-cyclic-sort/0448-find-all-numbers-disappeared-in-an-array/solution.py) · [notes](24-cyclic-sort/0448-find-all-numbers-disappeared-in-an-array/README.md)
+- [287 · Find the Duplicate Number](24-cyclic-sort/0287-find-the-duplicate-number/) — [solution](24-cyclic-sort/0287-find-the-duplicate-number/solution.py) · [notes](24-cyclic-sort/0287-find-the-duplicate-number/README.md)
+
+### Chapter 25: Math & Geometry
+
+- [50 · Pow(x, n)](25-math-geometry/0050-pow-x-n/) — [solution](25-math-geometry/0050-pow-x-n/solution.py) · [notes](25-math-geometry/0050-pow-x-n/README.md)
+- [202 · Happy Number](25-math-geometry/0202-happy-number/) — [solution](25-math-geometry/0202-happy-number/solution.py) · [notes](25-math-geometry/0202-happy-number/README.md)
+- [66 · Plus One](25-math-geometry/0066-plus-one/) — [solution](25-math-geometry/0066-plus-one/solution.py) · [notes](25-math-geometry/0066-plus-one/README.md)
+- [43 · Multiply Strings](25-math-geometry/0043-multiply-strings/) — [solution](25-math-geometry/0043-multiply-strings/solution.py) · [notes](25-math-geometry/0043-multiply-strings/README.md)
+- [7 · Reverse Integer](25-math-geometry/0007-reverse-integer/) — [solution](25-math-geometry/0007-reverse-integer/solution.py) · [notes](25-math-geometry/0007-reverse-integer/README.md)
+- [9 · Palindrome Number](25-math-geometry/0009-palindrome-number/) — [solution](25-math-geometry/0009-palindrome-number/solution.py) · [notes](25-math-geometry/0009-palindrome-number/README.md)
+
+### Chapter 26: Advanced Data Structures: Segment Tree, BIT, Union-Find
+
+- [307 · Range Sum Query - Mutable](26-advanced-ds/0307-range-sum-query-mutable/) — [solution](26-advanced-ds/0307-range-sum-query-mutable/solution.py) · [notes](26-advanced-ds/0307-range-sum-query-mutable/README.md)
+- [684 · Redundant Connection](26-advanced-ds/0684-redundant-connection/) — [solution](26-advanced-ds/0684-redundant-connection/solution.py) · [notes](26-advanced-ds/0684-redundant-connection/README.md)
+- [547 · Number of Provinces](26-advanced-ds/0547-number-of-provinces/) — [solution](26-advanced-ds/0547-number-of-provinces/solution.py) · [notes](26-advanced-ds/0547-number-of-provinces/README.md)
+- [315 · Count of Smaller Numbers After Self](26-advanced-ds/0315-count-of-smaller-numbers-after-self/) — [solution](26-advanced-ds/0315-count-of-smaller-numbers-after-self/solution.py) · [notes](26-advanced-ds/0315-count-of-smaller-numbers-after-self/README.md)
