@@ -89,6 +89,11 @@ pre.diagram{background:#fffdf8;color:#2b2620;border:1px solid #e0d6c4;
 .viz{background:var(--panel);border:1px solid var(--line);border-radius:12px;
   padding:16px 16px 12px}
 .viz-title{font-weight:600;font-size:15px;margin-bottom:10px;color:#22201b}
+.viz-acts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.viz-act{font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--line);
+  background:#fffdf8;color:var(--muted);transition:background .2s,color .2s,border-color .2s}
+.viz-act.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.viz-act.done{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-soft)}
 .viz-stage{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
 .viz-svg-wrap{flex:1 1 340px;min-width:0;overflow-x:auto}
 .viz-svg{width:100%;height:auto;min-height:150px}

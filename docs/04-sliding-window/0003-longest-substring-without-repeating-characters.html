@@ -74,7 +74,13 @@ return best</code></pre>
 <h2>Transfer</h2>
 <p>This is the variable-size sliding window sharpened with a jump instead of a one-step shrink: remembering *where* the conflict was lets <code>left</code> skip ahead in one move. The same idea powers <a href="../0424-longest-repeating-character-replacement/">Longest Repeating Character Replacement / 424</a> and <a href="../0076-minimum-window-substring/">Minimum Window Substring / 76</a>. Whenever a window becomes invalid at a known spot, ask whether you can jump the start straight to the fix rather than crawling.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
  "player": "linear",
- "title": "Longest Substring Without Repeating Characters - a window that never holds a repeat",
+ "title": "Longest Substring Without Repeating Characters - from restart-every-time to one window",
+ "acts": [
+  "Brute force: every start",
+  "The waste",
+  "Fast: sliding window",
+  "Edge case: \"bbbb\""
+ ],
  "cells": [
   "a",
   "b",
@@ -97,10 +103,31 @@ return best</code></pre>
  ],
  "frames": [
   {
-   "note": "Two markers, left and right, bound a window with no repeats. Grow right; if it brings a repeat, pull left until it's gone.",
+   "act": 0,
+   "cells": [
+    "a",
+    "b",
+    "c",
+    "a",
+    "b",
+    "c",
+    "b",
+    "b"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "note": "Brute force: from each start, extend until a repeat appears; remember the longest clean run. Watch the first two starts.",
    "pointers": {
-    "L": 0,
-    "R": 0
+    "start": 0,
+    "end": 0
    },
    "window": [
     0,
@@ -108,17 +135,14 @@ return best</code></pre>
    ],
    "marks": {
     "0": "active"
-   },
-   "sidebar": {
-    "title": "window contents",
-    "rows": []
    }
   },
   {
-   "note": "'a' is new. Window is s[0..0] = \"a\", length 1. Best so far: 1.",
+   "act": 0,
+   "note": "start=0: window \"a\" is still clean (length 1).",
    "pointers": {
-    "L": 0,
-    "R": 0
+    "start": 0,
+    "end": 0
    },
    "window": [
     0,
@@ -128,7 +152,7 @@ return best</code></pre>
     "0": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "this window",
     "rows": [
      [
       "a",
@@ -138,10 +162,11 @@ return best</code></pre>
    }
   },
   {
-   "note": "'b' is new. Window is s[0..1] = \"ab\", length 2. Best so far: 2.",
+   "act": 0,
+   "note": "start=0: window \"ab\" is still clean (length 2).",
    "pointers": {
-    "L": 0,
-    "R": 1
+    "start": 0,
+    "end": 1
    },
    "window": [
     0,
@@ -152,7 +177,7 @@ return best</code></pre>
     "1": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "this window",
     "rows": [
      [
       "a",
@@ -166,7 +191,305 @@ return best</code></pre>
    }
   },
   {
-   "note": "'c' is new. Window is s[0..2] = \"abc\", length 3. Best so far: 3.",
+   "act": 0,
+   "note": "start=0: window \"abc\" is still clean (length 3).",
+   "pointers": {
+    "start": 0,
+    "end": 2
+   },
+   "window": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "this window",
+    "rows": [
+     [
+      "a",
+      ""
+     ],
+     [
+      "b",
+      ""
+     ],
+     [
+      "c",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 0,
+   "note": "start=0: 'a' repeats \u2014 stop this start, then throw the whole window away and start over at 1.",
+   "pointers": {
+    "start": 0,
+    "end": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "bad",
+    "3": "bad"
+   },
+   "sidebar": {
+    "title": "this window",
+    "rows": [
+     [
+      "a",
+      ""
+     ],
+     [
+      "b",
+      ""
+     ],
+     [
+      "c",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 0,
+   "note": "start=1: window \"b\" is still clean (length 1).",
+   "pointers": {
+    "start": 1,
+    "end": 1
+   },
+   "window": [
+    1,
+    1
+   ],
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "this window",
+    "rows": [
+     [
+      "b",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 0,
+   "note": "start=1: window \"bc\" is still clean (length 2).",
+   "pointers": {
+    "start": 1,
+    "end": 2
+   },
+   "window": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "this window",
+    "rows": [
+     [
+      "b",
+      ""
+     ],
+     [
+      "c",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 0,
+   "note": "start=1: window \"bca\" is still clean (length 3).",
+   "pointers": {
+    "start": 1,
+    "end": 3
+   },
+   "window": [
+    1,
+    3
+   ],
+   "marks": {
+    "1": "active",
+    "2": "active",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "this window",
+    "rows": [
+     [
+      "b",
+      ""
+     ],
+     [
+      "c",
+      ""
+     ],
+     [
+      "a",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 0,
+   "note": "start=1: 'b' repeats \u2014 stop this start, then throw the whole window away and start over at 2.",
+   "pointers": {
+    "start": 1,
+    "end": 4
+   },
+   "window": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "bad",
+    "4": "bad"
+   },
+   "sidebar": {
+    "title": "this window",
+    "rows": [
+     [
+      "b",
+      ""
+     ],
+     [
+      "c",
+      ""
+     ],
+     [
+      "a",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 1,
+   "note": "The waste: start=1 re-reads 'b','c' that start=0 just read. Every start re-scans characters an earlier start already checked.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   }
+  },
+  {
+   "act": 1,
+   "note": "That double-reading is about n*n work. The fix: never move start backward \u2014 keep one window and only ever grow or shrink it.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   }
+  },
+  {
+   "act": 2,
+   "cells": [
+    "a",
+    "b",
+    "c",
+    "a",
+    "b",
+    "c",
+    "b",
+    "b"
+   ],
+   "note": "One window, two markers. Grow right. If right brings a repeat, shrink from the left until it's gone. left never rewinds.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "window",
+    "rows": []
+   }
+  },
+  {
+   "act": 2,
+   "note": "'a' is new. Window s[0..0] = \"a\", length 1. Best so far: 1.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "window",
+    "rows": [
+     [
+      "a",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "note": "'b' is new. Window s[0..1] = \"ab\", length 2. Best so far: 2.",
+   "pointers": {
+    "L": 0,
+    "R": 1
+   },
+   "window": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "window",
+    "rows": [
+     [
+      "a",
+      ""
+     ],
+     [
+      "b",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "note": "'c' is new. Window s[0..2] = \"abc\", length 3. Best so far: 3.",
    "pointers": {
     "L": 0,
     "R": 2
@@ -181,7 +504,7 @@ return best</code></pre>
     "2": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "a",
@@ -199,7 +522,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'a' at index 3 is already inside the window. Drop 'a' at the left and move left forward.",
+   "act": 2,
+   "note": "'a' is already in the window. Drop 'a' on the left and move left forward.",
    "pointers": {
     "L": 0,
     "R": 3
@@ -213,7 +537,7 @@ return best</code></pre>
     "3": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "a",
@@ -231,7 +555,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'a' is new. Window is s[1..3] = \"bca\", length 3. Best so far: 3.",
+   "act": 2,
+   "note": "'a' is new. Window s[1..3] = \"bca\", length 3. Best so far: 3.",
    "pointers": {
     "L": 1,
     "R": 3
@@ -246,7 +571,7 @@ return best</code></pre>
     "3": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "a",
@@ -264,7 +589,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'b' at index 4 is already inside the window. Drop 'b' at the left and move left forward.",
+   "act": 2,
+   "note": "'b' is already in the window. Drop 'b' on the left and move left forward.",
    "pointers": {
     "L": 1,
     "R": 4
@@ -278,7 +604,7 @@ return best</code></pre>
     "4": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "a",
@@ -296,7 +622,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'b' is new. Window is s[2..4] = \"cab\", length 3. Best so far: 3.",
+   "act": 2,
+   "note": "'b' is new. Window s[2..4] = \"cab\", length 3. Best so far: 3.",
    "pointers": {
     "L": 2,
     "R": 4
@@ -311,7 +638,7 @@ return best</code></pre>
     "4": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "a",
@@ -329,7 +656,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'c' at index 5 is already inside the window. Drop 'c' at the left and move left forward.",
+   "act": 2,
+   "note": "'c' is already in the window. Drop 'c' on the left and move left forward.",
    "pointers": {
     "L": 2,
     "R": 5
@@ -343,7 +671,7 @@ return best</code></pre>
     "5": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "a",
@@ -361,7 +689,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'c' is new. Window is s[3..5] = \"abc\", length 3. Best so far: 3.",
+   "act": 2,
+   "note": "'c' is new. Window s[3..5] = \"abc\", length 3. Best so far: 3.",
    "pointers": {
     "L": 3,
     "R": 5
@@ -376,7 +705,7 @@ return best</code></pre>
     "5": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "a",
@@ -394,7 +723,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'b' at index 6 is already inside the window. Drop 'a' at the left and move left forward.",
+   "act": 2,
+   "note": "'b' is already in the window. Drop 'a' on the left and move left forward.",
    "pointers": {
     "L": 3,
     "R": 6
@@ -408,7 +738,7 @@ return best</code></pre>
     "6": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "a",
@@ -426,7 +756,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'b' at index 6 is already inside the window. Drop 'b' at the left and move left forward.",
+   "act": 2,
+   "note": "'b' is already in the window. Drop 'b' on the left and move left forward.",
    "pointers": {
     "L": 4,
     "R": 6
@@ -440,7 +771,7 @@ return best</code></pre>
     "6": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "b",
@@ -454,7 +785,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'b' is new. Window is s[5..6] = \"cb\", length 2. Best so far: 3.",
+   "act": 2,
+   "note": "'b' is new. Window s[5..6] = \"cb\", length 2. Best so far: 3.",
    "pointers": {
     "L": 5,
     "R": 6
@@ -468,7 +800,7 @@ return best</code></pre>
     "6": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "b",
@@ -482,7 +814,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'b' at index 7 is already inside the window. Drop 'c' at the left and move left forward.",
+   "act": 2,
+   "note": "'b' is already in the window. Drop 'c' on the left and move left forward.",
    "pointers": {
     "L": 5,
     "R": 7
@@ -496,7 +829,7 @@ return best</code></pre>
     "7": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "b",
@@ -510,7 +843,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'b' at index 7 is already inside the window. Drop 'b' at the left and move left forward.",
+   "act": 2,
+   "note": "'b' is already in the window. Drop 'b' on the left and move left forward.",
    "pointers": {
     "L": 6,
     "R": 7
@@ -524,7 +858,7 @@ return best</code></pre>
     "7": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "b",
@@ -534,7 +868,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "'b' is new. Window is s[7..7] = \"b\", length 1. Best so far: 3.",
+   "act": 2,
+   "note": "'b' is new. Window s[7..7] = \"b\", length 1. Best so far: 3.",
    "pointers": {
     "L": 7,
     "R": 7
@@ -547,7 +882,7 @@ return best</code></pre>
     "7": "active"
    },
    "sidebar": {
-    "title": "window contents",
+    "title": "window",
     "rows": [
      [
       "b",
@@ -557,7 +892,8 @@ return best</code></pre>
    }
   },
   {
-   "note": "Done. Longest run with no repeat is \"abc\", length 3.",
+   "act": 2,
+   "note": "Longest clean run: \"abc\", length 3.",
    "pointers": {
     "L": 0,
     "R": 2
@@ -572,6 +908,133 @@ return best</code></pre>
     "2": "good"
    },
    "banner": "Longest without repeats: \"abc\"  (length 3)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    "b",
+    "b",
+    "b",
+    "b"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "note": "Edge case: every character the same. The window can never hold two, so left keeps chasing right and the answer is 1.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "window",
+    "rows": [
+     [
+      "b",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 3,
+   "note": "'b' at 1 repeats. Drop left 'b', move left to 1.",
+   "pointers": {
+    "L": 0,
+    "R": 1
+   },
+   "window": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "bad",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "window",
+    "rows": [
+     [
+      "b",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 3,
+   "note": "'b' at 2 repeats. Drop left 'b', move left to 2.",
+   "pointers": {
+    "L": 1,
+    "R": 2
+   },
+   "window": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "bad",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "window",
+    "rows": [
+     [
+      "b",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 3,
+   "note": "'b' at 3 repeats. Drop left 'b', move left to 3.",
+   "pointers": {
+    "L": 2,
+    "R": 3
+   },
+   "window": [
+    2,
+    3
+   ],
+   "marks": {
+    "2": "bad",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "window",
+    "rows": [
+     [
+      "b",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 3,
+   "note": "Window never grows past length 1.",
+   "pointers": {
+    "L": 3,
+    "R": 3
+   },
+   "window": [
+    3,
+    3
+   ],
+   "marks": {
+    "3": "good"
+   },
+   "banner": "Longest without repeats: \"b\"  (length 1)"
   }
  ]
 }</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/04-sliding-window/0003-longest-substring-without-repeating-characters/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;3. Longest Substring Without Repeating Characters — https://leetcode.com/problems/longest-substring-without-repeating-characters/

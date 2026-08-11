@@ -50,7 +50,12 @@
 <h2>Transfer</h2>
 <p>&quot;Solve each subtree, combine at the parent&quot; is the universal tree template. It drives <a href="../0226-invert-binary-tree/">Invert Binary Tree / 226</a>, <a href="../0100-same-tree/">Same Tree / 100</a>, <a href="https://leetcode.com/problems/balanced-binary-tree/">Balanced Binary Tree / 110</a>, and <a href="https://leetcode.com/problems/diameter-of-binary-tree/">Diameter of Binary Tree / 543</a>, which is depth with one extra twist.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
  "player": "tree",
- "title": "Maximum Depth - each node's depth resolves from its children upward",
+ "title": "Maximum Depth - the rule, run bottom-up, then a lopsided tree",
+ "acts": [
+  "The rule",
+  "DFS resolves bottom-up",
+  "Edge case: lopsided"
+ ],
  "nodes": [
   {
    "id": 0,
@@ -103,21 +108,148 @@
  ],
  "frames": [
   {
-   "note": "Visit node 3. Its depth is 1 + the deeper of its two sides, so first go down.",
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 3,
+     "x": 72,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 20,
+     "x": 216,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 15,
+     "x": 144,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 7,
+     "x": 288,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "note": "The rule, straight from the definition: a node's depth is 1 + the depth of its deeper child. So we need the children's answers first.",
    "active": [
     0
    ],
    "done": {}
   },
   {
-   "note": "Visit node 9. Its depth is 1 + the deeper of its two sides, so first go down.",
+   "act": 0,
+   "note": "A leaf has no children. The deeper child is 0, so a leaf's depth is 1 + 0 = 1. That is the base case everything builds on.",
    "active": [
     1
    ],
    "done": {}
   },
   {
-   "note": "Node 9 is a leaf (no children) -> depth 1.",
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 3,
+     "x": 72,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 20,
+     "x": 216,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 15,
+     "x": 144,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 7,
+     "x": 288,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "note": "Now run it. Each node lights up when visited and shows its answer once both sides come back.",
+   "active": [
+    0
+   ],
+   "done": {}
+  },
+  {
+   "act": 1,
+   "note": "Visit node 3. Ask its children first, then take 1 + the deeper answer.",
+   "active": [
+    0
+   ],
+   "done": {}
+  },
+  {
+   "act": 1,
+   "note": "Visit node 9. Ask its children first, then take 1 + the deeper answer.",
+   "active": [
+    1
+   ],
+   "done": {}
+  },
+  {
+   "act": 1,
+   "note": "Node 9 is a leaf -> depth 1.",
    "active": [
     1
    ],
@@ -126,7 +258,8 @@
    }
   },
   {
-   "note": "Visit node 20. Its depth is 1 + the deeper of its two sides, so first go down.",
+   "act": 1,
+   "note": "Visit node 20. Ask its children first, then take 1 + the deeper answer.",
    "active": [
     2
    ],
@@ -135,7 +268,8 @@
    }
   },
   {
-   "note": "Visit node 15. Its depth is 1 + the deeper of its two sides, so first go down.",
+   "act": 1,
+   "note": "Visit node 15. Ask its children first, then take 1 + the deeper answer.",
    "active": [
     3
    ],
@@ -144,7 +278,8 @@
    }
   },
   {
-   "note": "Node 15 is a leaf (no children) -> depth 1.",
+   "act": 1,
+   "note": "Node 15 is a leaf -> depth 1.",
    "active": [
     3
    ],
@@ -154,7 +289,8 @@
    }
   },
   {
-   "note": "Visit node 7. Its depth is 1 + the deeper of its two sides, so first go down.",
+   "act": 1,
+   "note": "Visit node 7. Ask its children first, then take 1 + the deeper answer.",
    "active": [
     4
    ],
@@ -164,7 +300,8 @@
    }
   },
   {
-   "note": "Node 7 is a leaf (no children) -> depth 1.",
+   "act": 1,
+   "note": "Node 7 is a leaf -> depth 1.",
    "active": [
     4
    ],
@@ -175,6 +312,7 @@
    }
   },
   {
+   "act": 1,
    "note": "Node 20: 1 + max(left 1, right 1) = 2.",
    "active": [
     2
@@ -187,6 +325,7 @@
    }
   },
   {
+   "act": 1,
    "note": "Node 3: 1 + max(left 1, right 2) = 3.",
    "active": [
     0
@@ -200,7 +339,8 @@
    }
   },
   {
-   "note": "The root's value is the answer: the longest root-to-leaf path is 3 nodes.",
+   "act": 1,
+   "note": "The root's answer is the whole tree's depth: 3.",
    "active": [],
    "done": {
     "1": 1,
@@ -208,7 +348,114 @@
     "4": 1,
     "2": 2,
     "0": 3
+   },
+   "banner": "Maximum depth = 3  (longest root-to-leaf path)"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 72,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 144,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "note": "Edge case: a lopsided tree, each node with only one child. No branching means depth just counts the nodes down the single path.",
+   "active": [
+    0
+   ],
+   "done": {}
+  },
+  {
+   "act": 2,
+   "note": "Visit node 1. Ask its children first, then take 1 + the deeper answer.",
+   "active": [
+    0
+   ],
+   "done": {}
+  },
+  {
+   "act": 2,
+   "note": "Visit node 2. Ask its children first, then take 1 + the deeper answer.",
+   "active": [
+    1
+   ],
+   "done": {}
+  },
+  {
+   "act": 2,
+   "note": "Visit node 3. Ask its children first, then take 1 + the deeper answer.",
+   "active": [
+    2
+   ],
+   "done": {}
+  },
+  {
+   "act": 2,
+   "note": "Node 3 is a leaf -> depth 1.",
+   "active": [
+    2
+   ],
+   "done": {
+    "2": 1
    }
+  },
+  {
+   "act": 2,
+   "note": "Node 2: 1 + max(left 0, right 1) = 2.",
+   "active": [
+    1
+   ],
+   "done": {
+    "2": 1,
+    "1": 2
+   }
+  },
+  {
+   "act": 2,
+   "note": "Node 1: 1 + max(left 0, right 2) = 3.",
+   "active": [
+    0
+   ],
+   "done": {
+    "2": 1,
+    "1": 2,
+    "0": 3
+   }
+  },
+  {
+   "act": 2,
+   "note": "Same rule, no branches: depth = number of nodes on the path = 3. (A single node would give 1; an empty tree, 0.)",
+   "active": [],
+   "done": {
+    "2": 1,
+    "1": 2,
+    "0": 3
+   },
+   "banner": "Maximum depth = 3"
   }
  ]
 }</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/08-trees/0104-maximum-depth-of-binary-tree/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;104. Maximum Depth of Binary Tree — https://leetcode.com/problems/maximum-depth-of-binary-tree/
