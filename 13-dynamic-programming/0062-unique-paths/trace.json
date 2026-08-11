@@ -1,0 +1,402 @@
+{
+ "player": "grid",
+ "title": "Unique Paths - fill each cell once instead of re-walking every path",
+ "acts": [
+  "Brute: every path",
+  "Fill the table",
+  "Answer + edge"
+ ],
+ "code": {
+  "tab": [
+   "dp = [[1] * n for _ in range(m)]",
+   "for r in range(1, m):",
+   "    for c in range(1, n):",
+   "        dp[r][c] = dp[r-1][c] + dp[r][c-1]",
+   "return dp[m-1][n-1]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the two cells we add"
+  ],
+  [
+   "good",
+   "filled / answer"
+  ],
+  [
+   "bad",
+   "recomputed (waste)"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": null,
+   "intro": "how many times the SAME cell gets asked 'how many paths from here?'",
+   "invariant": "paths(cell) = paths(right) + paths(down).",
+   "note": "Brute force: from the start, branch right or down until the corner. Count the paths that reach the end.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "start",
+     "(0,0)"
+    ],
+    [
+     "moves",
+     "right / down"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "But paths through (1,1) get recounted by many different routes \u2014 the same subproblem, solved again and again. That overlap is the waste.",
+   "marks": {
+    "1,1": "bad",
+    "0,0": "active",
+    "2,2": "active"
+   },
+   "state": [
+    [
+     "recomputed",
+     "(1,1) \u2026"
+    ],
+    [
+     "cost",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null
+    ]
+   ],
+   "code": "tab",
+   "line": 0,
+   "intro": "each cell is filled ONCE, from the two neighbors it depends on.",
+   "invariant": "dp[r][c] = ways to reach that cell, computed once.",
+   "note": "Seed the first row and column with 1: there is exactly one straight-line way to reach any edge cell.",
+   "marks": {},
+   "state": [
+    [
+     "fill",
+     "edges = 1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "dp[0][0] = 1 (only rightward).",
+   "set": {
+    "0,0": 1
+   },
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "dp[0][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "dp[0][1] = 1 (only rightward).",
+   "set": {
+    "0,1": 1
+   },
+   "marks": {
+    "0,1": "good"
+   },
+   "state": [
+    [
+     "dp[0][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "dp[0][2] = 1 (only rightward).",
+   "set": {
+    "0,2": 1
+   },
+   "marks": {
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "dp[0][2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "dp[1][0] = 1 (only downward).",
+   "set": {
+    "1,0": 1
+   },
+   "marks": {
+    "1,0": "good"
+   },
+   "state": [
+    [
+     "dp[1][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "dp[2][0] = 1 (only downward).",
+   "set": {
+    "2,0": 1
+   },
+   "marks": {
+    "2,0": "good"
+   },
+   "state": [
+    [
+     "dp[2][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "dp[1][1] = up 1 + left 1 = 2.",
+   "set": {
+    "1,1": 2
+   },
+   "marks": {
+    "0,1": "active",
+    "1,0": "active",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "up",
+     1
+    ],
+    [
+     "left",
+     1
+    ],
+    [
+     "dp[1][1]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "dp[1][2] = up 1 + left 2 = 3.",
+   "set": {
+    "1,2": 3
+   },
+   "marks": {
+    "0,2": "active",
+    "1,1": "active",
+    "1,2": "good"
+   },
+   "state": [
+    [
+     "up",
+     1
+    ],
+    [
+     "left",
+     2
+    ],
+    [
+     "dp[1][2]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "dp[2][1] = up 2 + left 1 = 3.",
+   "set": {
+    "2,1": 3
+   },
+   "marks": {
+    "1,1": "active",
+    "2,0": "active",
+    "2,1": "good"
+   },
+   "state": [
+    [
+     "up",
+     2
+    ],
+    [
+     "left",
+     1
+    ],
+    [
+     "dp[2][1]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "dp[2][2] = up 3 + left 3 = 6.",
+   "set": {
+    "2,2": 6
+   },
+   "marks": {
+    "1,2": "active",
+    "2,1": "active",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "up",
+     3
+    ],
+    [
+     "left",
+     3
+    ],
+    [
+     "dp[2][2]",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "tab",
+   "line": 4,
+   "intro": "the bottom-right cell is the whole answer.",
+   "invariant": "the corner already combined every path into one number.",
+   "note": "The corner dp[2][2] = 6 is the answer \u2014 filled once, no path re-walked.",
+   "marks": {
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "answer",
+     6
+    ]
+   ],
+   "banner": "Unique paths on a 3x3 grid = 6"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "0"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "tab",
+   "line": 4,
+   "note": "Edge case: a single-row grid. There is only one path \u2014 keep going right \u2014 so every cell is 1 and the answer is 1.",
+   "marks": {
+    "0,3": "good"
+   },
+   "state": [
+    [
+     "answer",
+     1
+    ]
+   ],
+   "banner": "Single row -> 1 path"
+  }
+ ]
+}

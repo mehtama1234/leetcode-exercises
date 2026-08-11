@@ -56,7 +56,500 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Order matters.</strong> Save <code>nxt = cur.next</code> *before* <code>cur.next = prev</code>. Do it the other way and you strand the rest of the list.</li><li>Return <code>prev</code>, not <code>cur</code>. When the loop ends <code>cur</code> is <code>None</code>; <code>prev</code> is the new head.</li><li>Empty list and single node fall out for free: <code>prev</code> ends as <code>None</code> or the lone node, both correct.</li></ul>
 <h2>Transfer</h2>
-<p>Reversing a list — or a *segment* of one — is a building block, not a destination. It is the second half of <a href="../0143-reorder-list/">reorder list / 143</a>, and the same three-pointer flip drives Reverse Nodes in k-Group / 25, Palindrome Linked List / 234, and Reverse Linked List II / 92. The &quot;save the next link before you overwrite it&quot; discipline is the muscle memory to keep. It pairs with the <a href="../0021-merge-two-sorted-lists/">merge / 21</a> and <a href="../0876-middle-of-the-linked-list/">find-middle / 876</a> primitives to build harder list problems.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0206-reverse-linked-list/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;206. Reverse Linked List — https://leetcode.com/problems/reverse-linked-list/
+<p>Reversing a list — or a *segment* of one — is a building block, not a destination. It is the second half of <a href="../0143-reorder-list/">reorder list / 143</a>, and the same three-pointer flip drives Reverse Nodes in k-Group / 25, Palindrome Linked List / 234, and Reverse Linked List II / 92. The &quot;save the next link before you overwrite it&quot; discipline is the muscle memory to keep. It pairs with the <a href="../0021-merge-two-sorted-lists/">merge / 21</a> and <a href="../0876-middle-of-the-linked-list/">find-middle / 876</a> primitives to build harder list problems.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linkedlist",
+ "title": "Reverse Linked List - flip each arrow in a single pass",
+ "acts": [
+  "The idea: flip arrows",
+  "Reverse in one pass",
+  "Edge: single node"
+ ],
+ "code": {
+  "rev": [
+   "prev = None",
+   "curr = head",
+   "while curr:",
+   "    nxt = curr.next",
+   "    curr.next = prev",
+   "    prev = curr",
+   "    curr = nxt",
+   "return prev"
+  ]
+ },
+ "legend": [
+  [
+   "good",
+   "already reversed"
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "vals": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "rev",
+   "line": 0,
+   "intro": "every arrow ends up pointing the other way \u2014 nothing moves in memory.",
+   "invariant": "the list stays a valid chain the whole time; only arrows flip.",
+   "note": "Reversing means every 'next' arrow should point backward instead of forward. We walk once and flip each arrow as we pass it.",
+   "pointers": {
+    "curr": 0
+   },
+   "state": [
+    [
+     "list",
+     "1->2->3->4"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "vals": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "rev",
+   "line": 1,
+   "intro": "prev trails behind; each node's arrow is bent back to prev.",
+   "invariant": "everything left of curr is already reversed.",
+   "note": "Two markers: curr is where we are, prev is the already-reversed part behind us (starts empty).",
+   "pointers": {
+    "curr": 0,
+    "prev": null
+   },
+   "state": [
+    [
+     "prev",
+     "null"
+    ],
+    [
+     "curr",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 3,
+   "note": "Remember curr.next (2) before we overwrite it \u2014 otherwise we lose the rest of the list.",
+   "pointers": {
+    "prev": null,
+    "curr": 0,
+    "nxt": 1
+   },
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "state": [
+    [
+     "curr",
+     1
+    ],
+    [
+     "nxt",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 4,
+   "note": "Flip: node 1's arrow now points back to null.",
+   "pointers": {
+    "prev": null,
+    "curr": 0,
+    "nxt": 1
+   },
+   "edges": [
+    [
+     0,
+     null
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "flipped",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 3,
+   "note": "Remember curr.next (3) before we overwrite it \u2014 otherwise we lose the rest of the list.",
+   "pointers": {
+    "prev": 0,
+    "curr": 1,
+    "nxt": 2
+   },
+   "edges": [
+    [
+     0,
+     null
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "state": [
+    [
+     "curr",
+     2
+    ],
+    [
+     "nxt",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 4,
+   "note": "Flip: node 2's arrow now points back to 1.",
+   "pointers": {
+    "prev": 0,
+    "curr": 1,
+    "nxt": 2
+   },
+   "edges": [
+    [
+     0,
+     null
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "flipped",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 3,
+   "note": "Remember curr.next (4) before we overwrite it \u2014 otherwise we lose the rest of the list.",
+   "pointers": {
+    "prev": 1,
+    "curr": 2,
+    "nxt": 3
+   },
+   "edges": [
+    [
+     0,
+     null
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "state": [
+    [
+     "curr",
+     3
+    ],
+    [
+     "nxt",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 4,
+   "note": "Flip: node 3's arrow now points back to 2.",
+   "pointers": {
+    "prev": 1,
+    "curr": 2,
+    "nxt": 3
+   },
+   "edges": [
+    [
+     0,
+     null
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "marks": {
+    "2": "good"
+   },
+   "state": [
+    [
+     "flipped",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 3,
+   "note": "Remember curr.next (null) before we overwrite it \u2014 otherwise we lose the rest of the list.",
+   "pointers": {
+    "prev": 2,
+    "curr": 3,
+    "nxt": null
+   },
+   "edges": [
+    [
+     0,
+     null
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "state": [
+    [
+     "curr",
+     4
+    ],
+    [
+     "nxt",
+     "null"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 4,
+   "note": "Flip: node 4's arrow now points back to 3.",
+   "pointers": {
+    "prev": 2,
+    "curr": 3,
+    "nxt": null
+   },
+   "edges": [
+    [
+     0,
+     null
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     2
+    ]
+   ],
+   "marks": {
+    "3": "good"
+   },
+   "state": [
+    [
+     "flipped",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 7,
+   "note": "curr fell off the end. prev is the new head: 4. The list now reads 4->3->2->1.",
+   "pointers": {
+    "prev": 3
+   },
+   "edges": [
+    [
+     0,
+     null
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     2
+    ]
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "new head",
+     4
+    ]
+   ],
+   "banner": "Reversed: 4 -> 3 -> 2 -> 1"
+  },
+  {
+   "act": 2,
+   "vals": [
+    7
+   ],
+   "edges": [
+    [
+     0,
+     null
+    ]
+   ],
+   "code": "rev",
+   "line": 7,
+   "intro": "the loop body runs zero or one time \u2014 nothing to flip.",
+   "invariant": "prev ends as the head; for one node that is the node itself.",
+   "note": "Edge case: a single node (or an empty list). curr flips nothing and prev ends pointing at the same node \u2014 reversing one node gives it back.",
+   "pointers": {
+    "prev": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "head",
+     7
+    ]
+   ],
+   "banner": "One node reverses to itself"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0206-reverse-linked-list/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;206. Reverse Linked List — https://leetcode.com/problems/reverse-linked-list/
 
 Given the head of a singly linked list, reverse it and return the new head.
 

@@ -205,6 +205,9 @@
     var stage = el("div", "viz-stage", host);
     var svgWrap = el("div", "viz-svg-wrap", stage);
     var svg = svgEl("svg"); svg.setAttribute("class", "viz-svg"); svgWrap.appendChild(svg);
+    var defs = svgEl("defs");
+    defs.innerHTML = '<marker id="llhead" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b5651d"/></marker>';
+    svg.appendChild(defs);
     var edgesG = svgEl("g"); svg.appendChild(edgesG);
     var nodesG = svgEl("g"); svg.appendChild(nodesG);
     var rail = el("div", "viz-rail", stage);
@@ -217,7 +220,7 @@
       while (nodesG.firstChild) nodesG.removeChild(nodesG.firstChild);
       while (edgesG.firstChild) edgesG.removeChild(edgesG.firstChild);
       ptrs = {}; ptrOrder = {}; rectEls = [];
-      svg.setAttribute("viewBox", "0 -40 " + (nx(n) + NPAD) + " 140");
+      svg.setAttribute("viewBox", "0 -44 " + (nx(n) + NPAD) + " 190");
       for (var i = 0; i < n; i++) {
         var r = svgEl("rect"); r.setAttribute("x", nx(i)); r.setAttribute("y", NY);
         r.setAttribute("width", NW); r.setAttribute("height", NW); r.setAttribute("rx", 10);
@@ -242,19 +245,23 @@
       if (f.vals) build(f.vals);
       while (edgesG.firstChild) edgesG.removeChild(edgesG.firstChild);
       (f.edges || []).forEach(function (e) {
-        var a = e[0], b = e[1];
-        var x1 = nx(a) + NW, y1 = NY + NW / 2;
+        var a = e[0], b = e[1], yc = NY + NW / 2;
         var path = svgEl("path");
-        if (b === null || b < 0) { // next = null: little stub
-          path.setAttribute("d", "M " + x1 + " " + y1 + " l 18 0");
+        if (b === null || b < 0) { // next = null: red stub off the right edge
+          path.setAttribute("d", "M " + (nx(a) + NW) + " " + yc + " l 20 0");
           path.setAttribute("class", "viz-ll-null");
-        } else {
-          var x2 = nx(b), fwd = b > a;
-          var mx = fwd ? (x1 + x2) / 2 : (x1 + x2) / 2;
-          var dip = fwd ? y1 - 4 : y1 + 30;
-          path.setAttribute("d", "M " + x1 + " " + y1 + " Q " + mx + " " + dip + " " + (x2) + " " + y1);
-          path.setAttribute("class", "viz-ll-edge");
+          edgesG.appendChild(path);
+          return;
         }
+        var fwd = b > a;
+        // forward arrows arc ABOVE the row, reversed arrows arc BELOW — so a
+        // reversal visibly moves the arrow from the top to the bottom.
+        var x1 = fwd ? nx(a) + NW : nx(a);
+        var x2 = fwd ? nx(b) : nx(b) + NW;
+        var apex = fwd ? NY - 22 : NY + NW + 22;
+        path.setAttribute("d", "M " + x1 + " " + yc + " Q " + ((x1 + x2) / 2) + " " + apex + " " + x2 + " " + yc);
+        path.setAttribute("class", "viz-ll-edge");
+        path.setAttribute("marker-end", "url(#llhead)");
         edgesG.appendChild(path);
       });
       rectEls.forEach(function (r) { r.setAttribute("class", "viz-node"); });

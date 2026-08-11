@@ -6,6 +6,26 @@
   "DFS resolves bottom-up",
   "Edge case: lopsided"
  ],
+ "code": {
+  "dfs": [
+   "def max_depth(node):",
+   "    if not node:",
+   "        return 0",
+   "    L = max_depth(node.left)",
+   "    R = max_depth(node.right)",
+   "    return 1 + max(L, R)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "visiting now"
+  ],
+  [
+   "good",
+   "depth known"
+  ]
+ ],
  "nodes": [
   {
    "id": 0,
@@ -109,19 +129,37 @@
      4
     ]
    ],
-   "note": "The rule, straight from the definition: a node's depth is 1 + the depth of its deeper child. So we need the children's answers first.",
+   "code": "dfs",
+   "line": 5,
+   "intro": "a node waits for BOTH children before it can answer.",
+   "invariant": "a node's depth = 1 + the depth of its deeper child.",
+   "note": "The rule from the definition: a node's depth is 1 + the depth of its deeper child. So we need the children's answers first.",
    "active": [
     0
    ],
-   "done": {}
+   "done": {},
+   "state": [
+    [
+     "rule",
+     "1 + max(L, R)"
+    ]
+   ]
   },
   {
    "act": 0,
-   "note": "A leaf has no children. The deeper child is 0, so a leaf's depth is 1 + 0 = 1. That is the base case everything builds on.",
+   "code": "dfs",
+   "line": 2,
+   "note": "A leaf has no children, so both sides are 0 -> depth 1 + 0 = 1. That base case is where the counting starts.",
    "active": [
     1
    ],
-   "done": {}
+   "done": {},
+   "state": [
+    [
+     "leaf depth",
+     1
+    ]
+   ]
   },
   {
    "act": 1,
@@ -175,60 +213,116 @@
      4
     ]
    ],
-   "note": "Now run it. Each node lights up when visited and shows its answer once both sides come back.",
+   "code": "dfs",
+   "line": 0,
+   "intro": "each node lights its answer only once both sides return.",
+   "invariant": "a node's badge appears only after its whole subtree is done.",
+   "note": "Run it. Watch answers appear from the leaves upward.",
    "active": [
     0
    ],
-   "done": {}
+   "done": {},
+   "state": [
+    [
+     "start",
+     "root 3"
+    ]
+   ]
   },
   {
    "act": 1,
-   "note": "Visit node 3. Ask its children first, then take 1 + the deeper answer.",
+   "code": "dfs",
+   "line": 3,
+   "note": "Visit node 3. Ask its children first.",
    "active": [
     0
    ],
-   "done": {}
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     3
+    ]
+   ]
   },
   {
    "act": 1,
-   "note": "Visit node 9. Ask its children first, then take 1 + the deeper answer.",
+   "code": "dfs",
+   "line": 3,
+   "note": "Visit node 9. Ask its children first.",
    "active": [
     1
    ],
-   "done": {}
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     9
+    ]
+   ]
   },
   {
    "act": 1,
+   "code": "dfs",
+   "line": 2,
    "note": "Node 9 is a leaf -> depth 1.",
    "active": [
     1
    ],
    "done": {
     "1": 1
-   }
+   },
+   "state": [
+    [
+     "node",
+     9
+    ],
+    [
+     "depth",
+     1
+    ]
+   ]
   },
   {
    "act": 1,
-   "note": "Visit node 20. Ask its children first, then take 1 + the deeper answer.",
+   "code": "dfs",
+   "line": 3,
+   "note": "Visit node 20. Ask its children first.",
    "active": [
     2
    ],
    "done": {
     "1": 1
-   }
+   },
+   "state": [
+    [
+     "visiting",
+     20
+    ]
+   ]
   },
   {
    "act": 1,
-   "note": "Visit node 15. Ask its children first, then take 1 + the deeper answer.",
+   "code": "dfs",
+   "line": 3,
+   "note": "Visit node 15. Ask its children first.",
    "active": [
     3
    ],
    "done": {
     "1": 1
-   }
+   },
+   "state": [
+    [
+     "visiting",
+     15
+    ]
+   ]
   },
   {
    "act": 1,
+   "code": "dfs",
+   "line": 2,
    "note": "Node 15 is a leaf -> depth 1.",
    "active": [
     3
@@ -236,21 +330,41 @@
    "done": {
     "1": 1,
     "3": 1
-   }
+   },
+   "state": [
+    [
+     "node",
+     15
+    ],
+    [
+     "depth",
+     1
+    ]
+   ]
   },
   {
    "act": 1,
-   "note": "Visit node 7. Ask its children first, then take 1 + the deeper answer.",
+   "code": "dfs",
+   "line": 3,
+   "note": "Visit node 7. Ask its children first.",
    "active": [
     4
    ],
    "done": {
     "1": 1,
     "3": 1
-   }
+   },
+   "state": [
+    [
+     "visiting",
+     7
+    ]
+   ]
   },
   {
    "act": 1,
+   "code": "dfs",
+   "line": 2,
    "note": "Node 7 is a leaf -> depth 1.",
    "active": [
     4
@@ -259,10 +373,22 @@
     "1": 1,
     "3": 1,
     "4": 1
-   }
+   },
+   "state": [
+    [
+     "node",
+     7
+    ],
+    [
+     "depth",
+     1
+    ]
+   ]
   },
   {
    "act": 1,
+   "code": "dfs",
+   "line": 5,
    "note": "Node 20: 1 + max(left 1, right 1) = 2.",
    "active": [
     2
@@ -272,10 +398,22 @@
     "3": 1,
     "4": 1,
     "2": 2
-   }
+   },
+   "state": [
+    [
+     "node",
+     20
+    ],
+    [
+     "depth",
+     2
+    ]
+   ]
   },
   {
    "act": 1,
+   "code": "dfs",
+   "line": 5,
    "note": "Node 3: 1 + max(left 1, right 2) = 3.",
    "active": [
     0
@@ -286,10 +424,22 @@
     "4": 1,
     "2": 2,
     "0": 3
-   }
+   },
+   "state": [
+    [
+     "node",
+     3
+    ],
+    [
+     "depth",
+     3
+    ]
+   ]
   },
   {
    "act": 1,
+   "code": "dfs",
+   "line": 5,
    "note": "The root's answer is the whole tree's depth: 3.",
    "active": [],
    "done": {
@@ -299,6 +449,12 @@
     "2": 2,
     "0": 3
    },
+   "state": [
+    [
+     "max depth",
+     3
+    ]
+   ],
    "banner": "Maximum depth = 3  (longest root-to-leaf path)"
   },
   {
@@ -333,48 +489,96 @@
      2
     ]
    ],
-   "note": "Edge case: a lopsided tree, each node with only one child. No branching means depth just counts the nodes down the single path.",
+   "code": "dfs",
+   "line": 0,
+   "intro": "with no branching, depth is just the count down one path.",
+   "invariant": "same rule, still 1 + max of the (single) child side.",
+   "note": "Edge case: a lopsided tree, each node with only one child.",
    "active": [
     0
    ],
-   "done": {}
+   "done": {},
+   "state": [
+    [
+     "shape",
+     "single path"
+    ]
+   ]
   },
   {
    "act": 2,
-   "note": "Visit node 1. Ask its children first, then take 1 + the deeper answer.",
+   "code": "dfs",
+   "line": 3,
+   "note": "Visit node 1. Ask its children first.",
    "active": [
     0
    ],
-   "done": {}
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     1
+    ]
+   ]
   },
   {
    "act": 2,
-   "note": "Visit node 2. Ask its children first, then take 1 + the deeper answer.",
+   "code": "dfs",
+   "line": 3,
+   "note": "Visit node 2. Ask its children first.",
    "active": [
     1
    ],
-   "done": {}
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     2
+    ]
+   ]
   },
   {
    "act": 2,
-   "note": "Visit node 3. Ask its children first, then take 1 + the deeper answer.",
+   "code": "dfs",
+   "line": 3,
+   "note": "Visit node 3. Ask its children first.",
    "active": [
     2
    ],
-   "done": {}
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     3
+    ]
+   ]
   },
   {
    "act": 2,
+   "code": "dfs",
+   "line": 2,
    "note": "Node 3 is a leaf -> depth 1.",
    "active": [
     2
    ],
    "done": {
     "2": 1
-   }
+   },
+   "state": [
+    [
+     "node",
+     3
+    ],
+    [
+     "depth",
+     1
+    ]
+   ]
   },
   {
    "act": 2,
+   "code": "dfs",
+   "line": 5,
    "note": "Node 2: 1 + max(left 0, right 1) = 2.",
    "active": [
     1
@@ -382,10 +586,22 @@
    "done": {
     "2": 1,
     "1": 2
-   }
+   },
+   "state": [
+    [
+     "node",
+     2
+    ],
+    [
+     "depth",
+     2
+    ]
+   ]
   },
   {
    "act": 2,
+   "code": "dfs",
+   "line": 5,
    "note": "Node 1: 1 + max(left 0, right 2) = 3.",
    "active": [
     0
@@ -394,17 +610,35 @@
     "2": 1,
     "1": 2,
     "0": 3
-   }
+   },
+   "state": [
+    [
+     "node",
+     1
+    ],
+    [
+     "depth",
+     3
+    ]
+   ]
   },
   {
    "act": 2,
-   "note": "Same rule, no branches: depth = number of nodes on the path = 3. (A single node would give 1; an empty tree, 0.)",
+   "code": "dfs",
+   "line": 5,
+   "note": "No branches, so depth = number of nodes = 3. (One node -> 1; empty -> 0.)",
    "active": [],
    "done": {
     "2": 1,
     "1": 2,
     "0": 3
    },
+   "state": [
+    [
+     "max depth",
+     3
+    ]
+   ],
    "banner": "Maximum depth = 3"
   }
  ]
