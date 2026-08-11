@@ -305,6 +305,38 @@ pre.diagram{background:#fffdf8;color:#2b2620;border:1px solid #e0d6c4;
 .viz-play{font-weight:600}
 .viz-scrub{flex:1 1 120px;accent-color:var(--accent)}
 .viz-counter{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.viz-speed{border:1px solid var(--line);border-radius:7px;padding:4px 6px;background:var(--panel);
+  color:var(--ink);font-size:13px;cursor:pointer}
+/* two-column: diagram+note on the left, code panel on the right */
+.viz-cols{display:grid;grid-template-columns:1fr minmax(0,300px);gap:16px;align-items:start}
+.viz-left{min-width:0}
+.viz-intro{background:var(--accent);color:#fff;border-radius:8px;padding:8px 12px;
+  font-size:13px;margin-bottom:8px}
+.viz-invariant{background:#fff8ef;border:1px dashed var(--accent);border-radius:8px;
+  padding:6px 12px;font-size:13px;color:#5a463a;margin-bottom:12px}
+.viz-invariant b{color:var(--accent)}
+.viz-rail{display:flex;flex-direction:column;gap:10px;flex:0 0 180px}
+.viz-state{background:#fffdf8;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
+.viz-state-row{display:flex;justify-content:space-between;gap:10px;padding:2px 2px;
+  font-family:"SFMono-Regular",Consolas,monospace}
+.viz-state-row span{color:var(--muted)}
+.viz-state-row b{color:#2b2620}
+.viz-state-row.work b{color:var(--accent)}
+.viz-arc{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:4 3;
+  transition:opacity .25s}
+.viz-code{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:12px 4px;
+  margin:0;overflow-x:auto;font:12.5px/1.7 "SFMono-Regular",Consolas,Menlo,monospace}
+.viz-code-line{display:block;padding:1px 12px;white-space:pre;border-left:3px solid transparent}
+.viz-code-line.active{background:rgba(181,101,29,.28);border-left-color:var(--accent);color:#fff}
+.viz-legend{display:flex;flex-wrap:wrap;gap:14px;margin:10px 2px 0;font-size:12px;color:var(--muted)}
+.viz-legend-item{display:flex;align-items:center;gap:5px}
+.viz-legend .sw{width:13px;height:13px;border-radius:3px;display:inline-block;
+  border:1.5px solid #d9cdb8;background:#fffdf8}
+.viz-legend .sw.m-active{background:var(--accent-soft);border-color:var(--accent)}
+.viz-legend .sw.m-good{background:#dff0e4;border-color:#2f8f5b}
+.viz-legend .sw.m-bad{background:#f6ddd2;border-color:#c0562f}
+.viz-legend .sw.m-dim{background:#efe8dc}
+@media(max-width:720px){.viz-cols{grid-template-columns:1fr}.viz-stage{flex-direction:column}}
 """
 
 
