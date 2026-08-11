@@ -53,7 +53,100 @@
 <h2>Pitfalls</h2>
 <ul><li>Returning the two <strong>numbers</strong> instead of their <strong>positions</strong>.</li><li>Filing a number into the map *before* checking — then it can match itself.</li><li>Assuming the list is sorted. It isn&#x27;t. (Sorted is a different, pointer-based problem — see <a href="../../03-two-pointers/0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>.)</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is: <strong>replace an inner search with a one-step &quot;have I seen it?&quot; check backed by a set or map.</strong> The same move powers <a href="../0217-contains-duplicate/">Contains Duplicate / 217</a>, <a href="../0242-valid-anagram/">Valid Anagram / 242</a>, and <a href="../0128-longest-consecutive-sequence/">Longest Consecutive Sequence / 128</a>. Any time a slow solution keeps re-scanning to ask &quot;is this value here?&quot;, reach for a hash set or map first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0001-two-sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;1. Two Sum — https://leetcode.com/problems/two-sum/
+<p>The reusable move is: <strong>replace an inner search with a one-step &quot;have I seen it?&quot; check backed by a set or map.</strong> The same move powers <a href="../0217-contains-duplicate/">Contains Duplicate / 217</a>, <a href="../0242-valid-anagram/">Valid Anagram / 242</a>, and <a href="../0128-longest-consecutive-sequence/">Longest Consecutive Sequence / 128</a>. Any time a slow solution keeps re-scanning to ask &quot;is this value here?&quot;, reach for a hash set or map first.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Two Sum - one pass, remembering what we have seen",
+ "cells": [
+  2,
+  7,
+  11,
+  15
+ ],
+ "frames": [
+  {
+   "note": "Start. The 'seen' map is empty. We walk left to right, once.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "seen  (value -> index)",
+    "rows": []
+   }
+  },
+  {
+   "note": "At index 0, value 2. The partner it needs is 9 - 2 = 7. Have we already seen 7?",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "seen  (value -> index)",
+    "rows": []
+   }
+  },
+  {
+   "note": "No. So we remember it: file 2 -> 0 into the map, then step right.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "seen  (value -> index)",
+    "rows": [
+     [
+      "2",
+      "0"
+     ]
+    ]
+   }
+  },
+  {
+   "note": "At index 1, value 7. The partner it needs is 9 - 7 = 2. Have we already seen 2?",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "seen  (value -> index)",
+    "rows": [
+     [
+      "2",
+      "0"
+     ]
+    ]
+   }
+  },
+  {
+   "note": "Yes \u2014 2 was filed at index 0. Done.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "seen  (value -> index)",
+    "rows": [
+     [
+      "2",
+      "0"
+     ]
+    ]
+   },
+   "banner": "Found [0, 1]   2 + 7 = 9"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0001-two-sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;1. Two Sum — https://leetcode.com/problems/two-sum/
 
 Given an array `nums` and a target, return the indices of the two numbers that
 add up to the target. Exactly one solution exists; you may not reuse an element.

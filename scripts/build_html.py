@@ -8,6 +8,7 @@ solution.py, and writes:
   site/assets/styles.css               theme
 """
 import html
+import json
 import os
 import sys
 from pathlib import Path
@@ -65,6 +66,8 @@ def sidebar_html(prefix: str, active_path: str = "") -> str:
 def build():
     (SITE / "assets").mkdir(parents=True, exist_ok=True)
     (SITE / "assets" / "styles.css").write_text(STYLES, encoding="utf-8")
+    viz_js = (Path(__file__).resolve().parent / "assets" / "viz.js").read_text(encoding="utf-8")
+    (SITE / "assets" / "viz.js").write_text(viz_js, encoding="utf-8")
     for _, _, ch_slug, _ in CHAPTERS:
         (SITE / ch_slug).mkdir(parents=True, exist_ok=True)
 
@@ -110,6 +113,22 @@ def build():
                   f'<a href="index.html">{ch_no}. {html.escape(ch_title)}</a> / '
                   f'<span>{num}</span></nav>')
         notes = render(readme)
+
+        viz_html = ""
+        trace_path = folder / "trace.json"
+        if trace_path.exists():
+            raw = trace_path.read_text(encoding="utf-8")
+            # keep the inline JSON from prematurely closing the <script>
+            safe = raw.replace("</", "<\\/")
+            viz_html = (
+                '<section class="viz-section"><h2>Watch it run</h2>'
+                '<p class="viz-hint">Step through the algorithm one move at a time — '
+                'this replays a trace emitted by the verified solution, so it matches '
+                'the code exactly.</p>'
+                '<div class="viz"><script type="application/json" class="viz-data">'
+                + safe + '</script></div></section>'
+                '<script src="../assets/viz.js"></script>')
+
         code_block = (f'<section class="solution"><h2>Solution (Python)</h2>'
                       f'<p class="srcnote">Self-testing — run <code>python3 solution.py</code>. '
                       f'<a href="{GH}/{rel}/solution.py">view on GitHub</a></p>'
@@ -128,8 +147,8 @@ def build():
             prev_next.append(
                 f'<a class="pn next" href="../{nx[2]}/{slugify(nx[3],nx[4])}.html">'
                 f'{nx[3]} · {html.escape(nx[4])} →</a>')
-        body = (crumbs + f'<article class="notes">{notes}</article>' + code_block
-                + f'<nav class="prevnext">{"".join(prev_next)}</nav>')
+        body = (crumbs + f'<article class="notes">{notes}</article>' + viz_html
+                + code_block + f'<nav class="prevnext">{"".join(prev_next)}</nav>')
         page = shell(f"{num}. {title}", body, "../",
                      sidebar=sidebar_html("../", rel))
         (SITE / ch_slug / f"{slug}.html").write_text(page, encoding="utf-8")
@@ -235,6 +254,52 @@ pre.diagram{background:#fffdf8;color:#2b2620;border:1px solid #e0d6c4;
   .layout.with-sidebar{grid-template-columns:1fr}
   .sidebar{display:none}
 }
+
+/* ---- step-through visualizer ---- */
+.viz-section{margin-top:40px;border-top:1px solid var(--line);padding-top:1.2em}
+.viz-section h2{font-size:21px;margin:.2em 0 .3em}
+.viz-hint{font-size:13px;color:var(--muted);max-width:66ch;margin:0 0 14px}
+.viz{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:16px 16px 12px}
+.viz-title{font-weight:600;font-size:15px;margin-bottom:10px;color:#22201b}
+.viz-stage{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.viz-svg-wrap{flex:1 1 340px;min-width:0;overflow-x:auto}
+.viz-svg{width:100%;height:auto;min-height:150px}
+.viz-cell{fill:#fffdf8;stroke:#d9cdb8;stroke-width:1.5;
+  transition:fill .3s ease,stroke .3s ease}
+.viz-cell.m-active{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.5}
+.viz-cell.m-good{fill:#dff0e4;stroke:#2f8f5b;stroke-width:2.5}
+.viz-cell.m-bad{fill:#f6ddd2;stroke:#c0562f;stroke-width:2.5}
+.viz-cell.m-dim{fill:#efe8dc;stroke:#d9cdb8}
+.viz-cell-val{font:600 18px "SFMono-Regular",Consolas,monospace;fill:#2b2620}
+.viz-cell-idx{font:12px sans-serif;fill:var(--muted)}
+.viz-ptr{transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.viz-ptr-tri{fill:var(--accent)}
+.viz-ptr-name{font:600 12px sans-serif;fill:var(--accent)}
+.viz-window{fill:var(--accent);opacity:.1;transition:x .4s ease,width .4s ease,opacity .3s}
+.viz-sidebar{flex:0 0 180px;font-size:13px;background:#fffdf8;border:1px solid var(--line);
+  border-radius:8px;padding:8px 10px}
+.viz-sb-title{font-weight:600;font-size:12px;color:var(--muted);margin-bottom:4px}
+.viz-sidebar table{width:100%;border-collapse:collapse}
+.viz-sidebar td{padding:2px 6px;border-bottom:1px solid var(--line);
+  font-family:"SFMono-Regular",Consolas,monospace}
+.viz-edge{stroke:#c9bca6;stroke-width:2}
+.viz-node{fill:#fffdf8;stroke:#d9cdb8;stroke-width:2;transition:fill .3s,stroke .3s}
+.viz-node.active{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3}
+.viz-node.resolved{fill:#dff0e4;stroke:#2f8f5b}
+.viz-node-val{font:600 16px "SFMono-Regular",Consolas,monospace;fill:#2b2620}
+.viz-node-badge{font:700 13px sans-serif;fill:#2f8f5b}
+.viz-note{margin:12px 2px 8px;min-height:2.6em;font-size:14px;color:#3a332b;
+  background:#fffdf8;border-left:3px solid var(--accent);padding:8px 12px;border-radius:0 6px 6px 0}
+.viz-banner{margin:8px 2px 0;font-weight:600;color:#2f6f4a;background:#dff0e4;
+  border:1px solid #b6dcc4;border-radius:8px;padding:8px 12px;font-size:14px}
+.viz-controls{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.viz-btn{background:var(--panel);border:1px solid var(--line);border-radius:7px;
+  padding:5px 11px;font-size:14px;cursor:pointer;color:var(--ink)}
+.viz-btn:hover{background:var(--accent-soft);border-color:var(--accent)}
+.viz-play{font-weight:600}
+.viz-scrub{flex:1 1 120px;accent-color:var(--accent)}
+.viz-counter{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 """
 
 

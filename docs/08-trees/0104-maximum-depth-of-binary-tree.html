@@ -48,7 +48,170 @@
 <h2>Pitfalls</h2>
 <ul><li>Returning 0 for a single node. The base case is the *empty* tree returning 0, so a lone node returns 1.</li><li>Using <code>min</code> instead of <code>max</code> — that is a different problem (minimum depth), which has its own trap around one-sided nodes.</li><li>Counting edges instead of nodes. LeetCode&#x27;s &quot;depth&quot; counts nodes.</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Solve each subtree, combine at the parent&quot; is the universal tree template. It drives <a href="../0226-invert-binary-tree/">Invert Binary Tree / 226</a>, <a href="../0100-same-tree/">Same Tree / 100</a>, <a href="https://leetcode.com/problems/balanced-binary-tree/">Balanced Binary Tree / 110</a>, and <a href="https://leetcode.com/problems/diameter-of-binary-tree/">Diameter of Binary Tree / 543</a>, which is depth with one extra twist.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/08-trees/0104-maximum-depth-of-binary-tree/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;104. Maximum Depth of Binary Tree — https://leetcode.com/problems/maximum-depth-of-binary-tree/
+<p>&quot;Solve each subtree, combine at the parent&quot; is the universal tree template. It drives <a href="../0226-invert-binary-tree/">Invert Binary Tree / 226</a>, <a href="../0100-same-tree/">Same Tree / 100</a>, <a href="https://leetcode.com/problems/balanced-binary-tree/">Balanced Binary Tree / 110</a>, and <a href="https://leetcode.com/problems/diameter-of-binary-tree/">Diameter of Binary Tree / 543</a>, which is depth with one extra twist.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Maximum Depth - each node's depth resolves from its children upward",
+ "nodes": [
+  {
+   "id": 0,
+   "val": 3,
+   "x": 72,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 9,
+   "x": 0,
+   "y": 82
+  },
+  {
+   "id": 2,
+   "val": 20,
+   "x": 216,
+   "y": 82
+  },
+  {
+   "id": 3,
+   "val": 15,
+   "x": 144,
+   "y": 164
+  },
+  {
+   "id": 4,
+   "val": 7,
+   "x": 288,
+   "y": 164
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   2,
+   4
+  ]
+ ],
+ "frames": [
+  {
+   "note": "Visit node 3. Its depth is 1 + the deeper of its two sides, so first go down.",
+   "active": [
+    0
+   ],
+   "done": {}
+  },
+  {
+   "note": "Visit node 9. Its depth is 1 + the deeper of its two sides, so first go down.",
+   "active": [
+    1
+   ],
+   "done": {}
+  },
+  {
+   "note": "Node 9 is a leaf (no children) -> depth 1.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": 1
+   }
+  },
+  {
+   "note": "Visit node 20. Its depth is 1 + the deeper of its two sides, so first go down.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": 1
+   }
+  },
+  {
+   "note": "Visit node 15. Its depth is 1 + the deeper of its two sides, so first go down.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": 1
+   }
+  },
+  {
+   "note": "Node 15 is a leaf (no children) -> depth 1.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": 1,
+    "3": 1
+   }
+  },
+  {
+   "note": "Visit node 7. Its depth is 1 + the deeper of its two sides, so first go down.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": 1,
+    "3": 1
+   }
+  },
+  {
+   "note": "Node 7 is a leaf (no children) -> depth 1.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": 1,
+    "3": 1,
+    "4": 1
+   }
+  },
+  {
+   "note": "Node 20: 1 + max(left 1, right 1) = 2.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": 1,
+    "3": 1,
+    "4": 1,
+    "2": 2
+   }
+  },
+  {
+   "note": "Node 3: 1 + max(left 1, right 2) = 3.",
+   "active": [
+    0
+   ],
+   "done": {
+    "1": 1,
+    "3": 1,
+    "4": 1,
+    "2": 2,
+    "0": 3
+   }
+  },
+  {
+   "note": "The root's value is the answer: the longest root-to-leaf path is 3 nodes.",
+   "active": [],
+   "done": {
+    "1": 1,
+    "3": 1,
+    "4": 1,
+    "2": 2,
+    "0": 3
+   }
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/08-trees/0104-maximum-depth-of-binary-tree/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;104. Maximum Depth of Binary Tree — https://leetcode.com/problems/maximum-depth-of-binary-tree/
 
 Return the number of nodes on the longest path from the root down to a leaf.
 &quot;&quot;&quot;

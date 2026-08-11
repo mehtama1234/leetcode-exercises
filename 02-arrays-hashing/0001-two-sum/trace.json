@@ -1,0 +1,94 @@
+{
+ "player": "linear",
+ "title": "Two Sum - one pass, remembering what we have seen",
+ "cells": [
+  2,
+  7,
+  11,
+  15
+ ],
+ "frames": [
+  {
+   "note": "Start. The 'seen' map is empty. We walk left to right, once.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "seen  (value -> index)",
+    "rows": []
+   }
+  },
+  {
+   "note": "At index 0, value 2. The partner it needs is 9 - 2 = 7. Have we already seen 7?",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "seen  (value -> index)",
+    "rows": []
+   }
+  },
+  {
+   "note": "No. So we remember it: file 2 -> 0 into the map, then step right.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "seen  (value -> index)",
+    "rows": [
+     [
+      "2",
+      "0"
+     ]
+    ]
+   }
+  },
+  {
+   "note": "At index 1, value 7. The partner it needs is 9 - 7 = 2. Have we already seen 2?",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "seen  (value -> index)",
+    "rows": [
+     [
+      "2",
+      "0"
+     ]
+    ]
+   }
+  },
+  {
+   "note": "Yes \u2014 2 was filed at index 0. Done.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "seen  (value -> index)",
+    "rows": [
+     [
+      "2",
+      "0"
+     ]
+    ]
+   },
+   "banner": "Found [0, 1]   2 + 7 = 9"
+  }
+ ]
+}
