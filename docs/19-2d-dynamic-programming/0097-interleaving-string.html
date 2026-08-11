@@ -66,7 +66,702 @@
 <h2>Pitfalls</h2>
 <ul><li>Skipping the length gate. If <code>m + n != len(s3)</code>, no interleaving can exist.</li><li>A greedy &quot;take from whichever matches&quot; fails: sometimes both match and you must keep both branches open. The grid keeps every reachable state, so it&#x27;s safe.</li><li>Getting the <code>s3</code> index wrong. When filling <code>dp[i][j]</code>, the letter under scrutiny is <code>s3[i+j-1]</code>, not <code>s3[i]</code> or <code>s3[j]</code>.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable idea is *a grid indexed by two prefixes, where a valid extension asks &quot;did the last piece come from string A or string B?&quot;* Siblings: <a href="../0072-edit-distance/">Edit Distance / 72</a> and <a href="../0115-distinct-subsequences/">Distinct Subsequences / 115</a> share the two-prefix-grid skeleton; <a href="https://leetcode.com/problems/longest-common-subsequence/">Longest Common Subsequence / 1143</a> is the same table shape with a different cell rule.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0097-interleaving-string/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;97. Interleaving String — https://leetcode.com/problems/interleaving-string/
+<p>The reusable idea is *a grid indexed by two prefixes, where a valid extension asks &quot;did the last piece come from string A or string B?&quot;* Siblings: <a href="../0072-edit-distance/">Edit Distance / 72</a> and <a href="../0115-distinct-subsequences/">Distinct Subsequences / 115</a> share the two-prefix-grid skeleton; <a href="https://leetcode.com/problems/longest-common-subsequence/">Longest Common Subsequence / 1143</a> is the same table shape with a different cell rule.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Interleaving String - decide each (i,j) prefix state once",
+ "acts": [
+  "Brute: draw from s1 / s2",
+  "Fill the table",
+  "Answer + edge"
+ ],
+ "code": {
+  "tab": [
+   "dp = [[False]*(n+1) for _ in range(m+1)]",
+   "dp[0][0] = True",
+   "for i in range(m+1):",
+   "    for j in range(n+1):",
+   "        up   = dp[i-1][j] and s1[i-1]==s3[i+j-1]   # took from s1",
+   "        left = dp[i][j-1] and s2[j-1]==s3[i+j-1]   # took from s2",
+   "        dp[i][j] = up or left",
+   "return dp[m][n]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "up / left cell read"
+  ],
+  [
+   "good",
+   "reachable (T)"
+  ],
+  [
+   "bad",
+   "not reachable (F) / waste"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "\u00b7",
+    "a",
+    "a",
+    "b"
+   ],
+   "colLabels": [
+    "\u00b7",
+    "d",
+    "b",
+    "b"
+   ],
+   "code": null,
+   "intro": "how the same (i chars of s1, j chars of s2) state gets re-explored.",
+   "invariant": "dp[i][j] = can s1[:i] + s2[:j] build s3[:i+j]?",
+   "note": "Brute force: to place s3's next character, draw it from s1 or from s2 (whichever offers it) and recurse. That two-way branch spans a whole tree.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "build",
+     "\"aadbbb\" from \"aab\"+\"dbb\""
+    ],
+    [
+     "draw",
+     "from s1 / s2"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "The third pointer k = i+j is derived, so many branches land on the same (i,j) state \u2014 e.g. dp[1][1] is reached two ways and re-solved. That is the waste.",
+   "marks": {
+    "1,1": "bad",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "recomputed",
+     "state(1,1) \u2026"
+    ],
+    [
+     "cost",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "code": "tab",
+   "line": 1,
+   "intro": "each cell = up (took from s1) OR left (took from s2).",
+   "invariant": "dp[i][j] reads dp[i-1][j] and dp[i][j-1] against s3[i+j-1].",
+   "note": "Seed dp[0][0] = T: empty + empty makes the empty prefix of s3.",
+   "marks": {
+    "0,0": "good"
+   },
+   "set": {
+    "0,0": "T"
+   },
+   "state": [
+    [
+     "dp[0][0]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[0]='a': up=F, left=F -> dp[0][1] = F.",
+   "set": {
+    "0,1": "F"
+   },
+   "marks": {
+    "0,1": "bad",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "need s3[0]",
+     "a"
+    ],
+    [
+     "left: s2[0]='d' & dp",
+     "F"
+    ],
+    [
+     "dp[0][1]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[1]='a': up=F, left=F -> dp[0][2] = F.",
+   "set": {
+    "0,2": "F"
+   },
+   "marks": {
+    "0,2": "bad",
+    "0,1": "active"
+   },
+   "state": [
+    [
+     "need s3[1]",
+     "a"
+    ],
+    [
+     "left: s2[1]='b' & dp",
+     "F"
+    ],
+    [
+     "dp[0][2]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[2]='d': up=F, left=F -> dp[0][3] = F.",
+   "set": {
+    "0,3": "F"
+   },
+   "marks": {
+    "0,3": "bad",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "need s3[2]",
+     "d"
+    ],
+    [
+     "left: s2[2]='b' & dp",
+     "F"
+    ],
+    [
+     "dp[0][3]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[0]='a': up=T, left=F -> dp[1][0] = T.",
+   "set": {
+    "1,0": "T"
+   },
+   "marks": {
+    "1,0": "good",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "need s3[0]",
+     "a"
+    ],
+    [
+     "up: s1[0]='a' & dp",
+     "T"
+    ],
+    [
+     "dp[1][0]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[1]='a': up=F, left=F -> dp[1][1] = F.",
+   "set": {
+    "1,1": "F"
+   },
+   "marks": {
+    "1,1": "bad",
+    "0,1": "active",
+    "1,0": "active"
+   },
+   "state": [
+    [
+     "need s3[1]",
+     "a"
+    ],
+    [
+     "up: s1[0]='a' & dp",
+     "F"
+    ],
+    [
+     "left: s2[0]='d' & dp",
+     "F"
+    ],
+    [
+     "dp[1][1]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[2]='d': up=F, left=F -> dp[1][2] = F.",
+   "set": {
+    "1,2": "F"
+   },
+   "marks": {
+    "1,2": "bad",
+    "0,2": "active",
+    "1,1": "active"
+   },
+   "state": [
+    [
+     "need s3[2]",
+     "d"
+    ],
+    [
+     "up: s1[0]='a' & dp",
+     "F"
+    ],
+    [
+     "left: s2[1]='b' & dp",
+     "F"
+    ],
+    [
+     "dp[1][2]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[3]='b': up=F, left=F -> dp[1][3] = F.",
+   "set": {
+    "1,3": "F"
+   },
+   "marks": {
+    "1,3": "bad",
+    "0,3": "active",
+    "1,2": "active"
+   },
+   "state": [
+    [
+     "need s3[3]",
+     "b"
+    ],
+    [
+     "up: s1[0]='a' & dp",
+     "F"
+    ],
+    [
+     "left: s2[2]='b' & dp",
+     "F"
+    ],
+    [
+     "dp[1][3]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[1]='a': up=T, left=F -> dp[2][0] = T.",
+   "set": {
+    "2,0": "T"
+   },
+   "marks": {
+    "2,0": "good",
+    "1,0": "active"
+   },
+   "state": [
+    [
+     "need s3[1]",
+     "a"
+    ],
+    [
+     "up: s1[1]='a' & dp",
+     "T"
+    ],
+    [
+     "dp[2][0]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[2]='d': up=F, left=T -> dp[2][1] = T.",
+   "set": {
+    "2,1": "T"
+   },
+   "marks": {
+    "2,1": "good",
+    "1,1": "active",
+    "2,0": "active"
+   },
+   "state": [
+    [
+     "need s3[2]",
+     "d"
+    ],
+    [
+     "up: s1[1]='a' & dp",
+     "F"
+    ],
+    [
+     "left: s2[0]='d' & dp",
+     "T"
+    ],
+    [
+     "dp[2][1]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[3]='b': up=F, left=T -> dp[2][2] = T.",
+   "set": {
+    "2,2": "T"
+   },
+   "marks": {
+    "2,2": "good",
+    "1,2": "active",
+    "2,1": "active"
+   },
+   "state": [
+    [
+     "need s3[3]",
+     "b"
+    ],
+    [
+     "up: s1[1]='a' & dp",
+     "F"
+    ],
+    [
+     "left: s2[1]='b' & dp",
+     "T"
+    ],
+    [
+     "dp[2][2]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[4]='b': up=F, left=T -> dp[2][3] = T.",
+   "set": {
+    "2,3": "T"
+   },
+   "marks": {
+    "2,3": "good",
+    "1,3": "active",
+    "2,2": "active"
+   },
+   "state": [
+    [
+     "need s3[4]",
+     "b"
+    ],
+    [
+     "up: s1[1]='a' & dp",
+     "F"
+    ],
+    [
+     "left: s2[2]='b' & dp",
+     "T"
+    ],
+    [
+     "dp[2][3]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[2]='d': up=F, left=F -> dp[3][0] = F.",
+   "set": {
+    "3,0": "F"
+   },
+   "marks": {
+    "3,0": "bad",
+    "2,0": "active"
+   },
+   "state": [
+    [
+     "need s3[2]",
+     "d"
+    ],
+    [
+     "up: s1[2]='b' & dp",
+     "F"
+    ],
+    [
+     "dp[3][0]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[3]='b': up=T, left=F -> dp[3][1] = T.",
+   "set": {
+    "3,1": "T"
+   },
+   "marks": {
+    "3,1": "good",
+    "2,1": "active",
+    "3,0": "active"
+   },
+   "state": [
+    [
+     "need s3[3]",
+     "b"
+    ],
+    [
+     "up: s1[2]='b' & dp",
+     "T"
+    ],
+    [
+     "left: s2[0]='d' & dp",
+     "F"
+    ],
+    [
+     "dp[3][1]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[4]='b': up=T, left=T -> dp[3][2] = T.",
+   "set": {
+    "3,2": "T"
+   },
+   "marks": {
+    "3,2": "good",
+    "2,2": "active",
+    "3,1": "active"
+   },
+   "state": [
+    [
+     "need s3[4]",
+     "b"
+    ],
+    [
+     "up: s1[2]='b' & dp",
+     "T"
+    ],
+    [
+     "left: s2[1]='b' & dp",
+     "T"
+    ],
+    [
+     "dp[3][2]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "To place s3[5]='b': up=T, left=T -> dp[3][3] = T.",
+   "set": {
+    "3,3": "T"
+   },
+   "marks": {
+    "3,3": "good",
+    "2,3": "active",
+    "3,2": "active"
+   },
+   "state": [
+    [
+     "need s3[5]",
+     "b"
+    ],
+    [
+     "up: s1[2]='b' & dp",
+     "T"
+    ],
+    [
+     "left: s2[2]='b' & dp",
+     "T"
+    ],
+    [
+     "dp[3][3]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "tab",
+   "line": 7,
+   "intro": "the bottom-right cell asks: did we consume ALL of both strings?",
+   "invariant": "dp[m][n] is true iff a full interleaving exists.",
+   "note": "dp[3][3] = T \u2014 \"aadbbb\" is an interleaving of \"aab\" and \"dbb\".",
+   "marks": {
+    "3,3": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "T"
+    ]
+   ],
+   "banner": "\"aadbbb\" is an interleaving: T"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     "T",
+     "F",
+     "F"
+    ],
+    [
+     "T",
+     "F",
+     "F"
+    ],
+    [
+     "T",
+     "F",
+     "F"
+    ]
+   ],
+   "rowLabels": [
+    "\u00b7",
+    "a",
+    "b"
+   ],
+   "colLabels": [
+    "\u00b7",
+    "c",
+    "d"
+   ],
+   "code": "tab",
+   "line": 7,
+   "note": "Edge case: the length matches (2+2=4) but the order can't work \u2014 after \"ab\" the string needs \"dc\" while s2 only offers \"cd\". The corner is F.",
+   "marks": {
+    "2,2": "bad"
+   },
+   "state": [
+    [
+     "answer",
+     "F"
+    ]
+   ],
+   "banner": "Right length, wrong order \u2192 F"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0097-interleaving-string/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;97. Interleaving String — https://leetcode.com/problems/interleaving-string/
 
 Given strings s1, s2, s3, decide whether s3 can be formed by interleaving s1 and
 s2 — keeping the internal order of each, but freely alternating which one you draw

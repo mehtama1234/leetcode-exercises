@@ -67,7 +67,1598 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Store the earliest index, not the latest.</strong> If a balance repeats, do *not* overwrite — the first occurrence gives the longest span.</li><li>Forgetting the <code>{0: -1}</code> seed — runs starting at index 0 come out one short (or are missed entirely).</li><li>Trying a sliding window: because entries are <code>+1</code>/<code>−1</code>, the balance goes up and down, so a window won&#x27;t work — you genuinely need the running-total map.</li><li>Returning the balance or a count instead of the <strong>length</strong>.</li></ul>
 <h2>Transfer</h2>
-<p>Same engine as <a href="../0560-subarray-sum-equals-k/">Subarray Sum Equals K / 560</a> — prefix sum plus a hash map — but the key here is &quot;have I seen this exact running total before?&quot; (earliest index) rather than &quot;have I seen <code>current − k</code>?&quot;. The relabel-to-<code>±1</code> idea generalizes: any &quot;equal counts of A and B&quot; question becomes a running-total-equals-zero question, and problems asking for the longest balanced window reuse this pattern directly.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/23-prefix-sum/0525-contiguous-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;525. Contiguous Array — https://leetcode.com/problems/contiguous-array/
+<p>Same engine as <a href="../0560-subarray-sum-equals-k/">Subarray Sum Equals K / 560</a> — prefix sum plus a hash map — but the key here is &quot;have I seen this exact running total before?&quot; (earliest index) rather than &quot;have I seen <code>current − k</code>?&quot;. The relabel-to-<code>±1</code> idea generalizes: any &quot;equal counts of A and B&quot; question becomes a running-total-equals-zero question, and problems asking for the longest balanced window reuse this pattern directly.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Contiguous Array \u2014 relabel to prefix sums, one pass",
+ "acts": [
+  "Brute force: every subarray",
+  "The waste",
+  "Fast: relabel + first-seen map",
+  "Edge case: never balances"
+ ],
+ "code": {
+  "brute": [
+   "best = 0",
+   "for start in range(n):",
+   "    balance = 0",
+   "    for end in range(start, n):",
+   "        balance += 1 if nums[end]==1 else -1",
+   "        if balance == 0:",
+   "            best = max(best, end - start + 1)"
+  ],
+  "fast": [
+   "best, balance = 0, 0",
+   "first_seen = {0: -1}",
+   "for i, x in enumerate(nums):",
+   "    balance += 1 if x==1 else -1",
+   "    if balance in first_seen:",
+   "        best = max(best, i - first_seen[balance])",
+   "    else:",
+   "        first_seen[balance] = i"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current index i"
+  ],
+  [
+   "good",
+   "a balanced run"
+  ],
+  [
+   "dim",
+   "prefix filed into the map"
+  ]
+ ],
+ "cells": [
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  1,
+  1
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "brute",
+   "line": 1,
+   "intro": "each start re-walks the tail counting balance from zero \u2014 the same steps, redone.",
+   "invariant": "best = longest balanced subarray found among all starts tried so far.",
+   "note": "Brute force: for each start, walk the tail tracking balance (1 -> +1, 0 -> -1); balance 0 means equal 0s and 1s.",
+   "pointers": {
+    "start": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "best",
+     0
+    ],
+    [
+     "steps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 0..end 0: balance = -1.",
+   "pointers": {
+    "start": 0,
+    "end": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "start",
+     0
+    ],
+    [
+     "end",
+     0
+    ],
+    [
+     "balance",
+     -1
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 0..end 1: balance = -2.",
+   "pointers": {
+    "start": 0,
+    "end": 1
+   },
+   "window": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active"
+   },
+   "state": [
+    [
+     "start",
+     0
+    ],
+    [
+     "end",
+     1
+    ],
+    [
+     "balance",
+     -2
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "steps",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 0..end 2: balance = -1.",
+   "pointers": {
+    "start": 0,
+    "end": 2
+   },
+   "window": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "state": [
+    [
+     "start",
+     0
+    ],
+    [
+     "end",
+     2
+    ],
+    [
+     "balance",
+     -1
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 0..end 3: balance = -2.",
+   "pointers": {
+    "start": 0,
+    "end": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "start",
+     0
+    ],
+    [
+     "end",
+     3
+    ],
+    [
+     "balance",
+     -2
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "steps",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 0..end 4: balance = -3.",
+   "pointers": {
+    "start": 0,
+    "end": 4
+   },
+   "window": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active",
+    "3": "active",
+    "4": "active"
+   },
+   "state": [
+    [
+     "start",
+     0
+    ],
+    [
+     "end",
+     4
+    ],
+    [
+     "balance",
+     -3
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "steps",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 1..end 1: balance = -1.",
+   "pointers": {
+    "start": 1,
+    "end": 1
+   },
+   "window": [
+    1,
+    1
+   ],
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "start",
+     1
+    ],
+    [
+     "end",
+     1
+    ],
+    [
+     "balance",
+     -1
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "steps",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 6,
+   "note": "start 1..end 2: balance = 0. Balanced! length 2, best 2.",
+   "pointers": {
+    "start": 1,
+    "end": 2
+   },
+   "window": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "active",
+    "2": "good"
+   },
+   "state": [
+    [
+     "start",
+     1
+    ],
+    [
+     "end",
+     2
+    ],
+    [
+     "balance",
+     0
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "steps",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 1..end 3: balance = -1.",
+   "pointers": {
+    "start": 1,
+    "end": 3
+   },
+   "window": [
+    1,
+    3
+   ],
+   "marks": {
+    "1": "active",
+    "2": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "start",
+     1
+    ],
+    [
+     "end",
+     3
+    ],
+    [
+     "balance",
+     -1
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "steps",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 1..end 4: balance = -2.",
+   "pointers": {
+    "start": 1,
+    "end": 4
+   },
+   "window": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "active",
+    "2": "active",
+    "3": "active",
+    "4": "active"
+   },
+   "state": [
+    [
+     "start",
+     1
+    ],
+    [
+     "end",
+     4
+    ],
+    [
+     "balance",
+     -2
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "steps",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 2..end 2: balance = 1.",
+   "pointers": {
+    "start": 2,
+    "end": 2
+   },
+   "window": [
+    2,
+    2
+   ],
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "start",
+     2
+    ],
+    [
+     "end",
+     2
+    ],
+    [
+     "balance",
+     1
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "steps",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 6,
+   "note": "start 2..end 3: balance = 0. Balanced! length 2, best 2.",
+   "pointers": {
+    "start": 2,
+    "end": 3
+   },
+   "window": [
+    2,
+    3
+   ],
+   "marks": {
+    "2": "active",
+    "3": "good"
+   },
+   "state": [
+    [
+     "start",
+     2
+    ],
+    [
+     "end",
+     3
+    ],
+    [
+     "balance",
+     0
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "steps",
+     11
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 2..end 4: balance = -1.",
+   "pointers": {
+    "start": 2,
+    "end": 4
+   },
+   "window": [
+    2,
+    4
+   ],
+   "marks": {
+    "2": "active",
+    "3": "active",
+    "4": "active"
+   },
+   "state": [
+    [
+     "start",
+     2
+    ],
+    [
+     "end",
+     4
+    ],
+    [
+     "balance",
+     -1
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "steps",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 3..end 3: balance = -1.",
+   "pointers": {
+    "start": 3,
+    "end": 3
+   },
+   "window": [
+    3,
+    3
+   ],
+   "marks": {
+    "3": "active"
+   },
+   "state": [
+    [
+     "start",
+     3
+    ],
+    [
+     "end",
+     3
+    ],
+    [
+     "balance",
+     -1
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "steps",
+     13
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 3..end 4: balance = -2.",
+   "pointers": {
+    "start": 3,
+    "end": 4
+   },
+   "window": [
+    3,
+    4
+   ],
+   "marks": {
+    "3": "active",
+    "4": "active"
+   },
+   "state": [
+    [
+     "start",
+     3
+    ],
+    [
+     "end",
+     4
+    ],
+    [
+     "balance",
+     -2
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "steps",
+     14
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 4..end 4: balance = -1.",
+   "pointers": {
+    "start": 4,
+    "end": 4
+   },
+   "window": [
+    4,
+    4
+   ],
+   "marks": {
+    "4": "active"
+   },
+   "state": [
+    [
+     "start",
+     4
+    ],
+    [
+     "end",
+     4
+    ],
+    [
+     "balance",
+     -1
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "steps",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 6,
+   "note": "On five numbers that took 15 steps, each start re-walking the same tail. It grows as the square of the length.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "best (slice)",
+     2
+    ],
+    [
+     "steps",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "relabel 0 -> -1 and 'equal 0s and 1s' becomes 'the run sums to 0' \u2014 a prefix-sum question.",
+   "note": "Replace each 0 with -1. Then a run is balanced when its sum is 0, i.e. its two end prefixes are EQUAL: prefix[i] == prefix[j+1].",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "steps (brute)",
+     15
+    ],
+    [
+     "insight",
+     "equal prefixes bracket balance"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "So the longest balanced run ending at j is j minus the FIRST index where that prefix value appeared. Remember each prefix's earliest index \u2014 one pass.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "remember",
+     "earliest index per prefix"
+    ],
+    [
+     "cost",
+     "one pass"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "the sidebar keeps the FIRST index each balance appeared. Seed {0:-1} lets runs from the very start count.",
+   "invariant": "first_seen[b] is the earliest index whose prefix balance is b.",
+   "note": "One pass. balance = running prefix (0 -> -1). first_seen = earliest index per balance value. Seed {0: -1}.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "balance",
+     0
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "i=0, x=0: balance = -1, new value. File first_seen[-1] = 0.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "-1",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "balance",
+     -1
+    ],
+    [
+     "filed",
+     "-1->0"
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "i=1, x=0: balance = -2, new value. File first_seen[-2] = 1.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "-1",
+      "0"
+     ],
+     [
+      "-2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "balance",
+     -2
+    ],
+    [
+     "filed",
+     "-2->1"
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "i=2, x=1: balance = -1, first seen at index 0. Balanced run 1..2, length 2. New best 2.",
+   "pointers": {
+    "i": 2
+   },
+   "window": [
+    1,
+    2
+   ],
+   "arc": [
+    0,
+    2
+   ],
+   "marks": {
+    "1": "good",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "-1",
+      "0"
+     ],
+     [
+      "-2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "balance",
+     -1
+    ],
+    [
+     "first at",
+     0
+    ],
+    [
+     "length",
+     2
+    ],
+    [
+     "best",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "i=3, x=0: balance = -2, first seen at index 1. Balanced run 2..3, length 2. best stays 2.",
+   "pointers": {
+    "i": 3
+   },
+   "window": [
+    2,
+    3
+   ],
+   "arc": [
+    1,
+    3
+   ],
+   "marks": {
+    "2": "good",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "-1",
+      "0"
+     ],
+     [
+      "-2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "balance",
+     -2
+    ],
+    [
+     "first at",
+     1
+    ],
+    [
+     "length",
+     2
+    ],
+    [
+     "best",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "i=4, x=0: balance = -3, new value. File first_seen[-3] = 4.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "-1",
+      "0"
+     ],
+     [
+      "-2",
+      "1"
+     ],
+     [
+      "-3",
+      "4"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "balance",
+     -3
+    ],
+    [
+     "filed",
+     "-3->4"
+    ],
+    [
+     "best",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "i=5, x=0: balance = -4, new value. File first_seen[-4] = 5.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "5": "dim"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "-1",
+      "0"
+     ],
+     [
+      "-2",
+      "1"
+     ],
+     [
+      "-3",
+      "4"
+     ],
+     [
+      "-4",
+      "5"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     5
+    ],
+    [
+     "balance",
+     -4
+    ],
+    [
+     "filed",
+     "-4->5"
+    ],
+    [
+     "best",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "i=6, x=1: balance = -3, first seen at index 4. Balanced run 5..6, length 2. best stays 2.",
+   "pointers": {
+    "i": 6
+   },
+   "window": [
+    5,
+    6
+   ],
+   "arc": [
+    4,
+    6
+   ],
+   "marks": {
+    "5": "good",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "-1",
+      "0"
+     ],
+     [
+      "-2",
+      "1"
+     ],
+     [
+      "-3",
+      "4"
+     ],
+     [
+      "-4",
+      "5"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     6
+    ],
+    [
+     "balance",
+     -3
+    ],
+    [
+     "first at",
+     4
+    ],
+    [
+     "length",
+     2
+    ],
+    [
+     "best",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "i=7, x=1: balance = -2, first seen at index 1. Balanced run 2..7, length 6. New best 6.",
+   "pointers": {
+    "i": 7
+   },
+   "window": [
+    2,
+    7
+   ],
+   "arc": [
+    1,
+    7
+   ],
+   "marks": {
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good",
+    "7": "active"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "-1",
+      "0"
+     ],
+     [
+      "-2",
+      "1"
+     ],
+     [
+      "-3",
+      "4"
+     ],
+     [
+      "-4",
+      "5"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     7
+    ],
+    [
+     "balance",
+     -2
+    ],
+    [
+     "first at",
+     1
+    ],
+    [
+     "length",
+     6
+    ],
+    [
+     "best",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "One pass gives best = 6: the longest stretch bracketed by two equal prefix balances.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "-1",
+      "0"
+     ],
+     [
+      "-2",
+      "1"
+     ],
+     [
+      "-3",
+      "4"
+     ],
+     [
+      "-4",
+      "5"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     6
+    ],
+    [
+     "brute (5 nums)",
+     15
+    ]
+   ],
+   "banner": "Longest balanced subarray = 6   \u2014 one pass"
+  },
+  {
+   "act": 3,
+   "cells": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "all 1s: balance only ever climbs, so no prefix value repeats \u2014 nothing is balanced.",
+   "invariant": "best stays 0 unless a prefix balance recurs.",
+   "note": "Edge case: [1,1,1,1]. Every step adds +1, so balance never repeats and no run is balanced.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "balance",
+     0
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "note": "i=0: balance = 1, brand new. File it. best stays 0.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "1",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "balance",
+     1
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "note": "i=1: balance = 2, brand new. File it. best stays 0.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "1",
+      "0"
+     ],
+     [
+      "2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "balance",
+     2
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "note": "i=2: balance = 3, brand new. File it. best stays 0.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "1",
+      "0"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "balance",
+     3
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "note": "i=3: balance = 4, brand new. File it. best stays 0.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "dim"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "1",
+      "0"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "balance",
+     4
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "best = 0: no two prefixes matched, so nothing balanced. All-1s can't be split evenly.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "sidebar": {
+    "title": "first_seen (prefix -> earliest index)",
+    "rows": [
+     [
+      "0",
+      "-1"
+     ],
+     [
+      "1",
+      "0"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     0
+    ]
+   ],
+   "banner": "[1,1,1,1] -> 0 (never balances)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/23-prefix-sum/0525-contiguous-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;525. Contiguous Array — https://leetcode.com/problems/contiguous-array/
 
 Given a binary array of 0s and 1s, find the length of the longest contiguous
 subarray with an equal number of 0s and 1s. A relabel turns this into a prefix-sum

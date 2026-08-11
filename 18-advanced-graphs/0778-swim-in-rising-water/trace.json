@@ -1,0 +1,825 @@
+{
+ "player": "tree",
+ "title": "Swim in Rising Water - the max rule, Dijkstra on the minimax path, big grid, then 1x1",
+ "acts": [
+  "The rule: cost is a max",
+  "Run it (2x2)",
+  "Bigger grid",
+  "Edge case: 1x1"
+ ],
+ "code": {
+  "dfs": [
+   "heap = [(grid[0][0], 0, 0)]",
+   "while heap:",
+   "    t, r, c = heappop(heap)",
+   "    if seen[r][c]: continue",
+   "    seen[r][c] = True",
+   "    if (r, c) == goal: return t",
+   "    for nr, nc in neighbors(r, c):",
+   "        push (max(t, grid[nr][nc]), nr, nc)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "cell settling now"
+  ],
+  [
+   "good",
+   "min worst-barrier to reach"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 0,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 2,
+   "x": 90,
+   "y": 0
+  },
+  {
+   "id": 2,
+   "val": 1,
+   "x": 0,
+   "y": 90
+  },
+  {
+   "id": 3,
+   "val": 3,
+   "x": 90,
+   "y": 90
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   2,
+   3
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 90,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 1,
+     "x": 0,
+     "y": 90
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 90,
+     "y": 90
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "a path's cost is its tallest cell, not the sum of steps.",
+   "invariant": "you can only stand on a cell once water >= its elevation.",
+   "note": "At time t the water level is t; you may stand on any cell with elevation <= t. The cost of a path is its highest cell \u2014 you wait for water to top the tallest barrier. We want the path whose maximum is smallest.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "start",
+     "(0,0)"
+    ],
+    [
+     "goal",
+     "(1,1)"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "dfs",
+   "line": 7,
+   "note": "So Dijkstra relaxes with max(cost so far, next cell) instead of a sum. The heap always expands the cell with the smallest worst-barrier reached so far.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "relax",
+     "max(t, cell)"
+    ]
+   ],
+   "banner": "Minimax path: minimize the largest elevation you must cross."
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 90,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 1,
+     "x": 0,
+     "y": 90
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 90,
+     "y": 90
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "the first time the goal pops, its value is the answer.",
+   "invariant": "a settled cell holds the minimal max-elevation to reach it.",
+   "note": "Run it: push the start's elevation, then always pop the smallest worst-barrier.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "heap",
+     "[(0,0,0)]"
+    ],
+    [
+     "pops",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "Pop the cell with the smallest worst-barrier: (0,0), needs time 0. Settle it.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "settle",
+     "(0,0) = 0"
+    ],
+    [
+     "pops",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 7,
+   "note": "Offer neighbors of (0,0): cost to stand on each = max(barrier 0, that cell). Push (1,1,0), (2,0,1).",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "pops",
+     1
+    ],
+    [
+     "pushed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "Pop the cell with the smallest worst-barrier: (1,0), needs time 1. Settle it.",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": 0,
+    "2": 1
+   },
+   "state": [
+    [
+     "settle",
+     "(1,0) = 1"
+    ],
+    [
+     "pops",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 7,
+   "note": "Offer neighbors of (1,0): cost to stand on each = max(barrier 1, that cell). Push (3,1,1).",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": 0,
+    "2": 1
+   },
+   "state": [
+    [
+     "pops",
+     2
+    ],
+    [
+     "pushed",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "Pop the cell with the smallest worst-barrier: (0,1), needs time 2. Settle it.",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": 0,
+    "2": 1,
+    "1": 2
+   },
+   "state": [
+    [
+     "settle",
+     "(0,1) = 2"
+    ],
+    [
+     "pops",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 7,
+   "note": "Offer neighbors of (0,1): cost to stand on each = max(barrier 2, that cell). Push (3,1,1).",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": 0,
+    "2": 1,
+    "1": 2
+   },
+   "state": [
+    [
+     "pops",
+     3
+    ],
+    [
+     "pushed",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 5,
+   "note": "Popped the goal (1,1) with worst-barrier 3. That is the earliest time the whole path is walkable \u2014 done.",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": 0,
+    "2": 1,
+    "1": 2,
+    "3": 3
+   },
+   "state": [
+    [
+     "settle",
+     "(1,1) = 3"
+    ],
+    [
+     "pops",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 5,
+   "note": "Goal reached at time 3: any route to (1,1) must cross the elevation-3 corner, so 3 is the earliest arrival.",
+   "active": [],
+   "done": {
+    "0": 0,
+    "2": 1,
+    "1": 2,
+    "3": 3
+   },
+   "state": [
+    [
+     "answer",
+     3
+    ]
+   ],
+   "banner": "Earliest swim time = 3"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 0
+    },
+    {
+     "id": 3,
+     "val": 8,
+     "x": 0,
+     "y": 90
+    },
+    {
+     "id": 4,
+     "val": 9,
+     "x": 90,
+     "y": 90
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 180,
+     "y": 90
+    },
+    {
+     "id": 6,
+     "val": 7,
+     "x": 0,
+     "y": 180
+    },
+    {
+     "id": 7,
+     "val": 6,
+     "x": 90,
+     "y": 180
+    },
+    {
+     "id": 8,
+     "val": 5,
+     "x": 180,
+     "y": 180
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     8
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "cheaper (lower-max) cells settle before taller ones.",
+   "invariant": "the heap orders cells by worst-barrier, never by grid distance.",
+   "note": "A 3x3 with a tall 8/9 wall in the way. Same rule \u2014 watch it snake around the wall.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "heap",
+     "[(0,0,0)]"
+    ],
+    [
+     "pops",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 4,
+   "note": "Pop the cell with the smallest worst-barrier: (0,0), needs time 0. Settle it.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "settle",
+     "(0,0) = 0"
+    ],
+    [
+     "pops",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 7,
+   "note": "Offer neighbors of (0,0): cost to stand on each = max(barrier 0, that cell). Push (8,1,0), (1,0,1).",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "pops",
+     1
+    ],
+    [
+     "pushed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 4,
+   "note": "Pop the cell with the smallest worst-barrier: (0,1), needs time 1. Settle it.",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": 0,
+    "1": 1
+   },
+   "state": [
+    [
+     "settle",
+     "(0,1) = 1"
+    ],
+    [
+     "pops",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 7,
+   "note": "Offer neighbors of (0,1): cost to stand on each = max(barrier 1, that cell). Push (9,1,1), (2,0,2).",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": 0,
+    "1": 1
+   },
+   "state": [
+    [
+     "pops",
+     2
+    ],
+    [
+     "pushed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 4,
+   "note": "Pop the cell with the smallest worst-barrier: (0,2), needs time 2. Settle it.",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2
+   },
+   "state": [
+    [
+     "settle",
+     "(0,2) = 2"
+    ],
+    [
+     "pops",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 7,
+   "note": "Offer neighbors of (0,2): cost to stand on each = max(barrier 2, that cell). Push (3,1,2).",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2
+   },
+   "state": [
+    [
+     "pops",
+     3
+    ],
+    [
+     "pushed",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 4,
+   "note": "Pop the cell with the smallest worst-barrier: (1,2), needs time 3. Settle it.",
+   "active": [
+    5
+   ],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "5": 3
+   },
+   "state": [
+    [
+     "settle",
+     "(1,2) = 3"
+    ],
+    [
+     "pops",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 7,
+   "note": "Offer neighbors of (1,2): cost to stand on each = max(barrier 3, that cell). Push (5,2,2), (9,1,1).",
+   "active": [
+    5
+   ],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "5": 3
+   },
+   "state": [
+    [
+     "pops",
+     4
+    ],
+    [
+     "pushed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "note": "Popped the goal (2,2) with worst-barrier 5. That is the earliest time the whole path is walkable \u2014 done.",
+   "active": [
+    8
+   ],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "5": 3,
+    "8": 5
+   },
+   "state": [
+    [
+     "settle",
+     "(2,2) = 5"
+    ],
+    [
+     "pops",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "note": "The best path hugs the low border 0->1->2->3->5, peaking at 5; going through the 8 or 9 would cost far more.",
+   "active": [],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "5": 3,
+    "8": 5
+   },
+   "state": [
+    [
+     "answer",
+     5
+    ],
+    [
+     "cells settled",
+     5
+    ]
+   ],
+   "banner": "Earliest swim time = 5"
+  },
+  {
+   "act": 3,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "dfs",
+   "line": 0,
+   "intro": "start and goal are the same cell.",
+   "invariant": "you begin already standing on the goal.",
+   "note": "Edge case: a 1x1 grid. Start is the goal, elevation 0 \u2014 no waiting needed.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "grid",
+     "1x1"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "dfs",
+   "line": 5,
+   "note": "Pop (0,0) with barrier 0, which is the goal. Answer 0.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "answer",
+     0
+    ]
+   ],
+   "banner": "Already at the goal -> time 0"
+  }
+ ]
+}

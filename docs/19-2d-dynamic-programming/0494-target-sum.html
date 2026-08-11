@@ -67,7 +67,1154 @@
 <h2>Pitfalls</h2>
 <ul><li>Skipping the parity/range check. If <code>target + total</code> is odd, <code>P</code> isn&#x27;t a whole number and the answer is 0; likewise if <code>|target| &gt; total</code>.</li><li>Sweeping <code>sum</code> upward in the 1-D roll. That reuses a number multiple times — this is 0/1 (each number once), so sweep downward.</li><li>Zeros. A <code>0</code> can take <code>+</code> or <code>-</code>, so each zero doubles the count; the subset-sum form handles this correctly as long as you include zeros in <code>total</code>.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable moves are *(a) state = running aggregate, not path*, and *(b) turn a signed/partition problem into subset-sum by algebra*. Siblings: <a href="https://leetcode.com/problems/partition-equal-subset-sum/">Partition Equal Subset Sum / 416</a> (does a subset hit total/2?), <a href="../0518-coin-change-ii/">Coin Change II / 518</a> (the unbounded counting cousin), and <a href="https://leetcode.com/problems/last-stone-weight-ii/">Last Stone Weight II / 1049</a> (same <code>+/-</code> reduction, minimizing the leftover).</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0494-target-sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;494. Target Sum — https://leetcode.com/problems/target-sum/
+<p>The reusable moves are *(a) state = running aggregate, not path*, and *(b) turn a signed/partition problem into subset-sum by algebra*. Siblings: <a href="https://leetcode.com/problems/partition-equal-subset-sum/">Partition Equal Subset Sum / 416</a> (does a subset hit total/2?), <a href="../0518-coin-change-ii/">Coin Change II / 518</a> (the unbounded counting cousin), and <a href="https://leetcode.com/problems/last-stone-weight-ii/">Last Stone Weight II / 1049</a> (same <code>+/-</code> reduction, minimizing the leftover).</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Target Sum - reduce to subset-sum count, one number per row",
+ "acts": [
+  "Brute: branch every sign",
+  "Reduce + fill",
+  "Answer + edge"
+ ],
+ "code": {
+  "tab": [
+   "need = (sum(nums) + target) // 2",
+   "dp = [0]*(need+1); dp[0] = 1",
+   "for x in nums:",
+   "    for s in range(need, x-1, -1):",
+   "        dp[s] += dp[s-x]        # subsets that include x",
+   "return dp[need]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "skip(up) + take(up-left)"
+  ],
+  [
+   "good",
+   "filled / answer"
+  ],
+  [
+   "bad",
+   "recomputed (waste)"
+  ],
+  [
+   "dim",
+   "zero / impossible"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "\u00b7",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "code": null,
+   "intro": "how the same (index, running sum) state recurs across the \u00b1 tree.",
+   "invariant": "ways(i, run) = sign choices for nums[i:] that hit the target.",
+   "note": "Brute force: put + or - in front of each number and branch both ways. Two different prefixes can reach the same running sum yet each spawns a subtree.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "target",
+     "+/- sum = 3"
+    ],
+    [
+     "branch",
+     "+x / -x"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "With five equal 1's, many sign choices reach the same running sum \u2014 the same (index, sum) state solved again and again. That overlap is the waste.",
+   "marks": {
+    "3,2": "bad",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "recomputed",
+     "ways(3, 2) \u2026"
+    ],
+    [
+     "cost",
+     "2^n"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "code": "tab",
+   "line": 0,
+   "intro": "reduce to: how many subsets sum to need? each cell = skip(up) + take(left by x).",
+   "invariant": "dp[i][s] = subsets of nums[:i] summing to s.",
+   "note": "Split into + and - groups. sum(P)-sum(N)=target and sum(P)+sum(N)=5, so sum(P) = (5+3)/2 = 4. Now just COUNT subsets summing to 4.",
+   "marks": {
+    "0,0": "good"
+   },
+   "set": {
+    "0,0": 1
+   },
+   "state": [
+    [
+     "need = (total+target)/2",
+     4
+    ],
+    [
+     "dp[\u00b7][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[\u00b7][1] = 0 (empty subset can't sum to 1).",
+   "set": {
+    "0,1": 0
+   },
+   "marks": {
+    "0,1": "dim"
+   },
+   "state": [
+    [
+     "dp[\u00b7][1]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[\u00b7][2] = 0 (empty subset can't sum to 2).",
+   "set": {
+    "0,2": 0
+   },
+   "marks": {
+    "0,2": "dim"
+   },
+   "state": [
+    [
+     "dp[\u00b7][2]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[\u00b7][3] = 0 (empty subset can't sum to 3).",
+   "set": {
+    "0,3": 0
+   },
+   "marks": {
+    "0,3": "dim"
+   },
+   "state": [
+    [
+     "dp[\u00b7][3]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[\u00b7][4] = 0 (empty subset can't sum to 4).",
+   "set": {
+    "0,4": 0
+   },
+   "marks": {
+    "0,4": "dim"
+   },
+   "state": [
+    [
+     "dp[\u00b7][4]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1 > sum 0: can't include, dp[1][0] = skip 1 = 1.",
+   "set": {
+    "1,0": 1
+   },
+   "marks": {
+    "0,0": "active",
+    "1,0": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "dp[1][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 1: skip 0 + take dp[0][0]=1 = 1.",
+   "set": {
+    "1,1": 1
+   },
+   "marks": {
+    "0,1": "active",
+    "0,0": "active",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(up-left)",
+     1
+    ],
+    [
+     "dp[1][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 2: skip 0 + take dp[0][1]=0 = 0.",
+   "set": {
+    "1,2": 0
+   },
+   "marks": {
+    "0,2": "active",
+    "0,1": "active",
+    "1,2": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(up-left)",
+     0
+    ],
+    [
+     "dp[1][2]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 3: skip 0 + take dp[0][2]=0 = 0.",
+   "set": {
+    "1,3": 0
+   },
+   "marks": {
+    "0,3": "active",
+    "0,2": "active",
+    "1,3": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(up-left)",
+     0
+    ],
+    [
+     "dp[1][3]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 4: skip 0 + take dp[0][3]=0 = 0.",
+   "set": {
+    "1,4": 0
+   },
+   "marks": {
+    "0,4": "active",
+    "0,3": "active",
+    "1,4": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(up-left)",
+     0
+    ],
+    [
+     "dp[1][4]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1 > sum 0: can't include, dp[2][0] = skip 1 = 1.",
+   "set": {
+    "2,0": 1
+   },
+   "marks": {
+    "1,0": "active",
+    "2,0": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "dp[2][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 1: skip 1 + take dp[1][0]=1 = 2.",
+   "set": {
+    "2,1": 2
+   },
+   "marks": {
+    "1,1": "active",
+    "1,0": "active",
+    "2,1": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "take(up-left)",
+     1
+    ],
+    [
+     "dp[2][1]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 2: skip 0 + take dp[1][1]=1 = 1.",
+   "set": {
+    "2,2": 1
+   },
+   "marks": {
+    "1,2": "active",
+    "1,1": "active",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(up-left)",
+     1
+    ],
+    [
+     "dp[2][2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 3: skip 0 + take dp[1][2]=0 = 0.",
+   "set": {
+    "2,3": 0
+   },
+   "marks": {
+    "1,3": "active",
+    "1,2": "active",
+    "2,3": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(up-left)",
+     0
+    ],
+    [
+     "dp[2][3]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 4: skip 0 + take dp[1][3]=0 = 0.",
+   "set": {
+    "2,4": 0
+   },
+   "marks": {
+    "1,4": "active",
+    "1,3": "active",
+    "2,4": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(up-left)",
+     0
+    ],
+    [
+     "dp[2][4]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1 > sum 0: can't include, dp[3][0] = skip 1 = 1.",
+   "set": {
+    "3,0": 1
+   },
+   "marks": {
+    "2,0": "active",
+    "3,0": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "dp[3][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 1: skip 2 + take dp[2][0]=1 = 3.",
+   "set": {
+    "3,1": 3
+   },
+   "marks": {
+    "2,1": "active",
+    "2,0": "active",
+    "3,1": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     2
+    ],
+    [
+     "take(up-left)",
+     1
+    ],
+    [
+     "dp[3][1]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 2: skip 1 + take dp[2][1]=2 = 3.",
+   "set": {
+    "3,2": 3
+   },
+   "marks": {
+    "2,2": "active",
+    "2,1": "active",
+    "3,2": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "take(up-left)",
+     2
+    ],
+    [
+     "dp[3][2]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 3: skip 0 + take dp[2][2]=1 = 1.",
+   "set": {
+    "3,3": 1
+   },
+   "marks": {
+    "2,3": "active",
+    "2,2": "active",
+    "3,3": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(up-left)",
+     1
+    ],
+    [
+     "dp[3][3]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 4: skip 0 + take dp[2][3]=0 = 0.",
+   "set": {
+    "3,4": 0
+   },
+   "marks": {
+    "2,4": "active",
+    "2,3": "active",
+    "3,4": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(up-left)",
+     0
+    ],
+    [
+     "dp[3][4]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1 > sum 0: can't include, dp[4][0] = skip 1 = 1.",
+   "set": {
+    "4,0": 1
+   },
+   "marks": {
+    "3,0": "active",
+    "4,0": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "dp[4][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 1: skip 3 + take dp[3][0]=1 = 4.",
+   "set": {
+    "4,1": 4
+   },
+   "marks": {
+    "3,1": "active",
+    "3,0": "active",
+    "4,1": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     3
+    ],
+    [
+     "take(up-left)",
+     1
+    ],
+    [
+     "dp[4][1]",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 2: skip 3 + take dp[3][1]=3 = 6.",
+   "set": {
+    "4,2": 6
+   },
+   "marks": {
+    "3,2": "active",
+    "3,1": "active",
+    "4,2": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     3
+    ],
+    [
+     "take(up-left)",
+     3
+    ],
+    [
+     "dp[4][2]",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 3: skip 1 + take dp[3][2]=3 = 4.",
+   "set": {
+    "4,3": 4
+   },
+   "marks": {
+    "3,3": "active",
+    "3,2": "active",
+    "4,3": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "take(up-left)",
+     3
+    ],
+    [
+     "dp[4][3]",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 4: skip 0 + take dp[3][3]=1 = 1.",
+   "set": {
+    "4,4": 1
+   },
+   "marks": {
+    "3,4": "active",
+    "3,3": "active",
+    "4,4": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(up-left)",
+     1
+    ],
+    [
+     "dp[4][4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1 > sum 0: can't include, dp[5][0] = skip 1 = 1.",
+   "set": {
+    "5,0": 1
+   },
+   "marks": {
+    "4,0": "active",
+    "5,0": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "dp[5][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 1: skip 4 + take dp[4][0]=1 = 5.",
+   "set": {
+    "5,1": 5
+   },
+   "marks": {
+    "4,1": "active",
+    "4,0": "active",
+    "5,1": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     4
+    ],
+    [
+     "take(up-left)",
+     1
+    ],
+    [
+     "dp[5][1]",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 2: skip 6 + take dp[4][1]=4 = 10.",
+   "set": {
+    "5,2": 10
+   },
+   "marks": {
+    "4,2": "active",
+    "4,1": "active",
+    "5,2": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     6
+    ],
+    [
+     "take(up-left)",
+     4
+    ],
+    [
+     "dp[5][2]",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 3: skip 4 + take dp[4][2]=6 = 10.",
+   "set": {
+    "5,3": 10
+   },
+   "marks": {
+    "4,3": "active",
+    "4,2": "active",
+    "5,3": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     4
+    ],
+    [
+     "take(up-left)",
+     6
+    ],
+    [
+     "dp[5][3]",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "num 1, sum 4: skip 1 + take dp[4][3]=4 = 5.",
+   "set": {
+    "5,4": 5
+   },
+   "marks": {
+    "4,4": "active",
+    "4,3": "active",
+    "5,4": "good"
+   },
+   "state": [
+    [
+     "num",
+     1
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "take(up-left)",
+     4
+    ],
+    [
+     "dp[5][4]",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "tab",
+   "line": 5,
+   "intro": "bottom-right: all numbers considered, sum = need.",
+   "invariant": "dp[K][need] counted each subset once \u2014 that is the number of sign assignments.",
+   "note": "dp[5][4] = 5 \u2014 the number of ways to sign [1, 1, 1, 1, 1] to reach 3.",
+   "marks": {
+    "5,4": "good"
+   },
+   "state": [
+    [
+     "answer",
+     5
+    ]
+   ],
+   "banner": "Ways to sign [1, 1, 1, 1, 1] to 3 = 5"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     null
+    ]
+   ],
+   "rowLabels": [
+    "\u00b7"
+   ],
+   "colLabels": [
+    "\u00b7"
+   ],
+   "code": "tab",
+   "line": 0,
+   "note": "Edge case: nums=[1, 2], target=2. total+target = 5 is odd, so no integer subset sum exists \u2014 the split is impossible, the answer is 0.",
+   "marks": {
+    "0,0": "dim"
+   },
+   "state": [
+    [
+     "total+target",
+     5
+    ],
+    [
+     "parity",
+     "odd \u2192 impossible"
+    ],
+    [
+     "answer",
+     0
+    ]
+   ],
+   "banner": "Odd total+target \u2192 0 ways"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0494-target-sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;494. Target Sum — https://leetcode.com/problems/target-sum/
 
 Given an array of non-negative integers and a target, put a `+` or `-` in front
 of each number and count how many sign assignments make the expression equal the

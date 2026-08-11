@@ -1,0 +1,706 @@
+{
+ "player": "grid",
+ "title": "Stock with Cooldown - three states across the days",
+ "acts": [
+  "Brute: buy / sell / rest tree",
+  "Fill the state table",
+  "Answer + edge"
+ ],
+ "code": {
+  "tab": [
+   "hold, sold, rest = -inf, 0, 0",
+   "for p in prices:",
+   "    hold = max(hold, rest - p)   # keep, or buy from a free day",
+   "    sold = hold_prev + p         # sell today",
+   "    rest = max(rest, sold_prev)  # stay free, or cooldown ends",
+   "return max(sold, rest)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "previous-day cells read"
+  ],
+  [
+   "good",
+   "computed / answer"
+  ],
+  [
+   "bad",
+   "recomputed (waste)"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "hold",
+    "sold",
+    "rest"
+   ],
+   "colLabels": [
+    "\u00b7",
+    "1",
+    "2",
+    "3",
+    "0",
+    "2"
+   ],
+   "code": null,
+   "intro": "how the same (day, holding?) situation gets re-explored down the choice tree.",
+   "invariant": "best(day, holding) = most profit from `day` onward in that state.",
+   "note": "Brute force: each day choose buy, sell, or rest, and recurse. Selling forces the next day to be a cooldown, so buys can only follow a rest day.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "prices",
+     "[1, 2, 3, 0, 2]"
+    ],
+    [
+     "daily choice",
+     "buy / sell / rest"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "Different early choices reach the same (day, holding) situation and re-solve the entire rest of the trip. That repeated tail is the waste.",
+   "marks": {
+    "0,3": "bad",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "recomputed",
+     "best(day 3, hold) \u2026"
+    ],
+    [
+     "cost",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "code": "tab",
+   "line": 0,
+   "intro": "each column (a day) is computed from the column to its left.",
+   "invariant": "hold/sold/rest each carry the best profit ending in that state.",
+   "note": "Seed the day-0 column (before trading): you can't hold yet (\u2212\u221e profit), and with nothing done, sold and rest are both 0.",
+   "marks": {},
+   "state": [
+    [
+     "seed",
+     "hold=\u2212\u221e, sold=0, rest=0"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "Day \u00b7 : hold = \u2212\u221e, sold = 0, rest = 0.",
+   "set": {
+    "0,0": "\u2212\u221e",
+    "1,0": 0,
+    "2,0": 0
+   },
+   "marks": {
+    "0,0": "good",
+    "1,0": "good",
+    "2,0": "good"
+   },
+   "state": [
+    [
+     "hold",
+     "\u2212\u221e"
+    ],
+    [
+     "sold",
+     0
+    ],
+    [
+     "rest",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 2,
+   "note": "Day price 1: hold = max(prev hold \u2212\u221e, rest 0 - 1) = -1.",
+   "set": {
+    "0,1": -1
+   },
+   "marks": {
+    "0,0": "active",
+    "2,0": "active",
+    "0,1": "good"
+   },
+   "state": [
+    [
+     "price",
+     1
+    ],
+    [
+     "prev hold",
+     "\u2212\u221e"
+    ],
+    [
+     "rest - p",
+     -1
+    ],
+    [
+     "hold",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "sold = prev hold \u2212\u221e + price 1 = \u2212\u221e (sell only if you held).",
+   "set": {
+    "1,1": "\u2212\u221e"
+   },
+   "marks": {
+    "0,0": "active",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "price",
+     1
+    ],
+    [
+     "prev hold",
+     "\u2212\u221e"
+    ],
+    [
+     "sold",
+     "\u2212\u221e"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "rest = max(prev rest 0, prev sold 0) = 0 \u2014 the cooldown after a sale lands here.",
+   "set": {
+    "2,1": 0
+   },
+   "marks": {
+    "2,0": "active",
+    "1,0": "active",
+    "2,1": "good"
+   },
+   "state": [
+    [
+     "prev rest",
+     0
+    ],
+    [
+     "prev sold",
+     0
+    ],
+    [
+     "rest",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 2,
+   "note": "Day price 2: hold = max(prev hold -1, rest 0 - 2) = -1.",
+   "set": {
+    "0,2": -1
+   },
+   "marks": {
+    "0,1": "active",
+    "2,1": "active",
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "price",
+     2
+    ],
+    [
+     "prev hold",
+     -1
+    ],
+    [
+     "rest - p",
+     -2
+    ],
+    [
+     "hold",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "sold = prev hold -1 + price 2 = 1 (sell only if you held).",
+   "set": {
+    "1,2": 1
+   },
+   "marks": {
+    "0,1": "active",
+    "1,2": "good"
+   },
+   "state": [
+    [
+     "price",
+     2
+    ],
+    [
+     "prev hold",
+     -1
+    ],
+    [
+     "sold",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "rest = max(prev rest 0, prev sold \u2212\u221e) = 0 \u2014 the cooldown after a sale lands here.",
+   "set": {
+    "2,2": 0
+   },
+   "marks": {
+    "2,1": "active",
+    "1,1": "active",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "prev rest",
+     0
+    ],
+    [
+     "prev sold",
+     "\u2212\u221e"
+    ],
+    [
+     "rest",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 2,
+   "note": "Day price 3: hold = max(prev hold -1, rest 0 - 3) = -1.",
+   "set": {
+    "0,3": -1
+   },
+   "marks": {
+    "0,2": "active",
+    "2,2": "active",
+    "0,3": "good"
+   },
+   "state": [
+    [
+     "price",
+     3
+    ],
+    [
+     "prev hold",
+     -1
+    ],
+    [
+     "rest - p",
+     -3
+    ],
+    [
+     "hold",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "sold = prev hold -1 + price 3 = 2 (sell only if you held).",
+   "set": {
+    "1,3": 2
+   },
+   "marks": {
+    "0,2": "active",
+    "1,3": "good"
+   },
+   "state": [
+    [
+     "price",
+     3
+    ],
+    [
+     "prev hold",
+     -1
+    ],
+    [
+     "sold",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "rest = max(prev rest 0, prev sold 1) = 1 \u2014 the cooldown after a sale lands here.",
+   "set": {
+    "2,3": 1
+   },
+   "marks": {
+    "2,2": "active",
+    "1,2": "active",
+    "2,3": "good"
+   },
+   "state": [
+    [
+     "prev rest",
+     0
+    ],
+    [
+     "prev sold",
+     1
+    ],
+    [
+     "rest",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 2,
+   "note": "Day price 0: hold = max(prev hold -1, rest 1 - 0) = 1.",
+   "set": {
+    "0,4": 1
+   },
+   "marks": {
+    "0,3": "active",
+    "2,3": "active",
+    "0,4": "good"
+   },
+   "state": [
+    [
+     "price",
+     0
+    ],
+    [
+     "prev hold",
+     -1
+    ],
+    [
+     "rest - p",
+     1
+    ],
+    [
+     "hold",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "sold = prev hold -1 + price 0 = -1 (sell only if you held).",
+   "set": {
+    "1,4": -1
+   },
+   "marks": {
+    "0,3": "active",
+    "1,4": "good"
+   },
+   "state": [
+    [
+     "price",
+     0
+    ],
+    [
+     "prev hold",
+     -1
+    ],
+    [
+     "sold",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "rest = max(prev rest 1, prev sold 2) = 2 \u2014 the cooldown after a sale lands here.",
+   "set": {
+    "2,4": 2
+   },
+   "marks": {
+    "2,3": "active",
+    "1,3": "active",
+    "2,4": "good"
+   },
+   "state": [
+    [
+     "prev rest",
+     1
+    ],
+    [
+     "prev sold",
+     2
+    ],
+    [
+     "rest",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 2,
+   "note": "Day price 2: hold = max(prev hold 1, rest 2 - 2) = 1.",
+   "set": {
+    "0,5": 1
+   },
+   "marks": {
+    "0,4": "active",
+    "2,4": "active",
+    "0,5": "good"
+   },
+   "state": [
+    [
+     "price",
+     2
+    ],
+    [
+     "prev hold",
+     1
+    ],
+    [
+     "rest - p",
+     0
+    ],
+    [
+     "hold",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "sold = prev hold 1 + price 2 = 3 (sell only if you held).",
+   "set": {
+    "1,5": 3
+   },
+   "marks": {
+    "0,4": "active",
+    "1,5": "good"
+   },
+   "state": [
+    [
+     "price",
+     2
+    ],
+    [
+     "prev hold",
+     1
+    ],
+    [
+     "sold",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "rest = max(prev rest 2, prev sold -1) = 2 \u2014 the cooldown after a sale lands here.",
+   "set": {
+    "2,5": 2
+   },
+   "marks": {
+    "2,4": "active",
+    "1,4": "active",
+    "2,5": "good"
+   },
+   "state": [
+    [
+     "prev rest",
+     2
+    ],
+    [
+     "prev sold",
+     -1
+    ],
+    [
+     "rest",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "tab",
+   "line": 5,
+   "intro": "the answer is the best non-holding state on the last day.",
+   "invariant": "you never end holding a share; profit is max(sold, rest) at the end.",
+   "note": "Last column: max(sold 3, rest 2) = 3. Buy at 1, sell at 3, cooldown, buy at 0, sell at 2.",
+   "marks": {
+    "1,5": "good",
+    "2,5": "good"
+   },
+   "state": [
+    [
+     "answer",
+     3
+    ]
+   ],
+   "banner": "Max profit with cooldown = 3"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     "\u00b7",
+     null,
+     null
+    ],
+    [
+     "\u00b7",
+     null,
+     null
+    ],
+    [
+     "\u00b7",
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "hold",
+    "sold",
+    "rest"
+   ],
+   "colLabels": [
+    "\u00b7",
+    "2",
+    "1"
+   ],
+   "code": "tab",
+   "line": 5,
+   "note": "Edge case: prices only fall ([2, 1]). Every buy would end in a loss, so the best plan is to trade nothing and the answer is 0.",
+   "marks": {
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "answer",
+     0
+    ]
+   ],
+   "banner": "Falling prices \u2192 0 profit"
+  }
+ ]
+}

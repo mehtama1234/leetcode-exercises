@@ -64,7 +64,393 @@ breakable(&quot;&quot;) = True</code></pre>
 <h2>Pitfalls</h2>
 <ul><li>Forgetting <code>dp[n] = True</code>. Without it every path dead-ends and you always return false.</li><li>Storing the vocabulary as a <strong>list</strong> instead of a <strong>set</strong> — that turns each membership check into a full scan and blows up the time.</li><li>This asks *whether* a split exists. Counting all splits or listing them (Word Break II) is a heavier, different problem.</li><li>Words are <strong>reusable</strong>, so <code>&quot;applepenapple&quot;</code> legitimately uses <code>&quot;apple&quot;</code> twice.</li></ul>
 <h2>Transfer</h2>
-<p>The shape is &quot;walk a line of positions; <code>dp[i]</code> depends on jumping ahead by an allowed step.&quot; Same skeleton as <a href="../0322-coin-change/">Coin Change / 322</a> (reach an amount with reusable coins), Jump Game, and its true/false-vs-counting sibling <a href="../0091-decode-ways/">Decode Ways / 91</a>. Whenever a brute force keeps re-asking &quot;is the rest solvable from here?&quot;, key the subproblem on *here* and cache it.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0139-word-break/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;139. Word Break — https://leetcode.com/problems/word-break/
+<p>The shape is &quot;walk a line of positions; <code>dp[i]</code> depends on jumping ahead by an allowed step.&quot; Same skeleton as <a href="../0322-coin-change/">Coin Change / 322</a> (reach an amount with reusable coins), Jump Game, and its true/false-vs-counting sibling <a href="../0091-decode-ways/">Decode Ways / 91</a>. Whenever a brute force keeps re-asking &quot;is the rest solvable from here?&quot;, key the subproblem on *here* and cache it.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Word Break - solve each suffix once, from the end",
+ "acts": [
+  "The suffix rule",
+  "Fill dp from the end",
+  "Answer + edge"
+ ],
+ "code": {
+  "dp": [
+   "dp[n] = True",
+   "for i in range(n-1, -1, -1):",
+   "    for j in range(i+1, n+1):",
+   "        if s[i:j] in words and dp[j]:",
+   "            dp[i] = True; break",
+   "return dp[0]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the rest (dp[j]) we lean on"
+  ],
+  [
+   "good",
+   "breakable / answer"
+  ],
+  [
+   "dim",
+   "not breakable"
+  ],
+  [
+   "bad",
+   "unbreakable tail"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "dp"
+   ],
+   "colLabels": [
+    "l",
+    "e",
+    "e",
+    "t",
+    "c",
+    "o",
+    "d",
+    "e",
+    "end"
+   ],
+   "code": null,
+   "intro": "dp[i] answers: can the suffix starting at i be cut into dictionary words?",
+   "invariant": "s[i:] is breakable iff some word matches at i and the rest is breakable.",
+   "note": "String \"leetcode\", words ['code', 'leet']. From position i, try each dictionary word that matches at i; if the remainder after it is also breakable, so is s[i:].",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "s",
+     "leetcode"
+    ],
+    [
+     "words",
+     "['code', 'leet']"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "The remainder is an identical subproblem keyed only by its start index. Plain recursion re-solves the same suffix along many prefix choices. Fill dp once, from the end.",
+   "marks": {
+    "0,4": "bad"
+   },
+   "state": [
+    [
+     "dp[i]",
+     "recomputed"
+    ],
+    [
+     "fix",
+     "fill from end"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "dp"
+   ],
+   "colLabels": [
+    "l",
+    "e",
+    "e",
+    "t",
+    "c",
+    "o",
+    "d",
+    "e",
+    "end"
+   ],
+   "code": "dp",
+   "line": 0,
+   "intro": "fill right to left; each dp[i] scans words that start at i.",
+   "invariant": "dp[i] final once written.",
+   "note": "dp[end] = True: the empty suffix is trivially broken.",
+   "set": {
+    "0,8": "T"
+   },
+   "marks": {
+    "0,8": "good"
+   },
+   "state": [
+    [
+     "dp[end]",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "i=7 ('e'): no dictionary word both matches at 7 and leaves a breakable rest -> dp[i] stays False.",
+   "set": {
+    "0,7": "F"
+   },
+   "marks": {
+    "0,7": "dim"
+   },
+   "state": [
+    [
+     "dp[7]",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "i=6 ('d'): no dictionary word both matches at 6 and leaves a breakable rest -> dp[i] stays False.",
+   "set": {
+    "0,6": "F"
+   },
+   "marks": {
+    "0,6": "dim"
+   },
+   "state": [
+    [
+     "dp[6]",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "i=5 ('o'): no dictionary word both matches at 5 and leaves a breakable rest -> dp[i] stays False.",
+   "set": {
+    "0,5": "F"
+   },
+   "marks": {
+    "0,5": "dim"
+   },
+   "state": [
+    [
+     "dp[5]",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "i=4: word \"code\" matches s[4:8] and dp[8] is True -> dp[4] = True.",
+   "set": {
+    "0,4": "T"
+   },
+   "marks": {
+    "0,4": "good",
+    "0,8": "active"
+   },
+   "state": [
+    [
+     "match",
+     "\"code\""
+    ],
+    [
+     "dp[4]",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "i=3 ('t'): no dictionary word both matches at 3 and leaves a breakable rest -> dp[i] stays False.",
+   "set": {
+    "0,3": "F"
+   },
+   "marks": {
+    "0,3": "dim"
+   },
+   "state": [
+    [
+     "dp[3]",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "i=2 ('e'): no dictionary word both matches at 2 and leaves a breakable rest -> dp[i] stays False.",
+   "set": {
+    "0,2": "F"
+   },
+   "marks": {
+    "0,2": "dim"
+   },
+   "state": [
+    [
+     "dp[2]",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "i=1 ('e'): no dictionary word both matches at 1 and leaves a breakable rest -> dp[i] stays False.",
+   "set": {
+    "0,1": "F"
+   },
+   "marks": {
+    "0,1": "dim"
+   },
+   "state": [
+    [
+     "dp[1]",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "i=0: word \"leet\" matches s[0:4] and dp[4] is True -> dp[0] = True.",
+   "set": {
+    "0,0": "T"
+   },
+   "marks": {
+    "0,0": "good",
+    "0,4": "active"
+   },
+   "state": [
+    [
+     "match",
+     "\"leet\""
+    ],
+    [
+     "dp[0]",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dp",
+   "line": 5,
+   "intro": "dp[0] is the whole answer: can all of s be broken?",
+   "invariant": "every suffix was solved before the one to its left.",
+   "note": "dp[0] = True: \"leetcode\" splits as \"leet\" + \"code\".",
+   "marks": {
+    "0,0": "good",
+    "0,4": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "True"
+    ]
+   ],
+   "banner": "\"leetcode\" -> True  (\"leet\" + \"code\")"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     "F",
+     "F",
+     "F",
+     "F",
+     "F",
+     "F",
+     "T",
+     "F",
+     "F",
+     "T"
+    ]
+   ],
+   "rowLabels": [
+    "dp"
+   ],
+   "colLabels": [
+    "c",
+    "a",
+    "t",
+    "s",
+    "a",
+    "n",
+    "d",
+    "o",
+    "g",
+    "end"
+   ],
+   "code": "dp",
+   "line": 5,
+   "note": "Edge case: \"catsandog\". Words cover the front (\"cats\"/\"cat\"...) but the tail \"og\" is in no word, so dp[0] is False \u2014 the split can't complete.",
+   "marks": {
+    "0,0": "dim",
+    "0,7": "bad",
+    "0,8": "bad"
+   },
+   "state": [
+    [
+     "dp[0]",
+     "False"
+    ],
+    [
+     "answer",
+     "False"
+    ]
+   ],
+   "banner": "Tail unbreakable -> False"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0139-word-break/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;139. Word Break — https://leetcode.com/problems/word-break/
 
 Given a string `s` and a dictionary of words, decide whether `s` can be split
 into a sequence of one or more dictionary words (each word reusable).

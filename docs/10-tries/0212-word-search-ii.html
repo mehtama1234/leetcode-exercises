@@ -76,7 +76,2838 @@
 <h2>Pitfalls</h2>
 <ul><li>Not marking cells visited (or forgetting to restore them) — a path could reuse a cell, so &quot;abcb&quot; on a board with a single <code>b</code> would wrongly match.</li><li>Reporting the same word multiple times when several grid paths spell it. Clear the end marker after collecting.</li><li>Reconstructing the found word from the path instead of storing it on the end node — easy to get subtly wrong; the stored word is exact.</li><li>Building the trie inside the per-cell loop instead of once up front.</li><li>A common extra optimization is pruning dead trie leaves as words are found; it&#x27;s not required for correctness, so this solution keeps it simple.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable idea is <strong>use a trie to search for many strings at once, and let &quot;fell off the trie&quot; be your pruning signal.</strong> This turns &quot;one search per word&quot; into a single guided walk. The board-DFS backtracking is <a href="../../11-backtracking/0079-word-search/">Word Search / 79</a>; the trie half is <a href="../0208-implement-trie-prefix-tree/">208</a> and <a href="../0211-design-add-and-search-words-data-structure/">211</a>. Any time you&#x27;re about to loop &quot;for each pattern, search the whole space,&quot; ask whether a trie lets you search for all patterns in one pass.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/10-tries/0212-word-search-ii/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;212. Word Search II — https://leetcode.com/problems/word-search-ii/
+<p>The reusable idea is <strong>use a trie to search for many strings at once, and let &quot;fell off the trie&quot; be your pruning signal.</strong> This turns &quot;one search per word&quot; into a single guided walk. The board-DFS backtracking is <a href="../../11-backtracking/0079-word-search/">Word Search / 79</a>; the trie half is <a href="../0208-implement-trie-prefix-tree/">208</a> and <a href="../0211-design-add-and-search-words-data-structure/">211</a>. Any time you&#x27;re about to loop &quot;for each pattern, search the whole space,&quot; ask whether a trie lets you search for all patterns in one pass.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Word Search II - one trie guides one board walk",
+ "acts": [
+  "Brute: a search per word",
+  "The waste",
+  "Trie-guided one pass",
+  "Edge: shared prefix, once"
+ ],
+ "code": {
+  "dfs": [
+   "def dfs(r, c, node):",
+   "    ch = board[r][c]",
+   "    nxt = node.children.get(ch)",
+   "    if nxt is None: return          # off the trie -> prune",
+   "    if nxt.word is not None:",
+   "        found.append(nxt.word); nxt.word = None   # collect once",
+   "    board[r][c] = '#'               # mark visited",
+   "    for nr, nc in neighbors(r, c):",
+   "        if board[nr][nc] != '#': dfs(nr, nc, nxt)",
+   "    board[r][c] = ch                # restore"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "trie node the board walk is on"
+  ],
+  [
+   "good",
+   "word label = a word ends here; 'check' = collected"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "\u25b2",
+   "x": 0,
+   "y": 0
+  }
+ ],
+ "edges": [],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": null,
+   "intro": "each word launches its OWN full-board search, re-treading whatever prefix it shares with another word.",
+   "invariant": "the answer set is the words that can be spelled on the board.",
+   "note": "Brute force: for each of the 4 words, DFS the whole board looking for just that word. 'oath' and (say) 'oat' would each re-walk the shared 'oa' from every start.",
+   "active": [
+    0
+   ],
+   "done": {
+    "4": "oath",
+    "7": "pea",
+    "10": "eat",
+    "14": "rain"
+   },
+   "state": [
+    [
+     "words",
+     4
+    ],
+    [
+     "searches",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "With w words that's w independent board sweeps. Nothing is shared between them, even when the words start the same.",
+   "active": [
+    0
+   ],
+   "done": {
+    "4": "oath",
+    "7": "pea",
+    "10": "eat",
+    "14": "rain"
+   },
+   "state": [
+    [
+     "cost",
+     "w x board-DFS"
+    ],
+    [
+     "shared prefixes",
+     "re-walked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "intro": "the repeated work is every shared prefix, walked once per word instead of once total.",
+   "invariant": "a prefix walked for word A is identical to the same prefix for word B.",
+   "note": "Put all the words in ONE trie. Now shared starts are a single shared PATH, so one board walk can chase every word that shares that start at once.",
+   "active": [
+    0
+   ],
+   "done": {
+    "4": "oath",
+    "7": "pea",
+    "10": "eat",
+    "14": "rain"
+   },
+   "state": [
+    [
+     "idea",
+     "one trie of all words"
+    ],
+    [
+     "searches",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "active = the trie node the board walk is on; when it leaves the trie we prune instantly.",
+   "invariant": "collecting a word clears its marker, so each word is found once.",
+   "note": "Walk the board once. From each cell, descend the trie while the letter is a valid next character; the moment it isn't, prune.",
+   "active": [
+    0
+   ],
+   "done": {
+    "4": "oath",
+    "7": "pea",
+    "10": "eat",
+    "14": "rain"
+   },
+   "state": [
+    [
+     "one pass",
+     "board + trie together"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "board (0,0)='o' matches a trie child -> descend. The board walk and the trie walk move together.",
+   "active": [
+    1
+   ],
+   "done": {
+    "4": "oath",
+    "7": "pea",
+    "10": "eat",
+    "14": "rain"
+   },
+   "state": [
+    [
+     "cell",
+     "(0,0)=o"
+    ],
+    [
+     "on trie node",
+     "o"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "board (0,1)='a' matches a trie child -> descend. The board walk and the trie walk move together.",
+   "active": [
+    2
+   ],
+   "done": {
+    "4": "oath",
+    "7": "pea",
+    "10": "eat",
+    "14": "rain"
+   },
+   "state": [
+    [
+     "cell",
+     "(0,1)=a"
+    ],
+    [
+     "on trie node",
+     "a"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "board (1,1)='t' matches a trie child -> descend. The board walk and the trie walk move together.",
+   "active": [
+    3
+   ],
+   "done": {
+    "4": "oath",
+    "7": "pea",
+    "10": "eat",
+    "14": "rain"
+   },
+   "state": [
+    [
+     "cell",
+     "(1,1)=t"
+    ],
+    [
+     "on trie node",
+     "t"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "board (2,1)='h' matches a trie child -> descend. The board walk and the trie walk move together.",
+   "active": [
+    4
+   ],
+   "done": {
+    "4": "oath",
+    "7": "pea",
+    "10": "eat",
+    "14": "rain"
+   },
+   "state": [
+    [
+     "cell",
+     "(2,1)=h"
+    ],
+    [
+     "on trie node",
+     "h"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 5,
+   "note": "this trie node carries a whole word -> collect 'oath'. Clear it so a duplicate can't be collected twice.",
+   "active": [
+    4
+   ],
+   "done": {
+    "7": "pea",
+    "10": "eat",
+    "14": "rain",
+    "4": "check"
+   },
+   "state": [
+    [
+     "found",
+     "oath"
+    ],
+    [
+     "total",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "board (1,0)='e' matches a trie child -> descend. The board walk and the trie walk move together.",
+   "active": [
+    8
+   ],
+   "done": {
+    "7": "pea",
+    "10": "eat",
+    "14": "rain",
+    "4": "check"
+   },
+   "state": [
+    [
+     "cell",
+     "(1,0)=e"
+    ],
+    [
+     "on trie node",
+     "e"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "board (1,3)='e' matches a trie child -> descend. The board walk and the trie walk move together.",
+   "active": [
+    8
+   ],
+   "done": {
+    "7": "pea",
+    "10": "eat",
+    "14": "rain",
+    "4": "check"
+   },
+   "state": [
+    [
+     "cell",
+     "(1,3)=e"
+    ],
+    [
+     "on trie node",
+     "e"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "board (1,2)='a' matches a trie child -> descend. The board walk and the trie walk move together.",
+   "active": [
+    9
+   ],
+   "done": {
+    "7": "pea",
+    "10": "eat",
+    "14": "rain",
+    "4": "check"
+   },
+   "state": [
+    [
+     "cell",
+     "(1,2)=a"
+    ],
+    [
+     "on trie node",
+     "a"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "board (1,1)='t' matches a trie child -> descend. The board walk and the trie walk move together.",
+   "active": [
+    10
+   ],
+   "done": {
+    "7": "pea",
+    "10": "eat",
+    "14": "rain",
+    "4": "check"
+   },
+   "state": [
+    [
+     "cell",
+     "(1,1)=t"
+    ],
+    [
+     "on trie node",
+     "t"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 5,
+   "note": "this trie node carries a whole word -> collect 'eat'. Clear it so a duplicate can't be collected twice.",
+   "active": [
+    10
+   ],
+   "done": {
+    "7": "pea",
+    "14": "rain",
+    "4": "check",
+    "10": "check"
+   },
+   "state": [
+    [
+     "found",
+     "eat"
+    ],
+    [
+     "total",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "board (2,3)='r' matches a trie child -> descend. The board walk and the trie walk move together.",
+   "active": [
+    11
+   ],
+   "done": {
+    "7": "pea",
+    "14": "rain",
+    "4": "check",
+    "10": "check"
+   },
+   "state": [
+    [
+     "cell",
+     "(2,3)=r"
+    ],
+    [
+     "on trie node",
+     "r"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    },
+    {
+     "id": 5,
+     "val": "p",
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 6,
+     "val": "e",
+     "x": 330,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": "a",
+     "x": 396,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": "e",
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 9,
+     "val": "a",
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 10,
+     "val": "t",
+     "x": 594,
+     "y": 246
+    },
+    {
+     "id": 11,
+     "val": "r",
+     "x": 660,
+     "y": 82
+    },
+    {
+     "id": 12,
+     "val": "a",
+     "x": 726,
+     "y": 164
+    },
+    {
+     "id": 13,
+     "val": "i",
+     "x": 792,
+     "y": 246
+    },
+    {
+     "id": 14,
+     "val": "n",
+     "x": 858,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     14
+    ]
+   ],
+   "code": "dfs",
+   "line": 5,
+   "note": "One board pass collected ['eat', 'oath']. 'pea' and 'rain' never matched a start and were pruned immediately.",
+   "active": [],
+   "done": {
+    "7": "pea",
+    "14": "rain",
+    "4": "check",
+    "10": "check"
+   },
+   "state": [
+    [
+     "found",
+     "['eat', 'oath']"
+    ]
+   ],
+   "banner": "findWords = ['eat', 'oath']  (one pass, shared prefixes walked once)"
+  },
+  {
+   "act": 3,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "dfs",
+   "line": 4,
+   "intro": "'oat' and 'oath' share the path o-a-t; a duplicate 'oat' is the same node, so it can only be collected once.",
+   "invariant": "clearing the word marker after collecting is what dedupes.",
+   "note": "Edge case: words ['oat','oath','oat']. The trie has ONE path o-a-t and one more node h. The duplicate 'oat' just marks the same 't' node.",
+   "active": [
+    0
+   ],
+   "done": {
+    "3": "oat",
+    "4": "oath"
+   },
+   "state": [
+    [
+     "stored",
+     "oat, oath, oat"
+    ],
+    [
+     "distinct paths",
+     "o-a-t(-h)"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "o",
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 66,
+     "y": 164
+    },
+    {
+     "id": 3,
+     "val": "t",
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 4,
+     "val": "h",
+     "x": 198,
+     "y": 328
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "dfs",
+   "line": 5,
+   "note": "Reaching the 't' node collects 'oat' and clears its marker. The duplicate can't fire again -> 'oat' appears once.",
+   "active": [
+    3
+   ],
+   "done": {
+    "4": "oath",
+    "3": "check"
+   },
+   "state": [
+    [
+     "collected",
+     "oat (once)"
+    ]
+   ],
+   "banner": "Duplicate 'oat' collected once; 'oath' still found on the same path"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/10-tries/0212-word-search-ii/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;212. Word Search II — https://leetcode.com/problems/word-search-ii/
 
 Given a grid of letters and a list of words, return every word that can be spelled
 by walking to adjacent (up/down/left/right) cells without reusing a cell.

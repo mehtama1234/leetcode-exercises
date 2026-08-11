@@ -63,7 +63,1055 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Wrong heap direction.</strong> You want a <strong>min</strong>-heap (smallest of the top k on top), not a max-heap. A max-heap surfaces the *largest* number, which is the 1st largest, not the kth.</li><li><strong>Forgetting to cap the size.</strong> If you never pop, the heap becomes the whole stream and its top is the global minimum, not the kth largest.</li><li><strong>The initial list can be shorter than k.</strong> The heap simply holds fewer than k items until enough numbers arrive; the top still works, and the problem guarantees a valid kth largest exists whenever <code>add</code> is called.</li><li><strong>Kth largest is not kth distinct.</strong> Don&#x27;t dedupe; duplicates each occupy a slot.</li></ul>
 <h2>Transfer</h2>
-<p>The move is: <strong>when you only need a fixed number of the biggest (or smallest) items from a stream, keep a bounded heap of exactly that many and pop the loser on each insert.</strong> The same size-k heap solves <a href="../0973-k-closest-points-to-origin/">K Closest Points to Origin / 973</a> and <a href="../0215-kth-largest-element-in-an-array/">Kth Largest Element in an Array / 215</a>, and the balanced two-heap cousin powers <a href="../0295-find-median-from-data-stream/">Find Median from Data Stream / 295</a>. Whenever a brute force keeps re-sorting to read &quot;the top k&quot;, reach for a capped heap first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0703-kth-largest-element-in-a-stream/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;703. Kth Largest Element in a Stream — https://leetcode.com/problems/kth-largest-element-in-a-stream/
+<p>The move is: <strong>when you only need a fixed number of the biggest (or smallest) items from a stream, keep a bounded heap of exactly that many and pop the loser on each insert.</strong> The same size-k heap solves <a href="../0973-k-closest-points-to-origin/">K Closest Points to Origin / 973</a> and <a href="../0215-kth-largest-element-in-an-array/">Kth Largest Element in an Array / 215</a>, and the balanced two-heap cousin powers <a href="../0295-find-median-from-data-stream/">Find Median from Data Stream / 295</a>. Whenever a brute force keeps re-sorting to read &quot;the top k&quot;, reach for a capped heap first.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Kth Largest in a Stream \u2014 keep only the k biggest",
+ "acts": [
+  "Naive: re-sort every add",
+  "The waste",
+  "Fast: size-k min-heap",
+  "Edge: k = 1"
+ ],
+ "code": {
+  "naive": [
+   "self._nums.append(val)",
+   "return sorted(self._nums, reverse=True)[k-1]"
+  ],
+  "fast": [
+   "heapq.heappush(heap, val)",
+   "if len(heap) > k:",
+   "    heapq.heappop(heap)   # drop smallest",
+   "return heap[0]            # kth largest"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the number just added"
+  ],
+  [
+   "dim",
+   "seeded / filed away"
+  ],
+  [
+   "good",
+   "the kth-largest answer"
+  ]
+ ],
+ "cells": [
+  4,
+  5,
+  8,
+  2
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    4,
+    5,
+    8,
+    2
+   ],
+   "code": "naive",
+   "line": 0,
+   "intro": "every add re-sorts the ENTIRE history just to read one value.",
+   "invariant": "_nums holds every number ever seen, in arrival order.",
+   "note": "Naive k=3: start with [4, 5, 8, 2]. To answer, sort all of it and take index k-1.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "k",
+     3
+    ],
+    [
+     "stored",
+     4
+    ],
+    [
+     "sorts",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    4,
+    5,
+    8,
+    2,
+    3
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "add(3): now 5 numbers. Sort desc \u2192 [8, 5, 4, 3, 2]. kth largest = index 2 = 4.",
+   "marks": {
+    "4": "active"
+   },
+   "state": [
+    [
+     "added",
+     3
+    ],
+    [
+     "stored",
+     5
+    ],
+    [
+     "answer",
+     4
+    ],
+    [
+     "sorts",
+     1
+    ]
+   ],
+   "banner": "add(3) \u2192 4"
+  },
+  {
+   "act": 0,
+   "cells": [
+    4,
+    5,
+    8,
+    2,
+    3,
+    5
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "add(5): now 6 numbers. Sort desc \u2192 [8, 5, 5, 4, 3, 2]. kth largest = index 2 = 5.",
+   "marks": {
+    "5": "active"
+   },
+   "state": [
+    [
+     "added",
+     5
+    ],
+    [
+     "stored",
+     6
+    ],
+    [
+     "answer",
+     5
+    ],
+    [
+     "sorts",
+     2
+    ]
+   ],
+   "banner": "add(5) \u2192 5"
+  },
+  {
+   "act": 0,
+   "cells": [
+    4,
+    5,
+    8,
+    2,
+    3,
+    5,
+    10
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "add(10): now 7 numbers. Sort desc \u2192 [10, 8, 5, 5, 4, 3, 2]. kth largest = index 2 = 5.",
+   "marks": {
+    "6": "active"
+   },
+   "state": [
+    [
+     "added",
+     10
+    ],
+    [
+     "stored",
+     7
+    ],
+    [
+     "answer",
+     5
+    ],
+    [
+     "sorts",
+     3
+    ]
+   ],
+   "banner": "add(10) \u2192 5"
+  },
+  {
+   "act": 0,
+   "cells": [
+    4,
+    5,
+    8,
+    2,
+    3,
+    5,
+    10,
+    9
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "add(9): now 8 numbers. Sort desc \u2192 [10, 9, 8, 5, 5, 4, 3, 2]. kth largest = index 2 = 8.",
+   "marks": {
+    "7": "active"
+   },
+   "state": [
+    [
+     "added",
+     9
+    ],
+    [
+     "stored",
+     8
+    ],
+    [
+     "answer",
+     8
+    ],
+    [
+     "sorts",
+     4
+    ]
+   ],
+   "banner": "add(9) \u2192 8"
+  },
+  {
+   "act": 0,
+   "cells": [
+    4,
+    5,
+    8,
+    2,
+    3,
+    5,
+    10,
+    9,
+    4
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "add(4): now 9 numbers. Sort desc \u2192 [10, 9, 8, 5, 5, 4, 4, 3, 2]. kth largest = index 2 = 8.",
+   "marks": {
+    "8": "active"
+   },
+   "state": [
+    [
+     "added",
+     4
+    ],
+    [
+     "stored",
+     9
+    ],
+    [
+     "answer",
+     8
+    ],
+    [
+     "sorts",
+     5
+    ]
+   ],
+   "banner": "add(4) \u2192 8"
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 1,
+   "note": "5 adds cost 5 full sorts of a growing list \u2014 and we only ever read one value.",
+   "state": [
+    [
+     "adds",
+     5
+    ],
+    [
+     "full sorts",
+     5
+    ],
+    [
+     "values read",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "how much order we compute and throw away.",
+   "note": "Each add sorts all n numbers (O(n log n)) but reads only rank k. The order among every other number is pure waste.",
+   "state": [
+    [
+     "per add",
+     "O(n log n)"
+    ],
+    [
+     "needed",
+     "the k biggest"
+    ],
+    [
+     "kth is",
+     "smallest of top k"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Key idea: the kth largest is the SMALLEST of the top k. So keep only the k biggest in a min-heap \u2014 its top is the answer, read in O(1).",
+   "state": [
+    [
+     "keep",
+     "top 3 only"
+    ],
+    [
+     "read answer",
+     "O(1)"
+    ],
+    [
+     "per add",
+     "O(log k)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    4,
+    5,
+    8,
+    2
+   ],
+   "code": "fast",
+   "line": 3,
+   "intro": "the heap FILLS to k, then every add pushes one and pops the smallest.",
+   "invariant": "the heap holds exactly the 3 largest seen; heap[0] is the kth largest.",
+   "note": "Seed [4, 5, 8, 2], trimmed to the top 3. heap[0] = 4 is already the kth largest.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "4"
+     ],
+     [
+      "1",
+      "5"
+     ],
+     [
+      "2",
+      "8"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "k",
+     3
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "kth largest",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 0,
+   "note": "add(3): push it. Heap now holds 4 \u2014 one over k, so trim.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "3"
+     ],
+     [
+      "1",
+      "4"
+     ],
+     [
+      "2",
+      "5"
+     ],
+     [
+      "3",
+      "8"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     3
+    ],
+    [
+     "heap size",
+     4
+    ],
+    [
+     "over k?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Pop the smallest (3) \u2014 it can't be in the top 3. heap[0] = 4 is the kth largest.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "4"
+     ],
+     [
+      "1",
+      "5"
+     ],
+     [
+      "2",
+      "8"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     3
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "kth largest",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Answer for add(3) = heap[0] = 4. One push, at most one pop \u2014 O(log k).",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "4"
+     ],
+     [
+      "1",
+      "5"
+     ],
+     [
+      "2",
+      "8"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     4
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ],
+   "banner": "add(3) \u2192 4   (no full sort)"
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 0,
+   "note": "add(5): push it. Heap now holds 4 \u2014 one over k, so trim.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "4"
+     ],
+     [
+      "1",
+      "5"
+     ],
+     [
+      "2",
+      "5"
+     ],
+     [
+      "3",
+      "8"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     5
+    ],
+    [
+     "heap size",
+     4
+    ],
+    [
+     "over k?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Pop the smallest (4) \u2014 it can't be in the top 3. heap[0] = 5 is the kth largest.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "5"
+     ],
+     [
+      "1",
+      "5"
+     ],
+     [
+      "2",
+      "8"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     4
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "kth largest",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Answer for add(5) = heap[0] = 5. One push, at most one pop \u2014 O(log k).",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "5"
+     ],
+     [
+      "1",
+      "5"
+     ],
+     [
+      "2",
+      "8"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     5
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ],
+   "banner": "add(5) \u2192 5   (no full sort)"
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 0,
+   "note": "add(10): push it. Heap now holds 4 \u2014 one over k, so trim.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "5"
+     ],
+     [
+      "1",
+      "5"
+     ],
+     [
+      "2",
+      "8"
+     ],
+     [
+      "3",
+      "10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     10
+    ],
+    [
+     "heap size",
+     4
+    ],
+    [
+     "over k?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Pop the smallest (5) \u2014 it can't be in the top 3. heap[0] = 5 is the kth largest.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "5"
+     ],
+     [
+      "1",
+      "8"
+     ],
+     [
+      "2",
+      "10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     5
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "kth largest",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Answer for add(10) = heap[0] = 5. One push, at most one pop \u2014 O(log k).",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "5"
+     ],
+     [
+      "1",
+      "8"
+     ],
+     [
+      "2",
+      "10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     5
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ],
+   "banner": "add(10) \u2192 5   (no full sort)"
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 0,
+   "note": "add(9): push it. Heap now holds 4 \u2014 one over k, so trim.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "5"
+     ],
+     [
+      "1",
+      "8"
+     ],
+     [
+      "2",
+      "9"
+     ],
+     [
+      "3",
+      "10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     9
+    ],
+    [
+     "heap size",
+     4
+    ],
+    [
+     "over k?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Pop the smallest (5) \u2014 it can't be in the top 3. heap[0] = 8 is the kth largest.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "8"
+     ],
+     [
+      "1",
+      "9"
+     ],
+     [
+      "2",
+      "10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     5
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "kth largest",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Answer for add(9) = heap[0] = 8. One push, at most one pop \u2014 O(log k).",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "8"
+     ],
+     [
+      "1",
+      "9"
+     ],
+     [
+      "2",
+      "10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     8
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ],
+   "banner": "add(9) \u2192 8   (no full sort)"
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 0,
+   "note": "add(4): push it. Heap now holds 4 \u2014 one over k, so trim.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "4"
+     ],
+     [
+      "1",
+      "8"
+     ],
+     [
+      "2",
+      "9"
+     ],
+     [
+      "3",
+      "10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     4
+    ],
+    [
+     "heap size",
+     4
+    ],
+    [
+     "over k?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Pop the smallest (4) \u2014 it can't be in the top 3. heap[0] = 8 is the kth largest.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "8"
+     ],
+     [
+      "1",
+      "9"
+     ],
+     [
+      "2",
+      "10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     4
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "kth largest",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Answer for add(4) = heap[0] = 8. One push, at most one pop \u2014 O(log k).",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "8"
+     ],
+     [
+      "1",
+      "9"
+     ],
+     [
+      "2",
+      "10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     8
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ],
+   "banner": "add(4) \u2192 8   (no full sort)"
+  },
+  {
+   "act": 3,
+   "cells": [],
+   "code": "fast",
+   "line": 3,
+   "intro": "k=1 means the heap holds a single number \u2014 the running maximum.",
+   "invariant": "with k=1 the heap has one slot; heap[0] is the largest seen so far.",
+   "note": "Edge: k=1, empty start. The kth (1st) largest is just the maximum so far.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "k",
+     1
+    ],
+    [
+     "heap size",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "add(-1): push. Max so far = -1.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "-1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     -1
+    ],
+    [
+     "heap size",
+     1
+    ],
+    [
+     "answer (max)",
+     -1
+    ]
+   ],
+   "banner": "add(-1) \u2192 -1"
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "add(-2): push. Over k=1, drop smaller -2. Max so far = -1.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "-1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     -2
+    ],
+    [
+     "heap size",
+     1
+    ],
+    [
+     "answer (max)",
+     -1
+    ]
+   ],
+   "banner": "add(-2) \u2192 -1"
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "add(0): push. Over k=1, drop smaller -1. Max so far = 0.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     0
+    ],
+    [
+     "heap size",
+     1
+    ],
+    [
+     "answer (max)",
+     0
+    ]
+   ],
+   "banner": "add(0) \u2192 0"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0703-kth-largest-element-in-a-stream/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;703. Kth Largest Element in a Stream — https://leetcode.com/problems/kth-largest-element-in-a-stream/
 
 Design a class that, given a fixed `k`, accepts numbers one at a time and after
 every add reports the kth largest value among everything seen so far.

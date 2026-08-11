@@ -55,7 +55,888 @@
 <h2>Pitfalls</h2>
 <ul><li>Off-by-one: <code>k</code> is 1-indexed. Decrement first, then test <code>k == 0</code>.</li><li>Forgetting to pivot to <code>node.right</code> after emitting — you loop forever or skip values.</li><li>Recursing over the whole tree and collecting everything defeats the early stop; the explicit stack lets you bail cleanly.</li><li>If the tree changes often and you need many k-th queries, store subtree counts in each node to get each lookup down to about the height — a common follow-up.</li></ul>
 <h2>Transfer</h2>
-<p>&quot;In-order turns a BST into a sorted stream&quot; is a workhorse: <a href="../0098-validate-binary-search-tree/">Validate BST / 98</a> (the stream must be increasing), <a href="https://leetcode.com/problems/minimum-absolute-difference-in-bst/">Minimum Absolute Difference in BST / 530</a>, and converting a BST to a sorted list. The explicit-stack pattern here is the general &quot;controllable DFS&quot; you reach for whenever plain recursion can&#x27;t stop early.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/08-trees/0230-kth-smallest-element-in-a-bst/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;230. Kth Smallest Element in a BST —
+<p>&quot;In-order turns a BST into a sorted stream&quot; is a workhorse: <a href="../0098-validate-binary-search-tree/">Validate BST / 98</a> (the stream must be increasing), <a href="https://leetcode.com/problems/minimum-absolute-difference-in-bst/">Minimum Absolute Difference in BST / 530</a>, and converting a BST to a sorted list. The explicit-stack pattern here is the general &quot;controllable DFS&quot; you reach for whenever plain recursion can&#x27;t stop early.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Kth Smallest in a BST - in-order is sorted, stop at k, then k = n",
+ "acts": [
+  "The rule: in-order is sorted",
+  "Run: k = 3",
+  "Edge: k = n (the max)"
+ ],
+ "code": {
+  "kth": [
+   "stack, node = [], root",
+   "while stack or node:",
+   "    while node:            # dive left",
+   "        stack.append(node)",
+   "        node = node.left",
+   "    node = stack.pop()     # smallest unseen",
+   "    k -= 1",
+   "    if k == 0: return node.val",
+   "    node = node.right      # then go right"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "on the stack / popping"
+  ],
+  [
+   "good",
+   "emitted (rank badge)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 5,
+   "x": 296,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 3,
+   "x": 148,
+   "y": 82
+  },
+  {
+   "id": 2,
+   "val": 6,
+   "x": 370,
+   "y": 82
+  },
+  {
+   "id": 3,
+   "val": 2,
+   "x": 74,
+   "y": 164
+  },
+  {
+   "id": 4,
+   "val": 4,
+   "x": 222,
+   "y": 164
+  },
+  {
+   "id": 5,
+   "val": 1,
+   "x": 0,
+   "y": 246
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   3,
+   5
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 5,
+     "x": 296,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 3,
+     "x": 148,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 6,
+     "x": 370,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 74,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 222,
+     "y": 164
+    },
+    {
+     "id": 5,
+     "val": 1,
+     "x": 0,
+     "y": 246
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     3,
+     5
+    ]
+   ],
+   "code": "kth",
+   "line": 2,
+   "intro": "an in-order walk of a BST emits values in sorted order.",
+   "invariant": "everything left of a node is smaller \u2014 so drain left before emitting.",
+   "note": "The rule: in a BST, everything to the left of a node is smaller. So an in-order walk (left, node, right) emits values already sorted.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "order",
+     "left, node, right"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "kth",
+   "line": 7,
+   "note": "If in-order gives sorted values, the k-th node emitted is the k-th smallest. Use a stack so we can stop the instant k hits 0.",
+   "active": [
+    5
+   ],
+   "done": {
+    "5": "1st"
+   },
+   "state": [
+    [
+     "1st smallest",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 5,
+     "x": 296,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 3,
+     "x": 148,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 6,
+     "x": 370,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 74,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 222,
+     "y": 164
+    },
+    {
+     "id": 5,
+     "val": 1,
+     "x": 0,
+     "y": 246
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     3,
+     5
+    ]
+   ],
+   "code": "kth",
+   "line": 0,
+   "intro": "values pop out in sorted order; we stop the moment the count hits k.",
+   "invariant": "the r-th node popped is the r-th smallest value.",
+   "note": "Run it with k=3. Walk in-order, counting, and stop at the 3rd pop.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "k",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "kth",
+   "line": 3,
+   "note": "Dive left from 5: push it, go to its left child.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "push",
+     5
+    ],
+    [
+     "stack",
+     [
+      5
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "kth",
+   "line": 3,
+   "note": "Dive left from 3: push it, go to its left child.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "push",
+     3
+    ],
+    [
+     "stack",
+     [
+      5,
+      3
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "kth",
+   "line": 3,
+   "note": "Dive left from 2: push it, go to its left child.",
+   "active": [
+    3
+   ],
+   "done": {},
+   "state": [
+    [
+     "push",
+     2
+    ],
+    [
+     "stack",
+     [
+      5,
+      3,
+      2
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "kth",
+   "line": 3,
+   "note": "Dive left from 1: push it, go to its left child.",
+   "active": [
+    5
+   ],
+   "done": {},
+   "state": [
+    [
+     "push",
+     1
+    ],
+    [
+     "stack",
+     [
+      5,
+      3,
+      2,
+      1
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "kth",
+   "line": 6,
+   "note": "Pop the smallest unseen: 1. That is #1 smallest.",
+   "active": [
+    5
+   ],
+   "done": {
+    "5": "1"
+   },
+   "state": [
+    [
+     "emitted #",
+     1
+    ],
+    [
+     "value",
+     1
+    ],
+    [
+     "target k",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "kth",
+   "line": 6,
+   "note": "Pop the smallest unseen: 2. That is #2 smallest.",
+   "active": [
+    3
+   ],
+   "done": {
+    "5": "1",
+    "3": "2"
+   },
+   "state": [
+    [
+     "emitted #",
+     2
+    ],
+    [
+     "value",
+     2
+    ],
+    [
+     "target k",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "kth",
+   "line": 6,
+   "note": "Pop the smallest unseen: 3. That is #3 smallest.  k=3 reached -> answer.",
+   "active": [
+    1
+   ],
+   "done": {
+    "5": "1",
+    "3": "2",
+    "1": "3"
+   },
+   "state": [
+    [
+     "emitted #",
+     3
+    ],
+    [
+     "value",
+     3
+    ],
+    [
+     "target k",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "kth",
+   "line": 7,
+   "note": "The 3rd node emitted is 3. We stop without touching the rest.",
+   "active": [],
+   "done": {
+    "5": "1",
+    "3": "2",
+    "1": "3"
+   },
+   "state": [
+    [
+     "3rd smallest",
+     3
+    ]
+   ],
+   "banner": "Kth smallest (k=3) = 3"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 5,
+     "x": 296,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 3,
+     "x": 148,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 6,
+     "x": 370,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 74,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 222,
+     "y": 164
+    },
+    {
+     "id": 5,
+     "val": 1,
+     "x": 0,
+     "y": 246
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     3,
+     5
+    ]
+   ],
+   "code": "kth",
+   "line": 0,
+   "intro": "with k = n we walk the entire tree and the last pop is the maximum.",
+   "invariant": "same in-order walk, no early stop until the very last node.",
+   "note": "Edge: k=6 = number of nodes. Now we must walk the whole tree; the last value emitted is the largest.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "k",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 3,
+   "note": "Dive left from 5: push it, go to its left child.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "push",
+     5
+    ],
+    [
+     "stack",
+     [
+      5
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 3,
+   "note": "Dive left from 3: push it, go to its left child.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "push",
+     3
+    ],
+    [
+     "stack",
+     [
+      5,
+      3
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 3,
+   "note": "Dive left from 2: push it, go to its left child.",
+   "active": [
+    3
+   ],
+   "done": {},
+   "state": [
+    [
+     "push",
+     2
+    ],
+    [
+     "stack",
+     [
+      5,
+      3,
+      2
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 3,
+   "note": "Dive left from 1: push it, go to its left child.",
+   "active": [
+    5
+   ],
+   "done": {},
+   "state": [
+    [
+     "push",
+     1
+    ],
+    [
+     "stack",
+     [
+      5,
+      3,
+      2,
+      1
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 6,
+   "note": "Pop the smallest unseen: 1. That is #1 smallest.",
+   "active": [
+    5
+   ],
+   "done": {
+    "5": "1"
+   },
+   "state": [
+    [
+     "emitted #",
+     1
+    ],
+    [
+     "value",
+     1
+    ],
+    [
+     "target k",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 6,
+   "note": "Pop the smallest unseen: 2. That is #2 smallest.",
+   "active": [
+    3
+   ],
+   "done": {
+    "5": "1",
+    "3": "2"
+   },
+   "state": [
+    [
+     "emitted #",
+     2
+    ],
+    [
+     "value",
+     2
+    ],
+    [
+     "target k",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 6,
+   "note": "Pop the smallest unseen: 3. That is #3 smallest.",
+   "active": [
+    1
+   ],
+   "done": {
+    "5": "1",
+    "3": "2",
+    "1": "3"
+   },
+   "state": [
+    [
+     "emitted #",
+     3
+    ],
+    [
+     "value",
+     3
+    ],
+    [
+     "target k",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 3,
+   "note": "Dive left from 4: push it, go to its left child.",
+   "active": [
+    4
+   ],
+   "done": {
+    "5": "1",
+    "3": "2",
+    "1": "3"
+   },
+   "state": [
+    [
+     "push",
+     4
+    ],
+    [
+     "stack",
+     [
+      5,
+      4
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 6,
+   "note": "Pop the smallest unseen: 4. That is #4 smallest.",
+   "active": [
+    4
+   ],
+   "done": {
+    "5": "1",
+    "3": "2",
+    "1": "3",
+    "4": "4"
+   },
+   "state": [
+    [
+     "emitted #",
+     4
+    ],
+    [
+     "value",
+     4
+    ],
+    [
+     "target k",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 6,
+   "note": "Pop the smallest unseen: 5. That is #5 smallest.",
+   "active": [
+    0
+   ],
+   "done": {
+    "5": "1",
+    "3": "2",
+    "1": "3",
+    "4": "4",
+    "0": "5"
+   },
+   "state": [
+    [
+     "emitted #",
+     5
+    ],
+    [
+     "value",
+     5
+    ],
+    [
+     "target k",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 3,
+   "note": "Dive left from 6: push it, go to its left child.",
+   "active": [
+    2
+   ],
+   "done": {
+    "5": "1",
+    "3": "2",
+    "1": "3",
+    "4": "4",
+    "0": "5"
+   },
+   "state": [
+    [
+     "push",
+     6
+    ],
+    [
+     "stack",
+     [
+      6
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 6,
+   "note": "Pop the smallest unseen: 6. That is #6 smallest.  k=6 reached -> answer.",
+   "active": [
+    2
+   ],
+   "done": {
+    "5": "1",
+    "3": "2",
+    "1": "3",
+    "4": "4",
+    "0": "5",
+    "2": "6"
+   },
+   "state": [
+    [
+     "emitted #",
+     6
+    ],
+    [
+     "value",
+     6
+    ],
+    [
+     "target k",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "kth",
+   "line": 7,
+   "note": "The 6th (last) node emitted is the maximum: 6.",
+   "active": [],
+   "done": {
+    "5": "1",
+    "3": "2",
+    "1": "3",
+    "4": "4",
+    "0": "5",
+    "2": "6"
+   },
+   "state": [
+    [
+     "6th smallest",
+     6
+    ]
+   ],
+   "banner": "Kth smallest (k=6) = 6"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/08-trees/0230-kth-smallest-element-in-a-bst/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;230. Kth Smallest Element in a BST —
 https://leetcode.com/problems/kth-smallest-element-in-a-bst/
 
 Given a binary search tree and an integer k, return the k-th smallest value

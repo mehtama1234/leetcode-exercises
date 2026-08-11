@@ -57,7 +57,754 @@
 <h2>Pitfalls</h2>
 <ul><li>Sorting first (about n log n — roughly n steps times a small growing factor) is a valid way to save memory, but don&#x27;t reach for it when you&#x27;re allowed the set; it&#x27;s slower here for no reason.</li><li>Empty list and single element must return false — there&#x27;s nothing to pair.</li><li>Inserting before checking still works for *this* problem, but the &quot;check first&quot; habit matters in siblings where a number must not match itself.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move: <strong>replace an inner search with a one-step &quot;have I seen it?&quot; check backed by a set.</strong> This is the base case the whole family builds on — <a href="../0001-two-sum/">Two Sum / 1</a> looks up the needed partner, and <a href="../0128-longest-consecutive-sequence/">Longest Consecutive Sequence / 128</a> asks &quot;is <code>x-1</code> present?&quot;. Any time a slow solution keeps re-scanning to ask &quot;is this value here?&quot;, reach for a set first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0217-contains-duplicate/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;217. Contains Duplicate — https://leetcode.com/problems/contains-duplicate/
+<p>The reusable move: <strong>replace an inner search with a one-step &quot;have I seen it?&quot; check backed by a set.</strong> This is the base case the whole family builds on — <a href="../0001-two-sum/">Two Sum / 1</a> looks up the needed partner, and <a href="../0128-longest-consecutive-sequence/">Longest Consecutive Sequence / 128</a> asks &quot;is <code>x-1</code> present?&quot;. Any time a slow solution keeps re-scanning to ask &quot;is this value here?&quot;, reach for a set first.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Contains Duplicate \u2014 from every-pair to one honest pass",
+ "acts": [
+  "Brute force: every pair",
+  "The waste",
+  "Fast: hash set",
+  "Edge case: all distinct"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "    for j in range(i+1, n):",
+   "        if nums[i] == nums[j]:",
+   "            return True",
+   "return False"
+  ],
+  "fast": [
+   "seen = set()",
+   "for x in nums:",
+   "    if x in seen:",
+   "        return True",
+   "    seen.add(x)",
+   "return False"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "value under inspection"
+  ],
+  [
+   "good",
+   "the duplicate / resolved"
+  ],
+  [
+   "dim",
+   "filed / skipped"
+  ]
+ ],
+ "cells": [
+  1,
+  2,
+  3,
+  1
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    1,
+    2,
+    3,
+    1
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "j re-walks the whole tail for every i \u2014 the same ground, again and again.",
+   "invariant": "every pair before this (i, j) has already been compared.",
+   "note": "Brute force: a duplicate is two positions with the same value, so test every pair.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "marks": {
+    "0": "active",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "comparisons",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[0] vs nums[1] = 1 vs 2. Different.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "1==2?",
+     "False"
+    ],
+    [
+     "comparisons",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[0] vs nums[2] = 1 vs 3. Different.",
+   "pointers": {
+    "i": 0,
+    "j": 2
+   },
+   "arc": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "1==3?",
+     "False"
+    ],
+    [
+     "comparisons",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "nums[0] vs nums[3] = 1 vs 1. Same value \u2014 a duplicate.",
+   "pointers": {
+    "i": 0,
+    "j": 3
+   },
+   "arc": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "3": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "1==1?",
+     "True"
+    ],
+    [
+     "comparisons",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "Found the pair at indices 0 and 3 \u2014 but it cost 3 comparisons.",
+   "pointers": {
+    "i": 0,
+    "j": 3
+   },
+   "arc": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "good",
+    "3": "good"
+   },
+   "banner": "True \u2014 nums[0] == nums[3] == 1",
+   "state": [
+    [
+     "answer",
+     "True"
+    ],
+    [
+     "comparisons",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "how the comparison counter climbs \u2014 that is the work we delete.",
+   "note": "i=0 checked 3 pairs, i=1 checked 2, i=2 checked 1 = 3 checks. Each i re-walks the tail the last i already walked.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "comparisons (brute)",
+     3
+    ],
+    [
+     "pattern",
+     "~ n*n / 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "For n values that is about n(n-1)/2. n=1000 -> ~500,000 checks, just to ask 'have I seen this before?'. A set answers that in one step.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "at n=1000",
+     "~500,000"
+    ],
+    [
+     "what we want",
+     "~1,000"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    2,
+    3,
+    1
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "each value is asked once \u2014 'already in seen?' \u2014 then filed. No tail walks.",
+   "invariant": "seen holds exactly the values strictly to the left of x.",
+   "note": "Same array, but remember as we go. Check before we add, so the first repeat is caught the moment it lands.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": []
+   },
+   "state": [
+    [
+     "checks",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "x = 1 at index 0. Not in seen yet.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": []
+   },
+   "state": [
+    [
+     "x",
+     1
+    ],
+    [
+     "in seen?",
+     "no"
+    ],
+    [
+     "checks",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "File 1 into seen and step right.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "filed",
+     1
+    ],
+    [
+     "checks",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "x = 2 at index 1. Not in seen yet.",
+   "pointers": {
+    "x": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "in seen?",
+     "no"
+    ],
+    [
+     "checks",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "File 2 into seen and step right.",
+   "pointers": {
+    "x": 1
+   },
+   "marks": {
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "filed",
+     2
+    ],
+    [
+     "checks",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "x = 3 at index 2. Not in seen yet.",
+   "pointers": {
+    "x": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     3
+    ],
+    [
+     "in seen?",
+     "no"
+    ],
+    [
+     "checks",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "File 3 into seen and step right.",
+   "pointers": {
+    "x": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "filed",
+     3
+    ],
+    [
+     "checks",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "x = 1 at index 3. It is already in seen \u2014 duplicate found on the spot.",
+   "pointers": {
+    "x": 3
+   },
+   "marks": {
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ]
+    ]
+   },
+   "banner": "True \u2014 1 was seen before   (4 checks vs 3 brute)",
+   "state": [
+    [
+     "answer",
+     "True"
+    ],
+    [
+     "checks",
+     4
+    ],
+    [
+     "vs brute",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the loop runs to the end and never returns True \u2014 that is a clean 'no duplicate'.",
+   "invariant": "a value only enters seen after we confirm it was not already there.",
+   "note": "Edge case: every value distinct. The set fills, no repeat is ever hit.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": []
+   },
+   "state": [
+    [
+     "result so far",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "x = 1 not in seen. File it and move on.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "filed",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "x = 2 not in seen. File it and move on.",
+   "pointers": {
+    "x": 1
+   },
+   "marks": {
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "filed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "x = 3 not in seen. File it and move on.",
+   "pointers": {
+    "x": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "filed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "x = 4 not in seen. File it and move on.",
+   "pointers": {
+    "x": 3
+   },
+   "marks": {
+    "3": "dim"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "filed",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "Reached the end with no repeat. Return False.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "seen (values so far)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ]
+    ]
+   },
+   "banner": "False \u2014 all four values are distinct",
+   "state": [
+    [
+     "answer",
+     "False"
+    ]
+   ]
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0217-contains-duplicate/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;217. Contains Duplicate — https://leetcode.com/problems/contains-duplicate/
 
 Given an array `nums`, return True if any value appears at least twice, and
 False if every element is distinct.

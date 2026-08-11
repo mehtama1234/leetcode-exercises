@@ -1,0 +1,694 @@
+{
+ "player": "linkedlist",
+ "title": "Linked List Cycle II - Floyd's two phases find the entrance",
+ "acts": [
+  "Brute: first repeat",
+  "The waste",
+  "Phase 1: meet",
+  "Phase 2: find entrance",
+  "Edge: no cycle"
+ ],
+ "code": {
+  "seen": [
+   "seen = set(); node = head",
+   "while node:",
+   "    if id(node) in seen:",
+   "        return node",
+   "    seen.add(id(node))",
+   "    node = node.next",
+   "return None"
+  ],
+  "fast": [
+   "slow = fast = head",
+   "while fast and fast.next:",
+   "    slow = slow.next",
+   "    fast = fast.next.next",
+   "    if slow is fast:",
+   "        ptr = head",
+   "        while ptr is not slow:",
+   "            ptr = ptr.next; slow = slow.next",
+   "        return ptr",
+   "return None"
+  ]
+ },
+ "legend": [
+  [
+   "good",
+   "entrance / collision"
+  ],
+  [
+   "active",
+   "pointer here"
+  ],
+  [
+   "dim",
+   "stored / passed"
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "vals": [
+    3,
+    2,
+    0,
+    -4
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "code": "seen",
+   "line": 0,
+   "intro": "the first node we meet twice is, by definition, where the loop rejoins.",
+   "invariant": "a repeat can only happen at the cycle's entry point.",
+   "note": "The honest idea: walk and remember every node; the first one already in memory is the cycle entrance. The arc below shows -4 looping back to 2.",
+   "pointers": {
+    "node": 0
+   },
+   "state": [
+    [
+     "seen",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "seen",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "First visit to 3; store it and continue.",
+   "pointers": {
+    "node": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "seen",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "seen",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "First visit to 2; store it and continue.",
+   "pointers": {
+    "node": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active"
+   },
+   "state": [
+    [
+     "seen",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "seen",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "First visit to 0; store it and continue.",
+   "pointers": {
+    "node": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active"
+   },
+   "state": [
+    [
+     "seen",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "seen",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "First visit to -4; store it and continue.",
+   "pointers": {
+    "node": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "state": [
+    [
+     "seen",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "seen",
+   "line": 3,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "Node 2 is already stored \u2014 this is where the loop begins. Return it.",
+   "pointers": {
+    "node": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "entrance",
+     2
+    ],
+    [
+     "memory",
+     4
+    ]
+   ],
+   "banner": "Set method: cycle starts at 2 (used O(n) memory)"
+  },
+  {
+   "act": 1,
+   "vals": [
+    3,
+    2,
+    0,
+    -4
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "code": "seen",
+   "line": 0,
+   "intro": "a two-step distance argument finds the same entrance with no memory.",
+   "invariant": "head-to-entrance distance equals meeting-to-entrance distance.",
+   "note": "The waste is the set. Floyd's insight: after slow and fast collide inside the loop, the distance from the head to the entrance equals the distance from that meeting point to the entrance. So two lockstep walkers pin it exactly.",
+   "pointers": {
+    "node": 0
+   },
+   "state": [
+    [
+     "extra memory",
+     "O(n) -> O(1)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "vals": [
+    3,
+    2,
+    0,
+    -4
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "phase 1: slow 1 step, fast 2 steps, until they collide somewhere in the loop.",
+   "invariant": "if a cycle exists, the two pointers must meet inside it.",
+   "note": "Phase 1 finds a meeting point (not yet the entrance). slow steps once, fast twice.",
+   "pointers": {
+    "slow": 0,
+    "fast": 0
+   },
+   "state": [
+    [
+     "slow",
+     3
+    ],
+    [
+     "fast",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "slow -> 2, fast -> 0.",
+   "pointers": {
+    "slow": 1,
+    "fast": 2
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "slow",
+     2
+    ],
+    [
+     "fast",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "slow -> 0, fast -> 2.",
+   "pointers": {
+    "slow": 2,
+    "fast": 1
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "slow",
+     0
+    ],
+    [
+     "fast",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "slow -> -4, fast -> -4. They meet here.",
+   "pointers": {
+    "slow": 3,
+    "fast": 3
+   },
+   "marks": {
+    "3": "good"
+   },
+   "state": [
+    [
+     "slow",
+     -4
+    ],
+    [
+     "fast",
+     -4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "vals": [
+    3,
+    2,
+    0,
+    -4
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "code": "fast",
+   "line": 5,
+   "intro": "phase 2: reset one pointer to the head; walk both one step until they meet.",
+   "invariant": "they collide exactly at the cycle entrance.",
+   "note": "They met at -4. Now reset ptr to the head and move ptr and slow one step at a time \u2014 where they meet is the entrance.",
+   "pointers": {
+    "ptr": 0,
+    "slow": 3
+   },
+   "marks": {
+    "3": "active",
+    "0": "active"
+   },
+   "state": [
+    [
+     "ptr",
+     3
+    ],
+    [
+     "slow",
+     -4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "ptr -> 2, slow -> 2. Same node \u2014 this is the entrance.",
+   "pointers": {
+    "ptr": 1,
+    "slow": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "ptr",
+     2
+    ],
+    [
+     "slow",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 8,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "Both landed on 2: the cycle begins here. No extra memory used.",
+   "pointers": {
+    "ptr": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "entrance",
+     2
+    ]
+   ],
+   "banner": "Floyd: cycle starts at 2 with O(1) memory"
+  },
+  {
+   "act": 4,
+   "vals": [
+    1,
+    2,
+    3
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "with no loop, fast reaches null and we never enter phase 2.",
+   "invariant": "no collision means no cycle; return None.",
+   "note": "Edge case: a straight list. fast walks off the end before it can meet slow, so the function returns None.",
+   "pointers": {
+    "slow": 0,
+    "fast": 0
+   },
+   "state": [
+    [
+     "slow",
+     1
+    ],
+    [
+     "fast",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 4,
+   "code": "fast",
+   "line": 9,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "note": "fast hit the end without meeting slow \u2014 there is no cycle. Return None.",
+   "pointers": {
+    "slow": 1
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "state": [
+    [
+     "result",
+     "no cycle"
+    ]
+   ],
+   "banner": "No back-arrow: return None"
+  }
+ ]
+}

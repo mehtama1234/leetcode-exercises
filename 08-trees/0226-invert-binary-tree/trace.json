@@ -1,0 +1,883 @@
+{
+ "player": "tree",
+ "title": "Invert Binary Tree - the rule, run bottom-up, then edge cases",
+ "acts": [
+  "The rule",
+  "Run: swap bottom-up",
+  "Edge: single node",
+  "Edge: lopsided"
+ ],
+ "code": {
+  "invert": [
+   "def invert(node):",
+   "    if node is None:",
+   "        return None",
+   "    node.left, node.right = (invert(node.right),",
+   "                             invert(node.left))",
+   "    return node"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "visiting now"
+  ],
+  [
+   "good",
+   "mirrored"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 4,
+   "x": 216,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 2,
+   "x": 72,
+   "y": 82
+  },
+  {
+   "id": 2,
+   "val": 7,
+   "x": 360,
+   "y": 82
+  },
+  {
+   "id": 3,
+   "val": 1,
+   "x": 0,
+   "y": 164
+  },
+  {
+   "id": 4,
+   "val": 3,
+   "x": 144,
+   "y": 164
+  },
+  {
+   "id": 5,
+   "val": 6,
+   "x": 288,
+   "y": 164
+  },
+  {
+   "id": 6,
+   "val": 9,
+   "x": 432,
+   "y": 164
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   2,
+   5
+  ],
+  [
+   2,
+   6
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 4,
+     "x": 216,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 72,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 7,
+     "x": 360,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 1,
+     "x": 0,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 3,
+     "x": 144,
+     "y": 164
+    },
+    {
+     "id": 5,
+     "val": 6,
+     "x": 288,
+     "y": 164
+    },
+    {
+     "id": 6,
+     "val": 9,
+     "x": 432,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ]
+   ],
+   "code": "invert",
+   "line": 3,
+   "intro": "at each node the two children trade places, all the way down.",
+   "invariant": "a node is 'done' only once both its subtrees are inverted.",
+   "note": "The rule: the mirror of a node is a node whose left is the mirror of the old right, and whose right is the mirror of the old left.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "rule",
+     "swap left <-> right"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "invert",
+   "line": 1,
+   "note": "Base case: an empty spot is already its own mirror -> return None.",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "empty",
+     "its own mirror"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 4,
+     "x": 216,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 72,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 7,
+     "x": 360,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 1,
+     "x": 0,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 3,
+     "x": 144,
+     "y": 164
+    },
+    {
+     "id": 5,
+     "val": 6,
+     "x": 288,
+     "y": 164
+    },
+    {
+     "id": 6,
+     "val": 9,
+     "x": 432,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ]
+   ],
+   "code": "invert",
+   "line": 0,
+   "intro": "each node gets its 'M' badge only after both sides below are flipped.",
+   "invariant": "the swap happens once, bottom-up, at every node.",
+   "note": "Run it on [4,2,7,1,3,6,9]. Watch the swap ripple up from the leaves.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "start",
+     "root 4"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 4. Invert its two subtrees first.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 2. Invert its two subtrees first.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 1. Invert its two subtrees first.",
+   "active": [
+    3
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 5,
+   "note": "Leaf 1: nothing below to swap -> done.",
+   "active": [
+    3
+   ],
+   "done": {
+    "3": "M"
+   },
+   "state": [
+    [
+     "node",
+     1
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 3. Invert its two subtrees first.",
+   "active": [
+    4
+   ],
+   "done": {
+    "3": "M"
+   },
+   "state": [
+    [
+     "visiting",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 5,
+   "note": "Leaf 3: nothing below to swap -> done.",
+   "active": [
+    4
+   ],
+   "done": {
+    "3": "M",
+    "4": "M"
+   },
+   "state": [
+    [
+     "node",
+     3
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 5,
+   "note": "Node 2: swap its (now-inverted) children -> done.",
+   "active": [
+    1
+   ],
+   "done": {
+    "3": "M",
+    "4": "M",
+    "1": "M"
+   },
+   "state": [
+    [
+     "node",
+     2
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 7. Invert its two subtrees first.",
+   "active": [
+    2
+   ],
+   "done": {
+    "3": "M",
+    "4": "M",
+    "1": "M"
+   },
+   "state": [
+    [
+     "visiting",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 6. Invert its two subtrees first.",
+   "active": [
+    5
+   ],
+   "done": {
+    "3": "M",
+    "4": "M",
+    "1": "M"
+   },
+   "state": [
+    [
+     "visiting",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 5,
+   "note": "Leaf 6: nothing below to swap -> done.",
+   "active": [
+    5
+   ],
+   "done": {
+    "3": "M",
+    "4": "M",
+    "1": "M",
+    "5": "M"
+   },
+   "state": [
+    [
+     "node",
+     6
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 9. Invert its two subtrees first.",
+   "active": [
+    6
+   ],
+   "done": {
+    "3": "M",
+    "4": "M",
+    "1": "M",
+    "5": "M"
+   },
+   "state": [
+    [
+     "visiting",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 5,
+   "note": "Leaf 9: nothing below to swap -> done.",
+   "active": [
+    6
+   ],
+   "done": {
+    "3": "M",
+    "4": "M",
+    "1": "M",
+    "5": "M",
+    "6": "M"
+   },
+   "state": [
+    [
+     "node",
+     9
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 5,
+   "note": "Node 7: swap its (now-inverted) children -> done.",
+   "active": [
+    2
+   ],
+   "done": {
+    "3": "M",
+    "4": "M",
+    "1": "M",
+    "5": "M",
+    "6": "M",
+    "2": "M"
+   },
+   "state": [
+    [
+     "node",
+     7
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 5,
+   "note": "Node 4: swap its (now-inverted) children -> done.",
+   "active": [
+    0
+   ],
+   "done": {
+    "3": "M",
+    "4": "M",
+    "1": "M",
+    "5": "M",
+    "6": "M",
+    "2": "M",
+    "0": "M"
+   },
+   "state": [
+    [
+     "node",
+     4
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "invert",
+   "line": 5,
+   "note": "Every node swapped its children -> the tree is now [4,7,2,9,6,3,1].",
+   "active": [],
+   "done": {
+    "3": "M",
+    "4": "M",
+    "1": "M",
+    "5": "M",
+    "6": "M",
+    "2": "M",
+    "0": "M"
+   },
+   "state": [
+    [
+     "result",
+     "[4,7,2,9,6,3,1]"
+    ]
+   ],
+   "banner": "Inverted: [4,7,2,9,6,3,1]"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "invert",
+   "line": 1,
+   "intro": "a lone node has no children, so mirroring changes nothing.",
+   "invariant": "the base cases (empty, single node) return unchanged.",
+   "note": "Edge: a single node is its own mirror. Nothing to swap.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "shape",
+     "one node"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 1. Invert its two subtrees first.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "invert",
+   "line": 5,
+   "note": "Leaf 1: nothing below to swap -> done.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "M"
+   },
+   "state": [
+    [
+     "node",
+     1
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "invert",
+   "line": 5,
+   "note": "No children to swap -> the node is returned as-is: [1].",
+   "active": [],
+   "done": {
+    "0": "M"
+   },
+   "state": [
+    [
+     "result",
+     "[1]"
+    ]
+   ],
+   "banner": "Inverted: [1]"
+  },
+  {
+   "act": 3,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 144,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 72,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "code": "invert",
+   "line": 3,
+   "intro": "a left-leaning chain becomes a right-leaning chain.",
+   "invariant": "the same rule flips each single child to the other side.",
+   "note": "Edge: a left-leaning chain. Inverting sends every child to the right, so the whole tree leans the other way.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "shape",
+     "left chain"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 1. Invert its two subtrees first.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 2. Invert its two subtrees first.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "invert",
+   "line": 3,
+   "note": "Enter node 3. Invert its two subtrees first.",
+   "active": [
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "invert",
+   "line": 5,
+   "note": "Leaf 3: nothing below to swap -> done.",
+   "active": [
+    2
+   ],
+   "done": {
+    "2": "M"
+   },
+   "state": [
+    [
+     "node",
+     3
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "invert",
+   "line": 5,
+   "note": "Node 2: swap its (now-inverted) children -> done.",
+   "active": [
+    1
+   ],
+   "done": {
+    "2": "M",
+    "1": "M"
+   },
+   "state": [
+    [
+     "node",
+     2
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "invert",
+   "line": 5,
+   "note": "Node 1: swap its (now-inverted) children -> done.",
+   "active": [
+    0
+   ],
+   "done": {
+    "2": "M",
+    "1": "M",
+    "0": "M"
+   },
+   "state": [
+    [
+     "node",
+     1
+    ],
+    [
+     "state",
+     "mirrored"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "invert",
+   "line": 5,
+   "note": "Each left child moved right -> [1,null,2,null,3] leans right now.",
+   "active": [],
+   "done": {
+    "2": "M",
+    "1": "M",
+    "0": "M"
+   },
+   "state": [
+    [
+     "result",
+     "right chain"
+    ]
+   ],
+   "banner": "Inverted: lean flipped left -> right"
+  }
+ ]
+}

@@ -65,7 +65,948 @@
 <h2>Pitfalls</h2>
 <ul><li>Getting the three directions crossed. Fix them once: diagonal = replace, up = delete from <code>word1</code>, left = insert into <code>word1</code>. Draw it.</li><li>Forgetting the free row and column. Turning <code>&quot;&quot;</code> into a length-<code>j</code> word costs <code>j</code> inserts; that seeds row 0. The empty-vs-empty corner is 0.</li><li>On a match, don&#x27;t take <code>1 + min(...)</code>. The matched letters cost nothing — copy the diagonal straight across.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable skeleton is *a two-prefix grid whose cell = &quot;free on match, else 1 + best of {replace-diagonal, delete-up, insert-left}.&quot;* Siblings: <a href="https://leetcode.com/problems/longest-common-subsequence/">Longest Common Subsequence / 1143</a> (same grid, max instead of min, only diagonal-on-match), <a href="https://leetcode.com/problems/delete-operation-for-two-strings/">Delete Operation for Two Strings / 583</a> (edit distance with no replace), <a href="../0115-distinct-subsequences/">Distinct Subsequences / 115</a> and <a href="../0097-interleaving-string/">Interleaving String / 97</a> share the grid shape.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0072-edit-distance/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;72. Edit Distance — https://leetcode.com/problems/edit-distance/
+<p>The reusable skeleton is *a two-prefix grid whose cell = &quot;free on match, else 1 + best of {replace-diagonal, delete-up, insert-left}.&quot;* Siblings: <a href="https://leetcode.com/problems/longest-common-subsequence/">Longest Common Subsequence / 1143</a> (same grid, max instead of min, only diagonal-on-match), <a href="https://leetcode.com/problems/delete-operation-for-two-strings/">Delete Operation for Two Strings / 583</a> (edit distance with no replace), <a href="../0115-distinct-subsequences/">Distinct Subsequences / 115</a> and <a href="../0097-interleaving-string/">Interleaving String / 97</a> share the grid shape.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Edit Distance - fill each (prefix, prefix) cell once",
+ "acts": [
+  "Brute: branch every edit",
+  "Fill the table",
+  "Answer + edge"
+ ],
+ "code": {
+  "tab": [
+   "dp = [[0]*(n+1) for _ in range(m+1)]",
+   "for j in range(n+1): dp[0][j] = j",
+   "for i in range(m+1): dp[i][0] = i",
+   "for i in range(1, m+1):",
+   "    for j in range(1, n+1):",
+   "        if w1[i-1] == w2[j-1]: dp[i][j] = dp[i-1][j-1]",
+   "        else: dp[i][j] = 1 + min(diag, left, up)",
+   "return dp[m][n]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "neighbors this cell reads"
+  ],
+  [
+   "good",
+   "filled / answer"
+  ],
+  [
+   "bad",
+   "recomputed (waste)"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "\u00b7",
+    "h",
+    "o",
+    "r",
+    "s",
+    "e"
+   ],
+   "colLabels": [
+    "\u00b7",
+    "r",
+    "o",
+    "s"
+   ],
+   "code": null,
+   "intro": "how the same (prefix, prefix) pair gets re-solved down many edit paths.",
+   "invariant": "dist(i,j) = edits to turn w1[:i] into w2[:j].",
+   "note": "Brute force: at each step try all three edits \u2014 replace, delete, insert \u2014 and recurse. Turning \"horse\" into \"ros\" branches three ways per character.",
+   "marks": {
+    "5,3": "active"
+   },
+   "state": [
+    [
+     "turn",
+     "horse \u2192 ros"
+    ],
+    [
+     "choices",
+     "replace / delete / insert"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "Different edit orders keep asking the same subproblem \u2014 e.g. dist(2,1) \"hor\u2192r\" is reached many ways and re-solved each time. That overlap is the waste.",
+   "marks": {
+    "2,1": "bad",
+    "5,3": "active",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "recomputed",
+     "dist(2,1) \u2026"
+    ],
+    [
+     "cost",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "code": "tab",
+   "line": 0,
+   "intro": "each cell filled ONCE from three neighbors: diagonal, left, up.",
+   "invariant": "dp[i][j] computed from dp[i-1][j-1], dp[i][j-1], dp[i-1][j].",
+   "note": "Seed the borders. Row 0: turning \"\" into w2[:j] takes j inserts. Column 0: turning w1[:i] into \"\" takes i deletes.",
+   "marks": {},
+   "state": [
+    [
+     "borders",
+     "row/col = index"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[0][0] = 0 (insert 0 char(s) of \"ros\").",
+   "set": {
+    "0,0": 0
+   },
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "dp[0][0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[0][1] = 1 (insert 1 char(s) of \"ros\").",
+   "set": {
+    "0,1": 1
+   },
+   "marks": {
+    "0,1": "good"
+   },
+   "state": [
+    [
+     "dp[0][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[0][2] = 2 (insert 2 char(s) of \"ros\").",
+   "set": {
+    "0,2": 2
+   },
+   "marks": {
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "dp[0][2]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[0][3] = 3 (insert 3 char(s) of \"ros\").",
+   "set": {
+    "0,3": 3
+   },
+   "marks": {
+    "0,3": "good"
+   },
+   "state": [
+    [
+     "dp[0][3]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 2,
+   "note": "dp[1][0] = 1 (delete 1 char(s) of \"horse\").",
+   "set": {
+    "1,0": 1
+   },
+   "marks": {
+    "1,0": "good"
+   },
+   "state": [
+    [
+     "dp[1][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 2,
+   "note": "dp[2][0] = 2 (delete 2 char(s) of \"horse\").",
+   "set": {
+    "2,0": 2
+   },
+   "marks": {
+    "2,0": "good"
+   },
+   "state": [
+    [
+     "dp[2][0]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 2,
+   "note": "dp[3][0] = 3 (delete 3 char(s) of \"horse\").",
+   "set": {
+    "3,0": 3
+   },
+   "marks": {
+    "3,0": "good"
+   },
+   "state": [
+    [
+     "dp[3][0]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 2,
+   "note": "dp[4][0] = 4 (delete 4 char(s) of \"horse\").",
+   "set": {
+    "4,0": 4
+   },
+   "marks": {
+    "4,0": "good"
+   },
+   "state": [
+    [
+     "dp[4][0]",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 2,
+   "note": "dp[5][0] = 5 (delete 5 char(s) of \"horse\").",
+   "set": {
+    "5,0": 5
+   },
+   "marks": {
+    "5,0": "good"
+   },
+   "state": [
+    [
+     "dp[5][0]",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'h' != 'r': pay 1 + min(diag 0, left 1, up 1) = 1.",
+   "set": {
+    "1,1": 1
+   },
+   "marks": {
+    "0,0": "active",
+    "1,0": "active",
+    "0,1": "active",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     0
+    ],
+    [
+     "left(insert)",
+     1
+    ],
+    [
+     "up(delete)",
+     1
+    ],
+    [
+     "dp[1][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'h' != 'o': pay 1 + min(diag 1, left 1, up 2) = 2.",
+   "set": {
+    "1,2": 2
+   },
+   "marks": {
+    "0,1": "active",
+    "1,1": "active",
+    "0,2": "active",
+    "1,2": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     1
+    ],
+    [
+     "left(insert)",
+     1
+    ],
+    [
+     "up(delete)",
+     2
+    ],
+    [
+     "dp[1][2]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'h' != 's': pay 1 + min(diag 2, left 2, up 3) = 3.",
+   "set": {
+    "1,3": 3
+   },
+   "marks": {
+    "0,2": "active",
+    "1,2": "active",
+    "0,3": "active",
+    "1,3": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     2
+    ],
+    [
+     "left(insert)",
+     2
+    ],
+    [
+     "up(delete)",
+     3
+    ],
+    [
+     "dp[1][3]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'o' != 'r': pay 1 + min(diag 1, left 2, up 1) = 2.",
+   "set": {
+    "2,1": 2
+   },
+   "marks": {
+    "1,0": "active",
+    "2,0": "active",
+    "1,1": "active",
+    "2,1": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     1
+    ],
+    [
+     "left(insert)",
+     2
+    ],
+    [
+     "up(delete)",
+     1
+    ],
+    [
+     "dp[2][1]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "w1[1]='o' == w2[1]='o': free move, dp[2][2] = diag 1 = 1.",
+   "set": {
+    "2,2": 1
+   },
+   "marks": {
+    "1,1": "active",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     1
+    ],
+    [
+     "left(insert)",
+     2
+    ],
+    [
+     "up(delete)",
+     2
+    ],
+    [
+     "dp[2][2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'o' != 's': pay 1 + min(diag 2, left 1, up 3) = 2.",
+   "set": {
+    "2,3": 2
+   },
+   "marks": {
+    "1,2": "active",
+    "2,2": "active",
+    "1,3": "active",
+    "2,3": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     2
+    ],
+    [
+     "left(insert)",
+     1
+    ],
+    [
+     "up(delete)",
+     3
+    ],
+    [
+     "dp[2][3]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "w1[2]='r' == w2[0]='r': free move, dp[3][1] = diag 2 = 2.",
+   "set": {
+    "3,1": 2
+   },
+   "marks": {
+    "2,0": "active",
+    "3,1": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     2
+    ],
+    [
+     "left(insert)",
+     3
+    ],
+    [
+     "up(delete)",
+     2
+    ],
+    [
+     "dp[3][1]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'r' != 'o': pay 1 + min(diag 2, left 2, up 1) = 2.",
+   "set": {
+    "3,2": 2
+   },
+   "marks": {
+    "2,1": "active",
+    "3,1": "active",
+    "2,2": "active",
+    "3,2": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     2
+    ],
+    [
+     "left(insert)",
+     2
+    ],
+    [
+     "up(delete)",
+     1
+    ],
+    [
+     "dp[3][2]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'r' != 's': pay 1 + min(diag 1, left 2, up 2) = 2.",
+   "set": {
+    "3,3": 2
+   },
+   "marks": {
+    "2,2": "active",
+    "3,2": "active",
+    "2,3": "active",
+    "3,3": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     1
+    ],
+    [
+     "left(insert)",
+     2
+    ],
+    [
+     "up(delete)",
+     2
+    ],
+    [
+     "dp[3][3]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'s' != 'r': pay 1 + min(diag 3, left 4, up 2) = 3.",
+   "set": {
+    "4,1": 3
+   },
+   "marks": {
+    "3,0": "active",
+    "4,0": "active",
+    "3,1": "active",
+    "4,1": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     3
+    ],
+    [
+     "left(insert)",
+     4
+    ],
+    [
+     "up(delete)",
+     2
+    ],
+    [
+     "dp[4][1]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'s' != 'o': pay 1 + min(diag 2, left 3, up 2) = 3.",
+   "set": {
+    "4,2": 3
+   },
+   "marks": {
+    "3,1": "active",
+    "4,1": "active",
+    "3,2": "active",
+    "4,2": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     2
+    ],
+    [
+     "left(insert)",
+     3
+    ],
+    [
+     "up(delete)",
+     2
+    ],
+    [
+     "dp[4][2]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "w1[3]='s' == w2[2]='s': free move, dp[4][3] = diag 2 = 2.",
+   "set": {
+    "4,3": 2
+   },
+   "marks": {
+    "3,2": "active",
+    "4,3": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     2
+    ],
+    [
+     "left(insert)",
+     3
+    ],
+    [
+     "up(delete)",
+     2
+    ],
+    [
+     "dp[4][3]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'e' != 'r': pay 1 + min(diag 4, left 5, up 3) = 4.",
+   "set": {
+    "5,1": 4
+   },
+   "marks": {
+    "4,0": "active",
+    "5,0": "active",
+    "4,1": "active",
+    "5,1": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     4
+    ],
+    [
+     "left(insert)",
+     5
+    ],
+    [
+     "up(delete)",
+     3
+    ],
+    [
+     "dp[5][1]",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'e' != 'o': pay 1 + min(diag 3, left 4, up 3) = 4.",
+   "set": {
+    "5,2": 4
+   },
+   "marks": {
+    "4,1": "active",
+    "5,1": "active",
+    "4,2": "active",
+    "5,2": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     3
+    ],
+    [
+     "left(insert)",
+     4
+    ],
+    [
+     "up(delete)",
+     3
+    ],
+    [
+     "dp[5][2]",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'e' != 's': pay 1 + min(diag 3, left 4, up 2) = 3.",
+   "set": {
+    "5,3": 3
+   },
+   "marks": {
+    "4,2": "active",
+    "5,2": "active",
+    "4,3": "active",
+    "5,3": "good"
+   },
+   "state": [
+    [
+     "diag(replace)",
+     3
+    ],
+    [
+     "left(insert)",
+     4
+    ],
+    [
+     "up(delete)",
+     2
+    ],
+    [
+     "dp[5][3]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "tab",
+   "line": 7,
+   "intro": "the bottom-right cell reconciles both whole words.",
+   "invariant": "dp[m][n] already folded every edit path into one minimum.",
+   "note": "dp[5][3] = 3 \u2014 the fewest edits from \"horse\" to \"ros\", each subproblem solved once.",
+   "marks": {
+    "5,3": "good"
+   },
+   "state": [
+    [
+     "answer",
+     3
+    ]
+   ],
+   "banner": "Edit distance(\"horse\", \"ros\") = 3"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     0,
+     1,
+     2,
+     3
+    ],
+    [
+     1,
+     0,
+     1,
+     2
+    ],
+    [
+     2,
+     1,
+     0,
+     1
+    ],
+    [
+     3,
+     2,
+     1,
+     0
+    ]
+   ],
+   "rowLabels": [
+    "\u00b7",
+    "a",
+    "b",
+    "c"
+   ],
+   "colLabels": [
+    "\u00b7",
+    "a",
+    "b",
+    "c"
+   ],
+   "code": "tab",
+   "line": 7,
+   "note": "Edge case: identical words. Every character matches on the diagonal, so the cost never grows \u2014 the whole diagonal stays 0 and the answer is 0.",
+   "marks": {
+    "3,3": "good"
+   },
+   "state": [
+    [
+     "answer",
+     0
+    ]
+   ],
+   "banner": "Identical words \u2192 0 edits"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0072-edit-distance/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;72. Edit Distance — https://leetcode.com/problems/edit-distance/
 
 Find the minimum number of single-character edits (insert, delete, replace) that
 turn word1 into word2.

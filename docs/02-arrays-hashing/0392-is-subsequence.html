@@ -52,7 +52,888 @@
 <h2>Pitfalls</h2>
 <ul><li>An empty <code>s</code> is a subsequence of *anything*, including empty <code>t</code> — return true. The <code>i == len(s)</code> check handles it because <code>i</code> starts already at the end.</li><li>Guard <code>i &lt; len(s)</code> before reading <code>s[i]</code>, or you read past the end once <code>s</code> is fully matched.</li><li>Don&#x27;t test only that every letter of <code>s</code> *appears* in <code>t</code> — order matters. <code>&quot;axc&quot;</code> fails against <code>&quot;ahbgdc&quot;</code> even though a, x?, c all seem present.</li></ul>
 <h2>Transfer</h2>
-<p>The pattern is <strong>one greedy forward pass, because order is fixed and there&#x27;s nothing to gain from looking back.</strong> It&#x27;s the same two-pointer merge motion in <a href="../../03-two-pointers/">Merge Sorted Array</a>. And the follow-up scales it: when you must check *many* different <code>s</code> strings against one fixed <code>t</code>, you prepare <code>t</code> once (a map from each letter to a sorted list of its positions, then binary search) so every check is fast — a natural next step once this scan feels automatic.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0392-is-subsequence/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;392. Is Subsequence — https://leetcode.com/problems/is-subsequence/
+<p>The pattern is <strong>one greedy forward pass, because order is fixed and there&#x27;s nothing to gain from looking back.</strong> It&#x27;s the same two-pointer merge motion in <a href="../../03-two-pointers/">Merge Sorted Array</a>. And the follow-up scales it: when you must check *many* different <code>s</code> strings against one fixed <code>t</code>, you prepare <code>t</code> once (a map from each letter to a sorted list of its positions, then binary search) so every check is fast — a natural next step once this scan feels automatic.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Is Subsequence \u2014 one greedy walk, no rewinding",
+ "acts": [
+  "The rule: walk t once",
+  "Full match",
+  "Edge case: no 'x'"
+ ],
+ "code": {
+  "fast": [
+   "i = 0",
+   "for ch in t:",
+   "    if i < len(s) and ch == s[i]:",
+   "        i += 1",
+   "return i == len(s)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current position in t"
+  ],
+  [
+   "good",
+   "a matched letter"
+  ],
+  [
+   "bad",
+   "t ran out"
+  ],
+  [
+   "dim",
+   "skipped in t"
+  ]
+ ],
+ "cells": [
+  "a",
+  "h",
+  "b",
+  "g",
+  "d",
+  "c"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "a",
+    "h",
+    "b",
+    "g",
+    "d",
+    "c"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "s never rewinds \u2014 one pointer into s only moves forward, and earliest-match greedy is safe.",
+   "invariant": "s[:i] has been found in t, in order, up to the current position.",
+   "note": "Is 'abc' a subsequence of 'ahbgdc'? Walk t once. Pointer i waits for the next letter of s.",
+   "pointers": {
+    "j": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "abc"
+     ],
+     [
+      "matched",
+      "(none)"
+     ],
+     [
+      "next needed",
+      "a"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "s",
+     "abc"
+    ],
+    [
+     "t",
+     "ahbgdc"
+    ],
+    [
+     "i",
+     0
+    ],
+    [
+     "need",
+     "a"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 2,
+   "note": "t[0] = 'a' == s[0] = 'a'. Match \u2014 advance i.",
+   "pointers": {
+    "j": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "abc"
+     ],
+     [
+      "matched",
+      "(none)"
+     ],
+     [
+      "next needed",
+      "a"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "a"
+    ],
+    [
+     "s[i]",
+     "a"
+    ],
+    [
+     "i",
+     0
+    ],
+    [
+     "match",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 3,
+   "note": "i -> 1. Now waiting for 'b'.",
+   "pointers": {
+    "j": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "abc"
+     ],
+     [
+      "matched",
+      "a"
+     ],
+     [
+      "next needed",
+      "b"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "need",
+     "b"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 1,
+   "note": "t[1] = 'h' != s[1] = 'b'. Skip this character of t; i stays.",
+   "pointers": {
+    "j": 1
+   },
+   "marks": {
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "abc"
+     ],
+     [
+      "matched",
+      "a"
+     ],
+     [
+      "next needed",
+      "b"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "h"
+    ],
+    [
+     "s[i]",
+     "b"
+    ],
+    [
+     "i",
+     1
+    ],
+    [
+     "match",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 2,
+   "note": "t[2] = 'b' == s[1] = 'b'. Match \u2014 advance i.",
+   "pointers": {
+    "j": 2
+   },
+   "marks": {
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "abc"
+     ],
+     [
+      "matched",
+      "a"
+     ],
+     [
+      "next needed",
+      "b"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "b"
+    ],
+    [
+     "s[i]",
+     "b"
+    ],
+    [
+     "i",
+     1
+    ],
+    [
+     "match",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 3,
+   "note": "i -> 2. Now waiting for 'c'.",
+   "pointers": {
+    "j": 2
+   },
+   "marks": {
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "abc"
+     ],
+     [
+      "matched",
+      "ab"
+     ],
+     [
+      "next needed",
+      "c"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "need",
+     "c"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 1,
+   "note": "t[3] = 'g' != s[2] = 'c'. Skip this character of t; i stays.",
+   "pointers": {
+    "j": 3
+   },
+   "marks": {
+    "3": "dim"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "abc"
+     ],
+     [
+      "matched",
+      "ab"
+     ],
+     [
+      "next needed",
+      "c"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "g"
+    ],
+    [
+     "s[i]",
+     "c"
+    ],
+    [
+     "i",
+     2
+    ],
+    [
+     "match",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 1,
+   "note": "t[4] = 'd' != s[2] = 'c'. Skip this character of t; i stays.",
+   "pointers": {
+    "j": 4
+   },
+   "marks": {
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "abc"
+     ],
+     [
+      "matched",
+      "ab"
+     ],
+     [
+      "next needed",
+      "c"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "d"
+    ],
+    [
+     "s[i]",
+     "c"
+    ],
+    [
+     "i",
+     2
+    ],
+    [
+     "match",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 2,
+   "note": "t[5] = 'c' == s[2] = 'c'. Match \u2014 advance i.",
+   "pointers": {
+    "j": 5
+   },
+   "marks": {
+    "5": "good"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "abc"
+     ],
+     [
+      "matched",
+      "ab"
+     ],
+     [
+      "next needed",
+      "c"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "c"
+    ],
+    [
+     "s[i]",
+     "c"
+    ],
+    [
+     "i",
+     2
+    ],
+    [
+     "match",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 3,
+   "note": "i -> 3. s is fully matched.",
+   "pointers": {
+    "j": 5
+   },
+   "marks": {
+    "5": "good"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "abc"
+     ],
+     [
+      "matched",
+      "abc"
+     ],
+     [
+      "next needed",
+      "-"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "need",
+     "(done)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 4,
+   "intro": "i reaching len(s) is the whole success test \u2014 s was consumed in order.",
+   "invariant": "the matched positions of t are strictly increasing, preserving order.",
+   "note": "i reached 3 = len(s). Every letter of 'abc' was found in order at t[0, 2, 5].",
+   "marks": {
+    "0": "good",
+    "2": "good",
+    "5": "good"
+   },
+   "banner": "True \u2014 'abc' is a subsequence of 'ahbgdc' (matched at t[0, 2, 5])",
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "len(s)",
+     3
+    ],
+    [
+     "answer",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "a",
+    "h",
+    "b",
+    "g",
+    "d",
+    "c"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "t runs out before s is satisfied \u2014 that is the honest 'no'.",
+   "invariant": "i still points at the first letter of s that t could not supply in order.",
+   "note": "Edge case: 'axc' vs 'ahbgdc'. There is an 'a' and a 'c', but no 'x' after the 'a'.",
+   "pointers": {
+    "j": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "axc"
+     ],
+     [
+      "matched",
+      "(none)"
+     ],
+     [
+      "next needed",
+      "a"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "s",
+     "axc"
+    ],
+    [
+     "t",
+     "ahbgdc"
+    ],
+    [
+     "i",
+     0
+    ],
+    [
+     "need",
+     "a"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "t[0] = 'a' == s[0] = 'a'. Advance i -> 1.",
+   "pointers": {
+    "j": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "axc"
+     ],
+     [
+      "matched",
+      "a"
+     ],
+     [
+      "next needed",
+      "x"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "need",
+     "x"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "t[1] = 'h' != s[1] = 'x'. Skip; still waiting for 'x'.",
+   "pointers": {
+    "j": 1
+   },
+   "marks": {
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "axc"
+     ],
+     [
+      "matched",
+      "a"
+     ],
+     [
+      "next needed",
+      "x"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "h"
+    ],
+    [
+     "need",
+     "x"
+    ],
+    [
+     "i",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "t[2] = 'b' != s[1] = 'x'. Skip; still waiting for 'x'.",
+   "pointers": {
+    "j": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "axc"
+     ],
+     [
+      "matched",
+      "a"
+     ],
+     [
+      "next needed",
+      "x"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "b"
+    ],
+    [
+     "need",
+     "x"
+    ],
+    [
+     "i",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "t[3] = 'g' != s[1] = 'x'. Skip; still waiting for 'x'.",
+   "pointers": {
+    "j": 3
+   },
+   "marks": {
+    "3": "dim"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "axc"
+     ],
+     [
+      "matched",
+      "a"
+     ],
+     [
+      "next needed",
+      "x"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "g"
+    ],
+    [
+     "need",
+     "x"
+    ],
+    [
+     "i",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "t[4] = 'd' != s[1] = 'x'. Skip; still waiting for 'x'.",
+   "pointers": {
+    "j": 4
+   },
+   "marks": {
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "axc"
+     ],
+     [
+      "matched",
+      "a"
+     ],
+     [
+      "next needed",
+      "x"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "d"
+    ],
+    [
+     "need",
+     "x"
+    ],
+    [
+     "i",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "t[5] = 'c' != s[1] = 'x'. Skip; still waiting for 'x'.",
+   "pointers": {
+    "j": 5
+   },
+   "marks": {
+    "5": "dim"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "axc"
+     ],
+     [
+      "matched",
+      "a"
+     ],
+     [
+      "next needed",
+      "x"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "t[j]",
+     "c"
+    ],
+    [
+     "need",
+     "x"
+    ],
+    [
+     "i",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "t is exhausted but i is only 1 of 3 \u2014 the 'x' was never found. Return False.",
+   "marks": {
+    "5": "bad"
+   },
+   "sidebar": {
+    "title": "s (target) \u2014 waiting for",
+    "rows": [
+     [
+      "s",
+      "axc"
+     ],
+     [
+      "matched",
+      "a"
+     ],
+     [
+      "next needed",
+      "x"
+     ]
+    ]
+   },
+   "banner": "False \u2014 'axc' is not a subsequence of 'ahbgdc' (no 'x')",
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "len(s)",
+     3
+    ],
+    [
+     "answer",
+     "False"
+    ]
+   ]
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0392-is-subsequence/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;392. Is Subsequence — https://leetcode.com/problems/is-subsequence/
 
 Given strings `s` and `t`, return True if `s` is a subsequence of `t` — i.e. you
 can delete some (or no) characters of `t` and be left with exactly `s`, keeping

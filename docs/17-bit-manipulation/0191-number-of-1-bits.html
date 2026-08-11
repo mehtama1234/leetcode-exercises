@@ -61,7 +61,1088 @@
 <h2>Pitfalls</h2>
 <ul><li>Using an *arithmetic* right shift on a negative number in languages that copy the sign bit in — you&#x27;d loop forever. Use an unsigned/logical shift, or the <code>n &amp; (n - 1)</code> form, which never shifts at all.</li><li>In Python, integers are unbounded, so treat the input as the 32-bit unsigned value it stands for; the tests use exact 32-bit patterns like <code>0xFFFFFFFF</code>.</li></ul>
 <h2>Transfer</h2>
-<p><code>n &amp; (n - 1)</code> is a workhorse. It powers the linear-time table fill in <a href="../0338-counting-bits/">Counting Bits / 338</a> and the classic power-of-two check <code>n &gt; 0 and (n &amp; (n - 1)) == 0</code> (a power of two has a single set bit, so clearing it leaves <code>0</code>). Whenever you want to touch set bits one at a time rather than scan every position, reach for it.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/17-bit-manipulation/0191-number-of-1-bits/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;191. Number of 1 Bits — https://leetcode.com/problems/number-of-1-bits/
+<p><code>n &amp; (n - 1)</code> is a workhorse. It powers the linear-time table fill in <a href="../0338-counting-bits/">Counting Bits / 338</a> and the classic power-of-two check <code>n &gt; 0 and (n &amp; (n - 1)) == 0</code> (a power of two has a single set bit, so clearing it leaves <code>0</code>). Whenever you want to touch set bits one at a time rather than scan every position, reach for it.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Number of 1 Bits - from scan-every-position to clear-one-bit-per-step",
+ "acts": [
+  "Brute: scan every position",
+  "The waste",
+  "Kernighan: clear a bit each step",
+  "Edge: all bits set"
+ ],
+ "code": {
+  "scan": [
+   "count = 0",
+   "while n:",
+   "    count += n & 1",
+   "    n >>= 1",
+   "return count"
+  ],
+  "kern": [
+   "count = 0",
+   "while n:",
+   "    n &= n - 1   # clear lowest set bit",
+   "    count += 1",
+   "return count"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "bit being examined / cleared"
+  ],
+  [
+   "good",
+   "a 1 counted / cleared"
+  ],
+  [
+   "bad",
+   "a 0 (wasted look)"
+  ],
+  [
+   "dim",
+   "finished"
+  ]
+ ],
+ "cells": [
+  1,
+  0,
+  0,
+  1,
+  0,
+  1,
+  0,
+  0
+ ],
+ "labels": [
+  7,
+  6,
+  5,
+  4,
+  3,
+  2,
+  1,
+  0
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "scan",
+   "line": 0,
+   "intro": "every bit position gets looked at, set or not \u2014 the loop length is fixed.",
+   "invariant": "count = number of 1s seen among the positions we have passed.",
+   "note": "Count the 1-bits of 10010100. Brute scan: look at the lowest bit, add it, shift right, repeat.",
+   "pointers": {
+    "look": 7
+   },
+   "marks": {
+    "7": "active"
+   },
+   "state": [
+    [
+     "n",
+     "10010100"
+    ],
+    [
+     "count",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "scan",
+   "line": 2,
+   "note": "Lowest bit is 0. count -> 0. Shift n right so the next bit drops into place.",
+   "pointers": {
+    "look": 7
+   },
+   "marks": {
+    "7": "bad"
+   },
+   "state": [
+    [
+     "n",
+     "10010100"
+    ],
+    [
+     "n & 1",
+     0
+    ],
+    [
+     "count",
+     0
+    ],
+    [
+     "steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "scan",
+   "line": 2,
+   "note": "Lowest bit is 0. count -> 0. Shift n right so the next bit drops into place.",
+   "pointers": {
+    "look": 7
+   },
+   "marks": {
+    "7": "bad"
+   },
+   "state": [
+    [
+     "n",
+     "01001010"
+    ],
+    [
+     "n & 1",
+     0
+    ],
+    [
+     "count",
+     0
+    ],
+    [
+     "steps",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "scan",
+   "line": 2,
+   "note": "Lowest bit is 1. count -> 1. Shift n right so the next bit drops into place.",
+   "pointers": {
+    "look": 7
+   },
+   "marks": {
+    "7": "good"
+   },
+   "state": [
+    [
+     "n",
+     "00100101"
+    ],
+    [
+     "n & 1",
+     1
+    ],
+    [
+     "count",
+     1
+    ],
+    [
+     "steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "scan",
+   "line": 2,
+   "note": "Lowest bit is 0. count -> 1. Shift n right so the next bit drops into place.",
+   "pointers": {
+    "look": 7
+   },
+   "marks": {
+    "7": "bad"
+   },
+   "state": [
+    [
+     "n",
+     "00010010"
+    ],
+    [
+     "n & 1",
+     0
+    ],
+    [
+     "count",
+     1
+    ],
+    [
+     "steps",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "scan",
+   "line": 2,
+   "note": "Lowest bit is 1. count -> 2. Shift n right so the next bit drops into place.",
+   "pointers": {
+    "look": 7
+   },
+   "marks": {
+    "7": "good"
+   },
+   "state": [
+    [
+     "n",
+     "00001001"
+    ],
+    [
+     "n & 1",
+     1
+    ],
+    [
+     "count",
+     2
+    ],
+    [
+     "steps",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "scan",
+   "line": 2,
+   "note": "Lowest bit is 0. count -> 2. Shift n right so the next bit drops into place.",
+   "pointers": {
+    "look": 7
+   },
+   "marks": {
+    "7": "bad"
+   },
+   "state": [
+    [
+     "n",
+     "00000100"
+    ],
+    [
+     "n & 1",
+     0
+    ],
+    [
+     "count",
+     2
+    ],
+    [
+     "steps",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "scan",
+   "line": 2,
+   "note": "Lowest bit is 0. count -> 2. Shift n right so the next bit drops into place.",
+   "pointers": {
+    "look": 7
+   },
+   "marks": {
+    "7": "bad"
+   },
+   "state": [
+    [
+     "n",
+     "00000010"
+    ],
+    [
+     "n & 1",
+     0
+    ],
+    [
+     "count",
+     2
+    ],
+    [
+     "steps",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "scan",
+   "line": 2,
+   "note": "Lowest bit is 1. count -> 3. Shift n right so the next bit drops into place.",
+   "pointers": {
+    "look": 7
+   },
+   "marks": {
+    "7": "good"
+   },
+   "state": [
+    [
+     "n",
+     "00000001"
+    ],
+    [
+     "n & 1",
+     1
+    ],
+    [
+     "count",
+     3
+    ],
+    [
+     "steps",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "scan",
+   "line": 1,
+   "note": "n is 0 now, so the loop can stop. It took 8 shifts to find 3 ones. In the 32-bit version it is 32 shifts no matter what.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "count",
+     3
+    ],
+    [
+     "steps",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": null,
+   "intro": "the scan touches leading zeros it will never count \u2014 pure overhead.",
+   "invariant": "only the 1-bits actually matter to the answer.",
+   "note": "The scan does one step per bit position. For a 32-bit number that is 32 steps even though only 3 of them are 1s.",
+   "marks": {
+    "0": "good",
+    "1": "bad",
+    "2": "bad",
+    "3": "good",
+    "4": "bad",
+    "5": "good",
+    "6": "bad",
+    "7": "bad"
+   },
+   "state": [
+    [
+     "set bits",
+     3
+    ],
+    [
+     "scan steps (32-bit)",
+     32
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": null,
+   "note": "For a sparse number like 1000...0001 the scan still walks all 32 bits to count 2 ones. We want steps = number of set bits, not number of positions.",
+   "marks": {
+    "1": "bad",
+    "2": "bad",
+    "4": "bad",
+    "6": "bad",
+    "7": "bad"
+   },
+   "state": [
+    [
+     "want steps",
+     3
+    ],
+    [
+     "scan steps",
+     32
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "kern",
+   "line": 0,
+   "intro": "n & (n-1) erases exactly the lowest 1-bit, so each step removes one 1.",
+   "invariant": "count = 1-bits already cleared; n holds the ones still to remove.",
+   "note": "Brian Kernighan: n & (n - 1) clears the lowest set bit. Loop until n is 0; each turn of the loop kills exactly one 1.",
+   "pointers": {
+    "lowest 1": 5
+   },
+   "marks": {
+    "5": "active"
+   },
+   "state": [
+    [
+     "n",
+     "10010100"
+    ],
+    [
+     "count",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "kern",
+   "line": 2,
+   "note": "Lowest set bit is at position 2. n & (n-1) wipes it in one move \u2014 no walking past zeros.",
+   "pointers": {
+    "clear": 5
+   },
+   "marks": {
+    "5": "active"
+   },
+   "state": [
+    [
+     "n",
+     "10010100"
+    ],
+    [
+     "step",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "kern",
+   "line": 3,
+   "note": "That 1 is gone; count -> 1. n is now 10010000.",
+   "marks": {
+    "5": "good"
+   },
+   "state": [
+    [
+     "n",
+     "10010000"
+    ],
+    [
+     "count",
+     1
+    ],
+    [
+     "steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "kern",
+   "line": 2,
+   "note": "Lowest set bit is at position 4. n & (n-1) wipes it in one move \u2014 no walking past zeros.",
+   "pointers": {
+    "clear": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "state": [
+    [
+     "n",
+     "10010000"
+    ],
+    [
+     "step",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "kern",
+   "line": 3,
+   "note": "That 1 is gone; count -> 2. n is now 10000000.",
+   "marks": {
+    "3": "good"
+   },
+   "state": [
+    [
+     "n",
+     "10000000"
+    ],
+    [
+     "count",
+     2
+    ],
+    [
+     "steps",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "kern",
+   "line": 2,
+   "note": "Lowest set bit is at position 7. n & (n-1) wipes it in one move \u2014 no walking past zeros.",
+   "pointers": {
+    "clear": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "n",
+     "10000000"
+    ],
+    [
+     "step",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "kern",
+   "line": 3,
+   "note": "That 1 is gone; count -> 3. n is now 00000000.",
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "n",
+     "00000000"
+    ],
+    [
+     "count",
+     3
+    ],
+    [
+     "steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "kern",
+   "line": 4,
+   "note": "n reached 0 after 3 steps \u2014 exactly the number of set bits, not the number of positions. Answer: 3.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "count",
+     3
+    ],
+    [
+     "steps",
+     3
+    ],
+    [
+     "vs scan",
+     32
+    ]
+   ],
+   "banner": "3 set bits in 3 steps  (scan would take 32)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "kern",
+   "line": 0,
+   "intro": "every bit is a 1, so this is the one case where both methods do equal work.",
+   "invariant": "each step still clears exactly one bit from the bottom.",
+   "note": "Edge case: all bits set (11111111). Kernighan runs once per bit here, since every bit is a 1 to clear.",
+   "pointers": {
+    "clear": 7
+   },
+   "marks": {
+    "7": "active"
+   },
+   "state": [
+    [
+     "n",
+     "11111111"
+    ],
+    [
+     "count",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "kern",
+   "line": 4,
+   "note": "All 8 bits cleared, one per step. For all-ones the answer equals the width. (For n = 0 the loop never runs and the answer is 0.)",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "count",
+     8
+    ]
+   ],
+   "banner": "All bits set -> count = 8"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/17-bit-manipulation/0191-number-of-1-bits/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;191. Number of 1 Bits — https://leetcode.com/problems/number-of-1-bits/
 
 Given an unsigned integer, return how many bits are set to 1 in its binary
 representation (its &quot;Hamming weight&quot;).

@@ -75,7 +75,790 @@ return -1</code></pre>
 <h2>Pitfalls</h2>
 <ul><li><strong>Deciding which half is sorted.</strong> Use <code>nums[lo] &lt;= nums[mid]</code> (with <code>&lt;=</code>, not <code>&lt;</code>) so tiny windows where <code>lo == mid</code> count as a sorted left half. Get this boundary wrong and you take the wrong branch near the edges.</li><li><strong>Inclusive vs exclusive range checks.</strong> Left-sorted uses <code>nums[lo] &lt;= target &lt; nums[mid]</code>; right-sorted uses <code>nums[mid] &lt; target &lt;= nums[hi]</code>. <code>mid</code> is already handled by the equality check at the top, so it&#x27;s excluded on the open side of each range — mixing these up sends the search into the wrong half.</li><li><strong>Two-pass temptation.</strong> You *can* first find the break (like <a href="../0153-find-minimum-in-rotated-sorted-array/">153</a>) and then binary-search one half. That works and is easier to reason about, but this single pass does it in one sweep — just keep the case analysis disciplined.</li><li>Assumes <strong>distinct</strong> values; duplicates (LeetCode 81) can make <code>nums[lo] == nums[mid]</code> ambiguous and degrade the worst case.</li></ul>
 <h2>Transfer</h2>
-<p>This is <a href="../0153-find-minimum-in-rotated-sorted-array/">153</a>&#x27;s &quot;which half holds the seam?&quot; idea pushed one step further, built on plain <a href="../0704-binary-search/">Binary Search / 704</a>. The reusable move: <strong>when an array is sorted-except-for-one-break, split so one side is guaranteed clean, and use that clean side to decide where to go.</strong> The same &quot;one half is always well-behaved&quot; trick shows up across rotated-array and mountain-array searches.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/07-binary-search/0033-search-in-rotated-sorted-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;33. Search in Rotated Sorted Array — https://leetcode.com/problems/search-in-rotated-sorted-array/
+<p>This is <a href="../0153-find-minimum-in-rotated-sorted-array/">153</a>&#x27;s &quot;which half holds the seam?&quot; idea pushed one step further, built on plain <a href="../0704-binary-search/">Binary Search / 704</a>. The reusable move: <strong>when an array is sorted-except-for-one-break, split so one side is guaranteed clean, and use that clean side to decide where to go.</strong> The same &quot;one half is always well-behaved&quot; trick shows up across rotated-array and mountain-array searches.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Search in Rotated Array \u2014 one sorted half tells you where to look",
+ "acts": [
+  "Linear scan",
+  "The structure",
+  "Binary search over the rotation",
+  "Edge case: target absent"
+ ],
+ "code": {
+  "linear": [
+   "for i, x in enumerate(nums):",
+   "    if x == target:",
+   "        return i",
+   "return -1"
+  ],
+  "fast": [
+   "lo, hi = 0, len(nums) - 1",
+   "while lo <= hi:",
+   "    mid = lo + (hi - lo) // 2",
+   "    if nums[mid] == target:",
+   "        return mid",
+   "    if nums[lo] <= nums[mid]:      # left half sorted",
+   "        if nums[lo] <= target < nums[mid]:",
+   "            hi = mid - 1",
+   "        else:",
+   "            lo = mid + 1",
+   "    else:                          # right half sorted",
+   "        if nums[mid] < target <= nums[hi]:",
+   "            lo = mid + 1",
+   "        else:",
+   "            hi = mid - 1",
+   "return -1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current mid"
+  ],
+  [
+   "good",
+   "the sorted half / answer"
+  ],
+  [
+   "bad",
+   "discarded half"
+  ],
+  [
+   "dim",
+   "still in the window"
+  ]
+ ],
+ "cells": [
+  4,
+  5,
+  6,
+  7,
+  0,
+  1,
+  2
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    4,
+    5,
+    6,
+    7,
+    0,
+    1,
+    2
+   ],
+   "code": "linear",
+   "line": 0,
+   "intro": "the scan ignores that the array is two sorted runs joined at a seam.",
+   "invariant": "every index left of i has been checked and ruled out.",
+   "note": "Linear scan: check each value against target 0. It works on a rotated array, but treats it like a shuffled one.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "target",
+     0
+    ],
+    [
+     "comparisons",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 1,
+   "note": "nums[0] = 4. Not 0.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "nums[i]",
+     4
+    ],
+    [
+     "comparisons",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 1,
+   "note": "nums[1] = 5. Not 0.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "active",
+    "0": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "nums[i]",
+     5
+    ],
+    [
+     "comparisons",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 1,
+   "note": "nums[2] = 6. Not 0.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active",
+    "0": "dim",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "nums[i]",
+     6
+    ],
+    [
+     "comparisons",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 1,
+   "note": "nums[3] = 7. Not 0.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "active",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "nums[i]",
+     7
+    ],
+    [
+     "comparisons",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 2,
+   "note": "nums[4] = 0. Match.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "nums[i]",
+     0
+    ],
+    [
+     "comparisons",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 2,
+   "note": "Found at index 4 after 5 comparisons \u2014 and a miss would cost all 7. The rotation didn't have to slow us down this much.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     4
+    ],
+    [
+     "comparisons",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "split anywhere and ONE side is a clean sorted run \u2014 that side we can trust.",
+   "note": "A rotated sorted array is two ascending runs: [4,5,6,7] then [0,1,2]. The seam sits in only one half, so the OTHER half is fully sorted.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "good",
+    "4": "good",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "left run",
+     "4 5 6 7"
+    ],
+    [
+     "right run",
+     "0 1 2"
+    ],
+    [
+     "seam",
+     "7 \u2192 0"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "At any mid, compare endpoints to find the sorted half. If target lies inside that half's known range, search it; otherwise search the other. Either way half the array goes \u2014 still ~log n.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "scan at n=1000",
+     "~1000"
+    ],
+    [
+     "binary at n=1000",
+     "~10"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    4,
+    5,
+    6,
+    7,
+    0,
+    1,
+    2
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "each step: name the sorted half (green), then keep or drop it by range.",
+   "invariant": "if target is present it is inside [lo, hi].",
+   "note": "Binary search for 0. Window [lo, hi]; at mid, one half is sorted and tells us where target can be.",
+   "pointers": {
+    "lo": 0,
+    "hi": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "hi",
+     6
+    ],
+    [
+     "target",
+     0
+    ],
+    [
+     "steps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [0, 6]. mid=3, nums[mid]=7.",
+   "pointers": {
+    "lo": 0,
+    "mid": 3,
+    "hi": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "mid",
+     3
+    ],
+    [
+     "hi",
+     6
+    ],
+    [
+     "nums[mid]",
+     7
+    ],
+    [
+     "steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 8,
+   "note": "nums[lo]=4 <= nums[mid]=7: LEFT [0, 3] is sorted (green). Is 4 <= 0 < 7? No \u2192 search right.",
+   "pointers": {
+    "lo": 0,
+    "mid": 3,
+    "hi": 6
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "active",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "sorted half",
+     "[0, 3] left"
+    ],
+    [
+     "target in it?",
+     "no"
+    ],
+    [
+     "lo \u2192",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [4, 6]. mid=5, nums[mid]=1.",
+   "pointers": {
+    "lo": 4,
+    "mid": 5,
+    "hi": 6
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "dim",
+    "5": "active",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     4
+    ],
+    [
+     "mid",
+     5
+    ],
+    [
+     "hi",
+     6
+    ],
+    [
+     "nums[mid]",
+     1
+    ],
+    [
+     "steps",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "nums[lo]=0 <= nums[mid]=1: LEFT [4, 5] is sorted (green). Is 0 <= 0 < 1? Yes \u2192 search left.",
+   "pointers": {
+    "lo": 4,
+    "mid": 5,
+    "hi": 6
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "good",
+    "5": "active",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "sorted half",
+     "[4, 5] left"
+    ],
+    [
+     "target in it?",
+     "yes"
+    ],
+    [
+     "hi \u2192",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [4, 4]. mid=4, nums[mid]=0.",
+   "pointers": {
+    "lo": 4,
+    "mid": 4,
+    "hi": 4
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "active",
+    "5": "bad",
+    "6": "bad"
+   },
+   "state": [
+    [
+     "lo",
+     4
+    ],
+    [
+     "mid",
+     4
+    ],
+    [
+     "hi",
+     4
+    ],
+    [
+     "nums[mid]",
+     0
+    ],
+    [
+     "steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "nums[4] = 0 = target. Found in 3 steps, not 5.",
+   "pointers": {
+    "lo": 4,
+    "mid": 4,
+    "hi": 4
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "good",
+    "5": "bad",
+    "6": "bad"
+   },
+   "state": [
+    [
+     "answer",
+     4
+    ],
+    [
+     "steps",
+     3
+    ],
+    [
+     "vs scan",
+     5
+    ]
+   ],
+   "banner": "Found 0 at index 4   \u2014 3 steps vs 5 scanned"
+  },
+  {
+   "act": 3,
+   "cells": [
+    4,
+    5,
+    6,
+    7,
+    0,
+    1,
+    2
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the same sorted-half logic prunes correctly even when nothing matches.",
+   "invariant": "each step still discards a half we've proven target can't be in.",
+   "note": "Edge case: target 3 is absent. The window must still collapse to empty without ever losing the target.",
+   "pointers": {
+    "lo": 0,
+    "hi": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "target",
+     3
+    ],
+    [
+     "lo",
+     0
+    ],
+    [
+     "hi",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [0, 6]. mid=3, nums[mid]=7. left half sorted; 3 not inside \u2192 lo \u2192 4.",
+   "pointers": {
+    "lo": 0,
+    "mid": 3,
+    "hi": 6
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "active",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "mid",
+     3
+    ],
+    [
+     "hi",
+     6
+    ],
+    [
+     "nums[mid]",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [4, 6]. mid=5, nums[mid]=1. left half sorted; 3 not inside \u2192 lo \u2192 6.",
+   "pointers": {
+    "lo": 4,
+    "mid": 5,
+    "hi": 6
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "good",
+    "5": "active",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     4
+    ],
+    [
+     "mid",
+     5
+    ],
+    [
+     "hi",
+     6
+    ],
+    [
+     "nums[mid]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [6, 6]. mid=6, nums[mid]=2. left half sorted; 3 not inside \u2192 lo \u2192 7.",
+   "pointers": {
+    "lo": 6,
+    "mid": 6,
+    "hi": 6
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "bad",
+    "5": "bad",
+    "6": "active"
+   },
+   "state": [
+    [
+     "lo",
+     6
+    ],
+    [
+     "mid",
+     6
+    ],
+    [
+     "hi",
+     6
+    ],
+    [
+     "nums[mid]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 15,
+   "note": "lo=7 > hi=6: window empty, 3 is not in the array. Return -1.",
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "bad",
+    "5": "bad",
+    "6": "bad"
+   },
+   "state": [
+    [
+     "lo",
+     7
+    ],
+    [
+     "hi",
+     6
+    ],
+    [
+     "answer",
+     -1
+    ]
+   ],
+   "banner": "3 absent \u2014 window emptied, return -1"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/07-binary-search/0033-search-in-rotated-sorted-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;33. Search in Rotated Sorted Array — https://leetcode.com/problems/search-in-rotated-sorted-array/
 
 A sorted array of distinct numbers was rotated at some unknown pivot. Given a
 target, return its index, or -1 if it&#x27;s absent. Must run in O(log n).

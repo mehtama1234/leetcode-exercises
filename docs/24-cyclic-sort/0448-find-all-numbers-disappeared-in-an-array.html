@@ -58,7 +58,1643 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Reading <code>nums[i]</code> instead of <code>abs(nums[i])</code>.</strong> After signs flip, the raw value can be negative and index the wrong home.</li><li><strong>Flipping without the <code>&gt; 0</code> guard.</strong> A value present twice would flip its home twice, turning it positive again and falsely reporting it missing. Guard, or use <code>nums[home] = -abs(nums[home])</code> to force negative every time.</li><li><strong>Off-by-one.</strong> Home is <code>value - 1</code>; the missing value at index <code>i</code> is <code>i + 1</code>.</li><li><strong>Relying on this where the range isn&#x27;t <code>1..n</code>.</strong> The whole trick depends on that bound.</li></ul>
 <h2>Transfer</h2>
-<p>This is the &quot;what&#x27;s absent&quot; face of the index-as-hash coin; its &quot;what&#x27;s doubled&quot; face is <a href="../0442-find-all-duplicates-in-an-array/">Find All Duplicates / 442</a> — identical marking, different read-out. Siblings that share the array-as-lookup-table idea: <a href="../0041-first-missing-positive/">First Missing Positive / 41</a> (finds the *first* gap via placement) and <a href="../0287-find-the-duplicate-number/">Find the Duplicate Number / 287</a> (same range, but mutation is banned so it needs cycle detection instead).</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/24-cyclic-sort/0448-find-all-numbers-disappeared-in-an-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;448. Find All Numbers Disappeared in an Array — https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/
+<p>This is the &quot;what&#x27;s absent&quot; face of the index-as-hash coin; its &quot;what&#x27;s doubled&quot; face is <a href="../0442-find-all-duplicates-in-an-array/">Find All Duplicates / 442</a> — identical marking, different read-out. Siblings that share the array-as-lookup-table idea: <a href="../0041-first-missing-positive/">First Missing Positive / 41</a> (finds the *first* gap via placement) and <a href="../0287-find-the-duplicate-number/">Find the Duplicate Number / 287</a> (same range, but mutation is banned so it needs cycle detection instead).</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Find Disappeared Numbers \u2014 signs as a visited flag",
+ "acts": [
+  "Set baseline (O(n) space)",
+  "The idea: sign = seen",
+  "Sign-flip pass in place",
+  "Edge case: nothing missing"
+ ],
+ "code": {
+  "set": [
+   "present = set(nums)",
+   "return [v for v in range(1, n+1)",
+   "        if v not in present]"
+  ],
+  "fast": [
+   "for x in nums:",
+   "    home = abs(x) - 1",
+   "    if nums[home] > 0:",
+   "        nums[home] = -nums[home]",
+   "return [i+1 for i in range(n)",
+   "        if nums[i] > 0]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "value / home being touched"
+  ],
+  [
+   "good",
+   "marked seen / negative"
+  ],
+  [
+   "bad",
+   "stayed positive = missing"
+  ],
+  [
+   "dim",
+   "not yet marked"
+  ]
+ ],
+ "cells": [
+  4,
+  3,
+  2,
+  7,
+  8,
+  2,
+  3,
+  1
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    4,
+    3,
+    2,
+    7,
+    8,
+    2,
+    3,
+    1
+   ],
+   "code": "set",
+   "line": 0,
+   "intro": "the set is exactly the extra memory the problem asks us to drop.",
+   "invariant": "present holds every value read so far from nums.",
+   "note": "Baseline: build a set of what's present, then report every v in 1..n that isn't in it. Correct, but the set is O(n) extra memory.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "\u2713"
+     ],
+     [
+      "2",
+      "\u2713"
+     ],
+     [
+      "3",
+      "\u2713"
+     ],
+     [
+      "4",
+      "\u2713"
+     ],
+     [
+      "7",
+      "\u2713"
+     ],
+     [
+      "8",
+      "\u2713"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "set size",
+     6
+    ],
+    [
+     "extra memory",
+     "O(n)"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "set",
+   "line": 1,
+   "note": "Is 1 in the set? Yes.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "\u2713"
+     ],
+     [
+      "2",
+      "\u2713"
+     ],
+     [
+      "3",
+      "\u2713"
+     ],
+     [
+      "4",
+      "\u2713"
+     ],
+     [
+      "7",
+      "\u2713"
+     ],
+     [
+      "8",
+      "\u2713"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "checking",
+     1
+    ],
+    [
+     "in set?",
+     "yes"
+    ],
+    [
+     "missing so far",
+     "\u2014"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "set",
+   "line": 1,
+   "note": "Is 2 in the set? Yes.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "\u2713"
+     ],
+     [
+      "2",
+      "\u2713"
+     ],
+     [
+      "3",
+      "\u2713"
+     ],
+     [
+      "4",
+      "\u2713"
+     ],
+     [
+      "7",
+      "\u2713"
+     ],
+     [
+      "8",
+      "\u2713"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "checking",
+     2
+    ],
+    [
+     "in set?",
+     "yes"
+    ],
+    [
+     "missing so far",
+     "\u2014"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "set",
+   "line": 1,
+   "note": "Is 3 in the set? Yes.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "\u2713"
+     ],
+     [
+      "2",
+      "\u2713"
+     ],
+     [
+      "3",
+      "\u2713"
+     ],
+     [
+      "4",
+      "\u2713"
+     ],
+     [
+      "7",
+      "\u2713"
+     ],
+     [
+      "8",
+      "\u2713"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "checking",
+     3
+    ],
+    [
+     "in set?",
+     "yes"
+    ],
+    [
+     "missing so far",
+     "\u2014"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "set",
+   "line": 1,
+   "note": "Is 4 in the set? Yes.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "\u2713"
+     ],
+     [
+      "2",
+      "\u2713"
+     ],
+     [
+      "3",
+      "\u2713"
+     ],
+     [
+      "4",
+      "\u2713"
+     ],
+     [
+      "7",
+      "\u2713"
+     ],
+     [
+      "8",
+      "\u2713"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "checking",
+     4
+    ],
+    [
+     "in set?",
+     "yes"
+    ],
+    [
+     "missing so far",
+     "\u2014"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "set",
+   "line": 1,
+   "note": "Is 5 in the set? No \u2014 it disappeared.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "\u2713"
+     ],
+     [
+      "2",
+      "\u2713"
+     ],
+     [
+      "3",
+      "\u2713"
+     ],
+     [
+      "4",
+      "\u2713"
+     ],
+     [
+      "7",
+      "\u2713"
+     ],
+     [
+      "8",
+      "\u2713"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "checking",
+     5
+    ],
+    [
+     "in set?",
+     "no"
+    ],
+    [
+     "missing so far",
+     "[5]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "set",
+   "line": 1,
+   "note": "Is 6 in the set? No \u2014 it disappeared.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "\u2713"
+     ],
+     [
+      "2",
+      "\u2713"
+     ],
+     [
+      "3",
+      "\u2713"
+     ],
+     [
+      "4",
+      "\u2713"
+     ],
+     [
+      "7",
+      "\u2713"
+     ],
+     [
+      "8",
+      "\u2713"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "checking",
+     6
+    ],
+    [
+     "in set?",
+     "no"
+    ],
+    [
+     "missing so far",
+     "[5, 6]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "set",
+   "line": 1,
+   "note": "Is 7 in the set? Yes.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "\u2713"
+     ],
+     [
+      "2",
+      "\u2713"
+     ],
+     [
+      "3",
+      "\u2713"
+     ],
+     [
+      "4",
+      "\u2713"
+     ],
+     [
+      "7",
+      "\u2713"
+     ],
+     [
+      "8",
+      "\u2713"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "checking",
+     7
+    ],
+    [
+     "in set?",
+     "yes"
+    ],
+    [
+     "missing so far",
+     "[5, 6]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "set",
+   "line": 1,
+   "note": "Is 8 in the set? Yes.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "\u2713"
+     ],
+     [
+      "2",
+      "\u2713"
+     ],
+     [
+      "3",
+      "\u2713"
+     ],
+     [
+      "4",
+      "\u2713"
+     ],
+     [
+      "7",
+      "\u2713"
+     ],
+     [
+      "8",
+      "\u2713"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "checking",
+     8
+    ],
+    [
+     "in set?",
+     "yes"
+    ],
+    [
+     "missing so far",
+     "[5, 6]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "set",
+   "line": 1,
+   "note": "Missing: [5, 6]. Right answer, but it cost a whole extra set.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     "[5, 6]"
+    ],
+    [
+     "extra memory",
+     "O(n)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "each value's home index v-1 gets a minus sign to record 'v showed up'.",
+   "note": "Values are 1..n, so value v has a home index v-1. We don't need a set \u2014 we flip the SIGN of the number parked at that home to mark 'seen v'.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "value v",
+     "home index v-1"
+    ],
+    [
+     "mark",
+     "negate nums[v-1]"
+    ],
+    [
+     "stays positive",
+     "= never seen"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Read magnitudes with abs() because a slot may already be flipped. After one pass, any index still POSITIVE was never marked \u2192 that value is missing.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "read",
+     "abs(x)"
+    ],
+    [
+     "extra memory",
+     "O(1)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    -4,
+    -3,
+    -2,
+    -7,
+    8,
+    2,
+    -3,
+    -1
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "watch homes go negative; the two that stay positive are the answer.",
+   "invariant": "a negative slot means its value's index+1 has already appeared.",
+   "note": "Pass 1: for each value x, go to home index abs(x)-1 and flip it negative (if still positive). That records 'this value appeared'.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "step",
+     0
+    ],
+    [
+     "n",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "Read nums[0] = 4. Value 4 \u2192 home index 3. nums[3] = 7 is positive \u2014 flip it.",
+   "pointers": {
+    "x": 0
+   },
+   "arc": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "1": "dim",
+    "2": "dim",
+    "3": "active",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "reading idx",
+     0
+    ],
+    [
+     "value",
+     4
+    ],
+    [
+     "home",
+     3
+    ],
+    [
+     "nums[home]",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Marked: nums[3] is now -7. Value 4 is recorded as seen.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "active",
+    "1": "dim",
+    "2": "dim",
+    "3": "active",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "marked value",
+     4
+    ],
+    [
+     "nums[home]",
+     -7
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "Read nums[1] = 3. Value 3 \u2192 home index 2. nums[2] = 2 is positive \u2014 flip it.",
+   "pointers": {
+    "x": 1
+   },
+   "arc": [
+    1,
+    2
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "active",
+    "2": "active",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "reading idx",
+     1
+    ],
+    [
+     "value",
+     3
+    ],
+    [
+     "home",
+     2
+    ],
+    [
+     "nums[home]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Marked: nums[2] is now -2. Value 3 is recorded as seen.",
+   "pointers": {
+    "x": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active",
+    "2": "active",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "marked value",
+     3
+    ],
+    [
+     "nums[home]",
+     -2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "Read nums[2] = -2. Value 2 \u2192 home index 1. nums[1] = 3 is positive \u2014 flip it.",
+   "pointers": {
+    "x": 2
+   },
+   "arc": [
+    2,
+    1
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "active",
+    "2": "active",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "reading idx",
+     2
+    ],
+    [
+     "value",
+     2
+    ],
+    [
+     "home",
+     1
+    ],
+    [
+     "nums[home]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Marked: nums[1] is now -3. Value 2 is recorded as seen.",
+   "pointers": {
+    "x": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active",
+    "2": "active",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "marked value",
+     2
+    ],
+    [
+     "nums[home]",
+     -3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "Read nums[3] = -7. Value 7 \u2192 home index 6. nums[6] = 3 is positive \u2014 flip it.",
+   "pointers": {
+    "x": 3
+   },
+   "arc": [
+    3,
+    6
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "good",
+    "3": "active",
+    "4": "dim",
+    "5": "dim",
+    "6": "active",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "reading idx",
+     3
+    ],
+    [
+     "value",
+     7
+    ],
+    [
+     "home",
+     6
+    ],
+    [
+     "nums[home]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Marked: nums[6] is now -3. Value 7 is recorded as seen.",
+   "pointers": {
+    "x": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "good",
+    "3": "active",
+    "4": "dim",
+    "5": "dim",
+    "6": "active",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "marked value",
+     7
+    ],
+    [
+     "nums[home]",
+     -3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "Read nums[4] = 8. Value 8 \u2192 home index 7. nums[7] = 1 is positive \u2014 flip it.",
+   "pointers": {
+    "x": 4
+   },
+   "arc": [
+    4,
+    7
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "active",
+    "5": "dim",
+    "6": "good",
+    "7": "active"
+   },
+   "state": [
+    [
+     "reading idx",
+     4
+    ],
+    [
+     "value",
+     8
+    ],
+    [
+     "home",
+     7
+    ],
+    [
+     "nums[home]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Marked: nums[7] is now -1. Value 8 is recorded as seen.",
+   "pointers": {
+    "x": 4
+   },
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "active",
+    "5": "dim",
+    "6": "good",
+    "7": "active"
+   },
+   "state": [
+    [
+     "marked value",
+     8
+    ],
+    [
+     "nums[home]",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "Read nums[5] = 2. Value 2 \u2192 home index 1. nums[1] already negative, skip.",
+   "pointers": {
+    "x": 5
+   },
+   "arc": [
+    5,
+    1
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "active",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "active",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "reading idx",
+     5
+    ],
+    [
+     "value",
+     2
+    ],
+    [
+     "home",
+     1
+    ],
+    [
+     "nums[home]",
+     -3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "Read nums[6] = -3. Value 3 \u2192 home index 2. nums[2] already negative, skip.",
+   "pointers": {
+    "x": 6
+   },
+   "arc": [
+    6,
+    2
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "active",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "active",
+    "7": "good"
+   },
+   "state": [
+    [
+     "reading idx",
+     6
+    ],
+    [
+     "value",
+     3
+    ],
+    [
+     "home",
+     2
+    ],
+    [
+     "nums[home]",
+     -2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "Read nums[7] = -1. Value 1 \u2192 home index 0. nums[0] = 4 is positive \u2014 flip it.",
+   "pointers": {
+    "x": 7
+   },
+   "arc": [
+    7,
+    0
+   ],
+   "marks": {
+    "0": "active",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good",
+    "7": "active"
+   },
+   "state": [
+    [
+     "reading idx",
+     7
+    ],
+    [
+     "value",
+     1
+    ],
+    [
+     "home",
+     0
+    ],
+    [
+     "nums[home]",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Marked: nums[0] is now -4. Value 1 is recorded as seen.",
+   "pointers": {
+    "x": 7
+   },
+   "marks": {
+    "0": "active",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good",
+    "7": "active"
+   },
+   "state": [
+    [
+     "marked value",
+     1
+    ],
+    [
+     "nums[home]",
+     -4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Pass 1 done. Now scan: every index still positive was never marked, so its value (index+1) never appeared.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "array",
+     "-4 -3 -2 -7 8 2 -3 -1"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "nums[0] = -4. Negative \u2192 1 appeared.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "nums[i]",
+     -4
+    ],
+    [
+     "missing so far",
+     "\u2014"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "nums[1] = -3. Negative \u2192 2 appeared.",
+   "pointers": {
+    "x": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "nums[i]",
+     -3
+    ],
+    [
+     "missing so far",
+     "\u2014"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "nums[2] = -2. Negative \u2192 3 appeared.",
+   "pointers": {
+    "x": 2
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "nums[i]",
+     -2
+    ],
+    [
+     "missing so far",
+     "\u2014"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "nums[3] = -7. Negative \u2192 4 appeared.",
+   "pointers": {
+    "x": 3
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "nums[i]",
+     -7
+    ],
+    [
+     "missing so far",
+     "\u2014"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "nums[4] = 8. Positive \u2192 5 is missing.",
+   "pointers": {
+    "x": 4
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "bad",
+    "5": "dim",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "nums[i]",
+     8
+    ],
+    [
+     "missing so far",
+     "[5]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "nums[5] = 2. Positive \u2192 6 is missing.",
+   "pointers": {
+    "x": 5
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "bad",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "i",
+     5
+    ],
+    [
+     "nums[i]",
+     2
+    ],
+    [
+     "missing so far",
+     "[5, 6]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "nums[6] = -3. Negative \u2192 7 appeared.",
+   "pointers": {
+    "x": 6
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "i",
+     6
+    ],
+    [
+     "nums[i]",
+     -3
+    ],
+    [
+     "missing so far",
+     "[5, 6]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "nums[7] = -1. Negative \u2192 8 appeared.",
+   "pointers": {
+    "x": 7
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "i",
+     7
+    ],
+    [
+     "nums[i]",
+     -1
+    ],
+    [
+     "missing so far",
+     "[5, 6]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Missing = [5, 6]. Same answer as the set, with no extra memory.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "bad",
+    "5": "bad",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "[5, 6]"
+    ],
+    [
+     "extra memory",
+     "O(1)"
+    ]
+   ],
+   "banner": "Disappeared = [5, 6]   (set said [5, 6]) \u2014 O(1) space"
+  },
+  {
+   "act": 3,
+   "cells": [
+    2,
+    1
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "when every value shows up, both homes flip negative \u2014 the answer is empty.",
+   "invariant": "each value in 1..n negates exactly one distinct home.",
+   "note": "Edge case: [2, 1] contains both 1 and 2, so no number is missing.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "n",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "Value 2 \u2192 home 1; flip it. nums[1] = -1.",
+   "pointers": {
+    "x": 0
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "good"
+   },
+   "state": [
+    [
+     "reading idx",
+     0
+    ],
+    [
+     "value",
+     2
+    ],
+    [
+     "home",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "Value 1 \u2192 home 0; flip it. nums[0] = -2.",
+   "pointers": {
+    "x": 1
+   },
+   "arc": [
+    1,
+    0
+   ],
+   "marks": {
+    "0": "good",
+    "1": "active"
+   },
+   "state": [
+    [
+     "reading idx",
+     1
+    ],
+    [
+     "value",
+     1
+    ],
+    [
+     "home",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "Every slot is negative \u2014 all of 1..2 appeared, so nothing disappeared.",
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "[]"
+    ],
+    [
+     "extra memory",
+     "O(1)"
+    ]
+   ],
+   "banner": "Both 1 and 2 present \u2192 disappeared = []"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/24-cyclic-sort/0448-find-all-numbers-disappeared-in-an-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;448. Find All Numbers Disappeared in an Array — https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/
 
 Given `nums` of length n where every value is in 1..n, return every value in
 1..n that does NOT appear. Aim for O(n) time and O(1) extra space.

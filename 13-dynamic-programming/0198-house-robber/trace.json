@@ -1,0 +1,321 @@
+{
+ "player": "grid",
+ "title": "House Robber - one best-so-far per house instead of re-branching",
+ "acts": [
+  "The rob/skip rule",
+  "Fill best[] once",
+  "Answer + edge"
+ ],
+ "code": {
+  "dp": [
+   "take, skip = 0, 0",
+   "for money in nums:",
+   "    take, skip = skip + money, max(take, skip)",
+   "return max(take, skip)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the two we compare"
+  ],
+  [
+   "good",
+   "locked best / robbed"
+  ],
+  [
+   "bad",
+   "recomputed (waste)"
+  ]
+ ],
+ "rows": [
+  [
+   2,
+   7,
+   9,
+   3,
+   1
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     2,
+     7,
+     9,
+     3,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "$"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "code": null,
+   "intro": "each house is a rob-or-skip choice; robbing one blocks its neighbor.",
+   "invariant": "you can never take two houses that sit next to each other.",
+   "note": "The houses in a row, each holding some money. You cannot rob two adjacent houses. We want the largest total.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "houses",
+     5
+    ],
+    [
+     "rule",
+     "no two neighbors"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "At each house you either ROB it (take its money, then you must skip the next) or SKIP it. best(i) = max(best(i-1), best(i-2) + money). Naive recursion re-solves the same best(i) in many branches.",
+   "marks": {
+    "0,2": "bad",
+    "0,3": "bad"
+   },
+   "state": [
+    [
+     "choice",
+     "rob / skip"
+    ],
+    [
+     "waste",
+     "best(i) recomputed"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "best"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "code": "dp",
+   "line": 0,
+   "intro": "one running best per house, each computed once left to right.",
+   "invariant": "best[i] = most money robbable from houses 0..i.",
+   "note": "Start with nothing taken. best[i] compares skipping house i (keep best[i-1]) against robbing it (best[i-2] + money[i]).",
+   "marks": {},
+   "state": [
+    [
+     "take",
+     0
+    ],
+    [
+     "skip",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "House 0 ($2): rob = best[-2] 0 + 2 = 2 vs skip = best[-1] 0. best[0] = 2.",
+   "set": {
+    "0,0": 2
+   },
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "rob here",
+     2
+    ],
+    [
+     "skip here",
+     0
+    ],
+    [
+     "best[0]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "House 1 ($7): rob = best[-1] 0 + 7 = 7 vs skip = best[0] 2. best[1] = 7.",
+   "set": {
+    "0,1": 7
+   },
+   "marks": {
+    "0,1": "good",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "rob here",
+     7
+    ],
+    [
+     "skip here",
+     2
+    ],
+    [
+     "best[1]",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "House 2 ($9): rob = best[0] 2 + 9 = 11 vs skip = best[1] 7. best[2] = 11.",
+   "set": {
+    "0,2": 11
+   },
+   "marks": {
+    "0,2": "good",
+    "0,1": "active",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "rob here",
+     11
+    ],
+    [
+     "skip here",
+     7
+    ],
+    [
+     "best[2]",
+     11
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "House 3 ($3): rob = best[1] 7 + 3 = 10 vs skip = best[2] 11. best[3] = 11.",
+   "set": {
+    "0,3": 11
+   },
+   "marks": {
+    "0,3": "good",
+    "0,2": "active",
+    "0,1": "active"
+   },
+   "state": [
+    [
+     "rob here",
+     10
+    ],
+    [
+     "skip here",
+     11
+    ],
+    [
+     "best[3]",
+     11
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 2,
+   "note": "House 4 ($1): rob = best[2] 11 + 1 = 12 vs skip = best[3] 11. best[4] = 12.",
+   "set": {
+    "0,4": 12
+   },
+   "marks": {
+    "0,4": "good",
+    "0,3": "active",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "rob here",
+     12
+    ],
+    [
+     "skip here",
+     11
+    ],
+    [
+     "best[4]",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dp",
+   "line": 3,
+   "intro": "the last house's best already folded in every earlier choice.",
+   "invariant": "best[n-1] is the whole answer.",
+   "note": "best[4] = 12 \u2014 that plan robs houses 0, 2, 4 (2 + 9 + 1). No two are neighbors.",
+   "marks": {
+    "0,4": "good",
+    "0,0": "good",
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "answer",
+     12
+    ]
+   ],
+   "banner": "Max robbed = 12  (houses 0, 2, 4)"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     5
+    ]
+   ],
+   "rowLabels": [
+    "$"
+   ],
+   "colLabels": [
+    "0"
+   ],
+   "code": "dp",
+   "line": 3,
+   "note": "Edge case: one house holding 5. Nothing to conflict with, so rob it \u2014 the answer is 5.",
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "answer",
+     5
+    ]
+   ],
+   "banner": "Single house -> 5"
+  }
+ ]
+}

@@ -1,0 +1,721 @@
+{
+ "player": "grid",
+ "title": "Longest Common Subsequence - fill each (i, j) once",
+ "acts": [
+  "The match/drop rule",
+  "Fill the table",
+  "Answer + edge"
+ ],
+ "code": {
+  "dp": [
+   "dp = [[0]*(n+1) for _ in range(m+1)]",
+   "for i in range(1, m+1):",
+   "    for j in range(1, n+1):",
+   "        if t1[i-1] == t2[j-1]:",
+   "            dp[i][j] = dp[i-1][j-1] + 1",
+   "        else:",
+   "            dp[i][j] = max(dp[i-1][j], dp[i][j-1])",
+   "return dp[m][n]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the neighbors we read"
+  ],
+  [
+   "good",
+   "just-filled / answer"
+  ],
+  [
+   "bad",
+   "recomputed (waste)"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "-",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e"
+   ],
+   "colLabels": [
+    "-",
+    "a",
+    "c",
+    "e"
+   ],
+   "code": null,
+   "intro": "dp[i][j] = LCS length of the first i chars of t1 and first j of t2.",
+   "invariant": "compare only the two LAST characters of each prefix.",
+   "note": "t1 = \"abcde\" down the rows, t2 = \"ace\" across the columns. Each cell is the LCS length of those two prefixes.",
+   "marks": {
+    "5,3": "active"
+   },
+   "state": [
+    [
+     "t1",
+     "abcde"
+    ],
+    [
+     "t2",
+     "ace"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "If the last chars match, they can end the LCS: dp[i][j] = dp[i-1][j-1] + 1 (a diagonal step). If not, drop one char: dp[i][j] = max(up, left). Naive recursion re-solves the same (i, j) many times; the table solves each once.",
+   "marks": {
+    "5,3": "active",
+    "4,2": "bad"
+   },
+   "state": [
+    [
+     "match",
+     "diag + 1"
+    ],
+    [
+     "mismatch",
+     "max(up, left)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     null,
+     null,
+     null
+    ],
+    [
+     0,
+     null,
+     null,
+     null
+    ],
+    [
+     0,
+     null,
+     null,
+     null
+    ],
+    [
+     0,
+     null,
+     null,
+     null
+    ],
+    [
+     0,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "-",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e"
+   ],
+   "colLabels": [
+    "-",
+    "a",
+    "c",
+    "e"
+   ],
+   "code": "dp",
+   "line": 0,
+   "intro": "row 0 and column 0 are all zeros; fill the interior top-left to bottom-right.",
+   "invariant": "dp[i][j] final before its right/down neighbors are computed.",
+   "note": "An empty prefix shares nothing, so the whole first row and first column are 0.",
+   "marks": {},
+   "state": [
+    [
+     "seed",
+     "edges = 0"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "t1[0]='a' == t2[0]='a': dp[1][1] = diag 0 + 1 = 1.",
+   "set": {
+    "1,1": 1
+   },
+   "marks": {
+    "0,0": "active",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(1,1)"
+    ],
+    [
+     "match",
+     true
+    ],
+    [
+     "dp[1][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'a' != 'c': dp[1][2] = max(up 0, left 1) = 1.",
+   "set": {
+    "1,2": 1
+   },
+   "marks": {
+    "0,2": "active",
+    "1,1": "active",
+    "1,2": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(1,2)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[1][2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'a' != 'e': dp[1][3] = max(up 0, left 1) = 1.",
+   "set": {
+    "1,3": 1
+   },
+   "marks": {
+    "0,3": "active",
+    "1,2": "active",
+    "1,3": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(1,3)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[1][3]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'b' != 'a': dp[2][1] = max(up 1, left 0) = 1.",
+   "set": {
+    "2,1": 1
+   },
+   "marks": {
+    "1,1": "active",
+    "2,0": "active",
+    "2,1": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(2,1)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[2][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'b' != 'c': dp[2][2] = max(up 1, left 1) = 1.",
+   "set": {
+    "2,2": 1
+   },
+   "marks": {
+    "1,2": "active",
+    "2,1": "active",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(2,2)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[2][2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'b' != 'e': dp[2][3] = max(up 1, left 1) = 1.",
+   "set": {
+    "2,3": 1
+   },
+   "marks": {
+    "1,3": "active",
+    "2,2": "active",
+    "2,3": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(2,3)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[2][3]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'c' != 'a': dp[3][1] = max(up 1, left 0) = 1.",
+   "set": {
+    "3,1": 1
+   },
+   "marks": {
+    "2,1": "active",
+    "3,0": "active",
+    "3,1": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(3,1)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[3][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "t1[2]='c' == t2[1]='c': dp[3][2] = diag 1 + 1 = 2.",
+   "set": {
+    "3,2": 2
+   },
+   "marks": {
+    "2,1": "active",
+    "3,2": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(3,2)"
+    ],
+    [
+     "match",
+     true
+    ],
+    [
+     "dp[3][2]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'c' != 'e': dp[3][3] = max(up 1, left 2) = 2.",
+   "set": {
+    "3,3": 2
+   },
+   "marks": {
+    "2,3": "active",
+    "3,2": "active",
+    "3,3": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(3,3)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[3][3]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'d' != 'a': dp[4][1] = max(up 1, left 0) = 1.",
+   "set": {
+    "4,1": 1
+   },
+   "marks": {
+    "3,1": "active",
+    "4,0": "active",
+    "4,1": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(4,1)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[4][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'d' != 'c': dp[4][2] = max(up 2, left 1) = 2.",
+   "set": {
+    "4,2": 2
+   },
+   "marks": {
+    "3,2": "active",
+    "4,1": "active",
+    "4,2": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(4,2)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[4][2]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'d' != 'e': dp[4][3] = max(up 2, left 2) = 2.",
+   "set": {
+    "4,3": 2
+   },
+   "marks": {
+    "3,3": "active",
+    "4,2": "active",
+    "4,3": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(4,3)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[4][3]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'e' != 'a': dp[5][1] = max(up 1, left 0) = 1.",
+   "set": {
+    "5,1": 1
+   },
+   "marks": {
+    "4,1": "active",
+    "5,0": "active",
+    "5,1": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(5,1)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[5][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "'e' != 'c': dp[5][2] = max(up 2, left 1) = 2.",
+   "set": {
+    "5,2": 2
+   },
+   "marks": {
+    "4,2": "active",
+    "5,1": "active",
+    "5,2": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(5,2)"
+    ],
+    [
+     "match",
+     false
+    ],
+    [
+     "dp[5][2]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "t1[4]='e' == t2[2]='e': dp[5][3] = diag 2 + 1 = 3.",
+   "set": {
+    "5,3": 3
+   },
+   "marks": {
+    "4,2": "active",
+    "5,3": "good"
+   },
+   "state": [
+    [
+     "cell",
+     "(5,3)"
+    ],
+    [
+     "match",
+     true
+    ],
+    [
+     "dp[5][3]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dp",
+   "line": 7,
+   "intro": "the bottom-right cell is the LCS of the two full strings.",
+   "invariant": "the corner combined every prefix decision into one number.",
+   "note": "dp[5][3] = 3 \u2014 the LCS is \"ace\", length 3.",
+   "marks": {
+    "5,3": "good"
+   },
+   "state": [
+    [
+     "answer",
+     3
+    ]
+   ],
+   "banner": "LCS(\"abcde\", \"ace\") = 3  (\"ace\")"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "rowLabels": [
+    "-",
+    "a",
+    "b",
+    "c"
+   ],
+   "colLabels": [
+    "-",
+    "d",
+    "e",
+    "f"
+   ],
+   "code": "dp",
+   "line": 7,
+   "note": "Edge case: \"abc\" and \"def\" share no character, so every mismatch just carries a 0 across \u2014 the whole table stays 0 and the answer is 0.",
+   "marks": {
+    "3,3": "good"
+   },
+   "state": [
+    [
+     "answer",
+     0
+    ]
+   ],
+   "banner": "No common characters -> 0"
+  }
+ ]
+}

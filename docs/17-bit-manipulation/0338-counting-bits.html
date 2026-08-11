@@ -64,7 +64,2332 @@
 <h2>Pitfalls</h2>
 <ul><li>The array has length <code>n + 1</code>, not <code>n</code> — index <code>0</code> through <code>n</code> inclusive.</li><li>Off-by-one on <code>i &amp; (i - 1)</code> when <code>i = 0</code>; start the loop at <code>i = 1</code> and leave <code>ans[0] = 0</code>.</li><li>Reaching for Python&#x27;s <code>bin(i).count(&quot;1&quot;)</code> works but hides the point; the DP relation is what this problem is teaching.</li></ul>
 <h2>Transfer</h2>
-<p>The trick <code>x &amp; (x - 1)</code> (clear the lowest set bit) shows up in <a href="../0191-number-of-1-bits/">Number of 1 Bits / 191</a> and in any &quot;is this a power of two?&quot; check (<code>x &amp; (x - 1) == 0</code>). The broader move — &quot;a bigger case is a smaller solved case plus one cheap step&quot; — is the heart of DP, the same shape as <a href="../../13-dynamic-programming/">Climbing Stairs</a> style problems.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/17-bit-manipulation/0338-counting-bits/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;338. Counting Bits — https://leetcode.com/problems/counting-bits/
+<p>The trick <code>x &amp; (x - 1)</code> (clear the lowest set bit) shows up in <a href="../0191-number-of-1-bits/">Number of 1 Bits / 191</a> and in any &quot;is this a power of two?&quot; check (<code>x &amp; (x - 1) == 0</code>). The broader move — &quot;a bigger case is a smaller solved case plus one cheap step&quot; — is the heart of DP, the same shape as <a href="../../13-dynamic-programming/">Climbing Stairs</a> style problems.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Counting Bits - reuse the answer for i with its lowest bit dropped",
+ "acts": [
+  "Brute: count each from scratch",
+  "The waste",
+  "DP: ans[i] = ans[i&(i-1)]+1",
+  "Edge: i = 0"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n + 1):",
+   "    count = 0; x = i",
+   "    while x:",
+   "        x &= x - 1   # drop lowest set bit",
+   "        count += 1",
+   "    ans.append(count)"
+  ],
+  "dp": [
+   "ans = [0] * (n + 1)",
+   "for i in range(1, n + 1):",
+   "    ans[i] = ans[i & (i - 1)] + 1",
+   "return ans"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "lowest set bit being dropped"
+  ],
+  [
+   "good",
+   "a 1 in i / settled answer"
+  ],
+  [
+   "bad",
+   "recounted work (waste)"
+  ],
+  [
+   "dim",
+   "a 0"
+  ]
+ ],
+ "cells": [
+  0,
+  0,
+  0
+ ],
+ "labels": [
+  2,
+  1,
+  0
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "each number is taken apart bit by bit, ignoring the ones we already solved.",
+   "invariant": "count = set bits removed from x so far.",
+   "note": "Brute force: for every i in 0..7, peel its set bits one at a time and count them. Correct, but every number starts from zero.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "?"
+     ],
+     [
+      "1",
+      "?"
+     ],
+     [
+      "2",
+      "?"
+     ],
+     [
+      "3",
+      "?"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "count",
+     0
+    ],
+    [
+     "ops",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 1,
+   "note": "i = 3 (011). Start count at 0 and strip its set bits.",
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "?"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "count",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 3,
+   "note": "Drop a set bit; count -> 1. x is now 010.",
+   "pointers": {
+    "dropped": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "?"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "count",
+     1
+    ],
+    [
+     "ops",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 3,
+   "note": "Drop a set bit; count -> 2. x is now 000.",
+   "pointers": {
+    "dropped": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "?"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "count",
+     2
+    ],
+    [
+     "ops",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    0,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 1,
+   "note": "i = 5 (101). Start count at 0 and strip its set bits.",
+   "marks": {
+    "0": "good",
+    "1": "dim",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     5
+    ],
+    [
+     "count",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 3,
+   "note": "Drop a set bit; count -> 1. x is now 100.",
+   "pointers": {
+    "dropped": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     5
+    ],
+    [
+     "count",
+     1
+    ],
+    [
+     "ops",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 3,
+   "note": "Drop a set bit; count -> 2. x is now 000.",
+   "pointers": {
+    "dropped": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     5
+    ],
+    [
+     "count",
+     2
+    ],
+    [
+     "ops",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 1,
+   "note": "i = 6 (110). Start count at 0 and strip its set bits.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     6
+    ],
+    [
+     "count",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 3,
+   "note": "Drop a set bit; count -> 1. x is now 100.",
+   "pointers": {
+    "dropped": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     6
+    ],
+    [
+     "count",
+     1
+    ],
+    [
+     "ops",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 3,
+   "note": "Drop a set bit; count -> 2. x is now 000.",
+   "pointers": {
+    "dropped": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     6
+    ],
+    [
+     "count",
+     2
+    ],
+    [
+     "ops",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 1,
+   "note": "i = 7 (111). Start count at 0 and strip its set bits.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "2"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     7
+    ],
+    [
+     "count",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 3,
+   "note": "Drop a set bit; count -> 1. x is now 110.",
+   "pointers": {
+    "dropped": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "2"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     7
+    ],
+    [
+     "count",
+     1
+    ],
+    [
+     "ops",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 3,
+   "note": "Drop a set bit; count -> 2. x is now 100.",
+   "pointers": {
+    "dropped": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "2"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     7
+    ],
+    [
+     "count",
+     2
+    ],
+    [
+     "ops",
+     11
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 3,
+   "note": "Drop a set bit; count -> 3. x is now 000.",
+   "pointers": {
+    "dropped": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "2"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     7
+    ],
+    [
+     "count",
+     3
+    ],
+    [
+     "ops",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "brute",
+   "line": 5,
+   "note": "All 8 numbers counted independently in 12 bit-drops. Notice 7 recomputed the very same bits 3 and 6 already went through.",
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "2"
+     ],
+     [
+      "7",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans",
+     "[0, 1, 1, 2, 1, 2, 2, 3]"
+    ],
+    [
+     "total bit-drops",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    1,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": null,
+   "intro": "7 = 111 is just 6 = 110 with one extra bit \u2014 6's answer is already known.",
+   "invariant": "dropping the lowest bit of i lands on a SMALLER number we solved.",
+   "note": "6 = 110 has 2 ones. 7 = 111 is 6 with the low bit added, so it has 3 \u2014 we recounted 6's two bits instead of reusing ans[6].",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "active"
+   },
+   "state": [
+    [
+     "ans[6]",
+     2
+    ],
+    [
+     "ans[7]",
+     3
+    ],
+    [
+     "reused?",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    1,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": null,
+   "note": "For every i, i & (i-1) clears its lowest 1-bit and gives a smaller number whose answer we already have. That is the work we can skip.",
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad"
+   },
+   "state": [
+    [
+     "relation",
+     "ans[i] = ans[i&(i-1)] + 1"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 0,
+   "intro": "each ans[i] is one lookup plus one \u2014 no inner loop over bits at all.",
+   "invariant": "ans[j] is already correct for every j < i.",
+   "note": "DP: ans[0] = 0. For each i, look up ans[i & (i-1)] (the number with i's lowest bit removed) and add 1.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "?"
+     ],
+     [
+      "2",
+      "?"
+     ],
+     [
+      "3",
+      "?"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans[0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "i = 1 (001). Drop the lowest 1-bit: i & (i-1) = 0 (000), which we already solved.",
+   "pointers": {
+    "drop": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "?"
+     ],
+     [
+      "2",
+      "?"
+     ],
+     [
+      "3",
+      "?"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "i & (i-1)",
+     0
+    ],
+    [
+     "ans[0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "ans[1] = ans[0] + 1 = 0 + 1 = 1. One lookup, no bit loop.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "?"
+     ],
+     [
+      "3",
+      "?"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans[1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "i = 2 (010). Drop the lowest 1-bit: i & (i-1) = 0 (000), which we already solved.",
+   "pointers": {
+    "drop": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "?"
+     ],
+     [
+      "3",
+      "?"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "i & (i-1)",
+     0
+    ],
+    [
+     "ans[0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "ans[2] = ans[0] + 1 = 0 + 1 = 1. One lookup, no bit loop.",
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "?"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans[2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "i = 3 (011). Drop the lowest 1-bit: i & (i-1) = 2 (010), which we already solved.",
+   "pointers": {
+    "drop": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "?"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "i & (i-1)",
+     2
+    ],
+    [
+     "ans[2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "ans[3] = ans[2] + 1 = 1 + 1 = 2. One lookup, no bit loop.",
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans[3]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "i = 4 (100). Drop the lowest 1-bit: i & (i-1) = 0 (000), which we already solved.",
+   "pointers": {
+    "drop": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "?"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "i & (i-1)",
+     0
+    ],
+    [
+     "ans[0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "ans[4] = ans[0] + 1 = 0 + 1 = 1. One lookup, no bit loop.",
+   "marks": {
+    "0": "good",
+    "1": "dim",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans[4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    0,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "i = 5 (101). Drop the lowest 1-bit: i & (i-1) = 4 (100), which we already solved.",
+   "pointers": {
+    "drop": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "?"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     5
+    ],
+    [
+     "i & (i-1)",
+     4
+    ],
+    [
+     "ans[4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    0,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "ans[5] = ans[4] + 1 = 1 + 1 = 2. One lookup, no bit loop.",
+   "marks": {
+    "0": "good",
+    "1": "dim",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans[5]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    1,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "i = 6 (110). Drop the lowest 1-bit: i & (i-1) = 4 (100), which we already solved.",
+   "pointers": {
+    "drop": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "?"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     6
+    ],
+    [
+     "i & (i-1)",
+     4
+    ],
+    [
+     "ans[4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    1,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "ans[6] = ans[4] + 1 = 1 + 1 = 2. One lookup, no bit loop.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "2"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans[6]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    1,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "i = 7 (111). Drop the lowest 1-bit: i & (i-1) = 6 (110), which we already solved.",
+   "pointers": {
+    "drop": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "2"
+     ],
+     [
+      "7",
+      "?"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     7
+    ],
+    [
+     "i & (i-1)",
+     6
+    ],
+    [
+     "ans[6]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    1,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "ans[7] = ans[6] + 1 = 2 + 1 = 3. One lookup, no bit loop.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "2"
+     ],
+     [
+      "7",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans[7]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    1,
+    1
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 3,
+   "note": "Whole table built in 7 single steps: [0, 1, 1, 2, 1, 2, 2, 3]. No number was taken apart twice.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "2"
+     ],
+     [
+      "6",
+      "2"
+     ],
+     [
+      "7",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans",
+     "[0, 1, 1, 2, 1, 2, 2, 3]"
+    ],
+    [
+     "steps",
+     7
+    ],
+    [
+     "vs brute drops",
+     12
+    ]
+   ],
+   "banner": "ans = [0, 1, 1, 2, 1, 2, 2, 3]   (7 lookups vs 12 brute bit-drops)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    2,
+    1,
+    0
+   ],
+   "code": "dp",
+   "line": 0,
+   "intro": "the base case anchors the whole recurrence.",
+   "invariant": "ans[0] = 0 is the one value not computed from a smaller one.",
+   "note": "Edge case: i = 0 has no set bits, so ans[0] = 0. Every other answer chains back to this base through i & (i-1).",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "ans[i] = # of 1s",
+    "rows": [
+     [
+      "0",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ans[0]",
+     0
+    ]
+   ],
+   "banner": "ans[0] = 0  (the base case)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/17-bit-manipulation/0338-counting-bits/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;338. Counting Bits — https://leetcode.com/problems/counting-bits/
 
 Given `n`, return an array `ans` of length `n+1` where `ans[i]` is the number of
 1-bits in the binary representation of `i`, for every `i` from 0 to n.

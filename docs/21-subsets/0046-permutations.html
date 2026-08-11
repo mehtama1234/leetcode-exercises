@@ -57,7 +57,1115 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Forgetting to clear <code>used[i]</code> on the way back up</strong> — later branches then think a freed number is still taken, and you lose whole permutations.</li><li><strong>Storing the live <code>path</code></strong> instead of <code>path[:]</code> — every entry points at one shared list.</li><li>Confusing this with subsets and looping from a <code>start</code> index — that produces combinations (order-blind), not orderings.</li></ul>
 <h2>Transfer</h2>
-<p>The &quot;for each unused item&quot; loop with a <code>used[]</code> mask is the ordering template. Add sort-and-skip-equal-siblings to handle repeats (<a href="../0047-permutations-ii/">Permutations II / 47</a>); swap the &quot;all n&quot; leaf test for a fixed depth and you&#x27;re back to <a href="../0077-combinations/">Combinations / 77</a>. Any &quot;try every sequence / arrangement&quot; problem reduces to this loop.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0046-permutations/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;46. Permutations — https://leetcode.com/problems/permutations/
+<p>The &quot;for each unused item&quot; loop with a <code>used[]</code> mask is the ordering template. Add sort-and-skip-equal-siblings to handle repeats (<a href="../0047-permutations-ii/">Permutations II / 47</a>); swap the &quot;all n&quot; leaf test for a fixed depth and you&#x27;re back to <a href="../0077-combinations/">Combinations / 77</a>. Any &quot;try every sequence / arrangement&quot; problem reduces to this loop.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Permutations \u2014 pick any unused number next, walked as a decision tree",
+ "acts": [
+  "The rule",
+  "Walk the decision tree",
+  "Edge case: single element"
+ ],
+ "code": {
+  "backtrack": [
+   "def backtrack():",
+   "    if len(path) == n:",
+   "        result.append(path[:])",
+   "        return",
+   "    for i in range(n):",
+   "        if used[i]:",
+   "            continue          # already placed",
+   "        used[i] = True        # choose",
+   "        path.append(nums[i])",
+   "        backtrack()           # explore",
+   "        path.pop()            # un-choose",
+   "        used[i] = False"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current path"
+  ],
+  [
+   "good",
+   "finished permutation (leaf)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "start",
+   "x": 145.0,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": "1",
+   "x": 29.0,
+   "y": 84
+  },
+  {
+   "id": 2,
+   "val": "1,2",
+   "x": 0.0,
+   "y": 168
+  },
+  {
+   "id": 3,
+   "val": "1,2,3",
+   "x": 0,
+   "y": 252
+  },
+  {
+   "id": 4,
+   "val": "1,3",
+   "x": 58.0,
+   "y": 168
+  },
+  {
+   "id": 5,
+   "val": "1,3,2",
+   "x": 58,
+   "y": 252
+  },
+  {
+   "id": 6,
+   "val": "2",
+   "x": 145.0,
+   "y": 84
+  },
+  {
+   "id": 7,
+   "val": "2,1",
+   "x": 116.0,
+   "y": 168
+  },
+  {
+   "id": 8,
+   "val": "2,1,3",
+   "x": 116,
+   "y": 252
+  },
+  {
+   "id": 9,
+   "val": "2,3",
+   "x": 174.0,
+   "y": 168
+  },
+  {
+   "id": 10,
+   "val": "2,3,1",
+   "x": 174,
+   "y": 252
+  },
+  {
+   "id": 11,
+   "val": "3",
+   "x": 261.0,
+   "y": 84
+  },
+  {
+   "id": 12,
+   "val": "3,1",
+   "x": 232.0,
+   "y": 168
+  },
+  {
+   "id": 13,
+   "val": "3,1,2",
+   "x": 232,
+   "y": 252
+  },
+  {
+   "id": 14,
+   "val": "3,2",
+   "x": 290.0,
+   "y": 168
+  },
+  {
+   "id": 15,
+   "val": "3,2,1",
+   "x": 290,
+   "y": 252
+  }
+ ],
+ "edges": [
+  [
+   2,
+   3
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   4,
+   5
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   7,
+   8
+  ],
+  [
+   6,
+   7
+  ],
+  [
+   9,
+   10
+  ],
+  [
+   6,
+   9
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   12,
+   13
+  ],
+  [
+   11,
+   12
+  ],
+  [
+   14,
+   15
+  ],
+  [
+   11,
+   14
+  ],
+  [
+   0,
+   11
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 145.0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "1",
+     "x": 29.0,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "1,2",
+     "x": 0.0,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "1,2,3",
+     "x": 0,
+     "y": 252
+    },
+    {
+     "id": 4,
+     "val": "1,3",
+     "x": 58.0,
+     "y": 168
+    },
+    {
+     "id": 5,
+     "val": "1,3,2",
+     "x": 58,
+     "y": 252
+    },
+    {
+     "id": 6,
+     "val": "2",
+     "x": 145.0,
+     "y": 84
+    },
+    {
+     "id": 7,
+     "val": "2,1",
+     "x": 116.0,
+     "y": 168
+    },
+    {
+     "id": 8,
+     "val": "2,1,3",
+     "x": 116,
+     "y": 252
+    },
+    {
+     "id": 9,
+     "val": "2,3",
+     "x": 174.0,
+     "y": 168
+    },
+    {
+     "id": 10,
+     "val": "2,3,1",
+     "x": 174,
+     "y": 252
+    },
+    {
+     "id": 11,
+     "val": "3",
+     "x": 261.0,
+     "y": 84
+    },
+    {
+     "id": 12,
+     "val": "3,1",
+     "x": 232.0,
+     "y": 168
+    },
+    {
+     "id": 13,
+     "val": "3,1,2",
+     "x": 232,
+     "y": 252
+    },
+    {
+     "id": 14,
+     "val": "3,2",
+     "x": 290.0,
+     "y": 168
+    },
+    {
+     "id": 15,
+     "val": "3,2,1",
+     "x": 290,
+     "y": 252
+    }
+   ],
+   "edges": [
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     14,
+     15
+    ],
+    [
+     11,
+     14
+    ],
+    [
+     0,
+     11
+    ]
+   ],
+   "code": "backtrack",
+   "line": 4,
+   "intro": "each level places one more number; branches are the numbers still free.",
+   "invariant": "depth = how many placed; a leaf uses every number exactly once.",
+   "note": "The rule: at each step pick any number not yet placed, then recurse. Order matters and every number must be used, so the tree branches over whatever is still available.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "numbers",
+     "[1, 2, 3]"
+    ],
+    [
+     "choice",
+     "any unused"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "backtrack",
+   "line": 1,
+   "note": "The root has 3 choices, the next level 2, then 1 \u2014 so 3\u00b72\u00b71 = 6 leaves. Each leaf, where len(path) == n, is one complete ordering.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "leaves",
+     "3! = 6"
+    ],
+    [
+     "= permutations",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 145.0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "1",
+     "x": 29.0,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "1,2",
+     "x": 0.0,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "1,2,3",
+     "x": 0,
+     "y": 252
+    },
+    {
+     "id": 4,
+     "val": "1,3",
+     "x": 58.0,
+     "y": 168
+    },
+    {
+     "id": 5,
+     "val": "1,3,2",
+     "x": 58,
+     "y": 252
+    },
+    {
+     "id": 6,
+     "val": "2",
+     "x": 145.0,
+     "y": 84
+    },
+    {
+     "id": 7,
+     "val": "2,1",
+     "x": 116.0,
+     "y": 168
+    },
+    {
+     "id": 8,
+     "val": "2,1,3",
+     "x": 116,
+     "y": 252
+    },
+    {
+     "id": 9,
+     "val": "2,3",
+     "x": 174.0,
+     "y": 168
+    },
+    {
+     "id": 10,
+     "val": "2,3,1",
+     "x": 174,
+     "y": 252
+    },
+    {
+     "id": 11,
+     "val": "3",
+     "x": 261.0,
+     "y": 84
+    },
+    {
+     "id": 12,
+     "val": "3,1",
+     "x": 232.0,
+     "y": 168
+    },
+    {
+     "id": 13,
+     "val": "3,1,2",
+     "x": 232,
+     "y": 252
+    },
+    {
+     "id": 14,
+     "val": "3,2",
+     "x": 290.0,
+     "y": 168
+    },
+    {
+     "id": 15,
+     "val": "3,2,1",
+     "x": 290,
+     "y": 252
+    }
+   ],
+   "edges": [
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     14,
+     15
+    ],
+    [
+     11,
+     14
+    ],
+    [
+     0,
+     11
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "the active path is the numbers placed so far; leaves light green.",
+   "invariant": "a green leaf spells a full ordering of all the numbers.",
+   "note": "Run it. The highlighted path shows the numbers placed so far; each time the path is full we record that permutation.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 4,
+   "note": "Start with an empty path. Every number is still free to place.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "placed",
+     0
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Place 1 (it was unused) -> path is now [1]. 2 number(s) still free.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "just placed",
+     1
+    ],
+    [
+     "path",
+     "1"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Place 2 (it was unused) -> path is now [1,2]. 1 number(s) still free.",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "just placed",
+     2
+    ],
+    [
+     "path",
+     "1,2"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Path is full -> record the permutation [1,2,3]. (1 of 6 so far.)",
+   "active": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "done": {
+    "3": "1,2,3"
+   },
+   "state": [
+    [
+     "permutation",
+     "1,2,3"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Place 3 (it was unused) -> path is now [1,3]. 1 number(s) still free.",
+   "active": [
+    0,
+    1,
+    4
+   ],
+   "done": {
+    "3": "1,2,3"
+   },
+   "state": [
+    [
+     "just placed",
+     3
+    ],
+    [
+     "path",
+     "1,3"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Path is full -> record the permutation [1,3,2]. (2 of 6 so far.)",
+   "active": [
+    0,
+    1,
+    4,
+    5
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2"
+   },
+   "state": [
+    [
+     "permutation",
+     "1,3,2"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Place 2 (it was unused) -> path is now [2]. 2 number(s) still free.",
+   "active": [
+    0,
+    6
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2"
+   },
+   "state": [
+    [
+     "just placed",
+     2
+    ],
+    [
+     "path",
+     "2"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Place 1 (it was unused) -> path is now [2,1]. 1 number(s) still free.",
+   "active": [
+    0,
+    6,
+    7
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2"
+   },
+   "state": [
+    [
+     "just placed",
+     1
+    ],
+    [
+     "path",
+     "2,1"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Path is full -> record the permutation [2,1,3]. (3 of 6 so far.)",
+   "active": [
+    0,
+    6,
+    7,
+    8
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2",
+    "8": "2,1,3"
+   },
+   "state": [
+    [
+     "permutation",
+     "2,1,3"
+    ],
+    [
+     "found",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Place 3 (it was unused) -> path is now [2,3]. 1 number(s) still free.",
+   "active": [
+    0,
+    6,
+    9
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2",
+    "8": "2,1,3"
+   },
+   "state": [
+    [
+     "just placed",
+     3
+    ],
+    [
+     "path",
+     "2,3"
+    ],
+    [
+     "found",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Path is full -> record the permutation [2,3,1]. (4 of 6 so far.)",
+   "active": [
+    0,
+    6,
+    9,
+    10
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2",
+    "8": "2,1,3",
+    "10": "2,3,1"
+   },
+   "state": [
+    [
+     "permutation",
+     "2,3,1"
+    ],
+    [
+     "found",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Place 3 (it was unused) -> path is now [3]. 2 number(s) still free.",
+   "active": [
+    0,
+    11
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2",
+    "8": "2,1,3",
+    "10": "2,3,1"
+   },
+   "state": [
+    [
+     "just placed",
+     3
+    ],
+    [
+     "path",
+     "3"
+    ],
+    [
+     "found",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Place 1 (it was unused) -> path is now [3,1]. 1 number(s) still free.",
+   "active": [
+    0,
+    11,
+    12
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2",
+    "8": "2,1,3",
+    "10": "2,3,1"
+   },
+   "state": [
+    [
+     "just placed",
+     1
+    ],
+    [
+     "path",
+     "3,1"
+    ],
+    [
+     "found",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Path is full -> record the permutation [3,1,2]. (5 of 6 so far.)",
+   "active": [
+    0,
+    11,
+    12,
+    13
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2",
+    "8": "2,1,3",
+    "10": "2,3,1",
+    "13": "3,1,2"
+   },
+   "state": [
+    [
+     "permutation",
+     "3,1,2"
+    ],
+    [
+     "found",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Place 2 (it was unused) -> path is now [3,2]. 1 number(s) still free.",
+   "active": [
+    0,
+    11,
+    14
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2",
+    "8": "2,1,3",
+    "10": "2,3,1",
+    "13": "3,1,2"
+   },
+   "state": [
+    [
+     "just placed",
+     2
+    ],
+    [
+     "path",
+     "3,2"
+    ],
+    [
+     "found",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Path is full -> record the permutation [3,2,1]. (6 of 6 so far.)",
+   "active": [
+    0,
+    11,
+    14,
+    15
+   ],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2",
+    "8": "2,1,3",
+    "10": "2,3,1",
+    "13": "3,1,2",
+    "15": "3,2,1"
+   },
+   "state": [
+    [
+     "permutation",
+     "3,2,1"
+    ],
+    [
+     "found",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Every path walked to the bottom -> all 6 orderings collected.",
+   "active": [],
+   "done": {
+    "3": "1,2,3",
+    "5": "1,3,2",
+    "8": "2,1,3",
+    "10": "2,3,1",
+    "13": "3,1,2",
+    "15": "3,2,1"
+   },
+   "state": [
+    [
+     "permutations",
+     6
+    ]
+   ],
+   "banner": "6 permutations = 3!, every ordering of 1,2,3"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 0.0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "7",
+     "x": 0,
+     "y": 84
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "backtrack",
+   "line": 4,
+   "intro": "with one number there is a single choice, then the path is full.",
+   "invariant": "n! collapses: 1! = 1, and 0! = 1 too.",
+   "note": "Edge case: nums = [7]. The root has exactly one number to place, so the tree is a single branch down to one leaf.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "numbers",
+     "[7]"
+    ],
+    [
+     "choices",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Place 7 -> path [7] is full -> record it. So [7] yields one permutation. (Empty [] also yields one: the empty ordering, since 0! = 1.)",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "1": "7"
+   },
+   "state": [
+    [
+     "permutation",
+     "7"
+    ],
+    [
+     "found",
+     1
+    ]
+   ],
+   "banner": "Single element -> exactly one permutation: [7]"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0046-permutations/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;46. Permutations — https://leetcode.com/problems/permutations/
 
 Given a list of *distinct* numbers, return every ordering of all of them. For n
 numbers there are n! permutations.

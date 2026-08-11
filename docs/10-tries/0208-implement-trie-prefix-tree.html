@@ -80,7 +80,1761 @@ startsWith(p):  return any(w.startswith(p) for w in words)</code></pre>
 <h2>Pitfalls</h2>
 <ul><li>Forgetting the <code>is_word</code> flag and treating &quot;reached a node&quot; as &quot;found a word&quot;. Then <code>search(&quot;app&quot;)</code> wrongly returns true just because &quot;apple&quot; exists.</li><li>Setting <code>is_word</code> on every node instead of only the final one.</li><li>Confusing <code>search</code> and <code>startsWith</code> — they walk identically and differ *only* in the check at the end. Factor the walk out so the difference is visible.</li><li>The empty string: inserting <code>&quot;&quot;</code> marks the root as a word, and <code>startsWith(&quot;&quot;)</code> is true whenever the trie exists (you&#x27;re already at the root).</li></ul>
 <h2>Transfer</h2>
-<p>The trie is the base structure for a whole family of prefix problems. Add a wildcard to the search and you get <a href="../0211-design-add-and-search-words-data-structure/">Add and Search Word / 211</a>; lay a trie over a grid and it prunes a DFS in <a href="../0212-word-search-ii/">Word Search II / 212</a>. Reach for a trie whenever you need prefix queries, autocomplete, or to search many words *at once* instead of one at a time.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/10-tries/0208-implement-trie-prefix-tree/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;208. Implement Trie (Prefix Tree) — https://leetcode.com/problems/implement-trie-prefix-tree/
+<p>The trie is the base structure for a whole family of prefix problems. Add a wildcard to the search and you get <a href="../0211-design-add-and-search-words-data-structure/">Add and Search Word / 211</a>; lay a trie over a grid and it prunes a DFS in <a href="../0212-word-search-ii/">Word Search II / 212</a>. Reach for a trie whenever you need prefix queries, autocomplete, or to search many words *at once* instead of one at a time.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Implement Trie - one path per word, a flag marks the real word",
+ "acts": [
+  "The rule",
+  "Insert 'apple' + query",
+  "Insert 'app': the flag flips"
+ ],
+ "code": {
+  "insert": [
+   "def insert(word):",
+   "    node = root",
+   "    for ch in word:",
+   "        node = node.children.setdefault(ch, TrieNode())",
+   "    node.is_word = True",
+   "",
+   "def _walk(prefix):        # -> node or None",
+   "    node = root",
+   "    for ch in prefix:",
+   "        if ch not in node.children: return None",
+   "        node = node.children[ch]",
+   "    return node"
+  ],
+  "walk": [
+   "def insert(word):",
+   "    node = root",
+   "    for ch in word:",
+   "        node = node.children.setdefault(ch, TrieNode())",
+   "    node.is_word = True",
+   "",
+   "def _walk(prefix):        # -> node or None",
+   "    node = root",
+   "    for ch in prefix:",
+   "        if ch not in node.children: return None",
+   "        node = node.children[ch]",
+   "    return node"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "node on the current walk"
+  ],
+  [
+   "good",
+   "\u2022 = a complete word ends here (is_word)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "\u25b2",
+   "x": 0,
+   "y": 0
+  }
+ ],
+ "edges": [],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "insert",
+   "line": 0,
+   "intro": "words that share a start share a PATH; a \u2022 flag marks where a real word ends.",
+   "invariant": "every node is one character; depth = position in the word.",
+   "note": "A trie stores words along paths from the root. 'app' and 'apple' walk the same first three nodes. A set couldn't answer startsWith without scanning every word; a path walk answers it for free.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "root",
+     "\u25b2"
+    ],
+    [
+     "node =",
+     "one character"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "insert",
+   "line": 0,
+   "intro": "the path a-p-p-l-e appears; only the last node gets the \u2022 flag.",
+   "invariant": "creating a node just extends the path; the flag is set once, at the end.",
+   "note": "insert('apple'): walk char by char, creating missing nodes.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "insert",
+     "apple"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "'a': no such child yet -> create the node.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "inserting",
+     "apple"
+    ],
+    [
+     "at",
+     "a"
+    ],
+    [
+     "shared",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "'p': no such child yet -> create the node.",
+   "active": [
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "inserting",
+     "apple"
+    ],
+    [
+     "at",
+     "p"
+    ],
+    [
+     "shared",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "'p': no such child yet -> create the node.",
+   "active": [
+    3
+   ],
+   "done": {},
+   "state": [
+    [
+     "inserting",
+     "apple"
+    ],
+    [
+     "at",
+     "p"
+    ],
+    [
+     "shared",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "'l': no such child yet -> create the node.",
+   "active": [
+    4
+   ],
+   "done": {},
+   "state": [
+    [
+     "inserting",
+     "apple"
+    ],
+    [
+     "at",
+     "l"
+    ],
+    [
+     "shared",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "'e': no such child yet -> create the node.",
+   "active": [
+    5
+   ],
+   "done": {},
+   "state": [
+    [
+     "inserting",
+     "apple"
+    ],
+    [
+     "at",
+     "e"
+    ],
+    [
+     "shared",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "insert",
+   "line": 4,
+   "note": "end of 'apple': mark this node is_word (the \u2022 badge). That flag is the only thing separating a real word from a passing-through prefix.",
+   "active": [
+    5
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "inserted",
+     "apple"
+    ],
+    [
+     "is_word here",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "walk",
+   "line": 10,
+   "note": "'a' -> step to its child. Following the shared path IS the prefix check.",
+   "active": [
+    1
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     "app"
+    ],
+    [
+     "on",
+     "a"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "walk",
+   "line": 10,
+   "note": "'p' -> step to its child. Following the shared path IS the prefix check.",
+   "active": [
+    2
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     "app"
+    ],
+    [
+     "on",
+     "p"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "walk",
+   "line": 10,
+   "note": "'p' -> step to its child. Following the shared path IS the prefix check.",
+   "active": [
+    3
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     "app"
+    ],
+    [
+     "on",
+     "p"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "walk",
+   "line": 11,
+   "note": "search('app') reached a real node, but is_word there is False \u2014 'app' is only a prefix of 'apple', never inserted. So search is False...",
+   "active": [
+    3
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "search('app')",
+     "False"
+    ],
+    [
+     "reason",
+     "no \u2022 flag here"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "walk",
+   "line": 10,
+   "note": "'a' -> step to its child. Following the shared path IS the prefix check.",
+   "active": [
+    1
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     "app"
+    ],
+    [
+     "on",
+     "a"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "walk",
+   "line": 10,
+   "note": "'p' -> step to its child. Following the shared path IS the prefix check.",
+   "active": [
+    2
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     "app"
+    ],
+    [
+     "on",
+     "p"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "walk",
+   "line": 10,
+   "note": "'p' -> step to its child. Following the shared path IS the prefix check.",
+   "active": [
+    3
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     "app"
+    ],
+    [
+     "on",
+     "p"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "walk",
+   "line": 11,
+   "note": "...but startsWith('app') only needs the node to EXIST, and it does. So startsWith is True. Same walk, different check at the end.",
+   "active": [
+    3
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "startsWith('app')",
+     "True"
+    ],
+    [
+     "needs",
+     "node exists"
+    ]
+   ],
+   "banner": "search('app')=False, startsWith('app')=True"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "insert",
+   "line": 0,
+   "intro": "no new nodes are made \u2014 'app' already exists as a path; only its flag changes.",
+   "invariant": "the flag is per-node, so 'app' and 'apple' can both be words on one shared path.",
+   "note": "insert('app'): the path a-p-p is already there, so we create nothing and just set is_word on the second 'p'.",
+   "active": [
+    0
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "insert",
+     "app"
+    ],
+    [
+     "new nodes",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "'a': child already there -> reuse the shared prefix.",
+   "active": [
+    1
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "inserting",
+     "app"
+    ],
+    [
+     "at",
+     "a"
+    ],
+    [
+     "shared",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "'p': child already there -> reuse the shared prefix.",
+   "active": [
+    2
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "inserting",
+     "app"
+    ],
+    [
+     "at",
+     "p"
+    ],
+    [
+     "shared",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "'p': child already there -> reuse the shared prefix.",
+   "active": [
+    3
+   ],
+   "done": {
+    "5": "\u2022"
+   },
+   "state": [
+    [
+     "inserting",
+     "app"
+    ],
+    [
+     "at",
+     "p"
+    ],
+    [
+     "shared",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "insert",
+   "line": 4,
+   "note": "end of 'app': mark this node is_word (the \u2022 badge). That flag is the only thing separating a real word from a passing-through prefix.",
+   "active": [
+    3
+   ],
+   "done": {
+    "5": "\u2022",
+    "3": "\u2022"
+   },
+   "state": [
+    [
+     "inserted",
+     "app"
+    ],
+    [
+     "is_word here",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "walk",
+   "line": 10,
+   "note": "'a' -> step to its child. Following the shared path IS the prefix check.",
+   "active": [
+    1
+   ],
+   "done": {
+    "5": "\u2022",
+    "3": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     "app"
+    ],
+    [
+     "on",
+     "a"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "walk",
+   "line": 10,
+   "note": "'p' -> step to its child. Following the shared path IS the prefix check.",
+   "active": [
+    2
+   ],
+   "done": {
+    "5": "\u2022",
+    "3": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     "app"
+    ],
+    [
+     "on",
+     "p"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "p",
+     "x": 70,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "p",
+     "x": 140,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "l",
+     "x": 210,
+     "y": 352
+    },
+    {
+     "id": 5,
+     "val": "e",
+     "x": 280,
+     "y": 440
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "code": "walk",
+   "line": 10,
+   "note": "'p' -> step to its child. Following the shared path IS the prefix check.",
+   "active": [
+    3
+   ],
+   "done": {
+    "5": "\u2022",
+    "3": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     "app"
+    ],
+    [
+     "on",
+     "p"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "walk",
+   "line": 11,
+   "note": "Now search('app') lands on a node whose \u2022 is set -> True. The flag is exactly what distinguishes a stored word from a mere prefix.",
+   "active": [
+    3
+   ],
+   "done": {
+    "5": "\u2022",
+    "3": "\u2022"
+   },
+   "state": [
+    [
+     "search('app')",
+     "True"
+    ],
+    [
+     "flag",
+     "now set"
+    ]
+   ],
+   "banner": "After insert('app'): search('app') = True"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/10-tries/0208-implement-trie-prefix-tree/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;208. Implement Trie (Prefix Tree) — https://leetcode.com/problems/implement-trie-prefix-tree/
 
 Build a data structure that stores words and can answer two questions fast:
 &quot;is this exact word here?&quot; and &quot;does any stored word start with this prefix?&quot;.

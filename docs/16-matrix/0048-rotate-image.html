@@ -60,7 +60,619 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Transposing the whole grid</strong> (every <code>r, c</code>) instead of only <code>c &gt; r</code>. You swap each pair back to where it started, and nothing changes.</li><li>Forgetting the reverse step, or reversing <strong>columns</strong> instead of rows — that gives you a counter-clockwise turn instead.</li><li>Writing <code>matrix = result</code> at the end. That rebinds a local name and does <strong>not</strong> change the caller&#x27;s grid. Copy the row contents back with <code>matrix[r][:] = ...</code>.</li></ul>
 <h2>Transfer</h2>
-<p>The move &quot;a hard rearrangement equals a short sequence of simple in-place swaps&quot; carries over to other grid transforms: transpose on its own, horizontal or vertical flips, and counter-clockwise rotation (reverse the rows first, then transpose). It&#x27;s the same in-place-grid discipline behind <a href="../0054-spiral-matrix/">Spiral Matrix / 54</a> and <a href="../0073-set-matrix-zeroes/">Set Matrix Zeroes / 73</a>, where the win is doing the work inside the grid you were given instead of copying it.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/16-matrix/0048-rotate-image/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;48. Rotate Image — https://leetcode.com/problems/rotate-image/
+<p>The move &quot;a hard rearrangement equals a short sequence of simple in-place swaps&quot; carries over to other grid transforms: transpose on its own, horizontal or vertical flips, and counter-clockwise rotation (reverse the rows first, then transpose). It&#x27;s the same in-place-grid discipline behind <a href="../0054-spiral-matrix/">Spiral Matrix / 54</a> and <a href="../0073-set-matrix-zeroes/">Set Matrix Zeroes / 73</a>, where the win is doing the work inside the grid you were given instead of copying it.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Rotate Image - transpose then reverse rows, no extra grid",
+ "acts": [
+  "Brute: copy to a new grid",
+  "Transpose in place",
+  "Reverse each row",
+  "Edge: 2x2"
+ ],
+ "code": {
+  "copy": [
+   "result = [[0]*n for _ in range(n)]",
+   "for r in range(n):",
+   "    for c in range(n):",
+   "        result[c][n-1-r] = matrix[r][c]",
+   "matrix[:] = result   # extra grid = the waste"
+  ],
+  "fast": [
+   "for r in range(n):",
+   "    for c in range(r+1, n):",
+   "        matrix[r][c], matrix[c][r] = matrix[c][r], matrix[r][c]",
+   "for row in matrix:",
+   "    row.reverse()"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "cells being swapped / read"
+  ],
+  [
+   "good",
+   "placed / answer"
+  ],
+  [
+   "bad",
+   "the extra grid (waste)"
+  ],
+  [
+   "dim",
+   "on the diagonal / settled"
+  ]
+ ],
+ "rows": [
+  [
+   1,
+   2,
+   3
+  ],
+  [
+   4,
+   5,
+   6
+  ],
+  [
+   7,
+   8,
+   9
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     1,
+     2,
+     3
+    ],
+    [
+     4,
+     5,
+     6
+    ],
+    [
+     7,
+     8,
+     9
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "intro": "where each cell lands under a 90-degree clockwise turn.",
+   "invariant": "clockwise sends (r,c) to (c, n-1-r).",
+   "note": "Brute force: allocate a second n x n grid and copy every cell to its rotated home. Watch (0,0), the top-left, travel to the top-right.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "extra grid",
+     "n x n"
+    ],
+    [
+     "writes",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "result[0][2] = matrix[0][0] = 1 (source (r,c) lands at (c, n-1-r)).",
+   "code": "copy",
+   "line": 3,
+   "marks": {
+    "0,0": "active",
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "from",
+     "(0,0)"
+    ],
+    [
+     "to",
+     "(0,2)"
+    ],
+    [
+     "writes",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "result[2][2] = matrix[0][2] = 3 (source (r,c) lands at (c, n-1-r)).",
+   "code": "copy",
+   "line": 3,
+   "marks": {
+    "0,2": "active",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "from",
+     "(0,2)"
+    ],
+    [
+     "to",
+     "(2,2)"
+    ],
+    [
+     "writes",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "result[2][0] = matrix[2][2] = 9 (source (r,c) lands at (c, n-1-r)).",
+   "code": "copy",
+   "line": 3,
+   "marks": {
+    "2,2": "active",
+    "2,0": "good"
+   },
+   "state": [
+    [
+     "from",
+     "(2,2)"
+    ],
+    [
+     "to",
+     "(2,0)"
+    ],
+    [
+     "writes",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "result[0][0] = matrix[2][0] = 7 (source (r,c) lands at (c, n-1-r)).",
+   "code": "copy",
+   "line": 3,
+   "marks": {
+    "2,0": "active",
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "from",
+     "(2,0)"
+    ],
+    [
+     "to",
+     "(0,0)"
+    ],
+    [
+     "writes",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "It works, but the second grid is banned by the problem. That extra n x n storage is the waste. In place we look for swaps that stay inside the grid.",
+   "marks": {
+    "0,0": "bad",
+    "0,2": "bad",
+    "2,2": "bad",
+    "2,0": "bad"
+   },
+   "state": [
+    [
+     "extra grid",
+     "n x n"
+    ],
+    [
+     "cost",
+     "O(n^2) space"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     1,
+     2,
+     3
+    ],
+    [
+     4,
+     5,
+     6
+    ],
+    [
+     7,
+     8,
+     9
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "a clockwise turn = transpose, then reverse each row. First the transpose.",
+   "invariant": "transpose swaps matrix[r][c] with matrix[c][r], only for c > r.",
+   "note": "Transpose flips the grid over its main diagonal: rows become columns. Swap each pair once, taking only cells above the diagonal (c > r).",
+   "marks": {
+    "0,0": "dim",
+    "1,1": "dim",
+    "2,2": "dim"
+   },
+   "state": [
+    [
+     "swaps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 2,
+   "note": "swap (0,1)=2 with (1,0)=4.",
+   "set": {
+    "0,1": 4,
+    "1,0": 2
+   },
+   "marks": {
+    "0,1": "active",
+    "1,0": "active"
+   },
+   "state": [
+    [
+     "swap",
+     "(0,1) <-> (1,0)"
+    ],
+    [
+     "swaps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 2,
+   "note": "swap (0,2)=3 with (2,0)=7.",
+   "set": {
+    "0,2": 7,
+    "2,0": 3
+   },
+   "marks": {
+    "0,2": "active",
+    "2,0": "active"
+   },
+   "state": [
+    [
+     "swap",
+     "(0,2) <-> (2,0)"
+    ],
+    [
+     "swaps",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 2,
+   "note": "swap (1,2)=6 with (2,1)=8.",
+   "set": {
+    "1,2": 8,
+    "2,1": 6
+   },
+   "marks": {
+    "1,2": "active",
+    "2,1": "active"
+   },
+   "state": [
+    [
+     "swap",
+     "(1,2) <-> (2,1)"
+    ],
+    [
+     "swaps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 2,
+   "note": "Transposed. Rows and columns have traded places, entirely in place.",
+   "marks": {
+    "0,0": "dim",
+    "1,1": "dim",
+    "2,2": "dim"
+   },
+   "state": [
+    [
+     "swaps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     1,
+     4,
+     7
+    ],
+    [
+     2,
+     5,
+     8
+    ],
+    [
+     3,
+     6,
+     9
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "fast",
+   "line": 3,
+   "intro": "now reverse each row left-to-right to finish the clockwise turn.",
+   "invariant": "reversing a row mirrors it; combined with the transpose that is the rotation.",
+   "note": "Reverse each row in place. No scratch space needed.",
+   "marks": {},
+   "state": [
+    [
+     "rows reversed",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "reverse row 0: [1, 4, 7] -> [7, 4, 1].",
+   "set": {
+    "0,0": 7,
+    "0,1": 4,
+    "0,2": 1
+   },
+   "marks": {
+    "0,0": "active",
+    "0,1": "active",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "row",
+     0
+    ],
+    [
+     "rows reversed",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "reverse row 1: [2, 5, 8] -> [8, 5, 2].",
+   "set": {
+    "1,0": 8,
+    "1,1": 5,
+    "1,2": 2
+   },
+   "marks": {
+    "1,0": "active",
+    "1,1": "active",
+    "1,2": "active"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "rows reversed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "reverse row 2: [3, 6, 9] -> [9, 6, 3].",
+   "set": {
+    "2,0": 9,
+    "2,1": 6,
+    "2,2": 3
+   },
+   "marks": {
+    "2,0": "active",
+    "2,1": "active",
+    "2,2": "active"
+   },
+   "state": [
+    [
+     "row",
+     2
+    ],
+    [
+     "rows reversed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Done. The grid is rotated 90 degrees clockwise using only in-grid swaps and reverses.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "1,0": "good",
+    "1,1": "good",
+    "1,2": "good",
+    "2,0": "good",
+    "2,1": "good",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "extra space",
+     "O(1)"
+    ]
+   ],
+   "banner": "Rotated 90 clockwise in place"
+  },
+  {
+   "act": 3,
+   "rows": [
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1"
+   ],
+   "colLabels": [
+    "0",
+    "1"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the smallest non-trivial grid: one transpose swap, then two reverses.",
+   "invariant": "same two passes, any n.",
+   "note": "Edge case: 2x2. Only pair above the diagonal is (0,1) <-> (1,0).",
+   "marks": {
+    "0,1": "active",
+    "1,0": "active"
+   },
+   "state": [
+    [
+     "swaps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "swap (0,1)=2 with (1,0)=3.",
+   "set": {
+    "0,1": 3,
+    "1,0": 2
+   },
+   "marks": {
+    "0,1": "active",
+    "1,0": "active"
+   },
+   "state": [
+    [
+     "swaps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "reverse row 0: [1, 3] -> [3, 1].",
+   "set": {
+    "0,0": 3,
+    "0,1": 1
+   },
+   "marks": {
+    "0,0": "active",
+    "0,1": "active"
+   },
+   "state": [
+    [
+     "rows reversed",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "reverse row 1: [2, 4] -> [4, 2].",
+   "set": {
+    "1,0": 4,
+    "1,1": 2
+   },
+   "marks": {
+    "1,0": "active",
+    "1,1": "active"
+   },
+   "state": [
+    [
+     "rows reversed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "2x2 rotated: [[1,2],[3,4]] -> [[3,1],[4,2]].",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "1,0": "good",
+    "1,1": "good"
+   },
+   "banner": "2x2 rotated in place"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/16-matrix/0048-rotate-image/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;48. Rotate Image — https://leetcode.com/problems/rotate-image/
 
 Rotate an n x n matrix 90 degrees clockwise, **in place**. You may not allocate
 another matrix — the input grid itself must end up rotated.

@@ -71,7 +71,962 @@
 <h2>Pitfalls</h2>
 <ul><li>Querying <code>prefix(rank)</code> instead of <code>prefix(rank - 1)</code> — you want *strictly* smaller, so exclude the current value&#x27;s own rank.</li><li>Forgetting to coordinate-compress: raw values can be enormous or negative, which would blow up the tree size.</li><li>Walking left-to-right by mistake. The right-to-left order is what makes &quot;already inserted&quot; mean &quot;to my right.&quot;</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is <strong>use a Fenwick tree as a live frequency counter, so &quot;how many values seen so far are below v&quot; is a log-n prefix query.</strong> It shares its machinery with <a href="../0307-range-sum-query-mutable/">Range Sum Query - Mutable / 307</a>, and the counting-during-merge alternative is the same inversion count behind <a href="https://leetcode.com/problems/reverse-pairs/">Reverse Pairs / 493</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/26-advanced-ds/0315-count-of-smaller-numbers-after-self/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;315. Count of Smaller Numbers After Self — https://leetcode.com/problems/count-of-smaller-numbers-after-self/
+<p>The reusable move is <strong>use a Fenwick tree as a live frequency counter, so &quot;how many values seen so far are below v&quot; is a log-n prefix query.</strong> It shares its machinery with <a href="../0307-range-sum-query-mutable/">Range Sum Query - Mutable / 307</a>, and the counting-during-merge alternative is the same inversion count behind <a href="https://leetcode.com/problems/reverse-pairs/">Reverse Pairs / 493</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Count of Smaller After Self - a Fenwick tree over value ranks",
+ "acts": [
+  "Brute: rescan suffix",
+  "The waste",
+  "BIT over ranks",
+  "Edge: already sorted"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "    for j in range(i+1, n):",
+   "        if nums[j] < nums[i]:",
+   "            result[i] += 1"
+  ],
+  "bit": [
+   "ranks: sorted distinct values -> 1..m",
+   "for i from RIGHT to LEFT:",
+   "    r = rank(nums[i])",
+   "    result[i] = prefix(r - 1)   # smaller, already inserted",
+   "    add(r)                       # record nums[i] as 'seen to the right'"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "buckets updated (insert)"
+  ],
+  [
+   "good",
+   "buckets summed (query) / answer"
+  ],
+  [
+   "dim",
+   "suffix being scanned"
+  ]
+ ],
+ "rows": [
+  [
+   5,
+   2,
+   6,
+   1
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     5,
+     2,
+     6,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "nums"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "every element rescans its entire right suffix to tally smaller values.",
+   "invariant": "result[i] = count of j>i with nums[j] < nums[i].",
+   "note": "Brute force on [5, 2, 6, 1]: for each i, scan everything to its right and count the strictly smaller ones.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "result",
+     "[?, ?, ?, ?]"
+    ],
+    [
+     "compares",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "i=0 (nums[i]=5): 2 smaller value(s) to its right.",
+   "rows": [
+    [
+     5,
+     2,
+     6,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "nums"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "marks": {
+    "0,0": "active",
+    "0,1": "dim",
+    "0,2": "dim",
+    "0,3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "count",
+     2
+    ],
+    [
+     "compares",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "i=1 (nums[i]=2): 1 smaller value(s) to its right.",
+   "rows": [
+    [
+     5,
+     2,
+     6,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "nums"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "marks": {
+    "0,1": "active",
+    "0,2": "dim",
+    "0,3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "count",
+     1
+    ],
+    [
+     "compares",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "i=2 (nums[i]=6): 1 smaller value(s) to its right.",
+   "rows": [
+    [
+     5,
+     2,
+     6,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "nums"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "marks": {
+    "0,2": "active",
+    "0,3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "count",
+     1
+    ],
+    [
+     "compares",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "i=3 (nums[i]=1): 0 smaller value(s) to its right.",
+   "rows": [
+    [
+     5,
+     2,
+     6,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "nums"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "marks": {
+    "0,3": "active"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "count",
+     0
+    ],
+    [
+     "compares",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "result = [2, 1, 1, 0], but it cost 6 comparisons \u2014 each element re-walked the suffix the element before it already walked.",
+   "rows": [
+    [
+     5,
+     2,
+     6,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "nums"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "marks": {},
+   "state": [
+    [
+     "result",
+     "[2, 1, 1, 0]"
+    ],
+    [
+     "compares",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "'how many smaller to my right?' can be a running count, not a fresh scan.",
+   "note": "The suffix scans overlap: 6 comparisons for 4 elements, growing like n*n. A Fenwick tree over value-ranks answers each query in log n.",
+   "marks": {},
+   "state": [
+    [
+     "compares (brute)",
+     6
+    ],
+    [
+     "pattern",
+     "~ n * n"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Compress values to ranks: {1: 1, 2: 2, 5: 3, 6: 4}. Sweep RIGHT to LEFT; the tree counts ranks already inserted (all to the right). Query prefix(rank-1) = smaller-so-far.",
+   "marks": {},
+   "state": [
+    [
+     "ranks",
+     "{1: 1, 2: 2, 5: 3, 6: 4}"
+    ],
+    [
+     "sweep",
+     "right -> left"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     0,
+     null,
+     null,
+     null
+    ],
+    [
+     0,
+     0,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     0,
+     null
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "r1\n=1",
+    "r2\n=2",
+    "r3\n=5",
+    "r4\n=6"
+   ],
+   "code": "bit",
+   "line": 1,
+   "intro": "the tree is a frequency counter over ranks; prefix(r) = how many ranks <= r inserted.",
+   "invariant": "everything inserted so far lies to the right of the current index.",
+   "note": "Sweep right-to-left. At each element: query smaller ranks already inserted, then insert this rank.",
+   "marks": {},
+   "state": [
+    [
+     "result",
+     "[?, ?, ?, ?]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 3,
+   "note": "nums[3]=1 has rank 1. prefix(0) = 0 smaller value(s) already to its right -> result[3] = 0.",
+   "rows": [
+    [
+     0,
+     null,
+     null,
+     null
+    ],
+    [
+     0,
+     0,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     0,
+     null
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "r1\n=1",
+    "r2\n=2",
+    "r3\n=5",
+    "r4\n=6"
+   ],
+   "marks": {},
+   "state": [
+    [
+     "nums[i]",
+     1
+    ],
+    [
+     "rank",
+     1
+    ],
+    [
+     "smaller right",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 4,
+   "note": "Insert rank 1: bump every bucket covering it. tree = [1, 1, 0, 1].",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     1,
+     1,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     0,
+     null
+    ],
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "r1\n=1",
+    "r2\n=2",
+    "r3\n=5",
+    "r4\n=6"
+   ],
+   "marks": {
+    "0,0": "active",
+    "1,0": "active",
+    "1,1": "active",
+    "3,0": "active",
+    "3,1": "active",
+    "3,2": "active",
+    "3,3": "active"
+   },
+   "state": [
+    [
+     "inserted rank",
+     1
+    ],
+    [
+     "tree",
+     "[1, 1, 0, 1]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 3,
+   "note": "nums[2]=6 has rank 4. prefix(3) = 1 smaller value(s) already to its right -> result[2] = 1.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     1,
+     1,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     0,
+     null
+    ],
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "r1\n=1",
+    "r2\n=2",
+    "r3\n=5",
+    "r4\n=6"
+   ],
+   "marks": {
+    "2,2": "good",
+    "1,0": "good",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "nums[i]",
+     6
+    ],
+    [
+     "rank",
+     4
+    ],
+    [
+     "smaller right",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 4,
+   "note": "Insert rank 4: bump every bucket covering it. tree = [1, 1, 0, 2].",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     1,
+     1,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     0,
+     null
+    ],
+    [
+     2,
+     2,
+     2,
+     2
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "r1\n=1",
+    "r2\n=2",
+    "r3\n=5",
+    "r4\n=6"
+   ],
+   "marks": {
+    "3,0": "active",
+    "3,1": "active",
+    "3,2": "active",
+    "3,3": "active"
+   },
+   "state": [
+    [
+     "inserted rank",
+     4
+    ],
+    [
+     "tree",
+     "[1, 1, 0, 2]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 3,
+   "note": "nums[1]=2 has rank 2. prefix(1) = 1 smaller value(s) already to its right -> result[1] = 1.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     1,
+     1,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     0,
+     null
+    ],
+    [
+     2,
+     2,
+     2,
+     2
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "r1\n=1",
+    "r2\n=2",
+    "r3\n=5",
+    "r4\n=6"
+   ],
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "nums[i]",
+     2
+    ],
+    [
+     "rank",
+     2
+    ],
+    [
+     "smaller right",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 4,
+   "note": "Insert rank 2: bump every bucket covering it. tree = [1, 2, 0, 3].",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     2,
+     2,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     0,
+     null
+    ],
+    [
+     3,
+     3,
+     3,
+     3
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "r1\n=1",
+    "r2\n=2",
+    "r3\n=5",
+    "r4\n=6"
+   ],
+   "marks": {
+    "1,0": "active",
+    "1,1": "active",
+    "3,0": "active",
+    "3,1": "active",
+    "3,2": "active",
+    "3,3": "active"
+   },
+   "state": [
+    [
+     "inserted rank",
+     2
+    ],
+    [
+     "tree",
+     "[1, 2, 0, 3]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 3,
+   "note": "nums[0]=5 has rank 3. prefix(2) = 2 smaller value(s) already to its right -> result[0] = 2.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     2,
+     2,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     0,
+     null
+    ],
+    [
+     3,
+     3,
+     3,
+     3
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "r1\n=1",
+    "r2\n=2",
+    "r3\n=5",
+    "r4\n=6"
+   ],
+   "marks": {
+    "1,0": "good",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "nums[i]",
+     5
+    ],
+    [
+     "rank",
+     3
+    ],
+    [
+     "smaller right",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 4,
+   "note": "Insert rank 3: bump every bucket covering it. tree = [1, 2, 1, 4].",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     2,
+     2,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     1,
+     null
+    ],
+    [
+     4,
+     4,
+     4,
+     4
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "r1\n=1",
+    "r2\n=2",
+    "r3\n=5",
+    "r4\n=6"
+   ],
+   "marks": {
+    "2,2": "active",
+    "3,0": "active",
+    "3,1": "active",
+    "3,2": "active",
+    "3,3": "active"
+   },
+   "state": [
+    [
+     "inserted rank",
+     3
+    ],
+    [
+     "tree",
+     "[1, 2, 1, 4]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 4,
+   "note": "result = [2, 1, 1, 0] \u2014 same answer as brute, but each query and insert was O(log m).",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     2,
+     2,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     1,
+     null
+    ],
+    [
+     4,
+     4,
+     4,
+     4
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "r1\n=1",
+    "r2\n=2",
+    "r3\n=5",
+    "r4\n=6"
+   ],
+   "marks": {},
+   "state": [
+    [
+     "result",
+     "[2, 1, 1, 0]"
+    ],
+    [
+     "vs brute compares",
+     6
+    ]
+   ],
+   "banner": "counts = [2, 1, 1, 0]   (Fenwick over ranks, O(n log n))"
+  },
+  {
+   "act": 3,
+   "rows": [
+    [
+     1,
+     2,
+     3,
+     4
+    ]
+   ],
+   "rowLabels": [
+    "nums"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "bit",
+   "line": 1,
+   "intro": "already sorted: nothing smaller is ever to the right.",
+   "invariant": "a rank inserted is always >= every future query -> zero counts.",
+   "note": "Edge case: [1,2,3,4], already ascending. Sweeping right-to-left, every inserted value is larger than the next one queried, so every count is 0.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good"
+   },
+   "state": [
+    [
+     "result",
+     "[0, 0, 0, 0]"
+    ]
+   ],
+   "banner": "Sorted input -> all zeros"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/26-advanced-ds/0315-count-of-smaller-numbers-after-self/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;315. Count of Smaller Numbers After Self — https://leetcode.com/problems/count-of-smaller-numbers-after-self/
 
 For each element, count how many elements to its right are strictly smaller than
 it. Return that list of counts (same length as the input).

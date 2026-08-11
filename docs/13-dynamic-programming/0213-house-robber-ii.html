@@ -62,7 +62,524 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>The <code>n == 1</code> case.</strong> With one house there is no &quot;other end,&quot; and both slices <code>nums[:-1]</code> and <code>nums[1:]</code> come out empty, giving <code>0</code>. Handle a single house directly and return <code>nums[0]</code>.</li><li>Dropping *just* the first or *just* the last house isn&#x27;t enough on its own — you need <strong>both</strong> runs and the max; each alone misses plans the other allows.</li><li>Don&#x27;t assume the two buckets are disjoint. They aren&#x27;t (a plan robbing neither end sits in both), but <code>max</code> handles the overlap correctly.</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Break a circular / wrap-around constraint by fixing one boundary choice and solving the linear cases&quot; is a reusable move — reach for it whenever a problem is a known linear DP made circular. The underlying line solver is <a href="../0198-house-robber/">House Robber / 198</a>; the same reduce-to-cases instinct shows up in circular-array problems like <a href="https://leetcode.com/problems/maximum-sum-circular-subarray/">Maximum Sum Circular Subarray / 918</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0213-house-robber-ii/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;213. House Robber II — https://leetcode.com/problems/house-robber-ii/
+<p>&quot;Break a circular / wrap-around constraint by fixing one boundary choice and solving the linear cases&quot; is a reusable move — reach for it whenever a problem is a known linear DP made circular. The underlying line solver is <a href="../0198-house-robber/">House Robber / 198</a>; the same reduce-to-cases instinct shows up in circular-array problems like <a href="https://leetcode.com/problems/maximum-sum-circular-subarray/">Maximum Sum Circular Subarray / 918</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "House Robber II - circle splits into two straight runs",
+ "acts": [
+  "The circle rule",
+  "Run A: drop last",
+  "Run B: drop first",
+  "Combine + edge"
+ ],
+ "code": {
+  "dp": [
+   "def _rob_line(a):",
+   "    take, skip = 0, 0",
+   "    for m in a: take, skip = skip + m, max(take, skip)",
+   "    return max(take, skip)",
+   "return max(_rob_line(nums[:-1]), _rob_line(nums[1:]))"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "compared best"
+  ],
+  [
+   "good",
+   "locked best / robbed"
+  ],
+  [
+   "bad",
+   "the two ends (can't share)"
+  ]
+ ],
+ "rows": [
+  [
+   1,
+   2,
+   3,
+   1
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     1,
+     2,
+     3,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "$"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": null,
+   "intro": "the houses form a CIRCLE, so the first and last are neighbors too.",
+   "invariant": "house 0 and house n-1 can never both be robbed.",
+   "note": "Same as House Robber, but the row is bent into a circle: house 0 touches house n-1. They can't both be robbed.",
+   "marks": {
+    "0,0": "active",
+    "0,3": "active"
+   },
+   "state": [
+    [
+     "houses",
+     4
+    ],
+    [
+     "extra rule",
+     "ends touch"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "The only new constraint is that one adjacency. So every legal plan either skips the last house or skips the first. Solve both as plain straight rows and keep the better.",
+   "marks": {
+    "0,0": "bad",
+    "0,3": "bad"
+   },
+   "state": [
+    [
+     "split",
+     "two linear runs"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     1,
+     2,
+     3
+    ]
+   ],
+   "rowLabels": [
+    "A $"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "dp",
+   "line": 4,
+   "intro": "run 1: houses 0..n-2 as a straight row (last house forbidden).",
+   "invariant": "best[i] = most robbable from this sub-row's houses 0..i.",
+   "note": "Run A uses houses [1, 2, 3] (drop the last). Fill best[] left to right.",
+   "marks": {},
+   "state": [
+    [
+     "row",
+     "[1, 2, 3]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     1,
+     2,
+     3
+    ]
+   ],
+   "rowLabels": [
+    "A best"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "House 0 ($1): best[0] = 1.",
+   "set": {
+    "0,0": 1
+   },
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "best[0]",
+     1
+    ],
+    [
+     "run A best",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     1,
+     2,
+     3
+    ]
+   ],
+   "rowLabels": [
+    "A best"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "House 1 ($2): best[1] = 2.",
+   "set": {
+    "0,0": 1,
+    "0,1": 2
+   },
+   "marks": {
+    "0,1": "good",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "best[1]",
+     2
+    ],
+    [
+     "run A best",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     1,
+     2,
+     3
+    ]
+   ],
+   "rowLabels": [
+    "A best"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "House 2 ($3): best[2] = 4.",
+   "set": {
+    "0,0": 1,
+    "0,1": 2,
+    "0,2": 4
+   },
+   "marks": {
+    "0,2": "good",
+    "0,1": "active"
+   },
+   "state": [
+    [
+     "best[2]",
+     4
+    ],
+    [
+     "run A best",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     1,
+     2,
+     4
+    ]
+   ],
+   "rowLabels": [
+    "A best"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "dp",
+   "line": 3,
+   "note": "Run A answer = 4 (rob houses 0 and 2: 1 + 3).",
+   "marks": {
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "run A",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     2,
+     3,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "B $"
+   ],
+   "colLabels": [
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "dp",
+   "line": 4,
+   "intro": "run 2: houses 1..n-1 as a straight row (first house forbidden).",
+   "invariant": "same recurrence, different window of houses.",
+   "note": "Run B uses houses [2, 3, 1] (drop the first). Same fill.",
+   "marks": {},
+   "state": [
+    [
+     "row",
+     "[2, 3, 1]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     2,
+     3,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "B best"
+   ],
+   "colLabels": [
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "House 1 ($2): best[0] = 2.",
+   "set": {
+    "0,0": 2
+   },
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "best[0]",
+     2
+    ],
+    [
+     "run B best",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     2,
+     3,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "B best"
+   ],
+   "colLabels": [
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "House 2 ($3): best[1] = 3.",
+   "set": {
+    "0,0": 2,
+    "0,1": 3
+   },
+   "marks": {
+    "0,1": "good",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "best[1]",
+     3
+    ],
+    [
+     "run B best",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     2,
+     3,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "B best"
+   ],
+   "colLabels": [
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "dp",
+   "line": 2,
+   "note": "House 3 ($1): best[2] = 3.",
+   "set": {
+    "0,0": 2,
+    "0,1": 3,
+    "0,2": 3
+   },
+   "marks": {
+    "0,2": "good",
+    "0,1": "active"
+   },
+   "state": [
+    [
+     "best[2]",
+     3
+    ],
+    [
+     "run B best",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     2,
+     3,
+     3
+    ]
+   ],
+   "rowLabels": [
+    "B best"
+   ],
+   "colLabels": [
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "dp",
+   "line": 3,
+   "note": "Run B answer = 3 (rob house 2: value 3).",
+   "marks": {
+    "0,1": "good"
+   },
+   "state": [
+    [
+     "run B",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "rows": [
+    [
+     1,
+     2,
+     3,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "$"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "dp",
+   "line": 4,
+   "intro": "the circular answer is just the better of the two straight runs.",
+   "invariant": "every legal circular plan lives in run A or run B.",
+   "note": "Answer = max(run A 4, run B 3) = 4. That plan robs houses 0 and 2 and never touches both ends.",
+   "marks": {
+    "0,0": "good",
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "run A",
+     4
+    ],
+    [
+     "run B",
+     3
+    ],
+    [
+     "answer",
+     4
+    ]
+   ],
+   "banner": "Circular max = 4  = max(4, 3)"
+  },
+  {
+   "act": 3,
+   "rows": [
+    [
+     5
+    ]
+   ],
+   "rowLabels": [
+    "$"
+   ],
+   "colLabels": [
+    "0"
+   ],
+   "code": "dp",
+   "line": 4,
+   "note": "Edge case: one house. There is no other end to conflict with, so rob it \u2014 the answer is 5.",
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "answer",
+     5
+    ]
+   ],
+   "banner": "Single house -> 5"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0213-house-robber-ii/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;213. House Robber II — https://leetcode.com/problems/house-robber-ii/
 
 Same as House Robber, but the houses are arranged in a circle, so the first and
 last house are also adjacent. Return the maximum you can rob without hitting two

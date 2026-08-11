@@ -70,7 +70,3962 @@
 <h2>Pitfalls</h2>
 <ul><li>Recursing with <code>start = i + 1</code> instead of <code>i</code> — that forbids reuse and turns this into a subset problem (see Combination Sum II).</li><li>Recording <code>path</code> directly instead of a <strong>copy</strong> — you&#x27;d store a reference to a list that later steps empty out; every recorded answer ends up identical.</li><li>Forgetting to sort, then trying to stop on the size check — without sorting a small candidate can sit after a big one, so an early stop would miss answers.</li></ul>
 <h2>Transfer</h2>
-<p>The &quot;pass a <code>start</code> index so combinations stay non-decreasing&quot; trick is the core of every *pick-a-subset* backtracking problem: <a href="../../21-subsets/0078-subsets/">Subsets / 78</a>, <a href="../../21-subsets/0077-combinations/">Combinations / 77</a>, and *Combination Sum II / 40* (each number used once, skip duplicates). Whenever you enumerate groups and order-within-a-group doesn&#x27;t matter, enforce an order with a <code>start</code> cursor.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/09-backtracking/0039-combination-sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;39. Combination Sum — https://leetcode.com/problems/combination-sum/
+<p>The &quot;pass a <code>start</code> index so combinations stay non-decreasing&quot; trick is the core of every *pick-a-subset* backtracking problem: <a href="../../21-subsets/0078-subsets/">Subsets / 78</a>, <a href="../../21-subsets/0077-combinations/">Combinations / 77</a>, and *Combination Sum II / 40* (each number used once, skip duplicates). Whenever you enumerate groups and order-within-a-group doesn&#x27;t matter, enforce an order with a <code>start</code> cursor.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Combination Sum - a decision tree that prunes overshoots",
+ "acts": [
+  "The rule",
+  "Run the decision tree",
+  "Edge: prune at the root"
+ ],
+ "code": {
+  "main": [
+   "def backtrack(start, remaining):",
+   "    if remaining == 0:",
+   "        result.append(path.copy())",
+   "        return",
+   "    for i in range(start, len(candidates)):",
+   "        c = candidates[i]",
+   "        if c > remaining:",
+   "            break",
+   "        path.append(c)",
+   "        backtrack(i, remaining - c)",
+   "        path.pop()"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "choice we're extending now"
+  ],
+  [
+   "good",
+   "OK = branch reached the target; X = pruned / exhausted"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "\u00b7",
+   "x": 0,
+   "y": 0
+  }
+ ],
+ "edges": [],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "main",
+   "line": 4,
+   "intro": "each node is a choice \u2014 'add this candidate next'; a branch dies when the candidate overshoots what's left.",
+   "invariant": "every path is non-decreasing, so no multiset is built twice.",
+   "note": "Rule: at each step pick a candidate to add, but never look left of where you started. That ordering makes each combination appear once. Candidates are sorted [2,3,6,7], target 7.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "target",
+     7
+    ],
+    [
+     "rule",
+     "pick >= start"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "main",
+   "line": 6,
+   "note": "Because they're sorted, the moment a candidate is bigger than what's left, every later candidate is too \u2014 so we prune the whole rest.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "prune when",
+     "c > remaining"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "main",
+   "line": 0,
+   "intro": "watch the tree grow: green-ish OK = a hit, X = a dead/pruned branch.",
+   "invariant": "a node's badge appears only once its whole subtree is finished.",
+   "note": "Run it from the root with remaining = 7. Each downward step commits to a candidate; each X is a branch we correctly abandon.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "start remaining",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "main",
+   "line": 9,
+   "note": "take 2: path [2], remaining 7 - 2 = 5.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "take",
+     2
+    ],
+    [
+     "path",
+     "[2]"
+    ],
+    [
+     "remaining",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "code": "main",
+   "line": 9,
+   "note": "take 2: path [2, 2], remaining 5 - 2 = 3.",
+   "active": [
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "take",
+     2
+    ],
+    [
+     "path",
+     "[2, 2]"
+    ],
+    [
+     "remaining",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "main",
+   "line": 9,
+   "note": "take 2: path [2, 2, 2], remaining 3 - 2 = 1.",
+   "active": [
+    3
+   ],
+   "done": {},
+   "state": [
+    [
+     "take",
+     2
+    ],
+    [
+     "path",
+     "[2, 2, 2]"
+    ],
+    [
+     "remaining",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "main",
+   "line": 7,
+   "note": "try 2: 2 > 1 left -> too big. Sorted, so stop this whole fan of choices.",
+   "active": [
+    4
+   ],
+   "done": {
+    "4": "X"
+   },
+   "state": [
+    [
+     "at",
+     2
+    ],
+    [
+     "remaining",
+     1
+    ],
+    [
+     "action",
+     "prune + break"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "main",
+   "line": 10,
+   "note": "undo 2; back up and try the next candidate from here.",
+   "active": [
+    2
+   ],
+   "done": {
+    "4": "X",
+    "3": "X"
+   },
+   "state": [
+    [
+     "pop",
+     2
+    ],
+    [
+     "back to remaining",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ]
+   ],
+   "code": "main",
+   "line": 9,
+   "note": "take 3: path [2, 2, 3], remaining 3 - 3 = 0.",
+   "active": [
+    5
+   ],
+   "done": {
+    "4": "X",
+    "3": "X"
+   },
+   "state": [
+    [
+     "take",
+     3
+    ],
+    [
+     "path",
+     "[2, 2, 3]"
+    ],
+    [
+     "remaining",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ]
+   ],
+   "code": "main",
+   "line": 2,
+   "note": "remaining hit 0 \u2014 record [2, 2, 3]. A real combination.",
+   "active": [],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK"
+   },
+   "state": [
+    [
+     "found",
+     "[2, 2, 3]"
+    ],
+    [
+     "sum",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ]
+   ],
+   "code": "main",
+   "line": 10,
+   "note": "undo 3; back up and try the next candidate from here.",
+   "active": [
+    2
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK"
+   },
+   "state": [
+    [
+     "pop",
+     3
+    ],
+    [
+     "back to remaining",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ]
+   ],
+   "code": "main",
+   "line": 7,
+   "note": "try 6: 6 > 3 left -> too big. Sorted, so stop this whole fan of choices.",
+   "active": [
+    6
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X"
+   },
+   "state": [
+    [
+     "at",
+     6
+    ],
+    [
+     "remaining",
+     3
+    ],
+    [
+     "action",
+     "prune + break"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ]
+   ],
+   "code": "main",
+   "line": 10,
+   "note": "undo 2; back up and try the next candidate from here.",
+   "active": [
+    1
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X"
+   },
+   "state": [
+    [
+     "pop",
+     2
+    ],
+    [
+     "back to remaining",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ]
+   ],
+   "code": "main",
+   "line": 9,
+   "note": "take 3: path [2, 3], remaining 5 - 3 = 2.",
+   "active": [
+    7
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X"
+   },
+   "state": [
+    [
+     "take",
+     3
+    ],
+    [
+     "path",
+     "[2, 3]"
+    ],
+    [
+     "remaining",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ]
+   ],
+   "code": "main",
+   "line": 7,
+   "note": "try 3: 3 > 2 left -> too big. Sorted, so stop this whole fan of choices.",
+   "active": [
+    8
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X"
+   },
+   "state": [
+    [
+     "at",
+     3
+    ],
+    [
+     "remaining",
+     2
+    ],
+    [
+     "action",
+     "prune + break"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ]
+   ],
+   "code": "main",
+   "line": 10,
+   "note": "undo 3; back up and try the next candidate from here.",
+   "active": [
+    1
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X"
+   },
+   "state": [
+    [
+     "pop",
+     3
+    ],
+    [
+     "back to remaining",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ]
+   ],
+   "code": "main",
+   "line": 7,
+   "note": "try 6: 6 > 5 left -> too big. Sorted, so stop this whole fan of choices.",
+   "active": [
+    9
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X"
+   },
+   "state": [
+    [
+     "at",
+     6
+    ],
+    [
+     "remaining",
+     5
+    ],
+    [
+     "action",
+     "prune + break"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ]
+   ],
+   "code": "main",
+   "line": 10,
+   "note": "undo 2; back up and try the next candidate from here.",
+   "active": [
+    0
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X"
+   },
+   "state": [
+    [
+     "pop",
+     2
+    ],
+    [
+     "back to remaining",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ]
+   ],
+   "code": "main",
+   "line": 9,
+   "note": "take 3: path [3], remaining 7 - 3 = 4.",
+   "active": [
+    10
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X"
+   },
+   "state": [
+    [
+     "take",
+     3
+    ],
+    [
+     "path",
+     "[3]"
+    ],
+    [
+     "remaining",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ]
+   ],
+   "code": "main",
+   "line": 9,
+   "note": "take 3: path [3, 3], remaining 4 - 3 = 1.",
+   "active": [
+    11
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X"
+   },
+   "state": [
+    [
+     "take",
+     3
+    ],
+    [
+     "path",
+     "[3, 3]"
+    ],
+    [
+     "remaining",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ]
+   ],
+   "code": "main",
+   "line": 7,
+   "note": "try 3: 3 > 1 left -> too big. Sorted, so stop this whole fan of choices.",
+   "active": [
+    12
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X"
+   },
+   "state": [
+    [
+     "at",
+     3
+    ],
+    [
+     "remaining",
+     1
+    ],
+    [
+     "action",
+     "prune + break"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ]
+   ],
+   "code": "main",
+   "line": 10,
+   "note": "undo 3; back up and try the next candidate from here.",
+   "active": [
+    10
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X",
+    "11": "X"
+   },
+   "state": [
+    [
+     "pop",
+     3
+    ],
+    [
+     "back to remaining",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    },
+    {
+     "id": 13,
+     "val": 6,
+     "x": 858,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     10,
+     13
+    ]
+   ],
+   "code": "main",
+   "line": 7,
+   "note": "try 6: 6 > 4 left -> too big. Sorted, so stop this whole fan of choices.",
+   "active": [
+    13
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X",
+    "11": "X",
+    "13": "X"
+   },
+   "state": [
+    [
+     "at",
+     6
+    ],
+    [
+     "remaining",
+     4
+    ],
+    [
+     "action",
+     "prune + break"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    },
+    {
+     "id": 13,
+     "val": 6,
+     "x": 858,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     10,
+     13
+    ]
+   ],
+   "code": "main",
+   "line": 10,
+   "note": "undo 3; back up and try the next candidate from here.",
+   "active": [
+    0
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X",
+    "11": "X",
+    "13": "X",
+    "10": "X"
+   },
+   "state": [
+    [
+     "pop",
+     3
+    ],
+    [
+     "back to remaining",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    },
+    {
+     "id": 13,
+     "val": 6,
+     "x": 858,
+     "y": 184
+    },
+    {
+     "id": 14,
+     "val": 6,
+     "x": 924,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     10,
+     13
+    ],
+    [
+     0,
+     14
+    ]
+   ],
+   "code": "main",
+   "line": 9,
+   "note": "take 6: path [6], remaining 7 - 6 = 1.",
+   "active": [
+    14
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X",
+    "11": "X",
+    "13": "X",
+    "10": "X"
+   },
+   "state": [
+    [
+     "take",
+     6
+    ],
+    [
+     "path",
+     "[6]"
+    ],
+    [
+     "remaining",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    },
+    {
+     "id": 13,
+     "val": 6,
+     "x": 858,
+     "y": 184
+    },
+    {
+     "id": 14,
+     "val": 6,
+     "x": 924,
+     "y": 92
+    },
+    {
+     "id": 15,
+     "val": 6,
+     "x": 990,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     10,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     14,
+     15
+    ]
+   ],
+   "code": "main",
+   "line": 7,
+   "note": "try 6: 6 > 1 left -> too big. Sorted, so stop this whole fan of choices.",
+   "active": [
+    15
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X",
+    "11": "X",
+    "13": "X",
+    "10": "X",
+    "15": "X"
+   },
+   "state": [
+    [
+     "at",
+     6
+    ],
+    [
+     "remaining",
+     1
+    ],
+    [
+     "action",
+     "prune + break"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    },
+    {
+     "id": 13,
+     "val": 6,
+     "x": 858,
+     "y": 184
+    },
+    {
+     "id": 14,
+     "val": 6,
+     "x": 924,
+     "y": 92
+    },
+    {
+     "id": 15,
+     "val": 6,
+     "x": 990,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     10,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     14,
+     15
+    ]
+   ],
+   "code": "main",
+   "line": 10,
+   "note": "undo 6; back up and try the next candidate from here.",
+   "active": [
+    0
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X",
+    "11": "X",
+    "13": "X",
+    "10": "X",
+    "15": "X",
+    "14": "X"
+   },
+   "state": [
+    [
+     "pop",
+     6
+    ],
+    [
+     "back to remaining",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    },
+    {
+     "id": 13,
+     "val": 6,
+     "x": 858,
+     "y": 184
+    },
+    {
+     "id": 14,
+     "val": 6,
+     "x": 924,
+     "y": 92
+    },
+    {
+     "id": 15,
+     "val": 6,
+     "x": 990,
+     "y": 184
+    },
+    {
+     "id": 16,
+     "val": 7,
+     "x": 1056,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     10,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     14,
+     15
+    ],
+    [
+     0,
+     16
+    ]
+   ],
+   "code": "main",
+   "line": 9,
+   "note": "take 7: path [7], remaining 7 - 7 = 0.",
+   "active": [
+    16
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X",
+    "11": "X",
+    "13": "X",
+    "10": "X",
+    "15": "X",
+    "14": "X"
+   },
+   "state": [
+    [
+     "take",
+     7
+    ],
+    [
+     "path",
+     "[7]"
+    ],
+    [
+     "remaining",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    },
+    {
+     "id": 13,
+     "val": 6,
+     "x": 858,
+     "y": 184
+    },
+    {
+     "id": 14,
+     "val": 6,
+     "x": 924,
+     "y": 92
+    },
+    {
+     "id": 15,
+     "val": 6,
+     "x": 990,
+     "y": 184
+    },
+    {
+     "id": 16,
+     "val": 7,
+     "x": 1056,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     10,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     14,
+     15
+    ],
+    [
+     0,
+     16
+    ]
+   ],
+   "code": "main",
+   "line": 2,
+   "note": "remaining hit 0 \u2014 record [7]. A real combination.",
+   "active": [],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X",
+    "11": "X",
+    "13": "X",
+    "10": "X",
+    "15": "X",
+    "14": "X",
+    "16": "OK"
+   },
+   "state": [
+    [
+     "found",
+     "[7]"
+    ],
+    [
+     "sum",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    },
+    {
+     "id": 13,
+     "val": 6,
+     "x": 858,
+     "y": 184
+    },
+    {
+     "id": 14,
+     "val": 6,
+     "x": 924,
+     "y": 92
+    },
+    {
+     "id": 15,
+     "val": 6,
+     "x": 990,
+     "y": 184
+    },
+    {
+     "id": 16,
+     "val": 7,
+     "x": 1056,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     10,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     14,
+     15
+    ],
+    [
+     0,
+     16
+    ]
+   ],
+   "code": "main",
+   "line": 10,
+   "note": "undo 7; back up and try the next candidate from here.",
+   "active": [
+    0
+   ],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X",
+    "11": "X",
+    "13": "X",
+    "10": "X",
+    "15": "X",
+    "14": "X",
+    "16": "OK"
+   },
+   "state": [
+    [
+     "pop",
+     7
+    ],
+    [
+     "back to remaining",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 132,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": 2,
+     "x": 198,
+     "y": 276
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 264,
+     "y": 368
+    },
+    {
+     "id": 5,
+     "val": 3,
+     "x": 330,
+     "y": 276
+    },
+    {
+     "id": 6,
+     "val": 6,
+     "x": 396,
+     "y": 276
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 462,
+     "y": 184
+    },
+    {
+     "id": 8,
+     "val": 3,
+     "x": 528,
+     "y": 276
+    },
+    {
+     "id": 9,
+     "val": 6,
+     "x": 594,
+     "y": 184
+    },
+    {
+     "id": 10,
+     "val": 3,
+     "x": 660,
+     "y": 92
+    },
+    {
+     "id": 11,
+     "val": 3,
+     "x": 726,
+     "y": 184
+    },
+    {
+     "id": 12,
+     "val": 3,
+     "x": 792,
+     "y": 276
+    },
+    {
+     "id": 13,
+     "val": 6,
+     "x": 858,
+     "y": 184
+    },
+    {
+     "id": 14,
+     "val": 6,
+     "x": 924,
+     "y": 92
+    },
+    {
+     "id": 15,
+     "val": 6,
+     "x": 990,
+     "y": 184
+    },
+    {
+     "id": 16,
+     "val": 7,
+     "x": 1056,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     10,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     14,
+     15
+    ],
+    [
+     0,
+     16
+    ]
+   ],
+   "code": "main",
+   "line": 0,
+   "note": "The whole tree is explored. Two branches reached 0: [2,2,3] and [7]. Everything else was pruned or exhausted.",
+   "active": [],
+   "done": {
+    "4": "X",
+    "3": "X",
+    "5": "OK",
+    "6": "X",
+    "2": "X",
+    "8": "X",
+    "7": "X",
+    "9": "X",
+    "1": "X",
+    "12": "X",
+    "11": "X",
+    "13": "X",
+    "10": "X",
+    "15": "X",
+    "14": "X",
+    "16": "OK",
+    "0": "OK"
+   },
+   "state": [
+    [
+     "combinations",
+     "[2,2,3], [7]"
+    ],
+    [
+     "target",
+     7
+    ]
+   ],
+   "banner": "Combination Sum([2,3,6,7], 7) = [[2,2,3], [7]]"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "main",
+   "line": 6,
+   "intro": "when the smallest candidate already overshoots, the search dies at the root \u2014 no work wasted.",
+   "invariant": "pruning happens on the first choice, not after building a path.",
+   "note": "Edge case: candidates [2], target 1. The only candidate is 2.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "target",
+     1
+    ],
+    [
+     "candidates",
+     "[2]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u00b7",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "main",
+   "line": 7,
+   "note": "try 2: 2 > 1 left -> too big. break. There's nothing smaller to try, so no combination exists.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": "X"
+   },
+   "state": [
+    [
+     "at",
+     2
+    ],
+    [
+     "remaining",
+     1
+    ],
+    [
+     "result",
+     "[]"
+    ]
+   ],
+   "banner": "No subset of [2] sums to 1 -> []"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/09-backtracking/0039-combination-sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;39. Combination Sum — https://leetcode.com/problems/combination-sum/
 
 Given distinct positive numbers `candidates` and a `target`, return every unique
 combination whose numbers sum to `target`. Each candidate may be reused any

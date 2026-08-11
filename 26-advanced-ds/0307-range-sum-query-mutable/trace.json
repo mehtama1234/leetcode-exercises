@@ -1,0 +1,774 @@
+{
+ "player": "grid",
+ "title": "Range Sum Query - a Fenwick tree of power-of-two buckets",
+ "acts": [
+  "Prefix baseline & waste",
+  "The bucket tree",
+  "Update walks up",
+  "Query walks down"
+ ],
+ "code": {
+  "pre": [
+   "prefix[k] = sum of first k elements",
+   "sumRange(l, r) = prefix[r+1] - prefix[l]   # O(1)",
+   "update(i, v): rewrite prefix[i+1 ..]        # O(n) !"
+  ],
+  "bit": [
+   "# node i covers a block of length (i & -i)",
+   "def add(i, delta):     # walk UP the buckets",
+   "    i += 1",
+   "    while i <= n: tree[i] += delta; i += i & -i",
+   "def prefix(i):         # walk DOWN the buckets",
+   "    i += 1; s = 0",
+   "    while i > 0: s += tree[i]; i -= i & -i",
+   "    return s"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "buckets touched now"
+  ],
+  [
+   "good",
+   "summed / final"
+  ],
+  [
+   "bad",
+   "rewritten (prefix waste)"
+  ]
+ ],
+ "rows": [
+  [
+   1,
+   null,
+   null,
+   null
+  ],
+  [
+   4,
+   4,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   5,
+   null
+  ],
+  [
+   11,
+   11,
+   11,
+   11
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     1,
+     4,
+     9,
+     11
+    ]
+   ],
+   "rowLabels": [
+    "prefix"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "pre",
+   "line": 0,
+   "intro": "a prefix array makes range sums O(1) \u2014 but every update rewrites the tail.",
+   "invariant": "sumRange(l,r) = prefix[r+1] - prefix[l].",
+   "note": "Prefix sums of [1, 3, 5, 2]: a range sum is one subtraction. But changing element 1 makes every later prefix wrong.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good"
+   },
+   "state": [
+    [
+     "sumRange",
+     "O(1)"
+    ],
+    [
+     "update",
+     "O(n)"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "pre",
+   "line": 2,
+   "note": "update(1, ...) must rebuild prefixes 2,3,4 \u2014 O(n) per update. With many updates that is the waste a Fenwick tree removes.",
+   "marks": {
+    "0,1": "active",
+    "0,2": "bad",
+    "0,3": "bad"
+   },
+   "state": [
+    [
+     "rewritten",
+     "prefix[2..]"
+    ],
+    [
+     "cost",
+     "O(n) each"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     4,
+     4,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     11,
+     11,
+     11,
+     11
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "bit",
+   "line": 0,
+   "intro": "each node stores the sum of a block; block length is its lowest set bit.",
+   "invariant": "node i covers exactly (i & -i) elements ending at index i-1.",
+   "note": "Fenwick tree of [1, 3, 5, 2]. Node 1 sums {0}, node 2 sums {0,1}, node 3 sums {2}, node 4 sums {0,1,2,3}. Distinct power-of-two blocks.",
+   "marks": {},
+   "state": [
+    [
+     "tree[1..4]",
+     "[1, 4, 5, 11]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bit",
+   "line": 0,
+   "note": "node 1 (binary 001) covers a block of length 1 -> indices [0], storing their sum 1.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     4,
+     4,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     11,
+     11,
+     11,
+     11
+    ]
+   ],
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "node 1",
+     1
+    ],
+    [
+     "block length",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bit",
+   "line": 0,
+   "note": "node 2 (binary 010) covers a block of length 2 -> indices [0, 1], storing their sum 4.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     4,
+     4,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     11,
+     11,
+     11,
+     11
+    ]
+   ],
+   "marks": {
+    "1,0": "active",
+    "1,1": "active"
+   },
+   "state": [
+    [
+     "node 2",
+     4
+    ],
+    [
+     "block length",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bit",
+   "line": 0,
+   "note": "node 3 (binary 011) covers a block of length 1 -> indices [2], storing their sum 5.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     4,
+     4,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     11,
+     11,
+     11,
+     11
+    ]
+   ],
+   "marks": {
+    "2,2": "active"
+   },
+   "state": [
+    [
+     "node 3",
+     5
+    ],
+    [
+     "block length",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bit",
+   "line": 0,
+   "note": "node 4 (binary 100) covers a block of length 4 -> indices [0, 1, 2, 3], storing their sum 11.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     4,
+     4,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     11,
+     11,
+     11,
+     11
+    ]
+   ],
+   "marks": {
+    "3,0": "active",
+    "3,1": "active",
+    "3,2": "active",
+    "3,3": "active"
+   },
+   "state": [
+    [
+     "node 4",
+     11
+    ],
+    [
+     "block length",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     4,
+     4,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     11,
+     11,
+     11,
+     11
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "bit",
+   "line": 1,
+   "intro": "an update touches only the buckets that contain that index \u2014 O(log n) of them.",
+   "invariant": "add lowest set bit to jump to the next node covering i.",
+   "note": "update(index 1, 2): the value drops by 1. Apply delta -1 to every node whose block covers index 1.",
+   "marks": {
+    "1,1": "active",
+    "3,1": "active"
+   },
+   "state": [
+    [
+     "index",
+     1
+    ],
+    [
+     "delta",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 3,
+   "note": "node 2 covers index 1: tree[2] += -1 -> 3. Jump by lowbit 2 to node 4.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     3,
+     3,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     11,
+     11,
+     11,
+     11
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "marks": {
+    "1,0": "good",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "tree[2]",
+     3
+    ],
+    [
+     "next node",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bit",
+   "line": 3,
+   "note": "node 4 covers index 1: tree[4] += -1 -> 10. Jump by lowbit 4 to node 8.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     3,
+     3,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     10,
+     10,
+     10,
+     10
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "marks": {
+    "3,0": "good",
+    "3,1": "good",
+    "3,2": "good",
+    "3,3": "good"
+   },
+   "state": [
+    [
+     "tree[4]",
+     10
+    ],
+    [
+     "next node",
+     "done"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     3,
+     3,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     10,
+     10,
+     10,
+     10
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "bit",
+   "line": 4,
+   "intro": "a prefix sum walks DOWN, peeling off the lowest set bit to hop disjoint blocks.",
+   "invariant": "sumRange(l,r) = prefix(r) - prefix(l-1).",
+   "note": "sumRange(0, 2) after the update. Compute prefix(2) by summing the buckets on the way down.",
+   "marks": {},
+   "state": [
+    [
+     "query",
+     "[0,2]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "bit",
+   "line": 6,
+   "note": "add tree[3] = 5 (covers [2]) -> running 5. Drop lowbit 1 to node 2.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     3,
+     3,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     10,
+     10,
+     10,
+     10
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "marks": {
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "tree[3]",
+     5
+    ],
+    [
+     "prefix so far",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "bit",
+   "line": 6,
+   "note": "add tree[2] = 3 (covers [0, 1]) -> running 8. Drop lowbit 2 to node 0.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     3,
+     3,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     10,
+     10,
+     10,
+     10
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "marks": {
+    "1,0": "good",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "tree[2]",
+     3
+    ],
+    [
+     "prefix so far",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "bit",
+   "line": 7,
+   "note": "prefix(2) = 8. Since l=0 that IS the range sum: 8. Both update and query touched only ~log n nodes.",
+   "rows": [
+    [
+     1,
+     null,
+     null,
+     null
+    ],
+    [
+     3,
+     3,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     5,
+     null
+    ],
+    [
+     10,
+     10,
+     10,
+     10
+    ]
+   ],
+   "rowLabels": [
+    "node 1 (001)",
+    "node 2 (010)",
+    "node 3 (011)",
+    "node 4 (100)"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "marks": {
+    "1,0": "good",
+    "1,1": "good",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "sumRange(0,2)",
+     8
+    ],
+    [
+     "nodes touched",
+     2
+    ]
+   ],
+   "banner": "sumRange(0,2) = 8   (update + query both O(log n))"
+  }
+ ]
+}

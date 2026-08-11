@@ -1,0 +1,670 @@
+{
+ "player": "tree",
+ "title": "Same Tree - the rule, run in lockstep, then shape and value edge cases",
+ "acts": [
+  "The rule",
+  "Run: identical",
+  "Edge: shape differs",
+  "Edge: values differ"
+ ],
+ "code": {
+  "same": [
+   "def same(p, q):",
+   "    if p is None and q is None:",
+   "        return True",
+   "    if p is None or q is None:",
+   "        return False",
+   "    return (p.val == q.val",
+   "            and same(p.left, q.left)",
+   "            and same(p.right, q.right))"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "comparing now"
+  ],
+  [
+   "good",
+   "pair resolved"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 1,
+   "x": 72,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 2,
+   "x": 0,
+   "y": 82
+  },
+  {
+   "id": 2,
+   "val": 3,
+   "x": 144,
+   "y": 82
+  },
+  {
+   "id": "q0",
+   "val": 1,
+   "x": 360,
+   "y": 0
+  },
+  {
+   "id": "q1",
+   "val": 2,
+   "x": 288,
+   "y": 82
+  },
+  {
+   "id": "q2",
+   "val": 3,
+   "x": 432,
+   "y": 82
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   "q0",
+   "q1"
+  ],
+  [
+   "q0",
+   "q2"
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 72,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 144,
+     "y": 82
+    },
+    {
+     "id": "q0",
+     "val": 1,
+     "x": 360,
+     "y": 0
+    },
+    {
+     "id": "q1",
+     "val": 2,
+     "x": 288,
+     "y": 82
+    },
+    {
+     "id": "q2",
+     "val": 3,
+     "x": 432,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     "q0",
+     "q1"
+    ],
+    [
+     "q0",
+     "q2"
+    ]
+   ],
+   "code": "same",
+   "line": 0,
+   "intro": "the two trees are compared at the same position, step for step.",
+   "invariant": "equal so far means every visited pair matched in value and shape.",
+   "note": "The rule: two trees are the same when their roots match and their left and right subtrees are the same. That is already recursive.",
+   "active": [
+    0,
+    "q0"
+   ],
+   "done": {},
+   "state": [
+    [
+     "rule",
+     "root == root, then sides"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "same",
+   "line": 1,
+   "note": "Base case: two empty spots agree (True). One empty and one not means the shapes differ (False).",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "both empty",
+     "True"
+    ],
+    [
+     "one empty",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 72,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 144,
+     "y": 82
+    },
+    {
+     "id": "q0",
+     "val": 1,
+     "x": 360,
+     "y": 0
+    },
+    {
+     "id": "q1",
+     "val": 2,
+     "x": 288,
+     "y": 82
+    },
+    {
+     "id": "q2",
+     "val": 3,
+     "x": 432,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     "q0",
+     "q1"
+    ],
+    [
+     "q0",
+     "q2"
+    ]
+   ],
+   "code": "same",
+   "line": 0,
+   "intro": "matching pairs turn to '=' from the bottom up; a mismatch stops early.",
+   "invariant": "a pair shows '=' only after its whole subtree pair matched.",
+   "note": "Run it on p=[1,2,3], q=[1,2,3]. Every position lines up.",
+   "active": [
+    0,
+    "q0"
+   ],
+   "done": {},
+   "state": [
+    [
+     "start",
+     "compare roots"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "same",
+   "line": 5,
+   "note": "Compare 1 with 1.",
+   "active": [
+    0,
+    "q0"
+   ],
+   "done": {},
+   "state": [
+    [
+     "at",
+     "a matching spot"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "same",
+   "line": 5,
+   "note": "Compare 2 with 2.",
+   "active": [
+    1,
+    "q1"
+   ],
+   "done": {},
+   "state": [
+    [
+     "at",
+     "a matching spot"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "same",
+   "line": 5,
+   "note": "2 matches and both subtrees matched -> this pair is equal.",
+   "active": [
+    1,
+    "q1"
+   ],
+   "done": {
+    "1": "=",
+    "q1": "="
+   },
+   "state": [
+    [
+     "pair",
+     "2 = 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "same",
+   "line": 5,
+   "note": "Compare 3 with 3.",
+   "active": [
+    2,
+    "q2"
+   ],
+   "done": {
+    "1": "=",
+    "q1": "="
+   },
+   "state": [
+    [
+     "at",
+     "a matching spot"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "same",
+   "line": 5,
+   "note": "3 matches and both subtrees matched -> this pair is equal.",
+   "active": [
+    2,
+    "q2"
+   ],
+   "done": {
+    "1": "=",
+    "q1": "=",
+    "2": "=",
+    "q2": "="
+   },
+   "state": [
+    [
+     "pair",
+     "3 = 3"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "same",
+   "line": 5,
+   "note": "1 matches and both subtrees matched -> this pair is equal.",
+   "active": [
+    0,
+    "q0"
+   ],
+   "done": {
+    "1": "=",
+    "q1": "=",
+    "2": "=",
+    "q2": "=",
+    "0": "=",
+    "q0": "="
+   },
+   "state": [
+    [
+     "pair",
+     "1 = 1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "same",
+   "line": 2,
+   "note": "Every pair matched -> the trees are the same: True.",
+   "active": [],
+   "done": {
+    "1": "=",
+    "q1": "=",
+    "2": "=",
+    "q2": "=",
+    "0": "=",
+    "q0": "="
+   },
+   "state": [
+    [
+     "same?",
+     true
+    ]
+   ],
+   "banner": "Same tree = True"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 72,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": "q0",
+     "val": 1,
+     "x": 216,
+     "y": 0
+    },
+    {
+     "id": "q1",
+     "val": 2,
+     "x": 288,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     "q0",
+     "q1"
+    ]
+   ],
+   "code": "same",
+   "line": 3,
+   "intro": "the same value at the root, but the child hangs on a different side.",
+   "invariant": "matching values is not enough \u2014 the shape must line up too.",
+   "note": "Edge: p has 2 on the left, q has 2 on the right. Values match at the root but the shape does not.",
+   "active": [
+    0,
+    "q0"
+   ],
+   "done": {},
+   "state": [
+    [
+     "shape",
+     "left vs right"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "same",
+   "line": 5,
+   "note": "Compare 1 with 1.",
+   "active": [
+    0,
+    "q0"
+   ],
+   "done": {},
+   "state": [
+    [
+     "at",
+     "a matching spot"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "same",
+   "line": 5,
+   "note": "One side is empty here \u2014 shapes differ.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "at",
+     "a matching spot"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "same",
+   "line": 4,
+   "note": "One tree has a node here and the other does not -> not same.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": "x"
+   },
+   "state": [
+    [
+     "result",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "same",
+   "line": 4,
+   "note": "A node faces an empty spot -> shapes differ -> not the same: False.",
+   "active": [],
+   "done": {
+    "1": "x"
+   },
+   "state": [
+    [
+     "same?",
+     false
+    ]
+   ],
+   "banner": "Same tree = False"
+  },
+  {
+   "act": 3,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 72,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 1,
+     "x": 144,
+     "y": 82
+    },
+    {
+     "id": "q0",
+     "val": 1,
+     "x": 360,
+     "y": 0
+    },
+    {
+     "id": "q1",
+     "val": 1,
+     "x": 288,
+     "y": 82
+    },
+    {
+     "id": "q2",
+     "val": 2,
+     "x": 432,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     "q0",
+     "q1"
+    ],
+    [
+     "q0",
+     "q2"
+    ]
+   ],
+   "code": "same",
+   "line": 5,
+   "intro": "same shape, but a value disagrees at a matching position.",
+   "invariant": "the walk halts the instant one value pair disagrees.",
+   "note": "Edge: p=[1,2,1], q=[1,1,2]. Same shape, but the left children differ.",
+   "active": [
+    0,
+    "q0"
+   ],
+   "done": {},
+   "state": [
+    [
+     "check",
+     "values"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "same",
+   "line": 5,
+   "note": "Compare 1 with 1.",
+   "active": [
+    0,
+    "q0"
+   ],
+   "done": {},
+   "state": [
+    [
+     "at",
+     "a matching spot"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "same",
+   "line": 5,
+   "note": "Compare 2 with 1.",
+   "active": [
+    1,
+    "q1"
+   ],
+   "done": {},
+   "state": [
+    [
+     "at",
+     "a matching spot"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "same",
+   "line": 5,
+   "note": "Values differ: 2 vs 1 -> not same.",
+   "active": [
+    1,
+    "q1"
+   ],
+   "done": {
+    "1": "x",
+    "q1": "x"
+   },
+   "state": [
+    [
+     "result",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "same",
+   "line": 5,
+   "note": "Left children 2 and 1 disagree -> not the same: False.",
+   "active": [],
+   "done": {
+    "1": "x",
+    "q1": "x"
+   },
+   "state": [
+    [
+     "same?",
+     false
+    ]
+   ],
+   "banner": "Same tree = False"
+  }
+ ]
+}

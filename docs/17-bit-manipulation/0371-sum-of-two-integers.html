@@ -73,7 +73,970 @@ carry = (a &amp; b) &lt;&lt; 1
 <h2>Pitfalls</h2>
 <ul><li>Skipping the mask: the loop hangs forever on inputs like <code>-1 + 1</code>, because the carry never falls off Python&#x27;s infinite-width integer.</li><li>Returning <code>a</code> directly for a negative result — you&#x27;d get a huge positive number. You must reinterpret the sign bit.</li><li>Off-by-one on which value to shift: the <strong>carry</strong> (<code>a &amp; b</code>) is shifted left, never the sum.</li></ul>
 <h2>Transfer</h2>
-<p>This is &quot;simulate a full adder in software,&quot; and the same XOR-is-sum / AND-is-carry split underlies other carry-free tricks (adding without overflow, Gray codes). The broader lesson — *when a language&#x27;s integers don&#x27;t match the problem&#x27;s fixed width, mask to that width and reinterpret the sign bit* — comes back across bit problems like <a href="../0190-reverse-bits/">Reverse Bits / 190</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/17-bit-manipulation/0371-sum-of-two-integers/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;371. Sum of Two Integers — https://leetcode.com/problems/sum-of-two-integers/
+<p>This is &quot;simulate a full adder in software,&quot; and the same XOR-is-sum / AND-is-carry split underlies other carry-free tricks (adding without overflow, Gray codes). The broader lesson — *when a language&#x27;s integers don&#x27;t match the problem&#x27;s fixed width, mask to that width and reinterpret the sign bit* — comes back across bit problems like <a href="../0190-reverse-bits/">Reverse Bits / 190</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Sum of Two Integers - XOR is the sum, AND<<1 is the carry, loop till it clears",
+ "acts": [
+  "The rule",
+  "Loop until no carry",
+  "Edge: adding 0"
+ ],
+ "code": {
+  "add": [
+   "while b != 0:",
+   "    carry = (a & b) << 1",
+   "    a = (a ^ b) & MASK",
+   "    b = carry & MASK",
+   "return a"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "column making a carry"
+  ],
+  [
+   "good",
+   "a 1 in the running sum"
+  ],
+  [
+   "dim",
+   "a 0"
+  ]
+ ],
+ "cells": [
+  0,
+  0,
+  0,
+  1,
+  1
+ ],
+ "labels": [
+  4,
+  3,
+  2,
+  1,
+  0
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0,
+    1,
+    1
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 0,
+   "intro": "XOR adds each column ignoring carry; AND finds where a carry is born.",
+   "invariant": "a always holds the sum-so-far without the pending carry.",
+   "note": "Add 3 + 5 without + or -. Split each column: a ^ b is the sum ignoring carry, and (a & b) << 1 is the carry, shifted one column left.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "good",
+    "4": "good"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00011"
+     ],
+     [
+      "b  (carry in)",
+      "00101"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "a",
+     "00011"
+    ],
+    [
+     "b",
+     "00101"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    0,
+    1,
+    1
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 0,
+   "intro": "the carry keeps sliding left; when it runs out, a is the answer.",
+   "invariant": "a ^ b plus (a & b) << 1 always equals the true total.",
+   "note": "Repeat: fold the carry-free sum into a and the new carry into b, until b (the carry) becomes 0.",
+   "marks": {
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00011"
+     ],
+     [
+      "b  (carry in)",
+      "00101"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     0
+    ],
+    [
+     "a",
+     "00011"
+    ],
+    [
+     "b",
+     "00101"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    0,
+    1,
+    1
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 1,
+   "note": "Pass 1: columns where a & b are both 1 make a carry. carry = (a & b) << 1 = 00010 (shifted one column left).",
+   "marks": {
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00011"
+     ],
+     [
+      "b  (carry in)",
+      "00101"
+     ],
+     [
+      "carry out",
+      "00010"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     1
+    ],
+    [
+     "a & b",
+     "00001"
+    ],
+    [
+     "carry",
+     "00010"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    1,
+    1,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 2,
+   "note": "a = a ^ b = 00110 \u2014 every column added without its carry.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good",
+    "3": "good",
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00110"
+     ],
+     [
+      "b  (carry in)",
+      "00101"
+     ],
+     [
+      "carry out",
+      "00010"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     1
+    ],
+    [
+     "a (new)",
+     "00110"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    1,
+    1,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 3,
+   "note": "b takes the carry: 00010. Still a carry, so loop again.",
+   "marks": {
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00110"
+     ],
+     [
+      "b  (carry in)",
+      "00010"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     1
+    ],
+    [
+     "b",
+     "00010"
+    ],
+    [
+     "a",
+     "00110"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    1,
+    1,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 1,
+   "note": "Pass 2: columns where a & b are both 1 make a carry. carry = (a & b) << 1 = 00100 (shifted one column left).",
+   "marks": {
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00110"
+     ],
+     [
+      "b  (carry in)",
+      "00010"
+     ],
+     [
+      "carry out",
+      "00100"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     2
+    ],
+    [
+     "a & b",
+     "00010"
+    ],
+    [
+     "carry",
+     "00100"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 2,
+   "note": "a = a ^ b = 00100 \u2014 every column added without its carry.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good",
+    "3": "dim",
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00100"
+     ],
+     [
+      "b  (carry in)",
+      "00010"
+     ],
+     [
+      "carry out",
+      "00100"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     2
+    ],
+    [
+     "a (new)",
+     "00100"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 3,
+   "note": "b takes the carry: 00100. Still a carry, so loop again.",
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00100"
+     ],
+     [
+      "b  (carry in)",
+      "00100"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     2
+    ],
+    [
+     "b",
+     "00100"
+    ],
+    [
+     "a",
+     "00100"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 1,
+   "note": "Pass 3: columns where a & b are both 1 make a carry. carry = (a & b) << 1 = 01000 (shifted one column left).",
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00100"
+     ],
+     [
+      "b  (carry in)",
+      "00100"
+     ],
+     [
+      "carry out",
+      "01000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     3
+    ],
+    [
+     "a & b",
+     "00100"
+    ],
+    [
+     "carry",
+     "01000"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 2,
+   "note": "a = a ^ b = 00000 \u2014 every column added without its carry.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00000"
+     ],
+     [
+      "b  (carry in)",
+      "00100"
+     ],
+     [
+      "carry out",
+      "01000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     3
+    ],
+    [
+     "a (new)",
+     "00000"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 3,
+   "note": "b takes the carry: 01000. Still a carry, so loop again.",
+   "marks": {},
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00000"
+     ],
+     [
+      "b  (carry in)",
+      "01000"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     3
+    ],
+    [
+     "b",
+     "01000"
+    ],
+    [
+     "a",
+     "00000"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 1,
+   "note": "Pass 4: columns where a & b are both 1 make a carry. carry = (a & b) << 1 = 00000 (shifted one column left).",
+   "marks": {},
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00000"
+     ],
+     [
+      "b  (carry in)",
+      "01000"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     4
+    ],
+    [
+     "a & b",
+     "00000"
+    ],
+    [
+     "carry",
+     "00000"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 2,
+   "note": "a = a ^ b = 01000 \u2014 every column added without its carry.",
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "01000"
+     ],
+     [
+      "b  (carry in)",
+      "01000"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     4
+    ],
+    [
+     "a (new)",
+     "01000"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 3,
+   "note": "b takes the carry: 00000. Carry is 0 now \u2014 done.",
+   "marks": {},
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "01000"
+     ],
+     [
+      "b  (carry in)",
+      "00000"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     4
+    ],
+    [
+     "b",
+     "00000"
+    ],
+    [
+     "a",
+     "01000"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 4,
+   "note": "No carry left. a = 01000 = 8. That is 3 + 5 with no + used.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "01000"
+     ],
+     [
+      "b  (carry in)",
+      "00000"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     8
+    ],
+    [
+     "passes",
+     4
+    ]
+   ],
+   "banner": "3 + 5 = 8   (in 4 carry passes, no + operator)"
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    1,
+    1,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 0,
+   "intro": "if b is 0 there is no carry to fold \u2014 the loop body never runs.",
+   "invariant": "a starts as the answer and stays it.",
+   "note": "Edge case: 6 + 0. b is already 0, so the while loop never executes and a is returned unchanged.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good",
+    "3": "good",
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00110"
+     ],
+     [
+      "b  (carry in)",
+      "00000"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "a",
+     "00110"
+    ],
+    [
+     "b",
+     "00000"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    1,
+    1,
+    0
+   ],
+   "labels": [
+    4,
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "add",
+   "line": 4,
+   "note": "Loop skipped, return a = 6. (Negatives use the same loop, with a 32-bit mask so the carry can't shift off forever, then a sign-bit fix at the end.)",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "sidebar": {
+    "title": "registers",
+    "rows": [
+     [
+      "a  (sum)",
+      "00110"
+     ],
+     [
+      "b  (carry in)",
+      "00000"
+     ],
+     [
+      "carry out",
+      "00000"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     6
+    ]
+   ],
+   "banner": "6 + 0 = 6  (loop runs zero times)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/17-bit-manipulation/0371-sum-of-two-integers/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;371. Sum of Two Integers — https://leetcode.com/problems/sum-of-two-integers/
 
 Return a + b without using the `+` or `-` operators. Inputs can be negative, and
 we treat them as 32-bit signed integers (two&#x27;s complement).

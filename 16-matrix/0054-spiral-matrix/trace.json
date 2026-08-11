@@ -1,0 +1,1156 @@
+{
+ "player": "grid",
+ "title": "Spiral Matrix - four shrinking walls peel the grid ring by ring",
+ "acts": [
+  "The rule (3x3)",
+  "Non-square 3x4 (guards)",
+  "Edge: single row"
+ ],
+ "code": {
+  "peel": [
+   "while top <= bottom and left <= right:",
+   "    for c in range(left, right+1): out += matrix[top][c]",
+   "    top += 1",
+   "    for r in range(top, bottom+1): out += matrix[r][right]",
+   "    right -= 1",
+   "    if top <= bottom:",
+   "        for c in range(right, left-1, -1): out += matrix[bottom][c]",
+   "        bottom -= 1",
+   "    if left <= right:",
+   "        for r in range(bottom, top-1, -1): out += matrix[r][left]",
+   "        left += 1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "cell being read now"
+  ],
+  [
+   "good",
+   "already collected"
+  ]
+ ],
+ "rows": [
+  [
+   1,
+   2,
+   3
+  ],
+  [
+   4,
+   5,
+   6
+  ],
+  [
+   7,
+   8,
+   9
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     1,
+     2,
+     3
+    ],
+    [
+     4,
+     5,
+     6
+    ],
+    [
+     7,
+     8,
+     9
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "peel",
+   "line": 0,
+   "intro": "how the four walls close in until they cross.",
+   "invariant": "everything outside the walls is already collected.",
+   "note": "The rule: walk the outer ring clockwise, shrink the walls, repeat on what's left. Start with top=0, bottom=2, left=0, right=2.",
+   "marks": {},
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 1.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 2.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 3.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "peel",
+   "line": 3,
+   "note": "right column 2, going down: read 6.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "1,2": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "peel",
+   "line": 3,
+   "note": "right column 2, going down: read 9.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "1,2": "good",
+    "2,2": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "peel",
+   "line": 6,
+   "note": "bottom row 2, going left: read 8.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "1,2": "good",
+    "2,2": "good",
+    "2,1": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     1
+    ],
+    [
+     "collected",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "peel",
+   "line": 6,
+   "note": "bottom row 2, going left: read 7.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "1,2": "good",
+    "2,2": "good",
+    "2,1": "good",
+    "2,0": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     1
+    ],
+    [
+     "collected",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "peel",
+   "line": 9,
+   "note": "left column 0, going up: read 4.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "1,2": "good",
+    "2,2": "good",
+    "2,1": "good",
+    "2,0": "good",
+    "1,0": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     1
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     1
+    ],
+    [
+     "collected",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 1, going right: read 5.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "1,2": "good",
+    "2,2": "good",
+    "2,1": "good",
+    "2,0": "good",
+    "1,0": "good",
+    "1,1": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     1
+    ],
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     1
+    ],
+    [
+     "collected",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "peel",
+   "line": 0,
+   "note": "Walls have crossed. Spiral order = [1, 2, 3, 6, 9, 8, 7, 4, 5].",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "1,0": "good",
+    "1,1": "good",
+    "1,2": "good",
+    "2,0": "good",
+    "2,1": "good",
+    "2,2": "good"
+   },
+   "banner": "3x3 spiral = [1, 2, 3, 6, 9, 8, 7, 4, 5]"
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     5,
+     6,
+     7,
+     8
+    ],
+    [
+     9,
+     10,
+     11,
+     12
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "peel",
+   "line": 0,
+   "intro": "a non-square grid, where the mid-loop guards do real work.",
+   "invariant": "a lone leftover row/column must not be walked twice.",
+   "note": "3x4 grid. After the top row and right column, only one middle row remains; the guards keep us from re-walking it backward.",
+   "marks": {},
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 1.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 2.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 3.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 4.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 3,
+   "note": "right column 3, going down: read 8.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good",
+    "1,3": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 3,
+   "note": "right column 3, going down: read 12.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good",
+    "1,3": "good",
+    "2,3": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 6,
+   "note": "bottom row 2, going left: read 11.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good",
+    "1,3": "good",
+    "2,3": "good",
+    "2,2": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 6,
+   "note": "bottom row 2, going left: read 10.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good",
+    "1,3": "good",
+    "2,3": "good",
+    "2,2": "good",
+    "2,1": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 6,
+   "note": "bottom row 2, going left: read 9.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good",
+    "1,3": "good",
+    "2,3": "good",
+    "2,2": "good",
+    "2,1": "good",
+    "2,0": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     2
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 9,
+   "note": "left column 0, going up: read 5.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good",
+    "1,3": "good",
+    "2,3": "good",
+    "2,2": "good",
+    "2,1": "good",
+    "2,0": "good",
+    "1,0": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     1
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 1, going right: read 6.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good",
+    "1,3": "good",
+    "2,3": "good",
+    "2,2": "good",
+    "2,1": "good",
+    "2,0": "good",
+    "1,0": "good",
+    "1,1": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     1
+    ],
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     11
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 1, going right: read 7.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good",
+    "1,3": "good",
+    "2,3": "good",
+    "2,2": "good",
+    "2,1": "good",
+    "2,0": "good",
+    "1,0": "good",
+    "1,1": "good",
+    "1,2": "active"
+   },
+   "state": [
+    [
+     "top",
+     1
+    ],
+    [
+     "bottom",
+     1
+    ],
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "collected",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "peel",
+   "line": 0,
+   "note": "Spiral order = [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]. The `if top <= bottom` / `if left <= right` guards stopped the single inner row being read twice.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good",
+    "1,0": "good",
+    "1,1": "good",
+    "1,2": "good",
+    "1,3": "good",
+    "2,0": "good",
+    "2,1": "good",
+    "2,2": "good",
+    "2,3": "good"
+   },
+   "banner": "3x4 spiral = [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     1,
+     2,
+     3,
+     4
+    ]
+   ],
+   "rowLabels": [
+    "0"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "peel",
+   "line": 0,
+   "intro": "the degenerate case: one row.",
+   "invariant": "after the top row, top passes bottom and the loop ends.",
+   "note": "Single row. The top-row pass reads everything; then top > bottom and both guards fail, so nothing is re-read.",
+   "marks": {},
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     0
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 1.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     0
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 2.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     0
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 3.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     0
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "peel",
+   "line": 1,
+   "note": "top row 0, going right: read 4.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "active"
+   },
+   "state": [
+    [
+     "top",
+     0
+    ],
+    [
+     "bottom",
+     0
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "collected",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "peel",
+   "line": 0,
+   "note": "Single row spiral = [1, 2, 3, 4].",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good"
+   },
+   "banner": "Single row = [1, 2, 3, 4]"
+  }
+ ]
+}

@@ -57,7 +57,917 @@ return merge(intervals)   # sort + sweep, about n log n</code></pre>
 <h2>Pitfalls</h2>
 <ul><li><strong>Off-by-one on the phase boundaries.</strong> Phase 1 uses <code>end &lt; s</code> (strictly before); phase 2 uses <code>start &lt;= e</code> so that *touching* intervals like <code>[3,4]</code> and a new <code>[4, ...]</code> still merge.</li><li><strong>Forgetting to append the merged interval</strong> after phase 2 — it is easy to fall straight into phase 3 and drop it.</li><li><strong>Empty input</strong>, or a new interval that lands entirely before or after everything — the three-phase structure handles these for free; test them anyway.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable idea is &quot;when the input is already sorted or structured, do not re-sort — sweep once and split into before / overlapping / after.&quot; Same shape as <a href="../0056-merge-intervals/">Merge Intervals / 56</a> but cheaper, because you spend the sortedness instead of rebuilding it. The three-bucket split also shows up in range-update problems and interval scheduling.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/15-intervals/0057-insert-interval/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;57. Insert Interval — https://leetcode.com/problems/insert-interval/
+<p>The reusable idea is &quot;when the input is already sorted or structured, do not re-sort — sweep once and split into before / overlapping / after.&quot; Same shape as <a href="../0056-merge-intervals/">Merge Intervals / 56</a> but cheaper, because you spend the sortedness instead of rebuilding it. The three-bucket split also shows up in range-update problems and interval scheduling.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Insert Interval \u2014 before, absorb, after in one pass",
+ "acts": [
+  "Absorb a run",
+  "Goes before everything",
+  "Swallowed by an existing one"
+ ],
+ "code": {
+  "fast": [
+   "start, end = new_interval",
+   "while i < n and intervals[i][1] < start:   # before",
+   "    result.append(intervals[i]); i += 1",
+   "while i < n and intervals[i][0] <= end:     # overlap",
+   "    start = min(start, intervals[i][0])",
+   "    end   = max(end,   intervals[i][1])",
+   "    i += 1",
+   "result.append([start, end])",
+   "while i < n:                                # after",
+   "    result.append(intervals[i]); i += 1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "overlapping \u2014 being absorbed"
+  ],
+  [
+   "good",
+   "settled in output"
+  ],
+  [
+   "dim",
+   "copied through (before the new one)"
+  ]
+ ],
+ "cells": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "labels": [
+  "1-2",
+  "3-5",
+  "6-7",
+  "8-10",
+  "12-16"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "labels": [
+    "1-2",
+    "3-5",
+    "6-7",
+    "8-10",
+    "12-16"
+   ],
+   "intro": "watch the new interval GROW as it swallows every one it overlaps.",
+   "invariant": "everything left of i is already settled in result.",
+   "code": "fast",
+   "line": 0,
+   "note": "Insert 4-8. Phase 1 copies what ends before 4; phase 2 absorbs everything it overlaps; phase 3 copies the rest.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "4-8"
+     ],
+     [
+      "phase",
+      "start"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "new",
+     "4-8"
+    ],
+    [
+     "i",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "labels": [
+    "1-2",
+    "3-5",
+    "6-7",
+    "8-10",
+    "12-16"
+   ],
+   "code": "fast",
+   "line": 2,
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "4-8"
+     ],
+     [
+      "phase",
+      "before"
+     ],
+     [
+      "out",
+      "1-2"
+     ]
+    ]
+   },
+   "note": "1-2 ends at 2 < 4 (new start) \u2014 it can't touch the new one. Copy it straight through.",
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "ends",
+     2
+    ],
+    [
+     "< new start",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "labels": [
+    "1-2",
+    "3-5",
+    "6-7",
+    "8-10",
+    "12-16"
+   ],
+   "code": "fast",
+   "line": 5,
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "3-8"
+     ],
+     [
+      "phase",
+      "overlap"
+     ],
+     [
+      "out",
+      "1-2"
+     ]
+    ]
+   },
+   "note": "3-5 starts at 3 <= 8 (new end) \u2014 overlap. Widen new to 3-8.",
+   "state": [
+    [
+     "absorbing",
+     "3-5"
+    ],
+    [
+     "new",
+     "3-8"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "labels": [
+    "1-2",
+    "3-5",
+    "6-7",
+    "8-10",
+    "12-16"
+   ],
+   "code": "fast",
+   "line": 5,
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "3-8"
+     ],
+     [
+      "phase",
+      "overlap"
+     ],
+     [
+      "out",
+      "1-2"
+     ]
+    ]
+   },
+   "note": "6-7 starts at 6 <= 8 (new end) \u2014 overlap. Widen new to 3-8.",
+   "state": [
+    [
+     "absorbing",
+     "6-7"
+    ],
+    [
+     "new",
+     "3-8"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "labels": [
+    "1-2",
+    "3-5",
+    "6-7",
+    "8-10",
+    "12-16"
+   ],
+   "code": "fast",
+   "line": 5,
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "3-10"
+     ],
+     [
+      "phase",
+      "overlap"
+     ],
+     [
+      "out",
+      "1-2"
+     ]
+    ]
+   },
+   "note": "8-10 starts at 8 <= 8 (new end) \u2014 overlap. Widen new to 3-10.",
+   "state": [
+    [
+     "absorbing",
+     "8-10"
+    ],
+    [
+     "new",
+     "3-10"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "labels": [
+    "1-2",
+    "3-5",
+    "6-7",
+    "8-10",
+    "12-16"
+   ],
+   "code": "fast",
+   "line": 7,
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "3-10"
+     ],
+     [
+      "phase",
+      "placed"
+     ],
+     [
+      "out",
+      "1-2"
+     ],
+     [
+      "out",
+      "3-10"
+     ]
+    ]
+   },
+   "note": "No more overlaps. Drop the widened 3-10 into place.",
+   "state": [
+    [
+     "placed",
+     "3-10"
+    ],
+    [
+     "i",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "labels": [
+    "1-2",
+    "3-5",
+    "6-7",
+    "8-10",
+    "12-16"
+   ],
+   "code": "fast",
+   "line": 9,
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "3-10"
+     ],
+     [
+      "phase",
+      "after"
+     ],
+     [
+      "out",
+      "1-2"
+     ],
+     [
+      "out",
+      "3-10"
+     ],
+     [
+      "out",
+      "12-16"
+     ]
+    ]
+   },
+   "note": "12-16 starts after the merged interval ends \u2014 copy the rest straight through.",
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "copying",
+     "12-16"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "labels": [
+    "1-2",
+    "3-5",
+    "6-7",
+    "8-10",
+    "12-16"
+   ],
+   "code": "fast",
+   "line": 7,
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "3-10"
+     ],
+     [
+      "phase",
+      "done"
+     ],
+     [
+      "out",
+      "1-2"
+     ],
+     [
+      "out",
+      "3-10"
+     ],
+     [
+      "out",
+      "12-16"
+     ]
+    ]
+   },
+   "banner": "['1-2', '3-5', '6-7', '8-10', '12-16'] + 4-8 -> ['1-2', '3-10', '12-16']",
+   "note": "Result stays sorted and merged: ['1-2', '3-10', '12-16'].",
+   "state": [
+    [
+     "result",
+     "['1-2', '3-10', '12-16']"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1
+   ],
+   "labels": [
+    "3-5",
+    "7-9"
+   ],
+   "intro": "phase 2 fires immediately; phases 1 and 3 do the copying.",
+   "code": "fast",
+   "line": 0,
+   "note": "Insert 1-2 into 3-5, 7-9. It ends before anything starts, so it just leads the list.",
+   "marks": {
+    "0": "dim",
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "1-2"
+     ],
+     [
+      "phase",
+      "start"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "new",
+     "1-2"
+    ],
+    [
+     "i",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1
+   ],
+   "labels": [
+    "3-5",
+    "7-9"
+   ],
+   "code": "fast",
+   "line": 7,
+   "marks": {},
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "1-2"
+     ],
+     [
+      "phase",
+      "placed"
+     ],
+     [
+      "out",
+      "1-2"
+     ]
+    ]
+   },
+   "note": "Nothing overlapped. Drop 1-2 into place.",
+   "state": [
+    [
+     "placed",
+     "1-2"
+    ],
+    [
+     "i",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1
+   ],
+   "labels": [
+    "3-5",
+    "7-9"
+   ],
+   "code": "fast",
+   "line": 9,
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "1-2"
+     ],
+     [
+      "phase",
+      "after"
+     ],
+     [
+      "out",
+      "1-2"
+     ],
+     [
+      "out",
+      "3-5"
+     ]
+    ]
+   },
+   "note": "3-5 starts after the merged interval ends \u2014 copy the rest straight through.",
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "copying",
+     "3-5"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1
+   ],
+   "labels": [
+    "3-5",
+    "7-9"
+   ],
+   "code": "fast",
+   "line": 9,
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "1-2"
+     ],
+     [
+      "phase",
+      "after"
+     ],
+     [
+      "out",
+      "1-2"
+     ],
+     [
+      "out",
+      "3-5"
+     ],
+     [
+      "out",
+      "7-9"
+     ]
+    ]
+   },
+   "note": "7-9 starts after the merged interval ends \u2014 copy the rest straight through.",
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "copying",
+     "7-9"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1
+   ],
+   "labels": [
+    "3-5",
+    "7-9"
+   ],
+   "code": "fast",
+   "line": 7,
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "1-2"
+     ],
+     [
+      "phase",
+      "done"
+     ],
+     [
+      "out",
+      "1-2"
+     ],
+     [
+      "out",
+      "3-5"
+     ],
+     [
+      "out",
+      "7-9"
+     ]
+    ]
+   },
+   "banner": "['3-5', '7-9'] + 1-2 -> ['1-2', '3-5', '7-9']",
+   "note": "Result stays sorted and merged: ['1-2', '3-5', '7-9'].",
+   "state": [
+    [
+     "result",
+     "['1-2', '3-5', '7-9']"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0
+   ],
+   "labels": [
+    "1-5"
+   ],
+   "intro": "a new interval INSIDE an existing one adds nothing \u2014 max/min keep 1-5.",
+   "invariant": "min(start) and max(end) never shrink the covering interval.",
+   "code": "fast",
+   "line": 0,
+   "note": "Insert 2-3 into 1-5. 1-5 starts at 1 <= 3, so it's absorbed; min/max leave 1-5 unchanged.",
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "2-3"
+     ],
+     [
+      "phase",
+      "start"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "new",
+     "2-3"
+    ],
+    [
+     "i",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0
+   ],
+   "labels": [
+    "1-5"
+   ],
+   "code": "fast",
+   "line": 5,
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "1-5"
+     ],
+     [
+      "phase",
+      "overlap"
+     ]
+    ]
+   },
+   "note": "1-5 starts at 1 <= 3 (new end) \u2014 overlap. Widen new to 1-5.",
+   "state": [
+    [
+     "absorbing",
+     "1-5"
+    ],
+    [
+     "new",
+     "1-5"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0
+   ],
+   "labels": [
+    "1-5"
+   ],
+   "code": "fast",
+   "line": 7,
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "1-5"
+     ],
+     [
+      "phase",
+      "placed"
+     ],
+     [
+      "out",
+      "1-5"
+     ]
+    ]
+   },
+   "note": "No more overlaps. Drop the widened 1-5 into place.",
+   "state": [
+    [
+     "placed",
+     "1-5"
+    ],
+    [
+     "i",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0
+   ],
+   "labels": [
+    "1-5"
+   ],
+   "code": "fast",
+   "line": 7,
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "building",
+    "rows": [
+     [
+      "new",
+      "1-5"
+     ],
+     [
+      "phase",
+      "done"
+     ],
+     [
+      "out",
+      "1-5"
+     ]
+    ]
+   },
+   "banner": "1-5 + 2-3 -> 1-5   (new interval swallowed)",
+   "note": "Result stays sorted and merged: ['1-5'].",
+   "state": [
+    [
+     "result",
+     "['1-5']"
+    ]
+   ]
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/15-intervals/0057-insert-interval/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;57. Insert Interval — https://leetcode.com/problems/insert-interval/
 
 You&#x27;re given a list of non-overlapping intervals sorted by start, plus one new
 interval. Insert the new one and return the list still merged and sorted.

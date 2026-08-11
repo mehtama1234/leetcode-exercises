@@ -62,7 +62,973 @@ return best</code></pre>
 <h2>Pitfalls</h2>
 <ul><li>Selling <strong>before</strong> buying. The &quot;later day&quot; rule is easy to drop; tracking a *running* minimum enforces it for free — you only ever sell against a price from an earlier day.</li><li>Returning a negative number when no trade is profitable. Clamp <code>best</code> at <code>0</code>.</li><li>Confusing this with &quot;biggest difference between any two numbers.&quot; Order matters here; the smaller value must come first.</li><li>Empty or single-day input: profit is <code>0</code>, since you can&#x27;t buy and sell.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is the running extremum: <strong>sweep once, keep the best &quot;so far&quot; value you need, and answer each new position against it.</strong> The same shape solves Maximum Subarray (carry the best sum ending here), the harder buy/sell variants, and any &quot;best pair where one index must precede the other&quot; question. Whenever a slow solution re-searches the prefix for a min or max, carry it as you go instead.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/04-sliding-window/0121-best-time-to-buy-and-sell-stock/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;121. Best Time to Buy and Sell Stock — https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
+<p>The reusable move is the running extremum: <strong>sweep once, keep the best &quot;so far&quot; value you need, and answer each new position against it.</strong> The same shape solves Maximum Subarray (carry the best sum ending here), the harder buy/sell variants, and any &quot;best pair where one index must precede the other&quot; question. Whenever a slow solution re-searches the prefix for a min or max, carry it as you go instead.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Best Time to Buy and Sell Stock \u2014 from every pair to one pass with a min",
+ "acts": [
+  "Brute force: every pair",
+  "The waste",
+  "Fast: track the min price",
+  "Edge case: only falling"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "    for j in range(i+1, n):",
+   "        best = max(best, prices[j] - prices[i])",
+   "return best"
+  ],
+  "fast": [
+   "min_price = inf",
+   "for price in prices:",
+   "    if price < min_price: min_price = price",
+   "    else: best = max(best, price - min_price)",
+   "return best"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current day / min"
+  ],
+  [
+   "good",
+   "buy/sell of the best trade"
+  ],
+  [
+   "bad",
+   "new low (no sell)"
+  ],
+  [
+   "dim",
+   "inactive"
+  ]
+ ],
+ "cells": [
+  7,
+  1,
+  5,
+  3,
+  6,
+  4
+ ],
+ "labels": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    7,
+    1,
+    5,
+    3,
+    6,
+    4
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "every buy day drags a sell pointer across the whole future after it.",
+   "invariant": "best holds the largest profit among all buy/sell pairs seen so far.",
+   "note": "Brute force: for each buy day, try every later sell day. Keep the best profit.",
+   "pointers": {
+    "buy": 0,
+    "sell": 1
+   },
+   "marks": {
+    "0": "active",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "buy",
+     0
+    ],
+    [
+     "sell",
+     1
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "pairs",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "buy day 0 (7), sell day 1 (1): profit -6. Best 0.",
+   "pointers": {
+    "buy": 0,
+    "sell": 1
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "buy",
+     0
+    ],
+    [
+     "sell",
+     1
+    ],
+    [
+     "profit",
+     -6
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "pairs",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "buy day 0 (7), sell day 2 (5): profit -2. Best 0.",
+   "pointers": {
+    "buy": 0,
+    "sell": 2
+   },
+   "arc": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "buy",
+     0
+    ],
+    [
+     "sell",
+     2
+    ],
+    [
+     "profit",
+     -2
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "pairs",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "buy day 0 (7), sell day 3 (3): profit -4. Best 0.",
+   "pointers": {
+    "buy": 0,
+    "sell": 3
+   },
+   "arc": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "buy",
+     0
+    ],
+    [
+     "sell",
+     3
+    ],
+    [
+     "profit",
+     -4
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "pairs",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "buy day 0 (7), sell day 4 (6): profit -1. Best 0.",
+   "pointers": {
+    "buy": 0,
+    "sell": 4
+   },
+   "arc": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "active",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "buy",
+     0
+    ],
+    [
+     "sell",
+     4
+    ],
+    [
+     "profit",
+     -1
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "pairs",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "buy day 0 (7), sell day 5 (4): profit -3. Best 0.",
+   "pointers": {
+    "buy": 0,
+    "sell": 5
+   },
+   "arc": [
+    0,
+    5
+   ],
+   "marks": {
+    "0": "active",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "buy",
+     0
+    ],
+    [
+     "sell",
+     5
+    ],
+    [
+     "profit",
+     -3
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "pairs",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "buy day 1 (1), sell day 2 (5): profit 4. New best 4.",
+   "pointers": {
+    "buy": 1,
+    "sell": 2
+   },
+   "arc": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "active",
+    "2": "good"
+   },
+   "state": [
+    [
+     "buy",
+     1
+    ],
+    [
+     "sell",
+     2
+    ],
+    [
+     "profit",
+     4
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "pairs",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "buy day 1 (1), sell day 4 (6): profit 5. New best 5.",
+   "pointers": {
+    "buy": 1,
+    "sell": 4
+   },
+   "arc": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "active",
+    "4": "good"
+   },
+   "state": [
+    [
+     "buy",
+     1
+    ],
+    [
+     "sell",
+     4
+    ],
+    [
+     "profit",
+     5
+    ],
+    [
+     "best",
+     5
+    ],
+    [
+     "pairs",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "Best profit 5: buy day 1, sell day 4 \u2014 but it cost 15 pairs.",
+   "pointers": {
+    "buy": 1,
+    "sell": 4
+   },
+   "arc": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "best",
+     5
+    ],
+    [
+     "pairs",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the pair counter \u2014 each sell day re-scanned every earlier day for a low buy.",
+   "note": "15 pairs. For each sell day, brute re-hunts the whole past for the cheapest buy. But that cheapest price is one number we could just carry along.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "pairs (brute)",
+     15
+    ],
+    [
+     "pattern",
+     "~ n*n / 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "On any sell day, the only thing you want from history is the single lowest price before it. Track that minimum as you walk right \u2014 one pass, no looking back.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "memory of past",
+     "1 number"
+    ],
+    [
+     "pattern",
+     "~ n"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    7,
+    1,
+    5,
+    3,
+    6,
+    4
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "one marker tracks the cheapest day so far; each day sells against it.",
+   "invariant": "min_price is the lowest price at or before the current day.",
+   "note": "Walk left to right. Remember the cheapest day so far; sell today against it.",
+   "pointers": {
+    "day": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "min so far",
+     "inf"
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "day 0: 7 is a new low. Remember it as the cheapest day to buy.",
+   "pointers": {
+    "day": 0,
+    "min": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "day",
+     0
+    ],
+    [
+     "price",
+     7
+    ],
+    [
+     "min so far",
+     7
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "day 1: 1 is a new low. Remember it as the cheapest day to buy.",
+   "pointers": {
+    "day": 1,
+    "min": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "day",
+     1
+    ],
+    [
+     "price",
+     1
+    ],
+    [
+     "min so far",
+     1
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "day 2: sell at 5 against min 1 \u2192 profit 4. New best 4.",
+   "pointers": {
+    "day": 2,
+    "min": 1
+   },
+   "arc": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "good",
+    "2": "good"
+   },
+   "state": [
+    [
+     "day",
+     2
+    ],
+    [
+     "price",
+     5
+    ],
+    [
+     "min so far",
+     1
+    ],
+    [
+     "profit",
+     4
+    ],
+    [
+     "best",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "day 3: sell at 3 against min 1 \u2192 profit 2. Best 4.",
+   "pointers": {
+    "day": 3,
+    "min": 1
+   },
+   "arc": [
+    1,
+    3
+   ],
+   "marks": {
+    "1": "dim",
+    "3": "active"
+   },
+   "state": [
+    [
+     "day",
+     3
+    ],
+    [
+     "price",
+     3
+    ],
+    [
+     "min so far",
+     1
+    ],
+    [
+     "profit",
+     2
+    ],
+    [
+     "best",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "day 4: sell at 6 against min 1 \u2192 profit 5. New best 5.",
+   "pointers": {
+    "day": 4,
+    "min": 1
+   },
+   "arc": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "day",
+     4
+    ],
+    [
+     "price",
+     6
+    ],
+    [
+     "min so far",
+     1
+    ],
+    [
+     "profit",
+     5
+    ],
+    [
+     "best",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "day 5: sell at 4 against min 1 \u2192 profit 3. Best 5.",
+   "pointers": {
+    "day": 5,
+    "min": 1
+   },
+   "arc": [
+    1,
+    5
+   ],
+   "marks": {
+    "1": "dim",
+    "5": "active"
+   },
+   "state": [
+    [
+     "day",
+     5
+    ],
+    [
+     "price",
+     4
+    ],
+    [
+     "min so far",
+     1
+    ],
+    [
+     "profit",
+     3
+    ],
+    [
+     "best",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "One pass. Best profit 5: buy day 1 (1), sell day 4 (6).",
+   "pointers": {
+    "buy": 1,
+    "sell": 4
+   },
+   "arc": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "best",
+     5
+    ],
+    [
+     "passes",
+     1
+    ],
+    [
+     "vs brute pairs",
+     15
+    ]
+   ],
+   "banner": "Best profit 5   buy 1 \u2192 sell 6   \u2014 one pass vs 15 brute pairs"
+  },
+  {
+   "act": 3,
+   "cells": [
+    7,
+    6,
+    4,
+    3,
+    1
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the min keeps dropping, so no sell ever beats its buy \u2014 the answer is 0.",
+   "invariant": "min_price is the lowest price seen so far; best stays 0 if nothing profits.",
+   "note": "Edge case: prices only fall. Every day is a new low, so no trade ever profits.",
+   "pointers": {
+    "day": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "min so far",
+     "inf"
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "day 0: 7 is yet another new low \u2014 nothing to sell against.",
+   "pointers": {
+    "day": 0
+   },
+   "marks": {
+    "0": "bad"
+   },
+   "state": [
+    [
+     "day",
+     0
+    ],
+    [
+     "price",
+     7
+    ],
+    [
+     "min so far",
+     7
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "day 1: 6 is yet another new low \u2014 nothing to sell against.",
+   "pointers": {
+    "day": 1
+   },
+   "marks": {
+    "1": "bad"
+   },
+   "state": [
+    [
+     "day",
+     1
+    ],
+    [
+     "price",
+     6
+    ],
+    [
+     "min so far",
+     6
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "day 2: 4 is yet another new low \u2014 nothing to sell against.",
+   "pointers": {
+    "day": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "state": [
+    [
+     "day",
+     2
+    ],
+    [
+     "price",
+     4
+    ],
+    [
+     "min so far",
+     4
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "day 3: 3 is yet another new low \u2014 nothing to sell against.",
+   "pointers": {
+    "day": 3
+   },
+   "marks": {
+    "3": "bad"
+   },
+   "state": [
+    [
+     "day",
+     3
+    ],
+    [
+     "price",
+     3
+    ],
+    [
+     "min so far",
+     3
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "day 4: 1 is yet another new low \u2014 nothing to sell against.",
+   "pointers": {
+    "day": 4
+   },
+   "marks": {
+    "4": "bad"
+   },
+   "state": [
+    [
+     "day",
+     4
+    ],
+    [
+     "price",
+     1
+    ],
+    [
+     "min so far",
+     1
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "No day ever sold above its buy. Best profit is 0 \u2014 don't trade.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "best",
+     0
+    ]
+   ],
+   "banner": "Best profit 0   (prices only fall \u2014 no trade)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/04-sliding-window/0121-best-time-to-buy-and-sell-stock/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;121. Best Time to Buy and Sell Stock — https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
 
 Given daily prices, buy on one day and sell on a *later* day to make the largest
 profit. Return that profit, or 0 if no profitable trade exists.

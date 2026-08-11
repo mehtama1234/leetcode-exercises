@@ -60,7 +60,942 @@
 <h2>Pitfalls</h2>
 <ul><li>The weave stop condition (<code>while second and second.next</code>) is fussy. Test both even (<code>[1,2,3,4]</code>) and odd (<code>[1,2,3,4,5]</code>) lengths — an off-by-one here either drops the middle node or creates a loop.</li><li>Save <code>first.next</code> and <code>second.next</code> *before* rewiring, same as ordinary reversal. Overwrite first and you lose the rest.</li><li>Empty, single, and two-node lists should come out unchanged; guard early.</li></ul>
 <h2>Transfer</h2>
-<p>This is the archetype of &quot;a hard list problem is a few easy ones composed.&quot; You&#x27;re reusing <a href="../0876-middle-of-the-linked-list/">find the middle / 876</a> and <a href="../0206-reverse-linked-list/">reverse / 206</a> as subroutines, and the weave is a cousin of <a href="../0021-merge-two-sorted-lists/">merge two lists / 21</a>. The same split-reverse-merge combo shows up in Palindrome Linked List / 234 and Sort List / 148.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0143-reorder-list/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;143. Reorder List — https://leetcode.com/problems/reorder-list/
+<p>This is the archetype of &quot;a hard list problem is a few easy ones composed.&quot; You&#x27;re reusing <a href="../0876-middle-of-the-linked-list/">find the middle / 876</a> and <a href="../0206-reverse-linked-list/">reverse / 206</a> as subroutines, and the weave is a cousin of <a href="../0021-merge-two-sorted-lists/">merge two lists / 21</a>. The same split-reverse-merge combo shows up in Palindrome Linked List / 234 and Sort List / 148.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linkedlist",
+ "title": "Reorder List - split, reverse the back half, weave",
+ "acts": [
+  "The plan",
+  "Find the middle",
+  "Reverse second half",
+  "Weave halves",
+  "Edge: two nodes"
+ ],
+ "code": {
+  "mid": [
+   "slow = fast = head",
+   "while fast and fast.next:",
+   "    slow = slow.next",
+   "    fast = fast.next.next"
+  ],
+  "rev": [
+   "prev = None; cur = slow",
+   "while cur:",
+   "    nxt = cur.next",
+   "    cur.next = prev",
+   "    prev = cur; cur = nxt"
+  ],
+  "weave": [
+   "first = head; second = prev",
+   "while second and second.next:",
+   "    f_next = first.next",
+   "    s_next = second.next",
+   "    first.next = second",
+   "    second.next = f_next",
+   "    first = f_next; second = s_next"
+  ]
+ },
+ "legend": [
+  [
+   "good",
+   "resolved / second half / linked"
+  ],
+  [
+   "active",
+   "slow pointer"
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "vals": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "code": "mid",
+   "line": 0,
+   "intro": "the target front-back-front-back pattern is three standard list moves.",
+   "invariant": "everything happens in place; no nodes are copied.",
+   "note": "We want 1 5 2 4 3: front, back, front, back. That is exactly: split in half, reverse the back half, then interleave the two halves.",
+   "pointers": {},
+   "state": [
+    [
+     "goal",
+     "1 5 2 4 3"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "vals": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "code": "mid",
+   "line": 0,
+   "intro": "fast/slow: when fast runs out, slow marks the start of the second half.",
+   "invariant": "slow is always half as far along as fast.",
+   "note": "Step one: locate the midpoint with fast/slow pointers.",
+   "pointers": {
+    "slow": 0,
+    "fast": 0
+   },
+   "state": [
+    [
+     "slow",
+     1
+    ],
+    [
+     "fast",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mid",
+   "line": 2,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "slow -> 2, fast -> 3.",
+   "pointers": {
+    "slow": 1,
+    "fast": 2
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "slow",
+     2
+    ],
+    [
+     "fast",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mid",
+   "line": 2,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "slow -> 3, fast -> 5.",
+   "pointers": {
+    "slow": 2,
+    "fast": 4
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "slow",
+     3
+    ],
+    [
+     "fast",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mid",
+   "line": 1,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "fast is done. slow rests on 3 \u2014 the start of the second half (3 onward).",
+   "pointers": {
+    "slow": 2
+   },
+   "marks": {
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "second half starts",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "vals": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "code": "rev",
+   "line": 0,
+   "intro": "flip every arrow from the midpoint onward; arrows move below the row.",
+   "invariant": "the second half becomes a valid chain running the other way.",
+   "note": "Step two: reverse everything from 3 onward, the same flip-each-arrow move as problem 206.",
+   "pointers": {
+    "cur": 2,
+    "prev": null
+   },
+   "marks": {
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "prev",
+     "null"
+    ],
+    [
+     "cur",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 2,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Remember 3.next = 4 before overwriting it.",
+   "pointers": {
+    "cur": 2,
+    "prev": null,
+    "nxt": 3
+   },
+   "state": [
+    [
+     "cur",
+     3
+    ],
+    [
+     "nxt",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 3,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Flip: 3's arrow now points back to null (arc drops below the row).",
+   "pointers": {
+    "cur": 2,
+    "prev": null,
+    "nxt": 3
+   },
+   "marks": {
+    "2": "good"
+   },
+   "state": [
+    [
+     "flipped",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 2,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Remember 4.next = 5 before overwriting it.",
+   "pointers": {
+    "cur": 3,
+    "prev": 2,
+    "nxt": 4
+   },
+   "state": [
+    [
+     "cur",
+     4
+    ],
+    [
+     "nxt",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 3,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Flip: 4's arrow now points back to 3 (arc drops below the row).",
+   "pointers": {
+    "cur": 3,
+    "prev": 2,
+    "nxt": 4
+   },
+   "marks": {
+    "3": "good"
+   },
+   "state": [
+    [
+     "flipped",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 2,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Remember 5.next = null before overwriting it.",
+   "pointers": {
+    "cur": 4,
+    "prev": 3,
+    "nxt": null
+   },
+   "state": [
+    [
+     "cur",
+     5
+    ],
+    [
+     "nxt",
+     "null"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 3,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     3
+    ]
+   ],
+   "note": "Flip: 5's arrow now points back to 4 (arc drops below the row).",
+   "pointers": {
+    "cur": 4,
+    "prev": 3,
+    "nxt": null
+   },
+   "marks": {
+    "4": "good"
+   },
+   "state": [
+    [
+     "flipped",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 1,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     3
+    ]
+   ],
+   "note": "Second half reversed: it now heads 5 -> ... . prev = 5 is its new head.",
+   "pointers": {
+    "prev": 4
+   },
+   "marks": {
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "reversed head",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "vals": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     3
+    ]
+   ],
+   "code": "weave",
+   "line": 0,
+   "intro": "alternate: one node from the front, one from the reversed back.",
+   "invariant": "second half is <= first half, so we stop when second runs out.",
+   "note": "Step three: interleave. first starts at 1, second at the reversed head 5.",
+   "pointers": {
+    "first": 0,
+    "second": 4
+   },
+   "state": [
+    [
+     "first",
+     1
+    ],
+    [
+     "second",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "weave",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     4
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     3
+    ]
+   ],
+   "note": "Link 1 -> 5 (front node then back node).",
+   "pointers": {
+    "first": 0,
+    "second": 4
+   },
+   "marks": {
+    "0": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "linked",
+     "1->5"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "weave",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     4
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     1
+    ]
+   ],
+   "note": "Then 5 -> 2 to rejoin the front thread; advance both.",
+   "pointers": {
+    "first": 1,
+    "second": 3
+   },
+   "marks": {
+    "0": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "next first",
+     2
+    ],
+    [
+     "next second",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "weave",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     4
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     1
+    ]
+   ],
+   "note": "Link 2 -> 4 (front node then back node).",
+   "pointers": {
+    "first": 1,
+    "second": 3
+   },
+   "marks": {
+    "1": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "linked",
+     "2->4"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "weave",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     4
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     1
+    ]
+   ],
+   "note": "Then 4 -> 3 to rejoin the front thread; advance both.",
+   "pointers": {
+    "first": 2,
+    "second": 2
+   },
+   "marks": {
+    "1": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "next first",
+     3
+    ],
+    [
+     "next second",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "weave",
+   "line": 1,
+   "edges": [
+    [
+     0,
+     4
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     1
+    ]
+   ],
+   "note": "Woven together. Reading from the head: 1 5 2 4 3.",
+   "pointers": {
+    "head": 0
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "result",
+     "1 5 2 4 3"
+    ]
+   ],
+   "banner": "Reordered: 1 5 2 4 3"
+  },
+  {
+   "act": 4,
+   "vals": [
+    1,
+    2
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     null
+    ]
+   ],
+   "code": "weave",
+   "line": 1,
+   "intro": "with two nodes the weave loop never runs \u2014 the list is unchanged.",
+   "invariant": "second.next is null, so the while condition is false at once.",
+   "note": "Edge case: [1,2]. The midpoint split gives a one-node second half; second.next is null, so nothing is woven and the list stays [1,2].",
+   "pointers": {
+    "first": 0,
+    "second": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "state": [
+    [
+     "result",
+     "1 2"
+    ]
+   ],
+   "banner": "Two nodes: already in order"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0143-reorder-list/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;143. Reorder List — https://leetcode.com/problems/reorder-list/
 
 Reorder a list L0 -&gt; L1 -&gt; ... -&gt; Ln-1 -&gt; Ln into
 L0 -&gt; Ln -&gt; L1 -&gt; Ln-1 -&gt; L2 -&gt; Ln-2 -&gt; ...  in place.

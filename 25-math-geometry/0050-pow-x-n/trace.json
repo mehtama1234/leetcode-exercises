@@ -1,0 +1,831 @@
+{
+ "player": "linear",
+ "title": "Pow(x, n) - square through the exponent's bits, not n multiplies",
+ "acts": [
+  "Naive: multiply n times",
+  "The waste",
+  "Squaring by bits",
+  "Edge: negative n"
+ ],
+ "code": {
+  "naive": [
+   "result = 1.0",
+   "for _ in range(n):",
+   "    result *= x",
+   "return result"
+  ],
+  "fast": [
+   "result, current = 1.0, x",
+   "while n > 0:",
+   "    if n & 1:",
+   "        result *= current",
+   "    current *= current   # x^2, x^4, x^8...",
+   "    n >>= 1",
+   "return result"
+  ]
+ },
+ "legend": [
+  [
+   "good",
+   "bit is 1: folded into result"
+  ],
+  [
+   "active",
+   "next power of two"
+  ],
+  [
+   "dim",
+   "bit is 0: skipped"
+  ]
+ ],
+ "cells": [
+  "0",
+  "1",
+  "0",
+  "1"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "10"
+   ],
+   "labels": [
+    "n"
+   ],
+   "code": "naive",
+   "line": 0,
+   "intro": "one multiply per unit of n \u2014 count them climb.",
+   "invariant": "result = x multiplied by itself (count) times.",
+   "note": "Naive power: multiply x by itself n times. For 2^10 that is 10 multiplies; for n = 2 billion it is 2 billion.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "x",
+     2.0
+    ],
+    [
+     "n",
+     10
+    ],
+    [
+     "multiplies",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "multiply 1: result = 2.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "step",
+     1
+    ],
+    [
+     "result",
+     "2"
+    ],
+    [
+     "multiplies",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "multiply 2: result = 4.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "step",
+     2
+    ],
+    [
+     "result",
+     "4"
+    ],
+    [
+     "multiplies",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "multiply 3: result = 8.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "step",
+     3
+    ],
+    [
+     "result",
+     "8"
+    ],
+    [
+     "multiplies",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "multiply 4: result = 16.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "step",
+     4
+    ],
+    [
+     "result",
+     "16"
+    ],
+    [
+     "multiplies",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "multiply 5: result = 32.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "step",
+     5
+    ],
+    [
+     "result",
+     "32"
+    ],
+    [
+     "multiplies",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "multiply 6: result = 64.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "step",
+     6
+    ],
+    [
+     "result",
+     "64"
+    ],
+    [
+     "multiplies",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "multiply 7: result = 128.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "step",
+     7
+    ],
+    [
+     "result",
+     "128"
+    ],
+    [
+     "multiplies",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "multiply 8: result = 256.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "step",
+     8
+    ],
+    [
+     "result",
+     "256"
+    ],
+    [
+     "multiplies",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "multiply 9: result = 512.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "step",
+     9
+    ],
+    [
+     "result",
+     "512"
+    ],
+    [
+     "multiplies",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "multiply 10: result = 1024.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "step",
+     10
+    ],
+    [
+     "result",
+     "1024"
+    ],
+    [
+     "multiplies",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "2^10 = 1024, but it took 10 multiplies \u2014 and this grows linearly with n.",
+   "marks": {},
+   "state": [
+    [
+     "answer",
+     "1024"
+    ],
+    [
+     "multiplies",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "x^10 = (x^5)^2, and x^5 = (x^2)^2 * x \u2014 the same squares reused.",
+   "note": "Multiplying one at a time redoes work: once you know x^5 you get x^10 by one squaring, not five more multiplies. The repeated single steps are the waste.",
+   "marks": {},
+   "state": [
+    [
+     "multiplies (naive)",
+     10
+    ],
+    [
+     "pattern",
+     "~ n"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Read n in binary: 10 = 1010. Each 1-bit says 'this power of two is present.' Square to climb powers of two, multiply in only where a bit is 1.",
+   "marks": {},
+   "state": [
+    [
+     "n in binary",
+     "1010"
+    ],
+    [
+     "what we want",
+     "~ log n"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "0",
+    "1",
+    "0",
+    "1"
+   ],
+   "labels": [
+    "2^0",
+    "2^1",
+    "2^2",
+    "2^3"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "cells are n's bits (low first); current doubles its exponent each step.",
+   "invariant": "current = x^(2^bit); result folds in current only where the bit is 1.",
+   "note": "n = 10 = binary 1010 (read low bit first: 0101). Keep current = x, x^2, x^4, x^8 and fold it into result at each 1-bit.",
+   "pointers": {
+    "bit": 0
+   },
+   "marks": {},
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "current",
+      "2"
+     ],
+     [
+      "result",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "result",
+     1
+    ],
+    [
+     "current",
+     "2"
+    ],
+    [
+     "multiplies",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "bit 0 (2^0) is 0: skip, this power of x is not in the exponent.",
+   "pointers": {
+    "bit": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "current",
+      "2"
+     ],
+     [
+      "result",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "bit",
+     0
+    ],
+    [
+     "current",
+     "2"
+    ],
+    [
+     "result",
+     "1"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Square current to reach x^(2^1) = 4; drop the used bit.",
+   "pointers": {
+    "bit": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "current",
+      "4"
+     ],
+     [
+      "result",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "current",
+     "4"
+    ],
+    [
+     "multiplies",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "bit 1 (2^1) is 1: fold current 4 into result -> 4.",
+   "pointers": {
+    "bit": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "current",
+      "4"
+     ],
+     [
+      "result",
+      "4"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "bit",
+     1
+    ],
+    [
+     "current",
+     "4"
+    ],
+    [
+     "result",
+     "4"
+    ],
+    [
+     "multiplies",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Square current to reach x^(2^2) = 16; drop the used bit.",
+   "pointers": {
+    "bit": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "current",
+      "16"
+     ],
+     [
+      "result",
+      "4"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "current",
+     "16"
+    ],
+    [
+     "multiplies",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "bit 2 (2^2) is 0: skip, this power of x is not in the exponent.",
+   "pointers": {
+    "bit": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "current",
+      "16"
+     ],
+     [
+      "result",
+      "4"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "bit",
+     2
+    ],
+    [
+     "current",
+     "16"
+    ],
+    [
+     "result",
+     "4"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Square current to reach x^(2^3) = 256; drop the used bit.",
+   "pointers": {
+    "bit": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "current",
+      "256"
+     ],
+     [
+      "result",
+      "4"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "current",
+     "256"
+    ],
+    [
+     "multiplies",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "bit 3 (2^3) is 1: fold current 256 into result -> 1024.",
+   "pointers": {
+    "bit": 3
+   },
+   "marks": {
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "current",
+      "256"
+     ],
+     [
+      "result",
+      "1024"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "bit",
+     3
+    ],
+    [
+     "current",
+     "256"
+    ],
+    [
+     "result",
+     "1024"
+    ],
+    [
+     "multiplies",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "2^10 = 1024 in 6 multiplies instead of 10 \u2014 log n, not n.",
+   "marks": {
+    "1": "good",
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "result",
+      "1024"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     "1024"
+    ],
+    [
+     "multiplies",
+     6
+    ],
+    [
+     "vs naive",
+     10
+    ]
+   ],
+   "banner": "2^10 = 1024   (6 multiplies vs 10 naive)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    "0",
+    "1"
+   ],
+   "labels": [
+    "2^0",
+    "2^1"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "negative n: flip x to 1/x, make n positive, then the same squaring runs.",
+   "invariant": "x^(-n) = (1/x)^n; the bit loop is unchanged.",
+   "note": "Edge case: 2^-2. Replace x with 1/x = 0.5 and n with 2, then run the same squaring loop.",
+   "pointers": {
+    "bit": 0
+   },
+   "marks": {},
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "x -> 1/x",
+      "0.5"
+     ],
+     [
+      "result",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     0.5
+    ],
+    [
+     "n",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "bit 0 is 0: skip; square current 0.5 -> 0.25.",
+   "pointers": {
+    "bit": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "current",
+      "0.5"
+     ],
+     [
+      "result",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "current",
+     "0.25"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "bit 1 is 1: result *= current 0.25 -> 0.25.",
+   "pointers": {
+    "bit": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "current",
+      "0.25"
+     ],
+     [
+      "result",
+      "0.25"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "result",
+     "0.25"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "2^-2 = 0.25 = 1/4.",
+   "marks": {
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "running",
+    "rows": [
+     [
+      "result",
+      "0.25"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     "0.25"
+    ]
+   ],
+   "banner": "2^-2 = 0.25"
+  }
+ ]
+}

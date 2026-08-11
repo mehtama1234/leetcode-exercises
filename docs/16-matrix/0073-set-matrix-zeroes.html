@@ -64,7 +64,494 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Zeroing rows or columns the moment you first see them</strong> — the chain reaction that blanks everything. Keep marking separate from acting.</li><li><strong>The <code>(0,0)</code> overlap.</strong> One corner cell can&#x27;t be the marker for both row 0 and column 0. Track column 0 with its own flag.</li><li><strong>Order of the final steps.</strong> If you blank row 0 or column 0 *before* using them to fix the inside, you erase your own markers. Inside first, edges last.</li><li>Assuming there&#x27;s at least one zero — a grid with none must come out unchanged.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable trick is &quot;store your notes *inside* the data structure you were already given, to keep extra memory constant.&quot; It shows up whenever a marker array mirrors a dimension the input already has — for example using the array&#x27;s own indices as a seen-set in <a href="https://leetcode.com/problems/first-missing-positive/">First Missing Positive / 41</a>, and it shares the in-place-grid discipline of <a href="../0048-rotate-image/">Rotate Image / 48</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/16-matrix/0073-set-matrix-zeroes/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;73. Set Matrix Zeroes — https://leetcode.com/problems/set-matrix-zeroes/
+<p>The reusable trick is &quot;store your notes *inside* the data structure you were already given, to keep extra memory constant.&quot; It shows up whenever a marker array mirrors a dimension the input already has — for example using the array&#x27;s own indices as a seen-set in <a href="https://leetcode.com/problems/first-missing-positive/">First Missing Positive / 41</a>, and it shares the in-place-grid discipline of <a href="../0048-rotate-image/">Rotate Image / 48</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Set Matrix Zeroes - reuse row 0 and column 0 as the markers",
+ "acts": [
+  "Brute: two marker sets",
+  "In place via row 0 / col 0",
+  "Edge: zero at (0,0)"
+ ],
+ "code": {
+  "mark": [
+   "for r,c in cells:",
+   "    if grid[r][c]==0: zero_rows.add(r); zero_cols.add(c)",
+   "for r in range(m):",
+   "    for c in range(n):",
+   "        if r in zero_rows or c in zero_cols: grid[r][c]=0"
+  ],
+  "fast": [
+   "for r in range(m):",
+   "    if matrix[r][0]==0: first_col_zero=True",
+   "    for c in range(1,n):",
+   "        if matrix[r][c]==0: matrix[r][0]=0; matrix[0][c]=0",
+   "for r in range(1,m):",
+   "    for c in range(1,n):",
+   "        if matrix[r][0]==0 or matrix[0][c]==0: matrix[r][c]=0",
+   "if matrix[0][0]==0: blank row 0",
+   "if first_col_zero: blank col 0"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "marker being set / read"
+  ],
+  [
+   "good",
+   "blanked to 0 / marker"
+  ],
+  [
+   "bad",
+   "an original zero"
+  ],
+  [
+   "dim",
+   "kept / marker strip"
+  ]
+ ],
+ "rows": [
+  [
+   1,
+   1,
+   1
+  ],
+  [
+   1,
+   0,
+   1
+  ],
+  [
+   1,
+   1,
+   1
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     1,
+     1,
+     1
+    ],
+    [
+     1,
+     0,
+     1
+    ],
+    [
+     1,
+     1,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "mark",
+   "line": 0,
+   "intro": "why blanking a row the moment you see a 0 destroys the grid.",
+   "invariant": "the ORIGINAL zeros decide which rows/cols blank, not the ones we write.",
+   "note": "Brute force: scan for zeros first, remember each zero's row and column in two sets, then blank in a second pass. Found a 0 at (1,1).",
+   "marks": {
+    "1,1": "bad"
+   },
+   "state": [
+    [
+     "zero_rows",
+     "{1}"
+    ],
+    [
+     "zero_cols",
+     "{1}"
+    ],
+    [
+     "extra space",
+     "O(m+n)"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "mark",
+   "line": 4,
+   "note": "Second pass blanks row 1 and column 1 using the sets. Correct \u2014 but the two sets are extra O(m+n) storage. That is the waste we remove.",
+   "set": {
+    "1,0": 0,
+    "1,2": 0,
+    "0,1": 0,
+    "2,1": 0,
+    "1,1": 0
+   },
+   "marks": {
+    "1,0": "good",
+    "1,1": "good",
+    "1,2": "good",
+    "0,1": "good",
+    "2,1": "good"
+   },
+   "state": [
+    [
+     "zero_rows",
+     "{1}"
+    ],
+    [
+     "zero_cols",
+     "{1}"
+    ],
+    [
+     "extra space",
+     "O(m+n)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     0,
+     1,
+     2,
+     0
+    ],
+    [
+     3,
+     4,
+     5,
+     2
+    ],
+    [
+     1,
+     3,
+     1,
+     5
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the grid's own first row and column stand in for the two sets.",
+   "invariant": "row 0 marks which columns to blank; column 0 marks which rows.",
+   "note": "No extra storage: reuse row 0 and column 0 as the markers. Column 0 clashes with row 0 at (0,0), so track column 0's own zero in one boolean flag first.",
+   "marks": {
+    "0,0": "dim",
+    "0,1": "dim",
+    "0,2": "dim",
+    "0,3": "dim"
+   },
+   "state": [
+    [
+     "first_col_zero",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 1,
+   "note": "matrix[0][0] is 0 -> remember column 0 in the flag.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "first_col_zero",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 3,
+   "note": "matrix[0][3]=0 -> set marker matrix[0][0] and matrix[0][3].",
+   "set": {
+    "0,0": 0,
+    "0,3": 0
+   },
+   "marks": {
+    "0,3": "active",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "first_col_zero",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 4,
+   "note": "Now blank the interior (r>=1, c>=1) wherever its row marker or column marker is 0. Markers are still intact because we haven't touched row 0 / column 0.",
+   "marks": {
+    "0,0": "dim",
+    "0,1": "dim",
+    "0,2": "dim",
+    "0,3": "dim"
+   },
+   "state": [
+    [
+     "pass",
+     "interior"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 6,
+   "note": "blank (1,3) via col marker (0,3).",
+   "set": {
+    "1,3": 0
+   },
+   "marks": {
+    "1,3": "good",
+    "1,0": "active",
+    "0,3": "active"
+   },
+   "state": [
+    [
+     "pass",
+     "interior"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 6,
+   "note": "blank (2,3) via col marker (0,3).",
+   "set": {
+    "2,3": 0
+   },
+   "marks": {
+    "2,3": "good",
+    "2,0": "active",
+    "0,3": "active"
+   },
+   "state": [
+    [
+     "pass",
+     "interior"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 7,
+   "note": "matrix[0][0] was 0, so blank all of row 0 now (done last, after its markers were read).",
+   "set": {
+    "0,0": 0,
+    "0,1": 0,
+    "0,2": 0,
+    "0,3": 0
+   },
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good"
+   },
+   "state": [
+    [
+     "row 0",
+     "blanked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 8,
+   "note": "first_col_zero was True, so blank all of column 0 now.",
+   "set": {
+    "0,0": 0,
+    "1,0": 0,
+    "2,0": 0
+   },
+   "marks": {
+    "0,0": "good",
+    "1,0": "good",
+    "2,0": "good"
+   },
+   "state": [
+    [
+     "col 0",
+     "blanked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 8,
+   "note": "Done in place with O(1) extra space: every original zero blanked its row and column, no chain reaction.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "0,3": "good",
+    "1,0": "good",
+    "1,1": "dim",
+    "1,2": "dim",
+    "1,3": "good",
+    "2,0": "good",
+    "2,1": "dim",
+    "2,2": "dim",
+    "2,3": "good"
+   },
+   "banner": "Zeroed in place, O(1) extra space"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     0,
+     2,
+     3
+    ],
+    [
+     4,
+     5,
+     6
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the (0,0) conflict case: a zero sits in both marker strips.",
+   "invariant": "the col0 flag keeps (0,0) from being overwritten too early.",
+   "note": "Edge case: the only zero is at (0,0), on both marker strips. The flag captures column 0 up front so it survives.",
+   "marks": {
+    "0,0": "bad"
+   },
+   "state": [
+    [
+     "first_col_zero",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "matrix[0][0]=0 -> set first_col_zero flag.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "first_col_zero",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Interior (r>=1, c>=1) checks its markers: row 1 marker (1,0)=4 not 0, but column markers depend on row 0. Only column 0's marker matters here.",
+   "marks": {
+    "0,0": "dim"
+   },
+   "state": [
+    [
+     "pass",
+     "interior"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "matrix[0][0]=0 -> blank row 0.",
+   "set": {
+    "0,0": 0,
+    "0,1": 0,
+    "0,2": 0
+   },
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "row 0",
+     "blanked"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 8,
+   "note": "flag True -> blank column 0.",
+   "set": {
+    "0,0": 0,
+    "1,0": 0
+   },
+   "marks": {
+    "0,0": "good",
+    "1,0": "good"
+   },
+   "state": [
+    [
+     "col 0",
+     "blanked"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 8,
+   "note": "Result: [[0,0,0],[0,5,6]]. The (0,0) conflict is handled by the extra flag, nothing else.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "1,0": "good",
+    "1,1": "dim",
+    "1,2": "dim"
+   },
+   "banner": "(0,0) edge handled"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/16-matrix/0073-set-matrix-zeroes/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;73. Set Matrix Zeroes — https://leetcode.com/problems/set-matrix-zeroes/
 
 If any cell in an m x n grid is 0, set that cell&#x27;s entire row and entire column
 to 0 — **in place**. The catch is doing it without an extra O(m+n) marker array.

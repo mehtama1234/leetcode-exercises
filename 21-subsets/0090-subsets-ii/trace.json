@@ -1,0 +1,858 @@
+{
+ "player": "tree",
+ "title": "Subsets II \u2014 every node is a subset, and a sibling-skip prunes duplicates",
+ "acts": [
+  "The rule",
+  "Walk the tree (prunes visible)",
+  "Edge case: all equal"
+ ],
+ "code": {
+  "backtrack": [
+   "def backtrack(start):",
+   "    result.append(path[:])          # every node is a subset",
+   "    for i in range(start, n):",
+   "        if i > start and nums[i] == nums[i-1]:",
+   "            continue                # skip duplicate sibling",
+   "        path.append(nums[i])        # choose",
+   "        backtrack(i + 1)            # explore the tail",
+   "        path.pop()                  # un-choose"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current path"
+  ],
+  [
+   "good",
+   "recorded subset / \u2715 = pruned twin"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "{}",
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": "{1}",
+   "x": 66,
+   "y": 84
+  },
+  {
+   "id": 2,
+   "val": "{1,2}",
+   "x": 132,
+   "y": 168
+  },
+  {
+   "id": 3,
+   "val": "{1,2,2}",
+   "x": 198,
+   "y": 252
+  },
+  {
+   "id": 4,
+   "val": "{1,2}",
+   "x": 264,
+   "y": 168
+  },
+  {
+   "id": 5,
+   "val": "{2}",
+   "x": 330,
+   "y": 84
+  },
+  {
+   "id": 6,
+   "val": "{2,2}",
+   "x": 396,
+   "y": 168
+  },
+  {
+   "id": 7,
+   "val": "{2}",
+   "x": 462,
+   "y": 84
+  }
+ ],
+ "edges": [
+  [
+   2,
+   3
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   5,
+   6
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   7
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "{}",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "{1}",
+     "x": 66,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "{1,2}",
+     "x": 132,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "{1,2,2}",
+     "x": 198,
+     "y": 252
+    },
+    {
+     "id": 4,
+     "val": "{1,2}",
+     "x": 264,
+     "y": 168
+    },
+    {
+     "id": 5,
+     "val": "{2}",
+     "x": 330,
+     "y": 84
+    },
+    {
+     "id": 6,
+     "val": "{2,2}",
+     "x": 396,
+     "y": 168
+    },
+    {
+     "id": 7,
+     "val": "{2}",
+     "x": 462,
+     "y": 84
+    }
+   ],
+   "edges": [
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     7
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "sorting groups equal values so a duplicate sits right next to its twin.",
+   "invariant": "every node is itself a valid subset \u2014 not just the leaves.",
+   "note": "Sort first: [1, 2, 2] -> [1, 2, 2]. Now equal numbers are neighbors, which is what lets us spot a duplicate sibling in O(1).",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "input",
+     "[1, 2, 2]"
+    ],
+    [
+     "sorted",
+     "[1, 2, 2]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "backtrack",
+   "line": 1,
+   "note": "Unlike plain Subsets, we record path the moment we ENTER a call, so every node in the tree is a subset \u2014 the root is {} , its children add one element each, and so on.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "{}"
+   },
+   "state": [
+    [
+     "node = subset",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "backtrack",
+   "line": 3,
+   "note": "The prune: inside one loop, a value equal to the previous sibling (nums[i]==nums[i-1] and i>start) is skipped \u2014 we already built every subset that starts with that value here, so retrying only remakes the same sets.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "{}"
+   },
+   "state": [
+    [
+     "skip when",
+     "nums[i]==nums[i-1]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "{}",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "{1}",
+     "x": 66,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "{1,2}",
+     "x": 132,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "{1,2,2}",
+     "x": 198,
+     "y": 252
+    },
+    {
+     "id": 4,
+     "val": "{1,2}",
+     "x": 264,
+     "y": 168
+    },
+    {
+     "id": 5,
+     "val": "{2}",
+     "x": 330,
+     "y": 84
+    },
+    {
+     "id": 6,
+     "val": "{2,2}",
+     "x": 396,
+     "y": 168
+    },
+    {
+     "id": 7,
+     "val": "{2}",
+     "x": 462,
+     "y": 84
+    }
+   ],
+   "edges": [
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     7
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "green badges accrue on every entered node; a \u2715 marks a skipped twin.",
+   "invariant": "a \u2715 child would only remake a subset already produced by its sibling.",
+   "note": "Run it. Each entered node lights green and records its subset; the second 2 at a level is skipped so we don't duplicate {2} or {2,2}.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 1,
+   "note": "Enter the root: record the empty subset {}.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "{}"
+   },
+   "state": [
+    [
+     "path",
+     "{}"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 4,
+   "note": "Here the next value equals its left sibling (nums[2]==nums[1] and i>start) -> skip. It would only remake {2}, already found.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "{}",
+    "7": "\u2717"
+   },
+   "state": [
+    [
+     "skipped",
+     "{2}"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Pick nums[i]=1 -> path becomes {1}, and record it. (2 of 6 subsets.)",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "0": "{}",
+    "1": "{1}"
+   },
+   "state": [
+    [
+     "path",
+     "{1}"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 4,
+   "note": "Here the next value equals its left sibling (nums[2]==nums[1] and i>start) -> skip. It would only remake {1,2}, already found.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "0": "{}",
+    "1": "{1}",
+    "4": "\u2717"
+   },
+   "state": [
+    [
+     "skipped",
+     "{1,2}"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Pick nums[i]=2 -> path becomes {1,2}, and record it. (3 of 6 subsets.)",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {
+    "0": "{}",
+    "1": "{1}",
+    "2": "{1,2}"
+   },
+   "state": [
+    [
+     "path",
+     "{1,2}"
+    ],
+    [
+     "found",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Pick nums[i]=2 -> path becomes {1,2,2}, and record it. (4 of 6 subsets.)",
+   "active": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "done": {
+    "0": "{}",
+    "1": "{1}",
+    "2": "{1,2}",
+    "3": "{1,2,2}"
+   },
+   "state": [
+    [
+     "path",
+     "{1,2,2}"
+    ],
+    [
+     "found",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Pick nums[i]=2 -> path becomes {2}, and record it. (5 of 6 subsets.)",
+   "active": [
+    0,
+    5
+   ],
+   "done": {
+    "0": "{}",
+    "1": "{1}",
+    "2": "{1,2}",
+    "3": "{1,2,2}",
+    "5": "{2}"
+   },
+   "state": [
+    [
+     "path",
+     "{2}"
+    ],
+    [
+     "found",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Pick nums[i]=2 -> path becomes {2,2}, and record it. (6 of 6 subsets.)",
+   "active": [
+    0,
+    5,
+    6
+   ],
+   "done": {
+    "0": "{}",
+    "1": "{1}",
+    "2": "{1,2}",
+    "3": "{1,2,2}",
+    "5": "{2}",
+    "6": "{2,2}"
+   },
+   "state": [
+    [
+     "path",
+     "{2,2}"
+    ],
+    [
+     "found",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Tree exhausted: 6 unique subsets, and every skipped \u2715 was a duplicate we correctly avoided.",
+   "active": [],
+   "done": {
+    "0": "{}",
+    "1": "{1}",
+    "2": "{1,2}",
+    "3": "{1,2,2}",
+    "5": "{2}",
+    "6": "{2,2}"
+   },
+   "state": [
+    [
+     "unique subsets",
+     6
+    ],
+    [
+     "duplicates made",
+     0
+    ]
+   ],
+   "banner": "6 unique subsets from [1, 2, 2] \u2014 no repeats"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "{}",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "{2}",
+     "x": 66,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "{2,2}",
+     "x": 132,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "{2,2,2}",
+     "x": 198,
+     "y": 252
+    },
+    {
+     "id": 4,
+     "val": "{2,2}",
+     "x": 264,
+     "y": 168
+    },
+    {
+     "id": 5,
+     "val": "{2}",
+     "x": 330,
+     "y": 84
+    },
+    {
+     "id": 6,
+     "val": "{2}",
+     "x": 396,
+     "y": 84
+    }
+   ],
+   "edges": [
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     6
+    ]
+   ],
+   "code": "backtrack",
+   "line": 3,
+   "intro": "with everything equal, only ONE child survives at each level.",
+   "invariant": "the kept path is the single increasing spine; all else is a \u2715.",
+   "note": "Edge case: all identical, nums = [2,2,2]. At every level only the first copy is kept; every later equal sibling is pruned.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "input",
+     "[2, 2, 2]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 1,
+   "note": "Enter root -> {}.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "{}"
+   },
+   "state": [
+    [
+     "path",
+     "{}"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 4,
+   "note": "Another 2 here equals its sibling -> skip; it would remake {2}.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "{}",
+    "5": "\u2717"
+   },
+   "state": [
+    [
+     "skipped",
+     "{2}"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 4,
+   "note": "Another 2 here equals its sibling -> skip; it would remake {2}.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "{}",
+    "6": "\u2717"
+   },
+   "state": [
+    [
+     "skipped",
+     "{2}"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Take the first available 2 -> {2}.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "0": "{}",
+    "1": "{2}"
+   },
+   "state": [
+    [
+     "path",
+     "{2}"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 4,
+   "note": "Another 2 here equals its sibling -> skip; it would remake {2,2}.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "0": "{}",
+    "1": "{2}",
+    "4": "\u2717"
+   },
+   "state": [
+    [
+     "skipped",
+     "{2,2}"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Take the first available 2 -> {2,2}.",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {
+    "0": "{}",
+    "1": "{2}",
+    "2": "{2,2}"
+   },
+   "state": [
+    [
+     "path",
+     "{2,2}"
+    ],
+    [
+     "found",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Take the first available 2 -> {2,2,2}.",
+   "active": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "done": {
+    "0": "{}",
+    "1": "{2}",
+    "2": "{2,2}",
+    "3": "{2,2,2}"
+   },
+   "state": [
+    [
+     "path",
+     "{2,2,2}"
+    ],
+    [
+     "found",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "All-equal input collapses to just 4 subsets \u2014 one per length (0..3) \u2014 because every branching duplicate was pruned.",
+   "active": [],
+   "done": {
+    "0": "{}",
+    "1": "{2}",
+    "2": "{2,2}",
+    "3": "{2,2,2}"
+   },
+   "state": [
+    [
+     "unique subsets",
+     4
+    ]
+   ],
+   "banner": "[2,2,2] -> 4 subsets: {}, {2}, {2,2}, {2,2,2}"
+  }
+ ]
+}

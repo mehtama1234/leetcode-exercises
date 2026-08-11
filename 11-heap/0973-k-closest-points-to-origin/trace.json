@@ -1,0 +1,748 @@
+{
+ "player": "linear",
+ "title": "K Closest Points \u2014 watch the farthest keeper",
+ "acts": [
+  "Naive: sort all by distance",
+  "The waste",
+  "Fast: size-k max-heap",
+  "Edge: origin, k=1"
+ ],
+ "code": {
+  "naive": [
+   "return sorted(points,",
+   "   key=lambda p: p[0]**2 + p[1]**2)[:k]"
+  ],
+  "fast": [
+   "for p in points:",
+   "    d2 = p[0]**2 + p[1]**2",
+   "    heapq.heappush(heap, (-d2, p))",
+   "    if len(heap) > k:",
+   "        heapq.heappop(heap)   # drop farthest",
+   "return [p for _, p in heap]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "point being challenged in"
+  ],
+  [
+   "good",
+   "a kept nearest point"
+  ],
+  [
+   "dim",
+   "far / discarded"
+  ]
+ ],
+ "cells": [
+  "(3,3)",
+  "(5,-1)",
+  "(-2,4)",
+  "(1,3)",
+  "(-2,2)"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "(3,3)",
+    "(5,-1)",
+    "(-2,4)",
+    "(1,3)",
+    "(-2,2)"
+   ],
+   "code": "naive",
+   "line": 0,
+   "intro": "the sort orders ALL points by distance, then keeps only the first k.",
+   "invariant": "after sorting by d\u00b2, the first k entries are the k nearest.",
+   "note": "Naive k=2: compute each point's squared distance and sort them all.",
+   "labels": [
+    18,
+    26,
+    20,
+    10,
+    8
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "k",
+     2
+    ],
+    [
+     "n",
+     5
+    ],
+    [
+     "cost",
+     "O(n log n)"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "(-2,2)",
+    "(1,3)",
+    "(3,3)",
+    "(-2,4)",
+    "(5,-1)"
+   ],
+   "labels": [
+    8,
+    10,
+    18,
+    20,
+    26
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "Sorted by d\u00b2 \u2192 [8, 10, 18, 20, 26]. The first 2 are nearest: ['(-2,2)', '(1,3)']. The rest were ordered for nothing.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "nearest",
+     "['(-2,2)', '(1,3)']"
+    ],
+    [
+     "kept",
+     2
+    ],
+    [
+     "ordered",
+     5
+    ]
+   ],
+   "banner": "2 nearest = ['(-2,2)', '(1,3)']"
+  },
+  {
+   "act": 1,
+   "intro": "only the k nearest matter; ordering the far points is discarded work.",
+   "note": "Sorting is O(n log n) and ranks every point. We keep k. The full order of the far points is computed then thrown away.",
+   "state": [
+    [
+     "cost",
+     "O(n log n)"
+    ],
+    [
+     "kept",
+     "2"
+    ],
+    [
+     "discarded order",
+     "3 pts"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "To keep the k NEAREST, watch the FARTHEST of the ones you're keeping. That farthest is the top of a size-k max-heap. If a new point beats it, swap.",
+   "state": [
+    [
+     "watch",
+     "farthest keeper"
+    ],
+    [
+     "structure",
+     "size-k max-heap"
+    ],
+    [
+     "total",
+     "O(n log k)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "(3,3)",
+    "(5,-1)",
+    "(-2,4)",
+    "(1,3)",
+    "(-2,2)"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the heap FILLS to k, then each point challenges the farthest keeper.",
+   "invariant": "the heap holds the 2 nearest points seen; its top is the farthest of them.",
+   "note": "Sweep the points once, size-2 max-heap of (negated d\u00b2, point).",
+   "labels": [
+    18,
+    26,
+    20,
+    10,
+    8
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "k",
+     2
+    ],
+    [
+     "heap size",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "pointers": {
+    "p": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "note": "Point (3,3), d\u00b2=18: push it. Heap size 1.",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(3,3)  \u2190 farthest",
+      "d\u00b2=18"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "point",
+     "(3,3)"
+    ],
+    [
+     "d\u00b2",
+     18
+    ],
+    [
+     "heap size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "pointers": {
+    "p": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "note": "Point (5,-1), d\u00b2=26: push it. Heap size 2.",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(3,3)",
+      "d\u00b2=18"
+     ],
+     [
+      "(5,-1)  \u2190 farthest",
+      "d\u00b2=26"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "point",
+     "(5,-1)"
+    ],
+    [
+     "d\u00b2",
+     26
+    ],
+    [
+     "heap size",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "pointers": {
+    "p": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "note": "Point (-2,4), d\u00b2=20: push it. Heap size 3 \u2014 over k, challenge the farthest.",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(3,3)",
+      "d\u00b2=18"
+     ],
+     [
+      "(-2,4)",
+      "d\u00b2=20"
+     ],
+     [
+      "(5,-1)  \u2190 farthest",
+      "d\u00b2=26"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "point",
+     "(-2,4)"
+    ],
+    [
+     "d\u00b2",
+     20
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "pointers": {
+    "p": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "note": "Drop the farthest keeper (5,-1) (d\u00b2=26) \u2014 it's not in the 2 nearest.",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(3,3)",
+      "d\u00b2=18"
+     ],
+     [
+      "(-2,4)  \u2190 farthest",
+      "d\u00b2=20"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     "(5,-1)"
+    ],
+    [
+     "its d\u00b2",
+     26
+    ],
+    [
+     "heap size",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "pointers": {
+    "p": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "note": "Point (1,3), d\u00b2=10: push it. Heap size 3 \u2014 over k, challenge the farthest.",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(1,3)",
+      "d\u00b2=10"
+     ],
+     [
+      "(3,3)",
+      "d\u00b2=18"
+     ],
+     [
+      "(-2,4)  \u2190 farthest",
+      "d\u00b2=20"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "point",
+     "(1,3)"
+    ],
+    [
+     "d\u00b2",
+     10
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "pointers": {
+    "p": 3
+   },
+   "marks": {
+    "3": "dim"
+   },
+   "note": "Drop the farthest keeper (-2,4) (d\u00b2=20) \u2014 it's not in the 2 nearest.",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(1,3)",
+      "d\u00b2=10"
+     ],
+     [
+      "(3,3)  \u2190 farthest",
+      "d\u00b2=18"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     "(-2,4)"
+    ],
+    [
+     "its d\u00b2",
+     20
+    ],
+    [
+     "heap size",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "pointers": {
+    "p": 4
+   },
+   "marks": {
+    "4": "active"
+   },
+   "note": "Point (-2,2), d\u00b2=8: push it. Heap size 3 \u2014 over k, challenge the farthest.",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(-2,2)",
+      "d\u00b2=8"
+     ],
+     [
+      "(1,3)",
+      "d\u00b2=10"
+     ],
+     [
+      "(3,3)  \u2190 farthest",
+      "d\u00b2=18"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "point",
+     "(-2,2)"
+    ],
+    [
+     "d\u00b2",
+     8
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "pointers": {
+    "p": 4
+   },
+   "marks": {
+    "4": "dim"
+   },
+   "note": "Drop the farthest keeper (3,3) (d\u00b2=18) \u2014 it's not in the 2 nearest.",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(-2,2)",
+      "d\u00b2=8"
+     ],
+     [
+      "(1,3)  \u2190 farthest",
+      "d\u00b2=10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     "(3,3)"
+    ],
+    [
+     "its d\u00b2",
+     18
+    ],
+    [
+     "heap size",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Sweep done. Heap holds the 2 nearest: ['(-2,2)', '(1,3)']. Far points never fully ranked.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(-2,2)",
+      "d\u00b2=8"
+     ],
+     [
+      "(1,3)  \u2190 farthest",
+      "d\u00b2=10"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     "['(-2,2)', '(1,3)']"
+    ],
+    [
+     "heap size",
+     2
+    ]
+   ],
+   "banner": "2 nearest = ['(-2,2)', '(1,3)']"
+  },
+  {
+   "act": 3,
+   "cells": [
+    "(0,0)",
+    "(1,1)",
+    "(2,2)"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the origin itself has distance 0 and must win when k=1.",
+   "invariant": "d\u00b2=0 for the origin, so it stays the nearest keeper.",
+   "note": "Edge: ['(0,0)', '(1,1)', '(2,2)'], k=1. The origin (0,0) is distance 0.",
+   "labels": [
+    0,
+    2,
+    8
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "k",
+     1
+    ],
+    [
+     "heap size",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "pointers": {
+    "p": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "note": "(0,0), d\u00b2=0: push. Nearest so far (0,0).",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(0,0)  \u2190 farthest",
+      "d\u00b2=0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "point",
+     "(0,0)"
+    ],
+    [
+     "d\u00b2",
+     0
+    ],
+    [
+     "heap size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "pointers": {
+    "p": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "note": "(1,1), d\u00b2=2: push. Over k=1, drop farther (1,1). Nearest so far (0,0).",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(0,0)  \u2190 farthest",
+      "d\u00b2=0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "point",
+     "(1,1)"
+    ],
+    [
+     "d\u00b2",
+     2
+    ],
+    [
+     "heap size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "pointers": {
+    "p": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "note": "(2,2), d\u00b2=8: push. Over k=1, drop farther (2,2). Nearest so far (0,0).",
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(0,0)  \u2190 farthest",
+      "d\u00b2=0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "point",
+     "(2,2)"
+    ],
+    [
+     "d\u00b2",
+     8
+    ],
+    [
+     "heap size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "Only (0,0) survives \u2014 distance 0 beats everything.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "k nearest so far (max-heap top = farthest)",
+    "rows": [
+     [
+      "(0,0)  \u2190 farthest",
+      "d\u00b2=0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     "(0,0)"
+    ]
+   ],
+   "banner": "1 nearest = (0,0)"
+  }
+ ]
+}

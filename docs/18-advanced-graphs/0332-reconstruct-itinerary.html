@@ -60,7 +60,627 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Forgetting to reverse</strong> the collected route — it is built end-to-front.</li><li>Trying <strong>pure forward greedy</strong> and getting stranded — the whole point is the get-stuck-then-prepend step.</li><li>Not enforcing alphabetical order structurally: sorting once won&#x27;t stay sorted as tickets are consumed; a <strong>min-heap per airport</strong> keeps &quot;smallest unused&quot; cheap.</li><li>Assuming the graph is simple — there can be <strong>repeated tickets</strong> (two identical edges) and airports visited many times; the heap handles duplicates fine.</li></ul>
 <h2>Transfer</h2>
-<p>Hierholzer&#x27;s &quot;walk, get stuck, splice back in reverse&quot; is the reusable engine for use-every-edge-once problems. It underlies <a href="https://leetcode.com/problems/valid-arrangement-of-pairs/">Valid Arrangement of Pairs / 2097</a> (the same reconstruction without a fixed start), de Bruijn sequence construction, and route-covering (&quot;postman&quot;) problems. Whenever the task is &quot;use every edge exactly once as one connected walk,&quot; reach for Hierholzer rather than backtracking.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/18-advanced-graphs/0332-reconstruct-itinerary/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;332. Reconstruct Itinerary — https://leetcode.com/problems/reconstruct-itinerary/
+<p>Hierholzer&#x27;s &quot;walk, get stuck, splice back in reverse&quot; is the reusable engine for use-every-edge-once problems. It underlies <a href="https://leetcode.com/problems/valid-arrangement-of-pairs/">Valid Arrangement of Pairs / 2097</a> (the same reconstruction without a fixed start), de Bruijn sequence construction, and route-covering (&quot;postman&quot;) problems. Whenever the task is &quot;use every edge exactly once as one connected walk,&quot; reach for Hierholzer rather than backtracking.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Reconstruct Itinerary - greedy's trap, Hierholzer's rule, a reused airport, then a straight line",
+ "acts": [
+  "Greedy can strand a ticket",
+  "The rule",
+  "Run it (reuses JFK)",
+  "Edge case: straight line"
+ ],
+ "code": {
+  "dfs": [
+   "for src, dst in tickets:",
+   "    heappush(graph[src], dst)   # smallest dst first",
+   "stack = ['JFK']; route = []",
+   "while stack:",
+   "    a = stack[-1]",
+   "    if graph[a]:",
+   "        stack.append(heappop(graph[a]))",
+   "    else:",
+   "        route.append(stack.pop())   # stuck: retreat",
+   "return route[::-1]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "top of stack"
+  ],
+  [
+   "good",
+   "final slot in route"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": "JFK",
+   "val": "JFK",
+   "x": 60,
+   "y": 0
+  },
+  {
+   "id": "ATL",
+   "val": "ATL",
+   "x": 60,
+   "y": 160
+  },
+  {
+   "id": "SFO",
+   "val": "SFO",
+   "x": 280,
+   "y": 80
+  }
+ ],
+ "edges": [
+  [
+   "JFK",
+   "SFO"
+  ],
+  [
+   "JFK",
+   "ATL"
+  ],
+  [
+   "SFO",
+   "ATL"
+  ],
+  [
+   "ATL",
+   "JFK"
+  ],
+  [
+   "ATL",
+   "SFO"
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": "JFK",
+     "val": "JFK",
+     "x": 150,
+     "y": 0
+    },
+    {
+     "id": "KUL",
+     "val": "KUL",
+     "x": 20,
+     "y": 140
+    },
+    {
+     "id": "NRT",
+     "val": "NRT",
+     "x": 280,
+     "y": 140
+    }
+   ],
+   "edges": [
+    [
+     "JFK",
+     "KUL"
+    ],
+    [
+     "JFK",
+     "NRT"
+    ],
+    [
+     "NRT",
+     "JFK"
+    ]
+   ],
+   "code": "dfs",
+   "line": 1,
+   "intro": "using every ticket once is an Eulerian path.",
+   "invariant": "every ticket must be used exactly once.",
+   "note": "Each ticket is a directed edge we must use once. From JFK the smallest next airport is KUL \u2014 but flying JFK->KUL first dead-ends and strands the NRT->JFK ticket.",
+   "active": [
+    "JFK"
+   ],
+   "done": {},
+   "state": [
+    [
+     "at",
+     "JFK"
+    ],
+    [
+     "tickets left",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "dfs",
+   "line": 8,
+   "note": "Naive greedy would get stuck at KUL with a ticket still unused. So we can't just commit to the smallest edge and forget it.",
+   "active": [
+    "KUL"
+   ],
+   "done": {},
+   "state": [
+    [
+     "stuck at",
+     "KUL"
+    ],
+    [
+     "tickets left",
+     1
+    ]
+   ],
+   "banner": "Greedy-smallest alone can strand a ticket. Hierholzer fixes it by retreating."
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": "JFK",
+     "val": "JFK",
+     "x": 150,
+     "y": 0
+    },
+    {
+     "id": "KUL",
+     "val": "KUL",
+     "x": 20,
+     "y": 140
+    },
+    {
+     "id": "NRT",
+     "val": "NRT",
+     "x": 280,
+     "y": 140
+    }
+   ],
+   "edges": [
+    [
+     "JFK",
+     "KUL"
+    ],
+    [
+     "JFK",
+     "NRT"
+    ],
+    [
+     "NRT",
+     "JFK"
+    ]
+   ],
+   "code": "dfs",
+   "line": 3,
+   "intro": "walk forward greedily; when stuck, prepend and back up.",
+   "invariant": "an airport is finalized only when it has no unused ticket out.",
+   "note": "Hierholzer: push JFK. Always follow the smallest unused ticket out of the top airport. When an airport has none left, it must be a trail end \u2014 pop it onto the route and back up. The route builds back-to-front.",
+   "active": [
+    "JFK"
+   ],
+   "done": {},
+   "state": [
+    [
+     "stack",
+     "[JFK]"
+    ],
+    [
+     "route",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": "JFK",
+     "val": "JFK",
+     "x": 60,
+     "y": 0
+    },
+    {
+     "id": "ATL",
+     "val": "ATL",
+     "x": 60,
+     "y": 160
+    },
+    {
+     "id": "SFO",
+     "val": "SFO",
+     "x": 280,
+     "y": 80
+    }
+   ],
+   "edges": [
+    [
+     "JFK",
+     "SFO"
+    ],
+    [
+     "JFK",
+     "ATL"
+    ],
+    [
+     "SFO",
+     "ATL"
+    ],
+    [
+     "ATL",
+     "JFK"
+    ],
+    [
+     "ATL",
+     "SFO"
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "intro": "the route fills from the end; final slots appear as badges.",
+   "invariant": "each ticket, once flown, is gone from its airport's heap.",
+   "note": "A route that must reuse JFK. Follow smallest tickets, prepend when stuck.",
+   "active": [
+    "JFK"
+   ],
+   "done": {},
+   "state": [
+    [
+     "stack",
+     "[JFK]"
+    ],
+    [
+     "route",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "JFK still has tickets \u2014 fly the smallest, JFK->ATL. Push ATL.",
+   "active": [
+    "ATL"
+   ],
+   "done": {},
+   "state": [
+    [
+     "stack",
+     "['JFK', 'ATL']"
+    ],
+    [
+     "route",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "ATL still has tickets \u2014 fly the smallest, ATL->JFK. Push JFK.",
+   "active": [
+    "JFK"
+   ],
+   "done": {},
+   "state": [
+    [
+     "stack",
+     "['JFK', 'ATL', 'JFK']"
+    ],
+    [
+     "route",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "JFK still has tickets \u2014 fly the smallest, JFK->SFO. Push SFO.",
+   "active": [
+    "SFO"
+   ],
+   "done": {},
+   "state": [
+    [
+     "stack",
+     "['JFK', 'ATL', 'JFK', 'SFO']"
+    ],
+    [
+     "route",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "SFO still has tickets \u2014 fly the smallest, SFO->ATL. Push ATL.",
+   "active": [
+    "ATL"
+   ],
+   "done": {},
+   "state": [
+    [
+     "stack",
+     "['JFK', 'ATL', 'JFK', 'SFO', 'ATL']"
+    ],
+    [
+     "route",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "ATL still has tickets \u2014 fly the smallest, ATL->SFO. Push SFO.",
+   "active": [
+    "SFO"
+   ],
+   "done": {},
+   "state": [
+    [
+     "stack",
+     "['JFK', 'ATL', 'JFK', 'SFO', 'ATL', 'SFO']"
+    ],
+    [
+     "route",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "SFO has no ticket left \u2014 it's a trail end. Prepend it to the route (final slot 6).",
+   "active": [
+    "ATL"
+   ],
+   "done": {
+    "SFO": 6
+   },
+   "state": [
+    [
+     "stack",
+     "['JFK', 'ATL', 'JFK', 'SFO', 'ATL']"
+    ],
+    [
+     "route",
+     "['SFO']"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "ATL has no ticket left \u2014 it's a trail end. Prepend it to the route (final slot 5).",
+   "active": [
+    "SFO"
+   ],
+   "done": {
+    "SFO": 6,
+    "ATL": 5
+   },
+   "state": [
+    [
+     "stack",
+     "['JFK', 'ATL', 'JFK', 'SFO']"
+    ],
+    [
+     "route",
+     "['ATL', 'SFO']"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "SFO has no ticket left \u2014 it's a trail end. Prepend it to the route (final slot 4).",
+   "active": [
+    "JFK"
+   ],
+   "done": {
+    "SFO": 4,
+    "ATL": 5
+   },
+   "state": [
+    [
+     "stack",
+     "['JFK', 'ATL', 'JFK']"
+    ],
+    [
+     "route",
+     "['SFO', 'ATL', 'SFO']"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "JFK has no ticket left \u2014 it's a trail end. Prepend it to the route (final slot 3).",
+   "active": [
+    "ATL"
+   ],
+   "done": {
+    "SFO": 4,
+    "ATL": 5,
+    "JFK": 3
+   },
+   "state": [
+    [
+     "stack",
+     "['JFK', 'ATL']"
+    ],
+    [
+     "route",
+     "['JFK', 'SFO', 'ATL', 'SFO']"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "ATL has no ticket left \u2014 it's a trail end. Prepend it to the route (final slot 2).",
+   "active": [
+    "JFK"
+   ],
+   "done": {
+    "SFO": 4,
+    "ATL": 2,
+    "JFK": 3
+   },
+   "state": [
+    [
+     "stack",
+     "['JFK']"
+    ],
+    [
+     "route",
+     "['ATL', 'JFK', 'SFO', 'ATL', 'SFO']"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "JFK has no ticket left \u2014 it's a trail end. Prepend it to the route (final slot 1).",
+   "active": [],
+   "done": {
+    "SFO": 4,
+    "ATL": 2,
+    "JFK": 1
+   },
+   "state": [
+    [
+     "stack",
+     "[]"
+    ],
+    [
+     "route",
+     "['JFK', 'ATL', 'JFK', 'SFO', 'ATL', 'SFO']"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 9,
+   "note": "Reverse the built route -> ['JFK', 'ATL', 'JFK', 'SFO', 'ATL', 'SFO']. Every ticket used once, smallest lexical order.",
+   "active": [],
+   "done": {
+    "JFK": "1,3",
+    "ATL": "2,5",
+    "SFO": "4,6"
+   },
+   "state": [
+    [
+     "itinerary",
+     "JFK ATL JFK SFO ATL SFO"
+    ]
+   ],
+   "banner": "Itinerary: JFK -> ATL -> JFK -> SFO -> ATL -> SFO"
+  },
+  {
+   "act": 3,
+   "nodes": [
+    {
+     "id": "JFK",
+     "val": "JFK",
+     "x": 20,
+     "y": 60
+    },
+    {
+     "id": "MUC",
+     "val": "MUC",
+     "x": 110,
+     "y": 60
+    },
+    {
+     "id": "LHR",
+     "val": "LHR",
+     "x": 200,
+     "y": 60
+    },
+    {
+     "id": "SFO",
+     "val": "SFO",
+     "x": 290,
+     "y": 60
+    },
+    {
+     "id": "SJC",
+     "val": "SJC",
+     "x": 360,
+     "y": 60
+    }
+   ],
+   "edges": [
+    [
+     "MUC",
+     "LHR"
+    ],
+    [
+     "JFK",
+     "MUC"
+    ],
+    [
+     "SFO",
+     "SJC"
+    ],
+    [
+     "LHR",
+     "SFO"
+    ]
+   ],
+   "code": "dfs",
+   "line": 3,
+   "intro": "with no branching there is only one possible trip.",
+   "invariant": "a linear chain has exactly one Eulerian path.",
+   "note": "Edge case: tickets form a single chain JFK->MUC->LHR->SFO->SJC. No choices, so Hierholzer just walks it straight through.",
+   "active": [
+    "JFK"
+   ],
+   "done": {},
+   "state": [
+    [
+     "shape",
+     "straight line"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "dfs",
+   "line": 9,
+   "note": "Only one trip exists: ['JFK', 'MUC', 'LHR', 'SFO', 'SJC'].",
+   "active": [],
+   "done": {
+    "JFK": "1",
+    "MUC": "2",
+    "LHR": "3",
+    "SFO": "4",
+    "SJC": "5"
+   },
+   "state": [
+    [
+     "itinerary",
+     "JFK MUC LHR SFO SJC"
+    ]
+   ],
+   "banner": "Itinerary: JFK -> MUC -> LHR -> SFO -> SJC"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/18-advanced-graphs/0332-reconstruct-itinerary/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;332. Reconstruct Itinerary — https://leetcode.com/problems/reconstruct-itinerary/
 
 Given a list of airline tickets [from, to], reconstruct one trip that uses *every*
 ticket exactly once, starting from &quot;JFK&quot;. Among all valid trips, return the one

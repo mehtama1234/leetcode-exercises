@@ -51,7 +51,1794 @@
 <h2>Pitfalls</h2>
 <ul><li>Forgetting to restore the cell after recursing — you&#x27;d permanently blank out cells and break later searches (and corrupt the caller&#x27;s board).</li><li>Reusing a cell in one path — the visited mark (or a set) is not optional; a naive DFS gives wrong answers on words like <code>&quot;ABCB&quot;</code>.</li><li>Checking bounds and mismatch *after* indexing instead of before — guard <code>r</code>, <code>c</code>, and <code>board[r][c] != word[k]</code> at the top of <code>dfs</code> so you never index off-grid.</li><li>Empty word: by convention it &quot;exists&quot; (return True) before touching the grid.</li></ul>
 <h2>Transfer</h2>
-<p>Mark-in-place + DFS + restore-on-return is the grid-backtracking template: <a href="../../12-graphs/0200-number-of-islands/">Number of Islands / 200</a> (flood-fill uses the same visited-in-place idea) and <a href="../../10-tries/0212-word-search-ii/">Word Search II / 212</a> (same walk, but drive many words at once with a Trie). Whenever a search must avoid revisiting cells on the current path, mark before recursing and unmark after.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/09-backtracking/0079-word-search/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;79. Word Search — https://leetcode.com/problems/word-search/
+<p>Mark-in-place + DFS + restore-on-return is the grid-backtracking template: <a href="../../12-graphs/0200-number-of-islands/">Number of Islands / 200</a> (flood-fill uses the same visited-in-place idea) and <a href="../../10-tries/0212-word-search-ii/">Word Search II / 212</a> (same walk, but drive many words at once with a Trie). Whenever a search must avoid revisiting cells on the current path, mark before recursing and unmark after.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Word Search - a decision tree that steps cell to cell",
+ "acts": [
+  "The rule",
+  "Run the decision tree",
+  "Edge: no cell reused"
+ ],
+ "code": {
+  "dfs": [
+   "def dfs(r, c, k):",
+   "    if k == len(word): return True",
+   "    if off_board(r, c): return False",
+   "    if board[r][c] != word[k]: return False",
+   "    board[r][c] = '#'          # mark used",
+   "    found = dfs(r+1,c,k+1) or dfs(r-1,c,k+1) \\",
+   "         or dfs(r,c+1,k+1) or dfs(r,c-1,k+1)",
+   "    board[r][c] = word[k]      # restore",
+   "    return found"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "cell we're stepping onto now"
+  ],
+  [
+   "good",
+   "OK = word spelled; X = mismatch / off-grid / reused"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "A",
+   "x": 0,
+   "y": 0
+  }
+ ],
+ "edges": [],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "dfs",
+   "line": 0,
+   "intro": "each node is a choice of which neighbor to step to; a branch dies the instant a letter mismatches, walks off-grid, or reuses a cell.",
+   "invariant": "the marked-used cells are exactly the ones on the current path.",
+   "note": "Spell 'ABCCED' by walking to adjacent cells, no cell reused. Try each cell as a start; here the search from (0,0)='A' is the live one.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "word",
+     "ABCCED"
+    ],
+    [
+     "start",
+     "(0,0)=A"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "dfs",
+   "line": 4,
+   "note": "Trick: overwrite the current cell with '#' before recursing (mark used) and restore it after. Restoring is the backtracking step.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "mark",
+     "board=#"
+    ],
+    [
+     "restore",
+     "on the way out"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "dfs",
+   "line": 0,
+   "intro": "watch the path grow A->B->C->C->E->D; X marks each abandoned branch.",
+   "invariant": "a node's badge appears only once its whole subtree is resolved.",
+   "note": "Run from (0,0)='A'. It matches word[0], so we open its neighbors and keep the branch that keeps matching.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "start remaining",
+     "ABCCED"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "dfs",
+   "line": 3,
+   "note": "cell (0,0)='A' matches word[0]='A'. path so far: A.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "k",
+     0
+    ],
+    [
+     "matched",
+     "A"
+    ],
+    [
+     "need next",
+     "B"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "dfs",
+   "line": 3,
+   "note": "cell (1,0)='S' but need 'B' -> mismatch, dead.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": "X"
+   },
+   "state": [
+    [
+     "need",
+     "B"
+    ],
+    [
+     "got",
+     "S"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "step up walks off the board -> dead branch.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": "X",
+    "2": "X"
+   },
+   "state": [
+    [
+     "target",
+     "B"
+    ],
+    [
+     "cell",
+     "off-grid"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ]
+   ],
+   "code": "dfs",
+   "line": 3,
+   "note": "cell (0,1)='B' matches word[1]='B'. path so far: AB.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": "X",
+    "2": "X"
+   },
+   "state": [
+    [
+     "k",
+     1
+    ],
+    [
+     "matched",
+     "AB"
+    ],
+    [
+     "need next",
+     "C"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "dfs",
+   "line": 3,
+   "note": "cell (1,1)='F' but need 'C' -> mismatch, dead.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X"
+   },
+   "state": [
+    [
+     "need",
+     "C"
+    ],
+    [
+     "got",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    },
+    {
+     "id": 5,
+     "val": "\u00b7",
+     "x": 370,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "step up walks off the board -> dead branch.",
+   "active": [
+    5
+   ],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X",
+    "5": "X"
+   },
+   "state": [
+    [
+     "target",
+     "C"
+    ],
+    [
+     "cell",
+     "off-grid"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    },
+    {
+     "id": 5,
+     "val": "\u00b7",
+     "x": 370,
+     "y": 184
+    },
+    {
+     "id": 6,
+     "val": "C",
+     "x": 444,
+     "y": 184
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ]
+   ],
+   "code": "dfs",
+   "line": 3,
+   "note": "cell (0,2)='C' matches word[2]='C'. path so far: ABC.",
+   "active": [
+    6
+   ],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X",
+    "5": "X"
+   },
+   "state": [
+    [
+     "k",
+     2
+    ],
+    [
+     "matched",
+     "ABC"
+    ],
+    [
+     "need next",
+     "C"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    },
+    {
+     "id": 5,
+     "val": "\u00b7",
+     "x": 370,
+     "y": 184
+    },
+    {
+     "id": 6,
+     "val": "C",
+     "x": 444,
+     "y": 184
+    },
+    {
+     "id": 7,
+     "val": "C",
+     "x": 518,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     7
+    ]
+   ],
+   "code": "dfs",
+   "line": 3,
+   "note": "cell (1,2)='C' matches word[3]='C'. path so far: ABCC.",
+   "active": [
+    7
+   ],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X",
+    "5": "X"
+   },
+   "state": [
+    [
+     "k",
+     3
+    ],
+    [
+     "matched",
+     "ABCC"
+    ],
+    [
+     "need next",
+     "E"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    },
+    {
+     "id": 5,
+     "val": "\u00b7",
+     "x": 370,
+     "y": 184
+    },
+    {
+     "id": 6,
+     "val": "C",
+     "x": 444,
+     "y": 184
+    },
+    {
+     "id": 7,
+     "val": "C",
+     "x": 518,
+     "y": 276
+    },
+    {
+     "id": 8,
+     "val": "E",
+     "x": 592,
+     "y": 368
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     8
+    ]
+   ],
+   "code": "dfs",
+   "line": 3,
+   "note": "cell (2,2)='E' matches word[4]='E'. path so far: ABCCE.",
+   "active": [
+    8
+   ],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X",
+    "5": "X"
+   },
+   "state": [
+    [
+     "k",
+     4
+    ],
+    [
+     "matched",
+     "ABCCE"
+    ],
+    [
+     "need next",
+     "D"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    },
+    {
+     "id": 5,
+     "val": "\u00b7",
+     "x": 370,
+     "y": 184
+    },
+    {
+     "id": 6,
+     "val": "C",
+     "x": 444,
+     "y": 184
+    },
+    {
+     "id": 7,
+     "val": "C",
+     "x": 518,
+     "y": 276
+    },
+    {
+     "id": 8,
+     "val": "E",
+     "x": 592,
+     "y": 368
+    },
+    {
+     "id": 9,
+     "val": "\u00b7",
+     "x": 666,
+     "y": 460
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "note": "step down walks off the board -> dead branch.",
+   "active": [
+    9
+   ],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X",
+    "5": "X",
+    "9": "X"
+   },
+   "state": [
+    [
+     "target",
+     "D"
+    ],
+    [
+     "cell",
+     "off-grid"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    },
+    {
+     "id": 5,
+     "val": "\u00b7",
+     "x": 370,
+     "y": 184
+    },
+    {
+     "id": 6,
+     "val": "C",
+     "x": 444,
+     "y": 184
+    },
+    {
+     "id": 7,
+     "val": "C",
+     "x": 518,
+     "y": 276
+    },
+    {
+     "id": 8,
+     "val": "E",
+     "x": 592,
+     "y": 368
+    },
+    {
+     "id": 9,
+     "val": "\u00b7",
+     "x": 666,
+     "y": 460
+    },
+    {
+     "id": 10,
+     "val": "C",
+     "x": 740,
+     "y": 460
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     8,
+     10
+    ]
+   ],
+   "code": "dfs",
+   "line": 4,
+   "note": "cell (1,2)='C' is already used on this path -> can't reuse.",
+   "active": [
+    10
+   ],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X",
+    "5": "X",
+    "9": "X",
+    "10": "X"
+   },
+   "state": [
+    [
+     "need",
+     "D"
+    ],
+    [
+     "cell",
+     "used"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    },
+    {
+     "id": 5,
+     "val": "\u00b7",
+     "x": 370,
+     "y": 184
+    },
+    {
+     "id": 6,
+     "val": "C",
+     "x": 444,
+     "y": 184
+    },
+    {
+     "id": 7,
+     "val": "C",
+     "x": 518,
+     "y": 276
+    },
+    {
+     "id": 8,
+     "val": "E",
+     "x": 592,
+     "y": 368
+    },
+    {
+     "id": 9,
+     "val": "\u00b7",
+     "x": 666,
+     "y": 460
+    },
+    {
+     "id": 10,
+     "val": "C",
+     "x": 740,
+     "y": 460
+    },
+    {
+     "id": 11,
+     "val": "E",
+     "x": 814,
+     "y": 460
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     8,
+     10
+    ],
+    [
+     8,
+     11
+    ]
+   ],
+   "code": "dfs",
+   "line": 3,
+   "note": "cell (2,3)='E' but need 'D' -> mismatch, dead.",
+   "active": [
+    11
+   ],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X",
+    "5": "X",
+    "9": "X",
+    "10": "X",
+    "11": "X"
+   },
+   "state": [
+    [
+     "need",
+     "D"
+    ],
+    [
+     "got",
+     "E"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    },
+    {
+     "id": 5,
+     "val": "\u00b7",
+     "x": 370,
+     "y": 184
+    },
+    {
+     "id": 6,
+     "val": "C",
+     "x": 444,
+     "y": 184
+    },
+    {
+     "id": 7,
+     "val": "C",
+     "x": 518,
+     "y": 276
+    },
+    {
+     "id": 8,
+     "val": "E",
+     "x": 592,
+     "y": 368
+    },
+    {
+     "id": 9,
+     "val": "\u00b7",
+     "x": 666,
+     "y": 460
+    },
+    {
+     "id": 10,
+     "val": "C",
+     "x": 740,
+     "y": 460
+    },
+    {
+     "id": 11,
+     "val": "E",
+     "x": 814,
+     "y": 460
+    },
+    {
+     "id": 12,
+     "val": "D",
+     "x": 888,
+     "y": 460
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     8,
+     10
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     8,
+     12
+    ]
+   ],
+   "code": "dfs",
+   "line": 3,
+   "note": "cell (2,1)='D' matches word[5]='D'. path so far: ABCCED.",
+   "active": [
+    12
+   ],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X",
+    "5": "X",
+    "9": "X",
+    "10": "X",
+    "11": "X"
+   },
+   "state": [
+    [
+     "k",
+     5
+    ],
+    [
+     "matched",
+     "ABCCED"
+    ],
+    [
+     "need next",
+     "(done)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    },
+    {
+     "id": 5,
+     "val": "\u00b7",
+     "x": 370,
+     "y": 184
+    },
+    {
+     "id": 6,
+     "val": "C",
+     "x": 444,
+     "y": 184
+    },
+    {
+     "id": 7,
+     "val": "C",
+     "x": 518,
+     "y": 276
+    },
+    {
+     "id": 8,
+     "val": "E",
+     "x": 592,
+     "y": 368
+    },
+    {
+     "id": 9,
+     "val": "\u00b7",
+     "x": 666,
+     "y": 460
+    },
+    {
+     "id": 10,
+     "val": "C",
+     "x": 740,
+     "y": 460
+    },
+    {
+     "id": 11,
+     "val": "E",
+     "x": 814,
+     "y": 460
+    },
+    {
+     "id": 12,
+     "val": "D",
+     "x": 888,
+     "y": 460
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     8,
+     10
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     8,
+     12
+    ]
+   ],
+   "code": "dfs",
+   "line": 1,
+   "note": "that was the last letter -> the whole word 'ABCCED' is spelled. True.",
+   "active": [
+    12
+   ],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X",
+    "5": "X",
+    "9": "X",
+    "10": "X",
+    "11": "X",
+    "12": "OK"
+   },
+   "state": [
+    [
+     "spelled",
+     "ABCCED"
+    ],
+    [
+     "result",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "S",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "\u00b7",
+     "x": 148,
+     "y": 92
+    },
+    {
+     "id": 3,
+     "val": "B",
+     "x": 222,
+     "y": 92
+    },
+    {
+     "id": 4,
+     "val": "F",
+     "x": 296,
+     "y": 184
+    },
+    {
+     "id": 5,
+     "val": "\u00b7",
+     "x": 370,
+     "y": 184
+    },
+    {
+     "id": 6,
+     "val": "C",
+     "x": 444,
+     "y": 184
+    },
+    {
+     "id": 7,
+     "val": "C",
+     "x": 518,
+     "y": 276
+    },
+    {
+     "id": 8,
+     "val": "E",
+     "x": 592,
+     "y": 368
+    },
+    {
+     "id": 9,
+     "val": "\u00b7",
+     "x": 666,
+     "y": 460
+    },
+    {
+     "id": 10,
+     "val": "C",
+     "x": 740,
+     "y": 460
+    },
+    {
+     "id": 11,
+     "val": "E",
+     "x": 814,
+     "y": 460
+    },
+    {
+     "id": 12,
+     "val": "D",
+     "x": 888,
+     "y": 460
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     8,
+     10
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     8,
+     12
+    ]
+   ],
+   "code": "dfs",
+   "line": 8,
+   "note": "One path spelled every letter, so exist(...) is True. The X branches were the neighbors that didn't match and got abandoned.",
+   "active": [],
+   "done": {
+    "1": "X",
+    "2": "X",
+    "4": "X",
+    "5": "X",
+    "9": "X",
+    "10": "X",
+    "11": "X",
+    "12": "OK",
+    "0": "OK"
+   },
+   "state": [
+    [
+     "word",
+     "ABCCED"
+    ],
+    [
+     "result",
+     "True"
+    ]
+   ],
+   "banner": "exist(board, 'ABCCED') = True"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "A",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "B",
+     "x": 74,
+     "y": 92
+    },
+    {
+     "id": 2,
+     "val": "C",
+     "x": 148,
+     "y": 184
+    },
+    {
+     "id": 3,
+     "val": "B?",
+     "x": 222,
+     "y": 276
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "dfs",
+   "line": 4,
+   "intro": "the fourth letter needs a 'B', but the only 'B' is already on the path.",
+   "invariant": "no cell may appear twice on one path \u2014 that's what kills this word.",
+   "note": "Edge case: word 'ABCB'. We reach A->B->C fine, but the next 'B' would have to reuse the same cell (0,1). It's marked used -> dead.",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": "",
+    "1": "",
+    "2": "",
+    "3": "X"
+   },
+   "state": [
+    [
+     "path",
+     "A-B-C"
+    ],
+    [
+     "need",
+     "B"
+    ],
+    [
+     "only B",
+     "already used"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "Every start hits the same wall, so exist(...) is False. The no-reuse rule is exactly the backtracking mark.",
+   "active": [],
+   "done": {
+    "0": "",
+    "1": "",
+    "2": "",
+    "3": "X"
+   },
+   "state": [
+    [
+     "word",
+     "ABCB"
+    ],
+    [
+     "result",
+     "False"
+    ]
+   ],
+   "banner": "exist(board, 'ABCB') = False  (would reuse the same B)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/09-backtracking/0079-word-search/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;79. Word Search — https://leetcode.com/problems/word-search/
 
 Given a grid of letters and a `word`, decide whether the word can be spelled by
 walking from cell to adjacent cell (up/down/left/right). You may not reuse the

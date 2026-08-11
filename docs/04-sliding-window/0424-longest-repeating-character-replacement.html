@@ -70,7 +70,1352 @@ return best</code></pre>
 <h2>Pitfalls</h2>
 <ul><li>Trying to keep <code>max_freq</code> perfectly accurate on shrink (recomputing it). It&#x27;s unnecessary and turns the loop into <code>26 × n</code> work for no gain.</li><li>Shrinking more than one step per over-budget move — this window only needs to drop *one* character each time, so a single <code>if</code> is right, not a <code>while</code>.</li><li>Forgetting the empty string returns <code>0</code>.</li><li>Thinking you must actually decide *which* letter to keep. You never fix a letter; you track the max count and let the arithmetic decide.</li></ul>
 <h2>Transfer</h2>
-<p>This is the &quot;longest window that stays valid&quot; template: grow greedily, shrink just enough to restore the rule, keep the best length. The same skeleton solves <a href="../0003-longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters / 3</a>, Max Consecutive Ones III, and &quot;longest subarray with at most k of something.&quot; The only thing that changes per problem is the validity test.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/04-sliding-window/0424-longest-repeating-character-replacement/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;424. Longest Repeating Character Replacement — https://leetcode.com/problems/longest-repeating-character-replacement/
+<p>This is the &quot;longest window that stays valid&quot; template: grow greedily, shrink just enough to restore the rule, keep the best length. The same skeleton solves <a href="../0003-longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters / 3</a>, Max Consecutive Ones III, and &quot;longest subarray with at most k of something.&quot; The only thing that changes per problem is the validity test.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Longest Repeating Character Replacement \u2014 from re-counting to one window",
+ "acts": [
+  "Brute force: re-count each start",
+  "The waste",
+  "Fast: fixable window",
+  "Edge case: k = 0"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "  counts = {}; max_freq = 0",
+   "  for j in range(i, n):",
+   "    counts[s[j]] += 1; max_freq = max(...)",
+   "    if (j-i+1) - max_freq <= k:",
+   "      best = max(best, j-i+1)"
+  ],
+  "fast": [
+   "for right, ch in enumerate(s):",
+   "    counts[ch] += 1",
+   "    max_freq = max(max_freq, counts[ch])",
+   "    if (right-left+1) - max_freq > k:",
+   "        counts[s[left]] -= 1; left += 1",
+   "    best = max(best, right-left+1)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current window"
+  ],
+  [
+   "good",
+   "best fixable window"
+  ],
+  [
+   "bad",
+   "letter leaving on the left"
+  ],
+  [
+   "dim",
+   "inactive"
+  ]
+ ],
+ "cells": [
+  "A",
+  "A",
+  "B",
+  "A",
+  "B",
+  "B",
+  "A"
+ ],
+ "labels": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "A",
+    "A",
+    "B",
+    "A",
+    "B",
+    "B",
+    "A"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "every start re-counts letters from scratch across an overlapping tail.",
+   "invariant": "best is the longest fixable substring among those starting before i.",
+   "note": "Brute force: a window is fixable if (length - most common letter) <= 1 changes. Re-count from each start.",
+   "pointers": {
+    "i": 0,
+    "j": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "k",
+     1
+    ],
+    [
+     "recounts",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "s[0..0] = \"A\": length 1, most common appears 1x \u2192 0 changes. <= 1: fixable, best 1.",
+   "pointers": {
+    "i": 0,
+    "j": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     0
+    ],
+    [
+     "max_freq",
+     1
+    ],
+    [
+     "changes",
+     0
+    ],
+    [
+     "best",
+     1
+    ],
+    [
+     "recounts",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "s[0..1] = \"AA\": length 2, most common appears 2x \u2192 0 changes. <= 1: fixable, best 2.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "window": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "max_freq",
+     2
+    ],
+    [
+     "changes",
+     0
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "recounts",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "s[0..2] = \"AAB\": length 3, most common appears 2x \u2192 1 changes. <= 1: fixable, best 3.",
+   "pointers": {
+    "i": 0,
+    "j": 2
+   },
+   "window": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "2"
+     ],
+     [
+      "B",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "max_freq",
+     2
+    ],
+    [
+     "changes",
+     1
+    ],
+    [
+     "best",
+     3
+    ],
+    [
+     "recounts",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "s[0..3] = \"AABA\": length 4, most common appears 3x \u2192 1 changes. <= 1: fixable, best 4.",
+   "pointers": {
+    "i": 0,
+    "j": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "3"
+     ],
+     [
+      "B",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "max_freq",
+     3
+    ],
+    [
+     "changes",
+     1
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "recounts",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "s[0..4] = \"AABAB\": length 5, most common appears 3x \u2192 2 changes. > 1: not fixable.",
+   "pointers": {
+    "i": 0,
+    "j": 4
+   },
+   "window": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active",
+    "3": "active",
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "3"
+     ],
+     [
+      "B",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "max_freq",
+     3
+    ],
+    [
+     "changes",
+     2
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "recounts",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "s[0..5] = \"AABABB\": length 6, most common appears 3x \u2192 3 changes. > 1: not fixable.",
+   "pointers": {
+    "i": 0,
+    "j": 5
+   },
+   "window": [
+    0,
+    5
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active",
+    "3": "active",
+    "4": "active",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "3"
+     ],
+     [
+      "B",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     5
+    ],
+    [
+     "max_freq",
+     3
+    ],
+    [
+     "changes",
+     3
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "recounts",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "s[0..6] = \"AABABBA\": length 7, most common appears 4x \u2192 3 changes. > 1: not fixable.",
+   "pointers": {
+    "i": 0,
+    "j": 6
+   },
+   "window": [
+    0,
+    6
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active",
+    "3": "active",
+    "4": "active",
+    "5": "active",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "4"
+     ],
+     [
+      "B",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     6
+    ],
+    [
+     "max_freq",
+     4
+    ],
+    [
+     "changes",
+     3
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "recounts",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "s[2..5] = \"BABB\": length 4, most common appears 3x \u2192 1 changes. <= 1: fixable, best 4.",
+   "pointers": {
+    "i": 2,
+    "j": 5
+   },
+   "window": [
+    2,
+    5
+   ],
+   "marks": {
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     5
+    ],
+    [
+     "max_freq",
+     3
+    ],
+    [
+     "changes",
+     1
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "recounts",
+     17
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "Longest fixable: \"AABA\" length 4 \u2014 but it re-counted 28 times.",
+   "pointers": {
+    "i": 0,
+    "j": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "best",
+     4
+    ],
+    [
+     "recounts",
+     28
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the recount counter \u2014 each new start rebuilds tallies an earlier start had.",
+   "note": "28 recounts. Every start rebuilds the letter tally from zero over overlapping text. That repeated counting is the waste.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "recounts (brute)",
+     28
+    ],
+    [
+     "pattern",
+     "~ n*n"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Keep ONE window. A window is fixable iff (length - max_freq) <= k. Grow right always; when it stops being fixable, nudge left forward by one. left never rewinds.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "pattern",
+     "~ n"
+    ],
+    [
+     "left moves",
+     "forward only"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "A",
+    "A",
+    "B",
+    "A",
+    "B",
+    "B",
+    "A"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "counts carry as the window moves; left only slides when the window is unfixable.",
+   "invariant": "the window [left, right] is always fixable within k changes.",
+   "note": "One window, budget k=1. Grow right; if changes needed exceed 1, slide left one.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": []
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "max_freq",
+     0
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "add 'A': window \"A\" needs 0 change(s) (<= 1) \u2014 valid, length 1.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "max_freq",
+     1
+    ],
+    [
+     "window",
+     1
+    ],
+    [
+     "best",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "add 'A': window \"AA\" needs 0 change(s) (<= 1) \u2014 valid, length 2.",
+   "pointers": {
+    "L": 0,
+    "R": 1
+   },
+   "window": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "max_freq",
+     2
+    ],
+    [
+     "window",
+     2
+    ],
+    [
+     "best",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "add 'B': window \"AAB\" needs 1 change(s) (<= 1) \u2014 valid, length 3.",
+   "pointers": {
+    "L": 0,
+    "R": 2
+   },
+   "window": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "2"
+     ],
+     [
+      "B",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "max_freq",
+     2
+    ],
+    [
+     "window",
+     3
+    ],
+    [
+     "best",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "add 'A': window \"AABA\" needs 1 change(s) (<= 1) \u2014 valid, length 4.",
+   "pointers": {
+    "L": 0,
+    "R": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "3"
+     ],
+     [
+      "B",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "max_freq",
+     3
+    ],
+    [
+     "window",
+     4
+    ],
+    [
+     "best",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "add 'B': window \"AABAB\" needs > 1 changes \u2014 slide left, drop 'A'. Window now \"ABAB\".",
+   "pointers": {
+    "L": 1,
+    "R": 4
+   },
+   "window": [
+    1,
+    4
+   ],
+   "marks": {
+    "0": "bad",
+    "1": "active",
+    "2": "active",
+    "3": "active",
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "2"
+     ],
+     [
+      "B",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "max_freq",
+     3
+    ],
+    [
+     "window",
+     4
+    ],
+    [
+     "best",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "add 'B': window \"ABABB\" needs > 1 changes \u2014 slide left, drop 'A'. Window now \"BABB\".",
+   "pointers": {
+    "L": 2,
+    "R": 5
+   },
+   "window": [
+    2,
+    5
+   ],
+   "marks": {
+    "1": "bad",
+    "2": "active",
+    "3": "active",
+    "4": "active",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     2
+    ],
+    [
+     "max_freq",
+     3
+    ],
+    [
+     "window",
+     4
+    ],
+    [
+     "best",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "add 'A': window \"BABBA\" needs > 1 changes \u2014 slide left, drop 'B'. Window now \"ABBA\".",
+   "pointers": {
+    "L": 3,
+    "R": 6
+   },
+   "window": [
+    3,
+    6
+   ],
+   "marks": {
+    "2": "bad",
+    "3": "active",
+    "4": "active",
+    "5": "active",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "2"
+     ],
+     [
+      "B",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     3
+    ],
+    [
+     "max_freq",
+     3
+    ],
+    [
+     "window",
+     4
+    ],
+    [
+     "best",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Longest run makeable with 1 change(s): length 4 (e.g. \"AABA\").",
+   "pointers": {
+    "L": 0,
+    "R": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "A",
+      "2"
+     ],
+     [
+      "B",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "best",
+     4
+    ],
+    [
+     "passes",
+     1
+    ],
+    [
+     "vs brute recounts",
+     28
+    ]
+   ],
+   "banner": "Longest run = 4   window \"AABA\" with 1 change(s) \u2014 one pass vs 28 recounts"
+  },
+  {
+   "act": 3,
+   "cells": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "with k=0 no letter may change, so the window can never hold two different letters.",
+   "invariant": "the window [left, right] is fixable with 0 changes \u2014 all one letter.",
+   "note": "Edge case: k = 0, all-distinct letters. left chases right; the run never exceeds 1.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": []
+   },
+   "state": [
+    [
+     "k",
+     0
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "add 'B': window would need a change but k=0 \u2014 slide left, drop 'A'.",
+   "pointers": {
+    "L": 1,
+    "R": 1
+   },
+   "window": [
+    1,
+    1
+   ],
+   "marks": {
+    "0": "bad",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "B",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "window",
+     1
+    ],
+    [
+     "best",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "add 'C': window would need a change but k=0 \u2014 slide left, drop 'B'.",
+   "pointers": {
+    "L": 2,
+    "R": 2
+   },
+   "window": [
+    2,
+    2
+   ],
+   "marks": {
+    "1": "bad",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     2
+    ],
+    [
+     "window",
+     1
+    ],
+    [
+     "best",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "add 'D': window would need a change but k=0 \u2014 slide left, drop 'C'.",
+   "pointers": {
+    "L": 3,
+    "R": 3
+   },
+   "window": [
+    3,
+    3
+   ],
+   "marks": {
+    "2": "bad",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "D",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     3
+    ],
+    [
+     "window",
+     1
+    ],
+    [
+     "best",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "add 'E': window would need a change but k=0 \u2014 slide left, drop 'D'.",
+   "pointers": {
+    "L": 4,
+    "R": 4
+   },
+   "window": [
+    4,
+    4
+   ],
+   "marks": {
+    "3": "bad",
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "counts in window",
+    "rows": [
+     [
+      "E",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     4
+    ],
+    [
+     "window",
+     1
+    ],
+    [
+     "best",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "No two letters are the same, so with 0 changes the best run stays length 1.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "best",
+     1
+    ]
+   ],
+   "banner": "Longest run = 1   (k=0, all letters distinct)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/04-sliding-window/0424-longest-repeating-character-replacement/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;424. Longest Repeating Character Replacement — https://leetcode.com/problems/longest-repeating-character-replacement/
 
 Given a string `s` and a budget `k`, you may change up to `k` characters to any
 letters. Return the length of the longest run of the *same* letter you can make.

@@ -63,7 +63,1379 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Moving the taller wall</strong> (or always moving one fixed side) can step right past the real answer. Move the *shorter* one.</li><li>Height is <code>min(left, right)</code>, not the sum or the max — water pours over the lower wall.</li><li>Ties (<code>height[left] == height[right]</code>): move either side; the pair you&#x27;d get by keeping one is no taller and strictly narrower.</li><li>Width is <code>right - left</code> (indices), not <code>right - left + 1</code>.</li></ul>
 <h2>Transfer</h2>
-<p>This is the &quot;start at the widest setup and give up the provably-worse end&quot; flavor of two pointers — different from the sum-target sweep in <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>, but the same converging-pointer skeleton. The transferable habit is *proving why an end can be dropped*, which also underlies harder greedy-pointer problems like *Trapping Rain Water / 42*.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/03-two-pointers/0011-container-with-most-water/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;11. Container With Most Water — https://leetcode.com/problems/container-with-most-water/
+<p>This is the &quot;start at the widest setup and give up the provably-worse end&quot; flavor of two pointers — different from the sum-target sweep in <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>, but the same converging-pointer skeleton. The transferable habit is *proving why an end can be dropped*, which also underlies harder greedy-pointer problems like *Trapping Rain Water / 42*.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Container With Most Water \u2014 from every pair to one converging sweep",
+ "acts": [
+  "Brute force: every pair",
+  "The waste",
+  "Fast: move the shorter wall",
+  "Edge case: equal ends"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "    for j in range(i+1, n):",
+   "        area = (j-i) * min(h[i], h[j])",
+   "        best = max(best, area)"
+  ],
+  "fast": [
+   "left, right = 0, n-1",
+   "while left < right:",
+   "    area = (right-left) * min(h[left], h[right])",
+   "    best = max(best, area)",
+   "    if h[left] < h[right]: left += 1",
+   "    else: right -= 1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the two walls in play"
+  ],
+  [
+   "good",
+   "best container"
+  ],
+  [
+   "dim",
+   "discarded pair"
+  ]
+ ],
+ "cells": [
+  1,
+  8,
+  6,
+  2,
+  5,
+  4,
+  8,
+  3,
+  7
+ ],
+ "labels": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    1,
+    8,
+    6,
+    2,
+    5,
+    4,
+    8,
+    3,
+    7
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "every i drags a j across the whole tail \u2014 most pairs can never win.",
+   "invariant": "best holds the largest area among all pairs seen so far.",
+   "note": "Brute force: try every pair of lines. Area = width * shorter wall. Watch i=0 sweep.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "marks": {
+    "0": "active",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "pairs",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 0,1: width 1 x min(1,8) = 1. New best 1.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "area",
+     1
+    ],
+    [
+     "best",
+     1
+    ],
+    [
+     "pairs",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 0,2: width 2 x min(1,6) = 2. New best 2.",
+   "pointers": {
+    "i": 0,
+    "j": 2
+   },
+   "arc": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "2": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "area",
+     2
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "pairs",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 0,3: width 3 x min(1,2) = 3. New best 3.",
+   "pointers": {
+    "i": 0,
+    "j": 3
+   },
+   "arc": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "3": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "area",
+     3
+    ],
+    [
+     "best",
+     3
+    ],
+    [
+     "pairs",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 0,4: width 4 x min(1,5) = 4. New best 4.",
+   "pointers": {
+    "i": 0,
+    "j": 4
+   },
+   "arc": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "active",
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "area",
+     4
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "pairs",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 0,5: width 5 x min(1,4) = 5. New best 5.",
+   "pointers": {
+    "i": 0,
+    "j": 5
+   },
+   "arc": [
+    0,
+    5
+   ],
+   "marks": {
+    "0": "active",
+    "5": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     5
+    ],
+    [
+     "area",
+     5
+    ],
+    [
+     "best",
+     5
+    ],
+    [
+     "pairs",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 0,6: width 6 x min(1,8) = 6. New best 6.",
+   "pointers": {
+    "i": 0,
+    "j": 6
+   },
+   "arc": [
+    0,
+    6
+   ],
+   "marks": {
+    "0": "active",
+    "6": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     6
+    ],
+    [
+     "area",
+     6
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "pairs",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 0,7: width 7 x min(1,3) = 7. New best 7.",
+   "pointers": {
+    "i": 0,
+    "j": 7
+   },
+   "arc": [
+    0,
+    7
+   ],
+   "marks": {
+    "0": "active",
+    "7": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     7
+    ],
+    [
+     "area",
+     7
+    ],
+    [
+     "best",
+     7
+    ],
+    [
+     "pairs",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 0,8: width 8 x min(1,7) = 8. New best 8.",
+   "pointers": {
+    "i": 0,
+    "j": 8
+   },
+   "arc": [
+    0,
+    8
+   ],
+   "marks": {
+    "0": "active",
+    "8": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     8
+    ],
+    [
+     "area",
+     8
+    ],
+    [
+     "best",
+     8
+    ],
+    [
+     "pairs",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "lines 1,2: width 1 x min(8,6) = 6. Best stays 8.",
+   "pointers": {
+    "i": 1,
+    "j": 2
+   },
+   "arc": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "active",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "area",
+     6
+    ],
+    [
+     "best",
+     8
+    ],
+    [
+     "pairs",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "lines 1,3: width 2 x min(8,2) = 4. Best stays 8.",
+   "pointers": {
+    "i": 1,
+    "j": 3
+   },
+   "arc": [
+    1,
+    3
+   ],
+   "marks": {
+    "1": "active",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "area",
+     4
+    ],
+    [
+     "best",
+     8
+    ],
+    [
+     "pairs",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 1,4: width 3 x min(8,5) = 15. New best 15.",
+   "pointers": {
+    "i": 1,
+    "j": 4
+   },
+   "arc": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "active",
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "area",
+     15
+    ],
+    [
+     "best",
+     15
+    ],
+    [
+     "pairs",
+     11
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 1,5: width 4 x min(8,4) = 16. New best 16.",
+   "pointers": {
+    "i": 1,
+    "j": 5
+   },
+   "arc": [
+    1,
+    5
+   ],
+   "marks": {
+    "1": "active",
+    "5": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     5
+    ],
+    [
+     "area",
+     16
+    ],
+    [
+     "best",
+     16
+    ],
+    [
+     "pairs",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 1,6: width 5 x min(8,8) = 40. New best 40.",
+   "pointers": {
+    "i": 1,
+    "j": 6
+   },
+   "arc": [
+    1,
+    6
+   ],
+   "marks": {
+    "1": "active",
+    "6": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     6
+    ],
+    [
+     "area",
+     40
+    ],
+    [
+     "best",
+     40
+    ],
+    [
+     "pairs",
+     13
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "lines 1,7: width 6 x min(8,3) = 18. Best stays 40.",
+   "pointers": {
+    "i": 1,
+    "j": 7
+   },
+   "arc": [
+    1,
+    7
+   ],
+   "marks": {
+    "1": "active",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     7
+    ],
+    [
+     "area",
+     18
+    ],
+    [
+     "best",
+     40
+    ],
+    [
+     "pairs",
+     14
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "lines 1,8: width 7 x min(8,7) = 49. New best 49.",
+   "pointers": {
+    "i": 1,
+    "j": 8
+   },
+   "arc": [
+    1,
+    8
+   ],
+   "marks": {
+    "1": "active",
+    "8": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     8
+    ],
+    [
+     "area",
+     49
+    ],
+    [
+     "best",
+     49
+    ],
+    [
+     "pairs",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "Best area 49 between lines 1 and 8 \u2014 but it cost 36 pairs for 9 lines.",
+   "pointers": {
+    "i": 1,
+    "j": 8
+   },
+   "arc": [
+    1,
+    8
+   ],
+   "marks": {
+    "1": "good",
+    "8": "good"
+   },
+   "state": [
+    [
+     "best",
+     49
+    ],
+    [
+     "pairs",
+     36
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "how many pairs the counter racked up \u2014 nearly all were doomed by width.",
+   "note": "36 pairs for 9 lines. Any pair narrower than the current best AND no taller than its short wall was never going to win \u2014 yet brute tested them all.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "dim"
+   },
+   "state": [
+    [
+     "pairs (brute)",
+     36
+    ],
+    [
+     "pattern",
+     "~ n*n / 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Start at the widest container instead. Moving inward only loses width, so the one hope for more area is a taller SHORTER wall. Move the short wall, never the tall.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "dim"
+   },
+   "state": [
+    [
+     "at n=1000",
+     "~500,000"
+    ],
+    [
+     "what we want",
+     "~1,000"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    8,
+    6,
+    2,
+    5,
+    4,
+    8,
+    3,
+    7
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the shorter wall always steps in \u2014 dropping it throws away no better container.",
+   "invariant": "best holds the largest area for any pair as wide as [left, right] or wider.",
+   "note": "Two pointers at the ends \u2014 the widest box. Area caps at the shorter wall.",
+   "pointers": {
+    "L": 0,
+    "R": 8
+   },
+   "window": [
+    0,
+    8
+   ],
+   "marks": {
+    "0": "active",
+    "8": "active"
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     8
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "width 8 x min(1,7) = 8. Best 8. Shorter wall is on the left \u2014 move it in.",
+   "pointers": {
+    "L": 0,
+    "R": 8
+   },
+   "window": [
+    0,
+    8
+   ],
+   "arc": [
+    0,
+    8
+   ],
+   "marks": {
+    "0": "active",
+    "8": "active"
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     8
+    ],
+    [
+     "area",
+     8
+    ],
+    [
+     "best",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "width 7 x min(8,7) = 49. Best 49. Shorter wall is on the right \u2014 move it in.",
+   "pointers": {
+    "L": 1,
+    "R": 8
+   },
+   "window": [
+    1,
+    8
+   ],
+   "arc": [
+    1,
+    8
+   ],
+   "marks": {
+    "1": "active",
+    "8": "active"
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     8
+    ],
+    [
+     "area",
+     49
+    ],
+    [
+     "best",
+     49
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "width 6 x min(8,3) = 18. Best 49. Shorter wall is on the right \u2014 move it in.",
+   "pointers": {
+    "L": 1,
+    "R": 7
+   },
+   "window": [
+    1,
+    7
+   ],
+   "arc": [
+    1,
+    7
+   ],
+   "marks": {
+    "1": "active",
+    "7": "active"
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     7
+    ],
+    [
+     "area",
+     18
+    ],
+    [
+     "best",
+     49
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "width 5 x min(8,8) = 40. Best 49. Shorter wall is on the right \u2014 move it in.",
+   "pointers": {
+    "L": 1,
+    "R": 6
+   },
+   "window": [
+    1,
+    6
+   ],
+   "arc": [
+    1,
+    6
+   ],
+   "marks": {
+    "1": "active",
+    "6": "active"
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     6
+    ],
+    [
+     "area",
+     40
+    ],
+    [
+     "best",
+     49
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "width 4 x min(8,4) = 16. Best 49. Shorter wall is on the right \u2014 move it in.",
+   "pointers": {
+    "L": 1,
+    "R": 5
+   },
+   "window": [
+    1,
+    5
+   ],
+   "arc": [
+    1,
+    5
+   ],
+   "marks": {
+    "1": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     5
+    ],
+    [
+     "area",
+     16
+    ],
+    [
+     "best",
+     49
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "width 3 x min(8,5) = 15. Best 49. Shorter wall is on the right \u2014 move it in.",
+   "pointers": {
+    "L": 1,
+    "R": 4
+   },
+   "window": [
+    1,
+    4
+   ],
+   "arc": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "active",
+    "4": "active"
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     4
+    ],
+    [
+     "area",
+     15
+    ],
+    [
+     "best",
+     49
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "width 2 x min(8,2) = 4. Best 49. Shorter wall is on the right \u2014 move it in.",
+   "pointers": {
+    "L": 1,
+    "R": 3
+   },
+   "window": [
+    1,
+    3
+   ],
+   "arc": [
+    1,
+    3
+   ],
+   "marks": {
+    "1": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "area",
+     4
+    ],
+    [
+     "best",
+     49
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "width 1 x min(8,6) = 6. Best 49. Shorter wall is on the right \u2014 move it in.",
+   "pointers": {
+    "L": 1,
+    "R": 2
+   },
+   "window": [
+    1,
+    2
+   ],
+   "arc": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "active",
+    "2": "active"
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "area",
+     6
+    ],
+    [
+     "best",
+     49
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Sweep done in one pass. Largest area 49 between lines 1 and 8.",
+   "pointers": {
+    "L": 1,
+    "R": 8
+   },
+   "window": [
+    1,
+    8
+   ],
+   "arc": [
+    1,
+    8
+   ],
+   "marks": {
+    "1": "good",
+    "8": "good"
+   },
+   "state": [
+    [
+     "best",
+     49
+    ],
+    [
+     "steps",
+     8
+    ],
+    [
+     "vs brute",
+     36
+    ]
+   ],
+   "banner": "Max area 49   lines 1 and 8   \u2014 one pass vs 36 brute pairs"
+  },
+  {
+   "act": 3,
+   "cells": [
+    4,
+    3,
+    2,
+    1,
+    4
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "on a tie either wall may move \u2014 the widest tie wins outright here.",
+   "invariant": "ties can move either side; width is largest at the very start.",
+   "note": "Edge case: equal walls at both ends. The widest box is already the answer.",
+   "pointers": {
+    "L": 0,
+    "R": 4
+   },
+   "window": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "active",
+    "4": "active"
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     4
+    ],
+    [
+     "best",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "width 4: area 16. Best 16.",
+   "pointers": {
+    "L": 0,
+    "R": 3
+   },
+   "window": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "area",
+     16
+    ],
+    [
+     "best",
+     16
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "width 3: area 3. Best 16.",
+   "pointers": {
+    "L": 0,
+    "R": 2
+   },
+   "window": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "area",
+     3
+    ],
+    [
+     "best",
+     16
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "width 2: area 4. Best 16.",
+   "pointers": {
+    "L": 0,
+    "R": 1
+   },
+   "window": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "area",
+     4
+    ],
+    [
+     "best",
+     16
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "width 1: area 3. Best 16.",
+   "pointers": {
+    "L": 0,
+    "R": 4
+   },
+   "window": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "area",
+     3
+    ],
+    [
+     "best",
+     16
+    ]
+   ],
+   "banner": "Max area 16   the two outer 4s, width 4"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/03-two-pointers/0011-container-with-most-water/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;11. Container With Most Water — https://leetcode.com/problems/container-with-most-water/
 
 Each array value is a vertical line&#x27;s height at that x-position. Pick two lines so
 that the water held between them (width times the shorter line) is as large as

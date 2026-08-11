@@ -1,0 +1,1613 @@
+{
+ "player": "tree",
+ "title": "N-Queens \u2014 one queen per row, pruning the attacked columns away",
+ "acts": [
+  "The rule (prune on attack)",
+  "Walk n=4 to a valid board",
+  "Edge case: n=3 has no solution"
+ ],
+ "code": {
+  "backtrack": [
+   "def backtrack(row):",
+   "    if row == n:",
+   "        result.append(build_board())",
+   "        return",
+   "    for col in range(n):",
+   "        if col in cols or (row-col) in diag or (row+col) in anti_diag:",
+   "            continue                 # under attack -> prune",
+   "        cols.add(col); diag.add(row-col); anti_diag.add(row+col)",
+   "        placement.append(col)",
+   "        backtrack(row + 1)          # explore next row",
+   "        placement.pop()             # un-choose"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "queens placed so far (current path)"
+  ],
+  [
+   "good",
+   "resolved: Q placed, x pruned, ok = solution"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "start",
+   "x": 209,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": "c1",
+   "x": 209,
+   "y": 84
+  },
+  {
+   "id": 2,
+   "val": "c0",
+   "x": 0,
+   "y": 168
+  },
+  {
+   "id": 3,
+   "val": "c1",
+   "x": 62,
+   "y": 168
+  },
+  {
+   "id": 4,
+   "val": "c2",
+   "x": 124,
+   "y": 168
+  },
+  {
+   "id": 5,
+   "val": "c3",
+   "x": 418,
+   "y": 168
+  },
+  {
+   "id": 6,
+   "val": "c0",
+   "x": 279,
+   "y": 252
+  },
+  {
+   "id": 7,
+   "val": "c0",
+   "x": 186,
+   "y": 336
+  },
+  {
+   "id": 8,
+   "val": "c1",
+   "x": 248,
+   "y": 336
+  },
+  {
+   "id": 9,
+   "val": "c2",
+   "x": 310,
+   "y": 336
+  },
+  {
+   "id": 10,
+   "val": "ok",
+   "x": 310,
+   "y": 420
+  },
+  {
+   "id": 11,
+   "val": "c3",
+   "x": 372,
+   "y": 336
+  },
+  {
+   "id": 12,
+   "val": "c1",
+   "x": 434,
+   "y": 252
+  },
+  {
+   "id": 13,
+   "val": "c2",
+   "x": 496,
+   "y": 252
+  },
+  {
+   "id": 14,
+   "val": "c3",
+   "x": 558,
+   "y": 252
+  }
+ ],
+ "edges": [
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   6,
+   7
+  ],
+  [
+   6,
+   8
+  ],
+  [
+   9,
+   10
+  ],
+  [
+   6,
+   9
+  ],
+  [
+   6,
+   11
+  ],
+  [
+   5,
+   6
+  ],
+  [
+   5,
+   12
+  ],
+  [
+   5,
+   13
+  ],
+  [
+   5,
+   14
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   0,
+   1
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 209,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "c1",
+     "x": 209,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "c0",
+     "x": 0,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "c1",
+     "x": 62,
+     "y": 168
+    },
+    {
+     "id": 4,
+     "val": "c2",
+     "x": 124,
+     "y": 168
+    },
+    {
+     "id": 5,
+     "val": "c3",
+     "x": 418,
+     "y": 168
+    },
+    {
+     "id": 6,
+     "val": "c0",
+     "x": 279,
+     "y": 252
+    },
+    {
+     "id": 7,
+     "val": "c0",
+     "x": 186,
+     "y": 336
+    },
+    {
+     "id": 8,
+     "val": "c1",
+     "x": 248,
+     "y": 336
+    },
+    {
+     "id": 9,
+     "val": "c2",
+     "x": 310,
+     "y": 336
+    },
+    {
+     "id": 10,
+     "val": "ok",
+     "x": 310,
+     "y": 420
+    },
+    {
+     "id": 11,
+     "val": "c3",
+     "x": 372,
+     "y": 336
+    },
+    {
+     "id": 12,
+     "val": "c1",
+     "x": 434,
+     "y": 252
+    },
+    {
+     "id": 13,
+     "val": "c2",
+     "x": 496,
+     "y": 252
+    },
+    {
+     "id": 14,
+     "val": "c3",
+     "x": 558,
+     "y": 252
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     6,
+     8
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     6,
+     11
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     12
+    ],
+    [
+     5,
+     13
+    ],
+    [
+     5,
+     14
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "backtrack",
+   "line": 5,
+   "intro": "one queen per row; a column dies the instant it shares a file or diagonal with a queen already placed.",
+   "invariant": "row conflicts are impossible \u2014 we place exactly one queen per row.",
+   "note": "The rule: put one queen in each row. Before committing a column, check three O(1) sets \u2014 same column, the down-diagonal (row-col), the up-diagonal (row+col). Any clash prunes that column immediately.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "board",
+     "4x4"
+    ],
+    [
+     "prune on",
+     "col / 2 diagonals"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "backtrack",
+   "line": 1,
+   "note": "A path that reaches row == n has a queen safely in every row \u2014 that's a solution. Here we follow the branch that starts with a queen in row 0, column 1; watch how few columns survive below it.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "goal",
+     "row == 4"
+    ],
+    [
+     "start",
+     "row0 = col1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 209,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "c1",
+     "x": 209,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "c0",
+     "x": 0,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "c1",
+     "x": 62,
+     "y": 168
+    },
+    {
+     "id": 4,
+     "val": "c2",
+     "x": 124,
+     "y": 168
+    },
+    {
+     "id": 5,
+     "val": "c3",
+     "x": 418,
+     "y": 168
+    },
+    {
+     "id": 6,
+     "val": "c0",
+     "x": 279,
+     "y": 252
+    },
+    {
+     "id": 7,
+     "val": "c0",
+     "x": 186,
+     "y": 336
+    },
+    {
+     "id": 8,
+     "val": "c1",
+     "x": 248,
+     "y": 336
+    },
+    {
+     "id": 9,
+     "val": "c2",
+     "x": 310,
+     "y": 336
+    },
+    {
+     "id": 10,
+     "val": "ok",
+     "x": 310,
+     "y": 420
+    },
+    {
+     "id": 11,
+     "val": "c3",
+     "x": 372,
+     "y": 336
+    },
+    {
+     "id": 12,
+     "val": "c1",
+     "x": 434,
+     "y": 252
+    },
+    {
+     "id": 13,
+     "val": "c2",
+     "x": 496,
+     "y": 252
+    },
+    {
+     "id": 14,
+     "val": "c3",
+     "x": 558,
+     "y": 252
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     6,
+     8
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     6,
+     11
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     12
+    ],
+    [
+     5,
+     13
+    ],
+    [
+     5,
+     14
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "attacked columns light with an x badge; a full safe board lights green.",
+   "invariant": "the active path is the queens placed so far, top row downward.",
+   "note": "Run it. At each row we scan columns left to right; most are attacked by queens already down and get pruned (x). Only a safe column recurses deeper.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "row",
+     0
+    ],
+    [
+     "placed",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Row 0, column 1 is safe -> place a queen and recurse to row 1. Placed columns: [1].",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "1": "Q"
+   },
+   "state": [
+    [
+     "row",
+     0
+    ],
+    [
+     "place col",
+     1
+    ],
+    [
+     "placed",
+     "[1]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 1, column 0: attacked (up-diagonal). Prune \u2014 don't recurse.",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "try col",
+     0
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 1, column 1: attacked (same column). Prune \u2014 don't recurse.",
+   "active": [
+    0,
+    1,
+    3
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "try col",
+     1
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 1, column 2: attacked (down-diagonal). Prune \u2014 don't recurse.",
+   "active": [
+    0,
+    1,
+    4
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "try col",
+     2
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Row 1, column 3 is safe -> place a queen and recurse to row 2. Placed columns: [1, 3].",
+   "active": [
+    0,
+    1,
+    5
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "place col",
+     3
+    ],
+    [
+     "placed",
+     "[1, 3]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Row 2, column 0 is safe -> place a queen and recurse to row 3. Placed columns: [1, 3, 0].",
+   "active": [
+    0,
+    1,
+    5,
+    6
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q",
+    "6": "Q"
+   },
+   "state": [
+    [
+     "row",
+     2
+    ],
+    [
+     "place col",
+     0
+    ],
+    [
+     "placed",
+     "[1, 3, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 3, column 0: attacked (same column). Prune \u2014 don't recurse.",
+   "active": [
+    0,
+    1,
+    5,
+    6,
+    7
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q",
+    "6": "Q",
+    "7": "x"
+   },
+   "state": [
+    [
+     "row",
+     3
+    ],
+    [
+     "try col",
+     0
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 3, column 1: attacked (same column, down-diagonal, up-diagonal). Prune \u2014 don't recurse.",
+   "active": [
+    0,
+    1,
+    5,
+    6,
+    8
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q",
+    "6": "Q",
+    "7": "x",
+    "8": "x"
+   },
+   "state": [
+    [
+     "row",
+     3
+    ],
+    [
+     "try col",
+     1
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Row 3, column 2 is safe -> place a queen and recurse to row 4. Placed columns: [1, 3, 0, 2].",
+   "active": [
+    0,
+    1,
+    5,
+    6,
+    9
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q",
+    "6": "Q",
+    "7": "x",
+    "8": "x",
+    "9": "Q"
+   },
+   "state": [
+    [
+     "row",
+     3
+    ],
+    [
+     "place col",
+     2
+    ],
+    [
+     "placed",
+     "[1, 3, 0, 2]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "row == 4: a queen sits safely in every row. Record the board (columns [1, 3, 0, 2]).",
+   "active": [
+    0,
+    1,
+    5,
+    6,
+    9,
+    10
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q",
+    "6": "Q",
+    "7": "x",
+    "8": "x",
+    "9": "Q",
+    "10": "ok"
+   },
+   "state": [
+    [
+     "solution",
+     "[1, 3, 0, 2]"
+    ],
+    [
+     "board",
+     ".Q.. / ...Q / Q... / ..Q."
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 3, column 3: attacked (same column). Prune \u2014 don't recurse.",
+   "active": [
+    0,
+    1,
+    5,
+    6,
+    11
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q",
+    "6": "Q",
+    "7": "x",
+    "8": "x",
+    "9": "Q",
+    "10": "ok",
+    "11": "x"
+   },
+   "state": [
+    [
+     "row",
+     3
+    ],
+    [
+     "try col",
+     3
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 2, column 1: attacked (same column). Prune \u2014 don't recurse.",
+   "active": [
+    0,
+    1,
+    5,
+    12
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q",
+    "6": "Q",
+    "7": "x",
+    "8": "x",
+    "9": "Q",
+    "10": "ok",
+    "11": "x",
+    "12": "x"
+   },
+   "state": [
+    [
+     "row",
+     2
+    ],
+    [
+     "try col",
+     1
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 2, column 2: attacked (up-diagonal). Prune \u2014 don't recurse.",
+   "active": [
+    0,
+    1,
+    5,
+    13
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q",
+    "6": "Q",
+    "7": "x",
+    "8": "x",
+    "9": "Q",
+    "10": "ok",
+    "11": "x",
+    "12": "x",
+    "13": "x"
+   },
+   "state": [
+    [
+     "row",
+     2
+    ],
+    [
+     "try col",
+     2
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 2, column 3: attacked (same column, down-diagonal). Prune \u2014 don't recurse.",
+   "active": [
+    0,
+    1,
+    5,
+    14
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q",
+    "6": "Q",
+    "7": "x",
+    "8": "x",
+    "9": "Q",
+    "10": "ok",
+    "11": "x",
+    "12": "x",
+    "13": "x",
+    "14": "x"
+   },
+   "state": [
+    [
+     "row",
+     2
+    ],
+    [
+     "try col",
+     3
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "A valid board found: .Q.. / ...Q / Q... / ..Q..  (n=4 has 2 solutions total; this is the first \u2014 the other is its left-right mirror.)",
+   "active": [
+    0,
+    1,
+    5,
+    6,
+    9,
+    10
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "x",
+    "5": "Q",
+    "6": "Q",
+    "7": "x",
+    "8": "x",
+    "9": "Q",
+    "10": "ok",
+    "11": "x",
+    "12": "x",
+    "13": "x",
+    "14": "x"
+   },
+   "state": [
+    [
+     "solution",
+     "[1, 3, 0, 2]"
+    ]
+   ],
+   "banner": "Valid 4-queens board: .Q.. ...Q Q... ..Q."
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 232,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "c0",
+     "x": 93,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "c0",
+     "x": 0,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "c1",
+     "x": 62,
+     "y": 168
+    },
+    {
+     "id": 4,
+     "val": "c2",
+     "x": 186,
+     "y": 168
+    },
+    {
+     "id": 5,
+     "val": "c0",
+     "x": 124,
+     "y": 252
+    },
+    {
+     "id": 6,
+     "val": "c1",
+     "x": 186,
+     "y": 252
+    },
+    {
+     "id": 7,
+     "val": "c2",
+     "x": 248,
+     "y": 252
+    },
+    {
+     "id": 8,
+     "val": "c1",
+     "x": 372,
+     "y": 84
+    },
+    {
+     "id": 9,
+     "val": "c0",
+     "x": 310,
+     "y": 168
+    },
+    {
+     "id": 10,
+     "val": "c1",
+     "x": 372,
+     "y": 168
+    },
+    {
+     "id": 11,
+     "val": "c2",
+     "x": 434,
+     "y": 168
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     8,
+     10
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     0,
+     8
+    ]
+   ],
+   "code": "backtrack",
+   "line": 5,
+   "intro": "on a 3x3 board no path ever reaches row 3 \u2014 pruning erases every line.",
+   "invariant": "same rule; there is simply no attack-free queen in every row.",
+   "note": "Edge case: n = 3. Follow row 0 = column 0 and column 1 (column 2 is the mirror). The diagonals are too tight \u2014 every deeper column is attacked.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "board",
+     "3x3"
+    ],
+    [
+     "solutions so far",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Row 0, column 0 is (so far) safe -> place and go deeper. Placed: [0].",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "1": "Q"
+   },
+   "state": [
+    [
+     "row",
+     0
+    ],
+    [
+     "place col",
+     0
+    ],
+    [
+     "placed",
+     "[0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 1, column 0: attacked (same column). Prune.",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "try col",
+     0
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 1, column 1: attacked (down-diagonal). Prune.",
+   "active": [
+    0,
+    1,
+    3
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "try col",
+     1
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Row 1, column 2 is (so far) safe -> place and go deeper. Placed: [0, 2].",
+   "active": [
+    0,
+    1,
+    4
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "Q"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "place col",
+     2
+    ],
+    [
+     "placed",
+     "[0, 2]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 2, column 0: attacked (same column). Prune.",
+   "active": [
+    0,
+    1,
+    4,
+    5
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "Q",
+    "5": "x"
+   },
+   "state": [
+    [
+     "row",
+     2
+    ],
+    [
+     "try col",
+     0
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 2, column 1: attacked (up-diagonal). Prune.",
+   "active": [
+    0,
+    1,
+    4,
+    6
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "Q",
+    "5": "x",
+    "6": "x"
+   },
+   "state": [
+    [
+     "row",
+     2
+    ],
+    [
+     "try col",
+     1
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 2, column 2: attacked (same column, down-diagonal). Prune.",
+   "active": [
+    0,
+    1,
+    4,
+    7
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "Q",
+    "5": "x",
+    "6": "x",
+    "7": "x"
+   },
+   "state": [
+    [
+     "row",
+     2
+    ],
+    [
+     "try col",
+     2
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Row 0, column 1 is (so far) safe -> place and go deeper. Placed: [1].",
+   "active": [
+    0,
+    8
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "Q",
+    "5": "x",
+    "6": "x",
+    "7": "x",
+    "8": "Q"
+   },
+   "state": [
+    [
+     "row",
+     0
+    ],
+    [
+     "place col",
+     1
+    ],
+    [
+     "placed",
+     "[1]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 1, column 0: attacked (up-diagonal). Prune.",
+   "active": [
+    0,
+    8,
+    9
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "Q",
+    "5": "x",
+    "6": "x",
+    "7": "x",
+    "8": "Q",
+    "9": "x"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "try col",
+     0
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 1, column 1: attacked (same column). Prune.",
+   "active": [
+    0,
+    8,
+    10
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "Q",
+    "5": "x",
+    "6": "x",
+    "7": "x",
+    "8": "Q",
+    "9": "x",
+    "10": "x"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "try col",
+     1
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Row 1, column 2: attacked (down-diagonal). Prune.",
+   "active": [
+    0,
+    8,
+    11
+   ],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "Q",
+    "5": "x",
+    "6": "x",
+    "7": "x",
+    "8": "Q",
+    "9": "x",
+    "10": "x",
+    "11": "x"
+   },
+   "state": [
+    [
+     "row",
+     1
+    ],
+    [
+     "try col",
+     2
+    ],
+    [
+     "verdict",
+     "attacked"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 0,
+   "note": "No branch ever reached row 3 \u2014 every path hit an attack and pruned. So n=3 has zero solutions. (n=2 is empty for the same reason.)",
+   "active": [],
+   "done": {
+    "1": "Q",
+    "2": "x",
+    "3": "x",
+    "4": "Q",
+    "5": "x",
+    "6": "x",
+    "7": "x",
+    "8": "Q",
+    "9": "x",
+    "10": "x",
+    "11": "x"
+   },
+   "state": [
+    [
+     "solutions",
+     0
+    ]
+   ],
+   "banner": "n=3: 0 solutions \u2014 pruning kills every branch"
+  }
+ ]
+}

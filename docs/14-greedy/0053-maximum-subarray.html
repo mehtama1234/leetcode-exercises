@@ -64,7 +64,1268 @@ for each start i:
 <h2>Pitfalls</h2>
 <ul><li><strong>Seeding <code>best</code> at 0.</strong> If every number is negative (<code>[-3, -1, -2]</code>), the answer is <code>-1</code>, not <code>0</code> — you must take at least one number. Seed both <code>cur</code> and <code>best</code> from <code>nums[0]</code>.</li><li><strong>Confusing <code>cur</code> and <code>best</code>.</strong> <code>cur</code> is &quot;best ending here&quot; and can dip; <code>best</code> is the high-water mark and never drops. You need both.</li><li><strong>Allowing an empty run.</strong> The run must have length at least 1. Seeding from <code>nums[0]</code> and looping over the rest guarantees at least one number is used.</li><li><strong>Reaching for divide-and-conquer.</strong> There is a clever split solution, but this one-pass version is simpler and faster. Do not over-build.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is <strong>&quot;best-ending-here&quot;: carry one rolling quantity that answers a per-position subproblem, and throw it away the moment it turns into deadweight.</strong> Siblings: <a href="https://leetcode.com/problems/maximum-product-subarray/">Maximum Product Subarray / 152</a> (same shape, but track best *and* worst, since a negative flips them), <a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">Best Time to Buy and Sell Stock / 121</a> (track the running minimum instead of a running sum), <a href="https://leetcode.com/problems/maximum-sum-circular-subarray/">Maximum Circular Subarray / 918</a>. Whenever the answer is &quot;best contiguous window,&quot; ask &quot;what&#x27;s the best one ending right here?&quot; first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/14-greedy/0053-maximum-subarray/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;53. Maximum Subarray — https://leetcode.com/problems/maximum-subarray/
+<p>The reusable move is <strong>&quot;best-ending-here&quot;: carry one rolling quantity that answers a per-position subproblem, and throw it away the moment it turns into deadweight.</strong> Siblings: <a href="https://leetcode.com/problems/maximum-product-subarray/">Maximum Product Subarray / 152</a> (same shape, but track best *and* worst, since a negative flips them), <a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">Best Time to Buy and Sell Stock / 121</a> (track the running minimum instead of a running sum), <a href="https://leetcode.com/problems/maximum-sum-circular-subarray/">Maximum Circular Subarray / 918</a>. Whenever the answer is &quot;best contiguous window,&quot; ask &quot;what&#x27;s the best one ending right here?&quot; first.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Maximum Subarray \u2014 from every-subarray to one greedy pass (Kadane's)",
+ "acts": [
+  "Brute force: every subarray",
+  "The waste",
+  "Fast: Kadane's greedy",
+  "Edge case: all negative"
+ ],
+ "code": {
+  "brute": [
+   "best = nums[0]",
+   "for i in range(n):",
+   "    running = 0",
+   "    for j in range(i, n):",
+   "        running += nums[j]",
+   "        if running > best:",
+   "            best = running"
+  ],
+  "fast": [
+   "cur = nums[0]",
+   "best = nums[0]",
+   "for x in nums[1:]:",
+   "    cur = max(x, cur + x)",
+   "    best = max(best, cur)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current index x"
+  ],
+  [
+   "good",
+   "the running / best subarray"
+  ],
+  [
+   "dim",
+   "filed / discarded"
+  ]
+ ],
+ "cells": [
+  -2,
+  1,
+  -3,
+  4,
+  -1,
+  2,
+  1,
+  -5,
+  4
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    -2,
+    1,
+    -3,
+    4,
+    -1
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "brute",
+   "line": 1,
+   "intro": "every start i re-adds the same tail from scratch \u2014 watch running climb from 0 again and again.",
+   "invariant": "best holds the largest subarray sum among all starts tried before this i.",
+   "note": "Brute force: for each start i, extend the end j and keep the running sum. Best so far = -2.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "best",
+     -2
+    ],
+    [
+     "additions",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 0, end 0: running = -2. Best stays -2.",
+   "pointers": {
+    "i": 0,
+    "j": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     0
+    ],
+    [
+     "running",
+     -2
+    ],
+    [
+     "best",
+     -2
+    ],
+    [
+     "additions",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 6,
+   "note": "start 0, end 1: running = -1. New best -1.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "window": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "running",
+     -1
+    ],
+    [
+     "best",
+     -1
+    ],
+    [
+     "additions",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 0, end 2: running = -4. Best stays -1.",
+   "pointers": {
+    "i": 0,
+    "j": 2
+   },
+   "window": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "1": "good",
+    "2": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "running",
+     -4
+    ],
+    [
+     "best",
+     -1
+    ],
+    [
+     "additions",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 6,
+   "note": "start 0, end 3: running = 0. New best 0.",
+   "pointers": {
+    "i": 0,
+    "j": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "running",
+     0
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "additions",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 0, end 4: running = -1. Best stays 0.",
+   "pointers": {
+    "i": 0,
+    "j": 4
+   },
+   "window": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "active",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "running",
+     -1
+    ],
+    [
+     "best",
+     0
+    ],
+    [
+     "additions",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 6,
+   "note": "start 1, end 1: running = 1. New best 1.",
+   "pointers": {
+    "i": 1,
+    "j": 1
+   },
+   "window": [
+    1,
+    1
+   ],
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "running",
+     1
+    ],
+    [
+     "best",
+     1
+    ],
+    [
+     "additions",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 1, end 2: running = -2. Best stays 1.",
+   "pointers": {
+    "i": 1,
+    "j": 2
+   },
+   "window": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "active",
+    "2": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "running",
+     -2
+    ],
+    [
+     "best",
+     1
+    ],
+    [
+     "additions",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 6,
+   "note": "start 1, end 3: running = 2. New best 2.",
+   "pointers": {
+    "i": 1,
+    "j": 3
+   },
+   "window": [
+    1,
+    3
+   ],
+   "marks": {
+    "1": "active",
+    "2": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "running",
+     2
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "additions",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 1, end 4: running = 1. Best stays 2.",
+   "pointers": {
+    "i": 1,
+    "j": 4
+   },
+   "window": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "active",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "running",
+     1
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "additions",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 2, end 2: running = -3. Best stays 2.",
+   "pointers": {
+    "i": 2,
+    "j": 2
+   },
+   "window": [
+    2,
+    2
+   ],
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "running",
+     -3
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "additions",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 2, end 3: running = 1. Best stays 2.",
+   "pointers": {
+    "i": 2,
+    "j": 3
+   },
+   "window": [
+    2,
+    3
+   ],
+   "marks": {
+    "2": "active",
+    "3": "good"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "running",
+     1
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "additions",
+     11
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 2, end 4: running = 0. Best stays 2.",
+   "pointers": {
+    "i": 2,
+    "j": 4
+   },
+   "window": [
+    2,
+    4
+   ],
+   "marks": {
+    "2": "active",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "running",
+     0
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "additions",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 6,
+   "note": "start 3, end 3: running = 4. New best 4.",
+   "pointers": {
+    "i": 3,
+    "j": 3
+   },
+   "window": [
+    3,
+    3
+   ],
+   "marks": {
+    "3": "active"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "running",
+     4
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "additions",
+     13
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 3, end 4: running = 3. Best stays 4.",
+   "pointers": {
+    "i": 3,
+    "j": 4
+   },
+   "window": [
+    3,
+    4
+   ],
+   "marks": {
+    "3": "active",
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "running",
+     3
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "additions",
+     14
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "start 4, end 4: running = -1. Best stays 4.",
+   "pointers": {
+    "i": 4,
+    "j": 4
+   },
+   "window": [
+    4,
+    4
+   ],
+   "marks": {
+    "4": "active"
+   },
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "running",
+     -1
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "additions",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 6,
+   "note": "On just five numbers that took 15 additions, and most re-added tails already summed. It grows as the square of the length.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "answer (slice)",
+     4
+    ],
+    [
+     "additions",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "how the addition counter ballooned \u2014 each start re-walks a tail its neighbour just walked.",
+   "note": "15 additions for 5 numbers. start 0 summed 5 tails, start 1 summed 4, and so on \u2014 the same suffixes, re-added.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "dim"
+   },
+   "state": [
+    [
+     "additions (brute)",
+     15
+    ],
+    [
+     "pattern",
+     "~ n*n / 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "For n numbers that is about n(n-1)/2. n=1000 -> ~500,000 additions. We want one pass that never re-sums a tail.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "dim"
+   },
+   "state": [
+    [
+     "at n=1000",
+     "~500,000"
+    ],
+    [
+     "what we want",
+     "~1,000"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    -2,
+    1,
+    -3,
+    4,
+    -1,
+    2,
+    1,
+    -5,
+    4
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "at each x the choice is only: start fresh at x, or glue x onto cur. best just records the peak.",
+   "invariant": "cur = best subarray sum ENDING at the current index; best = largest cur seen so far.",
+   "note": "Kadane: cur = best subarray ending here, best = largest anywhere. Seed both with nums[0] = -2.",
+   "pointers": {
+    "here": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "cur",
+     -2
+    ],
+    [
+     "best",
+     -2
+    ],
+    [
+     "additions",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "x = 1: max(1, cur+1=-1) = 1. drop the negative prefix, start fresh at 1. best rises to 1.",
+   "pointers": {
+    "here": 1
+   },
+   "window": [
+    1,
+    1
+   ],
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "x",
+     1
+    ],
+    [
+     "cur+x",
+     -1
+    ],
+    [
+     "cur",
+     1
+    ],
+    [
+     "best",
+     1
+    ],
+    [
+     "additions",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "x = -3: max(-3, cur+-3=-2) = -2. glue -3 onto cur -> -2. best stays 1.",
+   "pointers": {
+    "here": 2
+   },
+   "window": null,
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "active"
+   },
+   "state": [
+    [
+     "x",
+     -3
+    ],
+    [
+     "cur+x",
+     -2
+    ],
+    [
+     "cur",
+     -2
+    ],
+    [
+     "best",
+     1
+    ],
+    [
+     "additions",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "x = 4: max(4, cur+4=2) = 4. drop the negative prefix, start fresh at 4. best rises to 4.",
+   "pointers": {
+    "here": 3
+   },
+   "window": [
+    3,
+    3
+   ],
+   "marks": {
+    "3": "active"
+   },
+   "state": [
+    [
+     "x",
+     4
+    ],
+    [
+     "cur+x",
+     2
+    ],
+    [
+     "cur",
+     4
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "additions",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "x = -1: max(-1, cur+-1=3) = 3. glue -1 onto cur -> 3. best stays 4.",
+   "pointers": {
+    "here": 4
+   },
+   "window": null,
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "active"
+   },
+   "state": [
+    [
+     "x",
+     -1
+    ],
+    [
+     "cur+x",
+     3
+    ],
+    [
+     "cur",
+     3
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "additions",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "x = 2: max(2, cur+2=5) = 5. glue 2 onto cur -> 5. best rises to 5.",
+   "pointers": {
+    "here": 5
+   },
+   "window": null,
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "active"
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "cur+x",
+     5
+    ],
+    [
+     "cur",
+     5
+    ],
+    [
+     "best",
+     5
+    ],
+    [
+     "additions",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "x = 1: max(1, cur+1=6) = 6. glue 1 onto cur -> 6. best rises to 6.",
+   "pointers": {
+    "here": 6
+   },
+   "window": null,
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "active"
+   },
+   "state": [
+    [
+     "x",
+     1
+    ],
+    [
+     "cur+x",
+     6
+    ],
+    [
+     "cur",
+     6
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "additions",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "x = -5: max(-5, cur+-5=1) = 1. glue -5 onto cur -> 1. best stays 6.",
+   "pointers": {
+    "here": 7
+   },
+   "window": null,
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good",
+    "7": "active"
+   },
+   "state": [
+    [
+     "x",
+     -5
+    ],
+    [
+     "cur+x",
+     1
+    ],
+    [
+     "cur",
+     1
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "additions",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "x = 4: max(4, cur+4=5) = 5. glue 4 onto cur -> 5. best stays 6.",
+   "pointers": {
+    "here": 8
+   },
+   "window": null,
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good",
+    "7": "good",
+    "8": "active"
+   },
+   "state": [
+    [
+     "x",
+     4
+    ],
+    [
+     "cur+x",
+     5
+    ],
+    [
+     "cur",
+     5
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "additions",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "One pass over all nine numbers: 8 additions, best = 6, the sum of [4, -1, 2, 1]. Brute needed that many just for five.",
+   "marks": {
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good"
+   },
+   "state": [
+    [
+     "answer",
+     6
+    ],
+    [
+     "additions",
+     8
+    ],
+    [
+     "brute (5 nums)",
+     15
+    ]
+   ],
+   "banner": "Max subarray sum = 6   ([4, -1, 2, 1])   \u2014 8 additions, one pass"
+  },
+  {
+   "act": 3,
+   "cells": [
+    -3,
+    -1,
+    -2
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "with no positive number, cur+x is always worse than x alone \u2014 so cur just tracks single elements.",
+   "invariant": "a subarray must hold at least one element, so best can be negative.",
+   "note": "Edge case: all negative. We must still return one element \u2014 the least negative.",
+   "pointers": {
+    "here": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "cur",
+     -3
+    ],
+    [
+     "best",
+     -3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "x = -1: max(-1, -4) = -1. Carrying the prefix only hurts, so cur restarts at -1. best = -1.",
+   "pointers": {
+    "here": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "x",
+     -1
+    ],
+    [
+     "cur",
+     -1
+    ],
+    [
+     "best",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "x = -2: max(-2, -3) = -2. Carrying the prefix only hurts, so cur restarts at -2. best = -1.",
+   "pointers": {
+    "here": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "x",
+     -2
+    ],
+    [
+     "cur",
+     -2
+    ],
+    [
+     "best",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "best = -1 \u2014 the single least-negative element (-1). Kadane never picks the empty subarray.",
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "answer",
+     -1
+    ]
+   ],
+   "banner": "All negative -> -1   (the one least-negative element)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/14-greedy/0053-maximum-subarray/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;53. Maximum Subarray — https://leetcode.com/problems/maximum-subarray/
 
 Given an integer array, find the contiguous subarray (at least one element) with
 the largest sum, and return that sum.

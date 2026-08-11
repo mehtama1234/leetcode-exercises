@@ -63,7 +63,494 @@
 <h2>Pitfalls</h2>
 <ul><li>Forgetting the odd-length case, where the lone middle digit must be dropped with <code>back // 10</code> before comparing.</li><li>Not filtering out numbers that end in <code>0</code> (except <code>0</code> itself), like <code>10</code> or <code>120</code>.</li><li>Reversing the whole number when half is enough — it works, but it can overflow on a fixed-width machine.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is <strong>process from both ends toward the middle, and stop once they meet instead of doing the full pass.</strong> The same meeting-in-the-middle shape drives <a href="https://leetcode.com/problems/valid-palindrome/">Valid Palindrome / 125</a> and any two-pointer symmetry check, and the digit-peeling shares its machinery with <a href="../0007-reverse-integer/">Reverse Integer / 7</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/25-math-geometry/0009-palindrome-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;9. Palindrome Number — https://leetcode.com/problems/palindrome-number/
+<p>The reusable move is <strong>process from both ends toward the middle, and stop once they meet instead of doing the full pass.</strong> The same meeting-in-the-middle shape drives <a href="https://leetcode.com/problems/valid-palindrome/">Valid Palindrome / 125</a> and any two-pointer symmetry check, and the digit-peeling shares its machinery with <a href="../0007-reverse-integer/">Reverse Integer / 7</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Palindrome Number - reverse only the back half, meet in the middle",
+ "acts": [
+  "The idea",
+  "Even length: 1221",
+  "Odd length: 12321",
+  "Edge: trailing zero"
+ ],
+ "code": {
+  "pal": [
+   "if x < 0 or (x % 10 == 0 and x != 0): return False",
+   "reversed_half = 0",
+   "while x > reversed_half:",
+   "    x, digit = divmod(x, 10)",
+   "    reversed_half = reversed_half * 10 + digit",
+   "return x == reversed_half or x == reversed_half // 10"
+  ]
+ },
+ "legend": [
+  [
+   "good",
+   "halves match -> palindrome"
+  ],
+  [
+   "bad",
+   "rejected"
+  ]
+ ],
+ "cells": [
+  "1",
+  "2",
+  "2",
+  "1"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "1",
+    "2",
+    "2",
+    "1"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "code": "pal",
+   "line": 0,
+   "intro": "we never build the whole reverse \u2014 just enough back half to meet the front.",
+   "invariant": "a palindrome reads the same both ways; halves must match at the middle.",
+   "note": "Test 1221 without strings: peel digits off the RIGHT into reversed_half while the left front shrinks. Stop when front <= reversed back \u2014 they've met.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "meet in the middle",
+    "rows": [
+     [
+      "front x",
+      "1221"
+     ],
+     [
+      "reversed back",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     1221
+    ],
+    [
+     "reversed_half",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "1",
+    "2",
+    "2",
+    "1"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "code": "pal",
+   "line": 2,
+   "intro": "even count: front and reversed back land exactly equal.",
+   "invariant": "each step moves one digit from front's end to the back half.",
+   "note": "Run 1221 (even length). Peel from the right until front x <= reversed back.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "meet in the middle",
+    "rows": [
+     [
+      "front x",
+      "1221"
+     ],
+     [
+      "reversed back",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     1221
+    ],
+    [
+     "reversed_half",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pal",
+   "line": 4,
+   "note": "peel 1: front x -> 122, reversed back -> 1.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "meet in the middle",
+    "rows": [
+     [
+      "front x",
+      "122"
+     ],
+     [
+      "reversed back",
+      "1"
+     ]
+    ]
+   },
+   "cells": [
+    "1",
+    "2",
+    "2",
+    "1"
+   ],
+   "state": [
+    [
+     "front x",
+     122
+    ],
+    [
+     "reversed back",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pal",
+   "line": 4,
+   "note": "peel 2: front x -> 12, reversed back -> 12.  Now x <= reversed: stop.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "meet in the middle",
+    "rows": [
+     [
+      "front x",
+      "12"
+     ],
+     [
+      "reversed back",
+      "12"
+     ]
+    ]
+   },
+   "cells": [
+    "1",
+    "2",
+    "2",
+    "1"
+   ],
+   "state": [
+    [
+     "front x",
+     12
+    ],
+    [
+     "reversed back",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pal",
+   "line": 5,
+   "note": "front 12 == reversed back 12: equal, so 1221 is a palindrome.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "meet in the middle",
+    "rows": [
+     [
+      "front x",
+      "12"
+     ],
+     [
+      "reversed back",
+      "12"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "front",
+     12
+    ],
+    [
+     "back",
+     12
+    ],
+    [
+     "palindrome",
+     true
+    ]
+   ],
+   "banner": "1221 is a palindrome"
+  },
+  {
+   "act": 2,
+   "cells": [
+    "1",
+    "2",
+    "3",
+    "2",
+    "1"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "pal",
+   "line": 2,
+   "intro": "odd count: a lone middle digit is left sitting in the front \u2014 drop it with //10.",
+   "invariant": "the middle digit never needs to match anything.",
+   "note": "Run 12321 (odd length). The center 3 will sit alone; we compare front to reversed_half // 10.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "meet in the middle",
+    "rows": [
+     [
+      "front x",
+      "12321"
+     ],
+     [
+      "reversed back",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     12321
+    ],
+    [
+     "reversed_half",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "pal",
+   "line": 4,
+   "note": "peel 1: front x -> 1232, reversed back -> 1.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "meet in the middle",
+    "rows": [
+     [
+      "front x",
+      "1232"
+     ],
+     [
+      "reversed back",
+      "1"
+     ]
+    ]
+   },
+   "cells": [
+    "1",
+    "2",
+    "3",
+    "2",
+    "1"
+   ],
+   "state": [
+    [
+     "front x",
+     1232
+    ],
+    [
+     "reversed back",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "pal",
+   "line": 4,
+   "note": "peel 2: front x -> 123, reversed back -> 12.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "meet in the middle",
+    "rows": [
+     [
+      "front x",
+      "123"
+     ],
+     [
+      "reversed back",
+      "12"
+     ]
+    ]
+   },
+   "cells": [
+    "1",
+    "2",
+    "3",
+    "2",
+    "1"
+   ],
+   "state": [
+    [
+     "front x",
+     123
+    ],
+    [
+     "reversed back",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "pal",
+   "line": 4,
+   "note": "peel 3: front x -> 12, reversed back -> 123.  x <= reversed: stop.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "meet in the middle",
+    "rows": [
+     [
+      "front x",
+      "12"
+     ],
+     [
+      "reversed back",
+      "123"
+     ]
+    ]
+   },
+   "cells": [
+    "1",
+    "2",
+    "3",
+    "2",
+    "1"
+   ],
+   "state": [
+    [
+     "front x",
+     12
+    ],
+    [
+     "reversed back",
+     123
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "pal",
+   "line": 5,
+   "note": "front 12 == reversed back // 10 = 12 (drop the middle 3): match, so 12321 is a palindrome.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "sidebar": {
+    "title": "meet in the middle",
+    "rows": [
+     [
+      "front x",
+      "12"
+     ],
+     [
+      "reversed back",
+      "12"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "front",
+     12
+    ],
+    [
+     "back//10",
+     12
+    ],
+    [
+     "palindrome",
+     true
+    ]
+   ],
+   "banner": "12321 is a palindrome (odd length)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    "1",
+    "0"
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "code": "pal",
+   "line": 0,
+   "intro": "a number ending in 0 (but not 0) can't be a palindrome \u2014 no leading 0 to match.",
+   "invariant": "the first-line guard rejects negatives and trailing zeros up front.",
+   "note": "Edge case: 10. It ends in 0 but isn't 0, so its reverse would start with 0 \u2014 impossible. The guard returns False before the loop.",
+   "marks": {
+    "0": "bad",
+    "1": "bad"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "x % 10",
+      "0"
+     ],
+     [
+      "x != 0",
+      "true"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     10
+    ],
+    [
+     "palindrome",
+     false
+    ]
+   ],
+   "banner": "10 is NOT a palindrome"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/25-math-geometry/0009-palindrome-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;9. Palindrome Number — https://leetcode.com/problems/palindrome-number/
 
 Return whether a signed integer reads the same forwards and backwards, without
 converting it to a string.

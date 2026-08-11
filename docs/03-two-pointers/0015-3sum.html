@@ -59,7 +59,1023 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Duplicate triplets</strong> are the whole difficulty. Skip repeats in three places: the anchor <code>i</code>, and the <code>left</code>/<code>right</code> values after a match.</li><li>Skip the anchor with <code>i &gt; 0 and nums[i] == nums[i-1]</code> — compare to the *previous*, so you keep the first copy and drop later ones.</li><li>Forgetting to move <strong>both</strong> pointers after a hit — leave one and you just re-find the same triplet.</li><li>Not sorting first: every step of the method depends on sorted order.</li></ul>
 <h2>Transfer</h2>
-<p>This is the template for the whole &quot;k-Sum&quot; family: fix outer values and two-pointer the innermost pair. It extends straight to <a href="https://leetcode.com/problems/4sum/">4Sum / 18</a> (two fixed loops, then two pointers) and *3Sum Closest*. The reusable move — <strong>sort, then reduce a k-sum to a (k-1)-sum with two converging pointers</strong> — builds directly on <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/03-two-pointers/0015-3sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;15. 3Sum — https://leetcode.com/problems/3sum/
+<p>This is the template for the whole &quot;k-Sum&quot; family: fix outer values and two-pointer the innermost pair. It extends straight to <a href="https://leetcode.com/problems/4sum/">4Sum / 18</a> (two fixed loops, then two pointers) and *3Sum Closest*. The reusable move — <strong>sort, then reduce a k-sum to a (k-1)-sum with two converging pointers</strong> — builds directly on <a href="../0167-two-sum-ii-input-array-is-sorted/">Two Sum II / 167</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "3Sum \u2014 from every triple to sort + Two Sum n times",
+ "acts": [
+  "Brute force: every triple",
+  "The waste",
+  "Fast: sort + fix anchor + two pointers",
+  "Edge case: all zeros"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "  for j in range(i+1, n):",
+   "    for k in range(j+1, n):",
+   "      if nums[i]+nums[j]+nums[k] == 0:",
+   "        found.add(sorted triple)"
+  ],
+  "fast": [
+   "nums = sorted(nums)",
+   "for i in range(n):",
+   "  if nums[i] == nums[i-1]: continue   # skip dup anchor",
+   "  left, right = i+1, n-1",
+   "  while left < right:",
+   "    s = nums[i] + nums[left] + nums[right]",
+   "    if s < 0: left += 1",
+   "    elif s > 0: right -= 1",
+   "    else: record; skip dups; move both"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "anchor / pointers in play"
+  ],
+  [
+   "good",
+   "a zero triplet"
+  ],
+  [
+   "dim",
+   "discarded / skipped"
+  ]
+ ],
+ "cells": [
+  -1,
+  0,
+  1,
+  2,
+  -1,
+  -4
+ ],
+ "labels": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    -1,
+    0,
+    1,
+    2,
+    -1,
+    -4
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "three nested loops \u2014 each element re-scans two tails behind it.",
+   "invariant": "every ordered triple before this i,j,k has been summed.",
+   "note": "Brute force: sum every triple, keep the ones that hit zero (dedupe with a set).",
+   "pointers": {
+    "i": 0,
+    "j": 1,
+    "k": 2
+   },
+   "marks": {
+    "0": "active",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "k",
+     2
+    ],
+    [
+     "triples",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "triple (-1,0,1) sums to 0. Zero \u2014 keep it.",
+   "pointers": {
+    "i": 0,
+    "j": 1,
+    "k": 2
+   },
+   "arc": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "1": "good",
+    "2": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "k",
+     2
+    ],
+    [
+     "sum",
+     0
+    ],
+    [
+     "triples",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "triple (-1,0,2) sums to 1. Not zero.",
+   "pointers": {
+    "i": 0,
+    "j": 1,
+    "k": 3
+   },
+   "arc": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "1": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "k",
+     3
+    ],
+    [
+     "sum",
+     1
+    ],
+    [
+     "triples",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "triple (-1,0,-1) sums to -2. Not zero.",
+   "pointers": {
+    "i": 0,
+    "j": 1,
+    "k": 4
+   },
+   "arc": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "active",
+    "1": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "k",
+     4
+    ],
+    [
+     "sum",
+     -2
+    ],
+    [
+     "triples",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "triple (-1,2,-1) sums to 0. Zero \u2014 keep it.",
+   "pointers": {
+    "i": 0,
+    "j": 3,
+    "k": 4
+   },
+   "arc": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "active",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "k",
+     4
+    ],
+    [
+     "sum",
+     0
+    ],
+    [
+     "triples",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "triple (0,1,-1) sums to 0. Zero \u2014 keep it.",
+   "pointers": {
+    "i": 1,
+    "j": 2,
+    "k": 4
+   },
+   "arc": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "active",
+    "2": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "k",
+     4
+    ],
+    [
+     "sum",
+     0
+    ],
+    [
+     "triples",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "Found 2 unique triplets \u2014 but it summed 20 triples for 6 numbers. That's n-cubed work.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "unique triplets",
+     2
+    ],
+    [
+     "triples",
+     20
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the triple counter \u2014 n-cubed \u2014 is the pile we cut down to n-squared.",
+   "note": "20 triples for 6 numbers. In general ~n-cubed, and we still had to dedupe with a set. Sorting first fixes both problems at once.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "triples (brute)",
+     20
+    ],
+    [
+     "pattern",
+     "~ n*n*n"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Sort the array. Then fix one number nums[i]; the other two must sum to -nums[i] \u2014 that's Two Sum on a sorted tail, solvable by converging pointers in one pass.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "pattern",
+     "sort + n * TwoSum"
+    ],
+    [
+     "result",
+     "~ n*n"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    -4,
+    -1,
+    -1,
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "equal numbers now sit together, so skipping a repeat kills duplicate triplets.",
+   "invariant": "results holds every unique zero triplet whose anchor index is < i.",
+   "note": "Sorted: [-4, -1, -1, 0, 1, 2]. Fix an anchor i, two-pointer the tail for -nums[i].",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "sorted",
+     "[-4, -1, -1, 0, 1, 2]"
+    ],
+    [
+     "result",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Anchor nums[0] = -4. Two-pointer the tail for two numbers summing to 4.",
+   "pointers": {
+    "i": 0,
+    "L": 1,
+    "R": 5
+   },
+   "window": [
+    1,
+    5
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "anchor",
+     -4
+    ],
+    [
+     "need",
+     4
+    ],
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "-4+-1+2 = -3 < 0 \u2014 grow it, move left in.",
+   "pointers": {
+    "i": 0,
+    "L": 1,
+    "R": 5
+   },
+   "window": [
+    1,
+    5
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "sum",
+     -3
+    ],
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "-4+-1+2 = -3 < 0 \u2014 grow it, move left in.",
+   "pointers": {
+    "i": 0,
+    "L": 2,
+    "R": 5
+   },
+   "window": [
+    2,
+    5
+   ],
+   "marks": {
+    "0": "active",
+    "2": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "sum",
+     -3
+    ],
+    [
+     "left",
+     2
+    ],
+    [
+     "right",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "-4+0+2 = -2 < 0 \u2014 grow it, move left in.",
+   "pointers": {
+    "i": 0,
+    "L": 3,
+    "R": 5
+   },
+   "window": [
+    3,
+    5
+   ],
+   "marks": {
+    "0": "active",
+    "3": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "sum",
+     -2
+    ],
+    [
+     "left",
+     3
+    ],
+    [
+     "right",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "-4+1+2 = -1 < 0 \u2014 grow it, move left in.",
+   "pointers": {
+    "i": 0,
+    "L": 4,
+    "R": 5
+   },
+   "window": [
+    4,
+    5
+   ],
+   "marks": {
+    "0": "active",
+    "4": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "sum",
+     -1
+    ],
+    [
+     "left",
+     4
+    ],
+    [
+     "right",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Anchor nums[1] = -1. Two-pointer the tail for two numbers summing to 1.",
+   "pointers": {
+    "i": 1,
+    "L": 2,
+    "R": 5
+   },
+   "window": [
+    2,
+    5
+   ],
+   "marks": {
+    "1": "active",
+    "2": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "anchor",
+     -1
+    ],
+    [
+     "need",
+     1
+    ],
+    [
+     "left",
+     2
+    ],
+    [
+     "right",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 8,
+   "note": "-1+-1+2 = 0 \u2014 record [-1, -1, 2], then skip dups both sides.",
+   "pointers": {
+    "i": 1,
+    "L": 2,
+    "R": 5
+   },
+   "window": [
+    2,
+    5
+   ],
+   "arc": [
+    2,
+    5
+   ],
+   "marks": {
+    "1": "good",
+    "2": "good",
+    "5": "good"
+   },
+   "state": [
+    [
+     "found",
+     "[-1, -1, 2]"
+    ],
+    [
+     "result count",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 8,
+   "note": "-1+0+1 = 0 \u2014 record [-1, 0, 1], then skip dups both sides.",
+   "pointers": {
+    "i": 1,
+    "L": 3,
+    "R": 4
+   },
+   "window": [
+    3,
+    4
+   ],
+   "arc": [
+    3,
+    4
+   ],
+   "marks": {
+    "1": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "found",
+     "[-1, 0, 1]"
+    ],
+    [
+     "result count",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "nums[2] = -1 repeats nums[1] \u2014 skip this anchor to avoid re-finding the same triplets.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "state": [
+    [
+     "nums[i]",
+     -1
+    ],
+    [
+     "skip",
+     "duplicate anchor"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Anchor nums[3] = 0. Two-pointer the tail for two numbers summing to 0.",
+   "pointers": {
+    "i": 3,
+    "L": 4,
+    "R": 5
+   },
+   "window": [
+    4,
+    5
+   ],
+   "marks": {
+    "3": "active",
+    "4": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "anchor",
+     0
+    ],
+    [
+     "need",
+     0
+    ],
+    [
+     "left",
+     4
+    ],
+    [
+     "right",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "0+1+2 = 3 > 0 \u2014 shrink it, move right in.",
+   "pointers": {
+    "i": 3,
+    "L": 4,
+    "R": 5
+   },
+   "window": [
+    4,
+    5
+   ],
+   "marks": {
+    "3": "active",
+    "4": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "sum",
+     3
+    ],
+    [
+     "left",
+     4
+    ],
+    [
+     "right",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "nums[4] = 1 > 0. Sorted, so every remaining triple is positive \u2014 no zero left. Stop.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "dim"
+   },
+   "state": [
+    [
+     "nums[i]",
+     1
+    ],
+    [
+     "result",
+     "[[-1, -1, 2], [-1, 0, 1]]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 8,
+   "note": "One anchor sweep each, no set needed. Triplets: [[-1, -1, 2], [-1, 0, 1]].",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "result",
+     "[[-1, -1, 2], [-1, 0, 1]]"
+    ],
+    [
+     "pointer moves",
+     7
+    ],
+    [
+     "vs brute triples",
+     20
+    ]
+   ],
+   "banner": "3Sum = [[-1, -1, 2], [-1, 0, 1]]   \u2014 ~n*n moves vs 20 brute triples"
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "code": "fast",
+   "line": 2,
+   "intro": "duplicate-skipping stops [0,0,0] from being reported four times.",
+   "invariant": "an anchor equal to its predecessor is skipped outright.",
+   "note": "Edge case: four zeros. The triplet [0,0,0] exists, but must appear only once.",
+   "pointers": {
+    "i": 0,
+    "L": 1,
+    "R": 3
+   },
+   "window": [
+    1,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "nums",
+     "[0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 8,
+   "note": "0+0+0 = 0 \u2014 record [0,0,0] once, then dup-skip collapses the rest.",
+   "pointers": {
+    "i": 0,
+    "L": 1,
+    "R": 3
+   },
+   "window": [
+    1,
+    3
+   ],
+   "arc": [
+    1,
+    3
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "found",
+     "[0, 0, 0]"
+    ],
+    [
+     "result count",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "anchor at i=1 is another 0 \u2014 skip it, or we'd report [0,0,0] again.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "dim"
+   },
+   "state": [
+    [
+     "skip",
+     "duplicate anchor"
+    ],
+    [
+     "result count",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "anchor at i=2 is another 0 \u2014 skip it, or we'd report [0,0,0] again.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "state": [
+    [
+     "skip",
+     "duplicate anchor"
+    ],
+    [
+     "result count",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "anchor at i=3 is another 0 \u2014 skip it, or we'd report [0,0,0] again.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "dim"
+   },
+   "state": [
+    [
+     "skip",
+     "duplicate anchor"
+    ],
+    [
+     "result count",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 8,
+   "note": "Result: [[0, 0, 0]]. Exactly one triplet despite four zeros.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "result",
+     "[[0, 0, 0]]"
+    ]
+   ],
+   "banner": "3Sum = [[0, 0, 0]]   (one triplet, not four)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/03-two-pointers/0015-3sum/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;15. 3Sum — https://leetcode.com/problems/3sum/
 
 Given an integer array, return all unique triplets [a, b, c] that sum to zero.
 The result must not contain duplicate triplets.

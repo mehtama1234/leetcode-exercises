@@ -1,0 +1,630 @@
+{
+ "player": "tree",
+ "title": "Connected Components - n clubs; each merging edge drops the count",
+ "acts": [
+  "The rule: n clubs",
+  "Run Union-Find",
+  "Edge: redundant edge"
+ ],
+ "code": {
+  "uf": [
+   "parent = list(range(n)); count = n   # n lonely clubs",
+   "def find(x):                          # x's club root",
+   "    while parent[x] != x: x = parent[x]",
+   "    return x",
+   "for a, b in edges:",
+   "    ra, rb = find(a), find(b)",
+   "    if ra == rb: continue             # same club: redundant",
+   "    parent[rb] = ra                   # fuse two clubs",
+   "    count -= 1",
+   "return count"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "edge's endpoints"
+  ],
+  [
+   "good",
+   "club root (badge)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 0,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 1,
+   "x": 110,
+   "y": 60
+  },
+  {
+   "id": 2,
+   "val": 2,
+   "x": 220,
+   "y": 0
+  },
+  {
+   "id": 3,
+   "val": 3,
+   "x": 0,
+   "y": 150
+  },
+  {
+   "id": 4,
+   "val": 4,
+   "x": 140,
+   "y": 150
+  }
+ ],
+ "edges": [],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 110,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 220,
+     "y": 0
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 150
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 140,
+     "y": 150
+    }
+   ],
+   "edges": [],
+   "code": "uf",
+   "line": 0,
+   "intro": "every node starts as its own club; the badge is its club's root.",
+   "invariant": "components = clubs; only a real merge lowers the count.",
+   "note": "Start with n isolated nodes = n components. Each edge either joins two different clubs (count drops by 1) or connects two already together (no change).",
+   "active": [],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "nodes",
+     5
+    ],
+    [
+     "components",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 110,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 220,
+     "y": 0
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 150
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 140,
+     "y": 150
+    }
+   ],
+   "edges": [],
+   "code": "uf",
+   "line": 4,
+   "intro": "watch the count drop only when an edge fuses two distinct clubs.",
+   "invariant": "badges share a value exactly when nodes are in the same club.",
+   "note": "Process the edges one at a time. Draw each edge, check if its ends are already in the same club, and merge if not.",
+   "active": [],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "components",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "note": "Edge 0-1: root(0)=0, root(1)=1. Different clubs \u2014 fuse them, count drops by 1.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "edge",
+     "0-1"
+    ],
+    [
+     "merge?",
+     "yes"
+    ],
+    [
+     "components",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 8,
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "note": "Merged: 0 and 1 now share a root. Components = 4.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "0": 0,
+    "1": 0,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "components",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "note": "Edge 1-2: root(1)=0, root(2)=2. Different clubs \u2014 fuse them, count drops by 1.",
+   "active": [
+    1,
+    2
+   ],
+   "done": {
+    "0": 0,
+    "1": 0,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "edge",
+     "1-2"
+    ],
+    [
+     "merge?",
+     "yes"
+    ],
+    [
+     "components",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 8,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "note": "Merged: 1 and 2 now share a root. Components = 3.",
+   "active": [
+    1,
+    2
+   ],
+   "done": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "components",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "note": "Edge 3-4: root(3)=3, root(4)=4. Different clubs \u2014 fuse them, count drops by 1.",
+   "active": [
+    3,
+    4
+   ],
+   "done": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "edge",
+     "3-4"
+    ],
+    [
+     "merge?",
+     "yes"
+    ],
+    [
+     "components",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 8,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "note": "Merged: 3 and 4 now share a root. Components = 2.",
+   "active": [
+    3,
+    4
+   ],
+   "done": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 3,
+    "4": 3
+   },
+   "state": [
+    [
+     "components",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 9,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "note": "All edges processed. Two clubs remain: {0,1,2} and {3,4}. Components = 2.",
+   "active": [],
+   "done": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 3,
+    "4": 3
+   },
+   "state": [
+    [
+     "components",
+     2
+    ]
+   ],
+   "banner": "Connected components = 2"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 140,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 70,
+     "y": 130
+    }
+   ],
+   "edges": [],
+   "code": "uf",
+   "line": 4,
+   "intro": "the third edge closes a triangle \u2014 both ends already share a root.",
+   "invariant": "an edge inside one club never lowers the count.",
+   "note": "Edge case: a triangle 0-1-2. The first two edges merge everything into one club; the third edge is redundant.",
+   "active": [],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2
+   },
+   "state": [
+    [
+     "components",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "uf",
+   "line": 8,
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "note": "Edge 0-1: different clubs, merge. Components = 2.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "0": 0,
+    "1": 0,
+    "2": 2
+   },
+   "state": [
+    [
+     "edge",
+     "0-1"
+    ],
+    [
+     "redundant?",
+     "no"
+    ],
+    [
+     "components",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "uf",
+   "line": 8,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "note": "Edge 1-2: different clubs, merge. Components = 1.",
+   "active": [
+    1,
+    2
+   ],
+   "done": {
+    "0": 0,
+    "1": 0,
+    "2": 0
+   },
+   "state": [
+    [
+     "edge",
+     "1-2"
+    ],
+    [
+     "redundant?",
+     "no"
+    ],
+    [
+     "components",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "uf",
+   "line": 6,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "note": "Edge 0-2: already in the same club \u2014 redundant, count stays 1.",
+   "active": [
+    0,
+    2
+   ],
+   "done": {
+    "0": 0,
+    "1": 0,
+    "2": 0
+   },
+   "state": [
+    [
+     "edge",
+     "0-2"
+    ],
+    [
+     "redundant?",
+     "yes"
+    ],
+    [
+     "components",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "uf",
+   "line": 9,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "note": "Three edges but only two did real merging \u2014 the triangle's closing edge changed nothing. One component.",
+   "active": [],
+   "done": {
+    "0": 0,
+    "1": 0,
+    "2": 0
+   },
+   "state": [
+    [
+     "components",
+     1
+    ]
+   ],
+   "banner": "Triangle -> 1 component (redundant edge ignored)"
+  }
+ ]
+}

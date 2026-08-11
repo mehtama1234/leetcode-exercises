@@ -1,0 +1,603 @@
+{
+ "player": "linear",
+ "title": "Jump Game \u2014 from branching every jump to one greedy frontier",
+ "acts": [
+  "Brute force: try every jump",
+  "The waste",
+  "Fast: greedy reach",
+  "Edge case: the zero trap"
+ ],
+ "code": {
+  "brute": [
+   "def dfs(i):",
+   "    if i >= last: return True",
+   "    for step in range(1, nums[i] + 1):",
+   "        if dfs(i + step):",
+   "            return True",
+   "    return False"
+  ],
+  "fast": [
+   "reach = 0",
+   "for i, step in enumerate(nums):",
+   "    if i > reach:",
+   "        return False",
+   "    reach = max(reach, i + step)",
+   "    if reach >= last:",
+   "        return True"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "index we stand on"
+  ],
+  [
+   "good",
+   "reachable so far"
+  ],
+  [
+   "bad",
+   "unreachable / stuck"
+  ],
+  [
+   "dim",
+   "filed away"
+  ]
+ ],
+ "cells": [
+  2,
+  3,
+  1,
+  1,
+  4
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    2,
+    3,
+    1,
+    1,
+    4
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "the brute force branches on every possible jump length from every index \u2014 the same indices get re-explored.",
+   "invariant": "dfs(i) is True if some choice of jumps from i reaches the last index.",
+   "note": "Brute force: from index i, TRY every jump length 1..nums[i] and recurse. One index fans out into many.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "choices from 0",
+     2
+    ],
+    [
+     "dfs calls",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "dfs(0): can jump 1..2 -> try [1, 2].",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "depth",
+     0
+    ],
+    [
+     "dfs calls",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "dfs(1): can jump 1..3 -> try [2, 3, 4].",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "depth",
+     1
+    ],
+    [
+     "dfs calls",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "dfs(2): can jump 1..1 -> try [3].",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "depth",
+     2
+    ],
+    [
+     "dfs calls",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "dfs(3): can jump 1..1 -> try [4].",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "depth",
+     3
+    ],
+    [
+     "dfs calls",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 1,
+   "note": "dfs(4) reaches the last index.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "depth",
+     4
+    ],
+    [
+     "dfs calls",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "Reachable -> True. But that was 5 dfs calls, and indices like 3 and 4 get visited from several paths.",
+   "marks": {
+    "4": "good"
+   },
+   "state": [
+    [
+     "answer",
+     true
+    ],
+    [
+     "dfs calls",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the recursion re-asks 'can I finish from index k?' many times \u2014 the answer never changes.",
+   "note": "5 calls for 5 indices. Whether you can finish from index k depends only on k, yet the branching re-computes it per path.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "dfs calls (brute)",
+     5
+    ],
+    [
+     "pattern",
+     "exponential branching"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "We never need WHICH jumps to take \u2014 only how far we could possibly get. One number, the farthest reachable index, captures the whole reachable set.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "what we track",
+     "farthest reach"
+    ],
+    [
+     "cost",
+     "one pass"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    2,
+    3,
+    1,
+    1,
+    4
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "reach is the farthest index reachable so far. If i ever passes reach we are stranded.",
+   "invariant": "every index <= reach is reachable from the start (reachability is downward-closed).",
+   "note": "Greedy: sweep left to right. reach = farthest index reachable using everything seen. Start reach = 0.",
+   "pointers": {
+    "i": 0,
+    "reach": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "reach",
+     0
+    ],
+    [
+     "steps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "at i=0 we can jump 2 -> reach = max(0, 0+2) = 2.",
+   "pointers": {
+    "i": 0,
+    "reach": 2
+   },
+   "marks": {
+    "0": "active",
+    "1": "good",
+    "2": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "step",
+     2
+    ],
+    [
+     "reach",
+     2
+    ],
+    [
+     "steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "at i=1 we can jump 3 -> reach = max(2, 1+3) = 4. Last index is within reach.",
+   "pointers": {
+    "i": 1,
+    "reach": 4
+   },
+   "marks": {
+    "0": "good",
+    "1": "active",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "step",
+     3
+    ],
+    [
+     "reach",
+     4
+    ],
+    [
+     "steps",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "reach 4 covers the last index 4. Reachable in 2 steps, no branching.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "True"
+    ],
+    [
+     "steps",
+     2
+    ],
+    [
+     "vs brute",
+     5
+    ]
+   ],
+   "banner": "Can reach the end -> True   \u2014 2 steps vs 5 brute calls"
+  },
+  {
+   "act": 3,
+   "cells": [
+    3,
+    2,
+    1,
+    0,
+    4
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "a 0 you can't jump OVER is a wall \u2014 watch reach stall while i marches past it.",
+   "invariant": "if i ever exceeds reach, no jump sequence lands on i.",
+   "note": "Edge case: [3,2,1,0,4]. The 0 at index 3 is a trap unless reach already passed it.",
+   "pointers": {
+    "i": 0,
+    "reach": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "reach",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "at i=0, step 3: reach = max(0, 3) = 3.",
+   "pointers": {
+    "i": 0,
+    "reach": 3
+   },
+   "marks": {
+    "0": "active",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "step",
+     3
+    ],
+    [
+     "reach",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "at i=1, step 2: reach = max(3, 3) = 3.",
+   "pointers": {
+    "i": 1,
+    "reach": 3
+   },
+   "marks": {
+    "0": "good",
+    "1": "active",
+    "2": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "step",
+     2
+    ],
+    [
+     "reach",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "at i=2, step 1: reach = max(3, 3) = 3.",
+   "pointers": {
+    "i": 2,
+    "reach": 3
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "active",
+    "3": "good"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "step",
+     1
+    ],
+    [
+     "reach",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "at i=3, step 0: reach = max(3, 3) = 3. reach stalls \u2014 0 adds nothing.",
+   "pointers": {
+    "i": 3,
+    "reach": 3
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "active"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "step",
+     0
+    ],
+    [
+     "reach",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "i = 4 > reach 3. Index 4 is unreachable \u2014 the 0 at index 3 capped reach at 3.",
+   "pointers": {
+    "i": 4,
+    "reach": 3
+   },
+   "marks": {
+    "4": "bad",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "reach",
+     3
+    ],
+    [
+     "result",
+     "False"
+    ]
+   ],
+   "banner": "Stuck behind the 0 at index 3 -> False"
+  }
+ ]
+}

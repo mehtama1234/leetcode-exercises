@@ -1,0 +1,1047 @@
+{
+ "player": "tree",
+ "title": "Subsets \u2014 one binary choice per element, walked as a decision tree",
+ "acts": [
+  "The rule",
+  "Walk the decision tree",
+  "Edge case: empty input"
+ ],
+ "code": {
+  "backtrack": [
+   "def backtrack(i):",
+   "    if i == n:",
+   "        result.append(path[:])",
+   "        return",
+   "    backtrack(i + 1)      # leave nums[i] out",
+   "    path.append(nums[i])  # choose",
+   "    backtrack(i + 1)      # explore",
+   "    path.pop()            # un-choose"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current path"
+  ],
+  [
+   "good",
+   "finished subset (leaf)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "{}",
+   "x": 420,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": "{}",
+   "x": 180,
+   "y": 84
+  },
+  {
+   "id": 2,
+   "val": "{}",
+   "x": 60,
+   "y": 168
+  },
+  {
+   "id": 3,
+   "val": "{}",
+   "x": 0,
+   "y": 252
+  },
+  {
+   "id": 4,
+   "val": "{3}",
+   "x": 120,
+   "y": 252
+  },
+  {
+   "id": 5,
+   "val": "{2}",
+   "x": 300,
+   "y": 168
+  },
+  {
+   "id": 6,
+   "val": "{2}",
+   "x": 240,
+   "y": 252
+  },
+  {
+   "id": 7,
+   "val": "{2,3}",
+   "x": 360,
+   "y": 252
+  },
+  {
+   "id": 8,
+   "val": "{1}",
+   "x": 660,
+   "y": 84
+  },
+  {
+   "id": 9,
+   "val": "{1}",
+   "x": 540,
+   "y": 168
+  },
+  {
+   "id": 10,
+   "val": "{1}",
+   "x": 480,
+   "y": 252
+  },
+  {
+   "id": 11,
+   "val": "{1,3}",
+   "x": 600,
+   "y": 252
+  },
+  {
+   "id": 12,
+   "val": "{1,2}",
+   "x": 780,
+   "y": 168
+  },
+  {
+   "id": 13,
+   "val": "{1,2}",
+   "x": 720,
+   "y": 252
+  },
+  {
+   "id": 14,
+   "val": "{1,2,3}",
+   "x": 840,
+   "y": 252
+  }
+ ],
+ "edges": [
+  [
+   2,
+   3
+  ],
+  [
+   2,
+   4
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   5,
+   6
+  ],
+  [
+   5,
+   7
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   9,
+   10
+  ],
+  [
+   9,
+   11
+  ],
+  [
+   8,
+   9
+  ],
+  [
+   12,
+   13
+  ],
+  [
+   12,
+   14
+  ],
+  [
+   8,
+   12
+  ],
+  [
+   0,
+   8
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "{}",
+     "x": 420,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "{}",
+     "x": 180,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "{}",
+     "x": 60,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "{}",
+     "x": 0,
+     "y": 252
+    },
+    {
+     "id": 4,
+     "val": "{3}",
+     "x": 120,
+     "y": 252
+    },
+    {
+     "id": 5,
+     "val": "{2}",
+     "x": 300,
+     "y": 168
+    },
+    {
+     "id": 6,
+     "val": "{2}",
+     "x": 240,
+     "y": 252
+    },
+    {
+     "id": 7,
+     "val": "{2,3}",
+     "x": 360,
+     "y": 252
+    },
+    {
+     "id": 8,
+     "val": "{1}",
+     "x": 660,
+     "y": 84
+    },
+    {
+     "id": 9,
+     "val": "{1}",
+     "x": 540,
+     "y": 168
+    },
+    {
+     "id": 10,
+     "val": "{1}",
+     "x": 480,
+     "y": 252
+    },
+    {
+     "id": 11,
+     "val": "{1,3}",
+     "x": 600,
+     "y": 252
+    },
+    {
+     "id": 12,
+     "val": "{1,2}",
+     "x": 780,
+     "y": 168
+    },
+    {
+     "id": 13,
+     "val": "{1,2}",
+     "x": 720,
+     "y": 252
+    },
+    {
+     "id": 14,
+     "val": "{1,2,3}",
+     "x": 840,
+     "y": 252
+    }
+   ],
+   "edges": [
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     12,
+     14
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     0,
+     8
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "each level is one element; going left leaves it out, right takes it.",
+   "invariant": "depth = index i; a leaf at the bottom row is one finished subset.",
+   "note": "The rule: at element i make one binary choice \u2014 leave it out (left) or take it (right) \u2014 then move to i+1. The whole tree of choices has one leaf per subset.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "elements",
+     "[1, 2, 3]"
+    ],
+    [
+     "choice",
+     "out / take"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "backtrack",
+   "line": 1,
+   "note": "The bottom row (i == 3, past the last element) is where a path becomes a complete subset \u2014 we copy the path into the result there.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "leaves",
+     "2^3 = 8"
+    ],
+    [
+     "= subsets",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "{}",
+     "x": 420,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "{}",
+     "x": 180,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "{}",
+     "x": 60,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "{}",
+     "x": 0,
+     "y": 252
+    },
+    {
+     "id": 4,
+     "val": "{3}",
+     "x": 120,
+     "y": 252
+    },
+    {
+     "id": 5,
+     "val": "{2}",
+     "x": 300,
+     "y": 168
+    },
+    {
+     "id": 6,
+     "val": "{2}",
+     "x": 240,
+     "y": 252
+    },
+    {
+     "id": 7,
+     "val": "{2,3}",
+     "x": 360,
+     "y": 252
+    },
+    {
+     "id": 8,
+     "val": "{1}",
+     "x": 660,
+     "y": 84
+    },
+    {
+     "id": 9,
+     "val": "{1}",
+     "x": 540,
+     "y": 168
+    },
+    {
+     "id": 10,
+     "val": "{1}",
+     "x": 480,
+     "y": 252
+    },
+    {
+     "id": 11,
+     "val": "{1,3}",
+     "x": 600,
+     "y": 252
+    },
+    {
+     "id": 12,
+     "val": "{1,2}",
+     "x": 780,
+     "y": 168
+    },
+    {
+     "id": 13,
+     "val": "{1,2}",
+     "x": 720,
+     "y": 252
+    },
+    {
+     "id": 14,
+     "val": "{1,2,3}",
+     "x": 840,
+     "y": 252
+    }
+   ],
+   "edges": [
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     12,
+     14
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     0,
+     8
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "the active path is the current line of choices; leaves light green.",
+   "invariant": "a green leaf holds exactly the elements taken on the way down.",
+   "note": "Run it. The highlighted path is the choices made so far; each time we reach the bottom we record that subset.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 0,
+   "note": "At element index 0: decide out vs take. Path so far {}.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "at index",
+     0
+    ],
+    [
+     "path",
+     "{}"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 4,
+   "note": "Went left (leave out): path is now {}.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "at index",
+     1
+    ],
+    [
+     "path",
+     "{}"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 4,
+   "note": "Went left (leave out): path is now {}.",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "at index",
+     2
+    ],
+    [
+     "path",
+     "{}"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the subset {}. (1 of 8 so far.)",
+   "active": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "done": {
+    "3": "{}"
+   },
+   "state": [
+    [
+     "subset",
+     "{}"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the subset {3}. (2 of 8 so far.)",
+   "active": [
+    0,
+    1,
+    2,
+    4
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}"
+   },
+   "state": [
+    [
+     "subset",
+     "{3}"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Went right (take): path is now {2}.",
+   "active": [
+    0,
+    1,
+    5
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}"
+   },
+   "state": [
+    [
+     "at index",
+     2
+    ],
+    [
+     "path",
+     "{2}"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the subset {2}. (3 of 8 so far.)",
+   "active": [
+    0,
+    1,
+    5,
+    6
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}",
+    "6": "{2}"
+   },
+   "state": [
+    [
+     "subset",
+     "{2}"
+    ],
+    [
+     "found",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the subset {2,3}. (4 of 8 so far.)",
+   "active": [
+    0,
+    1,
+    5,
+    7
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}",
+    "6": "{2}",
+    "7": "{2,3}"
+   },
+   "state": [
+    [
+     "subset",
+     "{2,3}"
+    ],
+    [
+     "found",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Went right (take): path is now {1}.",
+   "active": [
+    0,
+    8
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}",
+    "6": "{2}",
+    "7": "{2,3}"
+   },
+   "state": [
+    [
+     "at index",
+     1
+    ],
+    [
+     "path",
+     "{1}"
+    ],
+    [
+     "found",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 4,
+   "note": "Went left (leave out): path is now {1}.",
+   "active": [
+    0,
+    8,
+    9
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}",
+    "6": "{2}",
+    "7": "{2,3}"
+   },
+   "state": [
+    [
+     "at index",
+     2
+    ],
+    [
+     "path",
+     "{1}"
+    ],
+    [
+     "found",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the subset {1}. (5 of 8 so far.)",
+   "active": [
+    0,
+    8,
+    9,
+    10
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}",
+    "6": "{2}",
+    "7": "{2,3}",
+    "10": "{1}"
+   },
+   "state": [
+    [
+     "subset",
+     "{1}"
+    ],
+    [
+     "found",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the subset {1,3}. (6 of 8 so far.)",
+   "active": [
+    0,
+    8,
+    9,
+    11
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}",
+    "6": "{2}",
+    "7": "{2,3}",
+    "10": "{1}",
+    "11": "{1,3}"
+   },
+   "state": [
+    [
+     "subset",
+     "{1,3}"
+    ],
+    [
+     "found",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Went right (take): path is now {1,2}.",
+   "active": [
+    0,
+    8,
+    12
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}",
+    "6": "{2}",
+    "7": "{2,3}",
+    "10": "{1}",
+    "11": "{1,3}"
+   },
+   "state": [
+    [
+     "at index",
+     2
+    ],
+    [
+     "path",
+     "{1,2}"
+    ],
+    [
+     "found",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the subset {1,2}. (7 of 8 so far.)",
+   "active": [
+    0,
+    8,
+    12,
+    13
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}",
+    "6": "{2}",
+    "7": "{2,3}",
+    "10": "{1}",
+    "11": "{1,3}",
+    "13": "{1,2}"
+   },
+   "state": [
+    [
+     "subset",
+     "{1,2}"
+    ],
+    [
+     "found",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the subset {1,2,3}. (8 of 8 so far.)",
+   "active": [
+    0,
+    8,
+    12,
+    14
+   ],
+   "done": {
+    "3": "{}",
+    "4": "{3}",
+    "6": "{2}",
+    "7": "{2,3}",
+    "10": "{1}",
+    "11": "{1,3}",
+    "13": "{1,2}",
+    "14": "{1,2,3}"
+   },
+   "state": [
+    [
+     "subset",
+     "{1,2,3}"
+    ],
+    [
+     "found",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Every leaf visited -> all 8 subsets collected: the power set.",
+   "active": [],
+   "done": {
+    "3": "{}",
+    "4": "{3}",
+    "6": "{2}",
+    "7": "{2,3}",
+    "10": "{1}",
+    "11": "{1,3}",
+    "13": "{1,2}",
+    "14": "{1,2,3}"
+   },
+   "state": [
+    [
+     "subsets",
+     8
+    ]
+   ],
+   "banner": "8 subsets = 2^3, the full power set"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "{}",
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "backtrack",
+   "line": 1,
+   "intro": "with no elements the tree is a single node \u2014 already a leaf.",
+   "invariant": "the empty path is still a valid subset.",
+   "note": "Edge case: nums = []. There are no choices to make, so the root is immediately the bottom (i == n == 0).",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "elements",
+     "[]"
+    ],
+    [
+     "choice",
+     "none"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "The single leaf records the empty subset {}. So even [] yields one subset \u2014 the empty set.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "{}"
+   },
+   "state": [
+    [
+     "subset",
+     "{}"
+    ],
+    [
+     "found",
+     1
+    ]
+   ],
+   "banner": "Empty input -> exactly one subset: {}"
+  }
+ ]
+}

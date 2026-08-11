@@ -1,0 +1,619 @@
+{
+ "player": "linear",
+ "title": "Insert Delete GetRandom O(1) - array for random, dict for index, swap-with-last to delete",
+ "acts": [
+  "Two structures, each missing one thing",
+  "Pair them + the swap-with-last trick",
+  "Edge: remove the last element"
+ ],
+ "code": {
+  "insert": [
+   "def insert(val):",
+   "    if val in pos: return False",
+   "    pos[val] = len(vals)",
+   "    vals.append(val)",
+   "    return True"
+  ],
+  "remove": [
+   "def remove(val):",
+   "    if val not in pos: return False",
+   "    idx = pos[val]",
+   "    last = vals[-1]",
+   "    vals[idx] = last      # swap last into the hole",
+   "    pos[last] = idx",
+   "    vals.pop()            # drop the duplicated tail",
+   "    del pos[val]",
+   "    return True"
+  ],
+  "random": [
+   "def getRandom():",
+   "    return vals[random_index]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "cell(s) in play"
+  ],
+  [
+   "good",
+   "live / inserted"
+  ],
+  [
+   "bad",
+   "the slot being dropped"
+  ],
+  [
+   "dim",
+   "inactive"
+  ]
+ ],
+ "cells": [],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": null,
+   "intro": "watch which operation each structure alone makes slow.",
+   "invariant": "we want insert, remove, AND uniform getRandom all O(1) at once.",
+   "note": "An array gives O(1) random pick \u2014 just index a random slot \u2014 but deleting from the middle is O(n): every later element shifts left to close the hole.",
+   "marks": {
+    "1": "bad"
+   },
+   "state": [
+    [
+     "array delete",
+     "O(n) shift"
+    ],
+    [
+     "array random",
+     "O(1)"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": null,
+   "note": "A hash set gives O(1) insert and remove, but picking a uniform random element means walking its buckets \u2014 O(n). Neither structure alone does all three.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "set insert/remove",
+     "O(1)"
+    ],
+    [
+     "set random",
+     "O(n) walk"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [],
+   "labels": [],
+   "code": "insert",
+   "line": 0,
+   "intro": "the array holds the values; the dict remembers each value's index.",
+   "invariant": "pos[v] is always the current index of v inside vals.",
+   "note": "Pair them: an array vals for O(1) random indexing, and a dict pos mapping value -> its index. Start empty.",
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": []
+   },
+   "state": [
+    [
+     "size",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1
+   ],
+   "labels": [
+    0
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "insert(1): record pos[1] = 0 (the next free index), then append 1 to the array. Both O(1).",
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "inserted",
+     1
+    ],
+    [
+     "at index",
+     0
+    ],
+    [
+     "size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "insert(2): record pos[2] = 1 (the next free index), then append 2 to the array. Both O(1).",
+   "marks": {
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ],
+     [
+      "2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "inserted",
+     2
+    ],
+    [
+     "at index",
+     1
+    ],
+    [
+     "size",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "insert(3): record pos[3] = 2 (the next free index), then append 3 to the array. Both O(1).",
+   "marks": {
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "inserted",
+     3
+    ],
+    [
+     "at index",
+     2
+    ],
+    [
+     "size",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "random",
+   "line": 1,
+   "note": "getRandom(): pick any index into vals \u2014 here 0, 1, or 2 \u2014 each equally likely, and return that slot. One array index, O(1), and uniform for free.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "choices",
+     "index 0, 1, 2"
+    ],
+    [
+     "each",
+     "1/3 chance"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "remove",
+   "line": 2,
+   "note": "remove(2): the dict says 2 sits at index 1. Deleting it directly would leave a hole and force a shift \u2014 so instead we use the last element, 3.",
+   "marks": {
+    "1": "active",
+    "2": "active"
+   },
+   "arc": [
+    1,
+    2
+   ],
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "remove",
+     2
+    ],
+    [
+     "idx",
+     1
+    ],
+    [
+     "last",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    3,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "remove",
+   "line": 5,
+   "note": "Swap: copy 3 into index 1 and update pos[3] = 1. Now the element we want gone is only the duplicated copy at the end.",
+   "marks": {
+    "1": "good",
+    "2": "bad"
+   },
+   "arc": [
+    2,
+    1
+   ],
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "moved",
+     "3 -> index 1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    3
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "code": "remove",
+   "line": 6,
+   "note": "Pop the last slot (removing from the end is O(1)) and delete pos[2]. 2 is gone, no shifting \u2014 vals is [1, 3].",
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ],
+     [
+      "3",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "removed",
+     2
+    ],
+    [
+     "size",
+     2
+    ]
+   ],
+   "banner": "remove(2): last element swapped into the hole, then popped \u2014 all O(1)"
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    3
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "code": "remove",
+   "line": 2,
+   "intro": "when val is already the last slot, the swap moves an element onto itself.",
+   "invariant": "the trick still works: swap-then-pop is safe even when idx == last.",
+   "note": "Edge: remove(3) when 3 IS the last element (index 1). last = vals[-1] = 3 is the same element.",
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ],
+     [
+      "3",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "remove",
+     3
+    ],
+    [
+     "idx",
+     1
+    ],
+    [
+     "last",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    3
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "code": "remove",
+   "line": 4,
+   "note": "The swap copies 3 onto its own slot \u2014 a harmless no-op. No other element moves.",
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ],
+     [
+      "3",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "swap",
+     "3 onto itself"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1
+   ],
+   "labels": [
+    0
+   ],
+   "code": "remove",
+   "line": 6,
+   "note": "Pop the tail and delete pos[3]. Only 1 remains, vals = [1]. Removing the last slot needs no real swap.",
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "removed",
+     3
+    ],
+    [
+     "vals",
+     "[1]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "code": "insert",
+   "line": 3,
+   "note": "insert(2) again: pos[2] = 1, append 2. The set is consistent after the removals \u2014 indices and dict still agree.",
+   "marks": {
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "pos (value -> index)",
+    "rows": [
+     [
+      "1",
+      "0"
+     ],
+     [
+      "2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "re-inserted",
+     2
+    ],
+    [
+     "at index",
+     1
+    ],
+    [
+     "vals",
+     "[1, 2]"
+    ]
+   ],
+   "banner": "Removing the last slot, then re-inserting, keeps vals and pos in sync"
+  }
+ ]
+}

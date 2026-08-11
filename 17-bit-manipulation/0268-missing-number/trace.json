@@ -1,0 +1,517 @@
+{
+ "player": "linear",
+ "title": "Missing Number - XOR every index and value; the survivor is the gap",
+ "acts": [
+  "The XOR facts",
+  "Fold everything into acc",
+  "Edge: missing 0"
+ ],
+ "code": {
+  "xor": [
+   "acc = len(nums)      # = n, folds in top of range",
+   "for i, x in enumerate(nums):",
+   "    acc ^= i ^ x",
+   "return acc"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "bit flipped this step"
+  ],
+  [
+   "good",
+   "a 1 in the current value"
+  ],
+  [
+   "dim",
+   "a 0 / settled bit"
+  ]
+ ],
+ "cells": [
+  0,
+  0,
+  0,
+  0
+ ],
+ "labels": [
+  3,
+  2,
+  1,
+  0
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": null,
+   "intro": "a value XORed with itself vanishes; that is what makes the pairs cancel.",
+   "invariant": "XOR is order-free, so we can fold indices and values in any order.",
+   "note": "Two facts: x ^ x = 0 (a value cancels itself) and x ^ 0 = x. Every number in 0..n appears as an index; every array value appears once. Fold them all and the matched pairs cancel to 0.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "nums",
+     "[3, 0, 1]"
+    ],
+    [
+     "range",
+     "0..3"
+    ],
+    [
+     "missing",
+     "one value"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": null,
+   "note": "The missing value shows up as an index (0..n) but never as a value, so it has no partner to cancel with \u2014 it is the lone survivor.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "indices",
+     "0..3"
+    ],
+    [
+     "values",
+     "n of them"
+    ],
+    [
+     "unpaired",
+     "1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 0,
+   "intro": "acc starts at n because indices only reach n-1 but values reach n.",
+   "invariant": "acc = XOR of everything folded so far; cancelled pairs leave no trace.",
+   "note": "Seed acc = n = 3 (0011). This folds in the top of the value range, which no index provides.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "acc",
+     "0011"
+    ],
+    [
+     "seed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 2,
+   "note": "i=0, value=3. Fold in i ^ x = 0 ^ 3 = 3. XOR flips acc's bits wherever 3 has a 1.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "x",
+     3
+    ],
+    [
+     "i ^ x",
+     3
+    ],
+    [
+     "acc",
+     "0011"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 2,
+   "note": "acc is now 0000 = 0. Value 3 at index 3 will cancel later.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "acc",
+     "0000"
+    ],
+    [
+     "acc value",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 2,
+   "note": "i=1, value=0. Fold in i ^ x = 1 ^ 0 = 1. XOR flips acc's bits wherever 1 has a 1.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "x",
+     0
+    ],
+    [
+     "i ^ x",
+     1
+    ],
+    [
+     "acc",
+     "0000"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    0,
+    1
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 2,
+   "note": "acc is now 0001 = 1. Value 0 at index 0 will cancel later.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "state": [
+    [
+     "acc",
+     "0001"
+    ],
+    [
+     "acc value",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    0,
+    1
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 2,
+   "note": "i=2, value=1. Fold in i ^ x = 2 ^ 1 = 3. XOR flips acc's bits wherever 3 has a 1.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "x",
+     1
+    ],
+    [
+     "i ^ x",
+     3
+    ],
+    [
+     "acc",
+     "0001"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    1,
+    0
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 2,
+   "note": "acc is now 0010 = 2. Only the missing value's bits are left standing.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "acc",
+     "0010"
+    ],
+    [
+     "acc value",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    0,
+    1,
+    0
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 3,
+   "note": "Every paired index/value cancelled to 0. What remains is 2 \u2014 the missing number.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "missing",
+     2
+    ]
+   ],
+   "banner": "Missing number = 2   (nums = [3, 0, 1], range 0..3)"
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    0,
+    1
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 0,
+   "intro": "the missing value can be 0 \u2014 then acc must end at all-zero bits.",
+   "invariant": "the same fold runs; the survivor just happens to be 0.",
+   "note": "Edge case: nums = [1], range 0..1, missing 0. Seed acc = n = 1, then fold in i=0, value=1.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "good"
+   },
+   "state": [
+    [
+     "nums",
+     "[1]"
+    ],
+    [
+     "acc seed",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 2,
+   "note": "i=0, value=1: fold i ^ x = 1. acc -> 0000. The 1 from the seed cancels the value 1.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "state": [
+    [
+     "i ^ x",
+     1
+    ],
+    [
+     "acc",
+     "0000"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "labels": [
+    3,
+    2,
+    1,
+    0
+   ],
+   "code": "xor",
+   "line": 3,
+   "note": "acc ended at 0 \u2014 and 0 is exactly the missing value. XOR handles a missing bottom-of-range just as cleanly as any other.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "missing",
+     0
+    ]
+   ],
+   "banner": "Missing number = 0"
+  }
+ ]
+}

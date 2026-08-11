@@ -73,7 +73,847 @@ return the last stone (or 0)</code></pre>
 <h2>Pitfalls</h2>
 <ul><li><strong>Min-heap in a min-heap language.</strong> <code>heapq</code> gives the *smallest*; to get the heaviest, negate on push and negate again on pop. Forgetting a negation smashes the two *lightest* stones instead.</li><li><strong>The equal case.</strong> When <code>y == x</code>, both vanish — push *nothing*. Pushing <code>0</code> back is a bug: stones have weight at least 1, and a phantom <code>0</code> can change the count and even the answer.</li><li><strong>Empty result.</strong> If every stone is destroyed, return <code>0</code>, not a crash on an empty heap. Guard the final read.</li><li><strong>Loop condition.</strong> Stop when one or zero stones remain; peeling two off needs at least two present, and the survivor (if any) is the answer.</li></ul>
 <h2>Transfer</h2>
-<p>The move is: <strong>when a process repeatedly consumes the extreme item(s) of a changing set and may feed new items back, keep the set in a heap instead of re-sorting.</strong> The same repeated-extract shape drives <a href="../0703-kth-largest-element-in-a-stream/">Kth Largest Element in a Stream / 703</a>, the greedy simulation in <a href="../0621-task-scheduler/">Task Scheduler / 621</a>, and the classic Huffman-tree and k-way-merge algorithms. Whenever a loop keeps re-sorting to find &quot;the current biggest/smallest,&quot; reach for a heap.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/1046-last-stone-weight/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;1046. Last Stone Weight — https://leetcode.com/problems/last-stone-weight/
+<p>The move is: <strong>when a process repeatedly consumes the extreme item(s) of a changing set and may feed new items back, keep the set in a heap instead of re-sorting.</strong> The same repeated-extract shape drives <a href="../0703-kth-largest-element-in-a-stream/">Kth Largest Element in a Stream / 703</a>, the greedy simulation in <a href="../0621-task-scheduler/">Task Scheduler / 621</a>, and the classic Huffman-tree and k-way-merge algorithms. Whenever a loop keeps re-sorting to find &quot;the current biggest/smallest,&quot; reach for a heap.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Last Stone Weight \u2014 the two heaviest, always on top",
+ "acts": [
+  "Naive: re-sort each round",
+  "The waste",
+  "Fast: max-heap",
+  "Edge: equal pair"
+ ],
+ "code": {
+  "naive": [
+   "while len(stones) > 1:",
+   "    stones.sort()          # re-sort every round",
+   "    y = stones.pop()       # heaviest",
+   "    x = stones.pop()       # second heaviest",
+   "    if y != x:",
+   "        stones.append(y-x) # leftover"
+  ],
+  "fast": [
+   "heapq.heapify(heap)        # negated weights",
+   "while len(heap) > 1:",
+   "    y = -heapq.heappop(heap)   # heaviest",
+   "    x = -heapq.heappop(heap)   # second",
+   "    if y != x:",
+   "        heapq.heappush(heap, -(y-x))"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the two heaviest being smashed"
+  ],
+  [
+   "dim",
+   "resting in the pile"
+  ],
+  [
+   "good",
+   "the last stone"
+  ]
+ ],
+ "cells": [
+  2,
+  7,
+  4,
+  1,
+  8,
+  1
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    2,
+    7,
+    4,
+    1,
+    8,
+    1
+   ],
+   "code": "naive",
+   "line": 1,
+   "intro": "every round sorts the WHOLE pile just to read the top two.",
+   "invariant": "after each sort, the last two cells are the two heaviest.",
+   "note": "Naive: pile [2, 7, 4, 1, 8, 1]. To smash we need the two heaviest, so re-sort each round.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "stones",
+     6
+    ],
+    [
+     "sorts",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    2,
+    4,
+    7,
+    8
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "Sort \u2192 [1, 1, 2, 4, 7, 8]. Two heaviest: 8 and 7.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "sorts",
+     1
+    ],
+    [
+     "heaviest",
+     8
+    ],
+    [
+     "second",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    2,
+    4,
+    1
+   ],
+   "code": "naive",
+   "line": 5,
+   "note": "Smash 8 vs 7 \u2192 1 back in the pile. Pile now [1, 1, 2, 4, 1].",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "after smash",
+     "[1, 1, 2, 4, 1]"
+    ],
+    [
+     "stones left",
+     5
+    ],
+    [
+     "sorts",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    1,
+    2,
+    4
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "Sort \u2192 [1, 1, 1, 2, 4]. Two heaviest: 4 and 2.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active",
+    "4": "active"
+   },
+   "state": [
+    [
+     "sorts",
+     2
+    ],
+    [
+     "heaviest",
+     4
+    ],
+    [
+     "second",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    1,
+    2
+   ],
+   "code": "naive",
+   "line": 5,
+   "note": "Smash 4 vs 2 \u2192 2 back in the pile. Pile now [1, 1, 1, 2].",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "after smash",
+     "[1, 1, 1, 2]"
+    ],
+    [
+     "stones left",
+     4
+    ],
+    [
+     "sorts",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    1,
+    2
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "Sort \u2192 [1, 1, 1, 2]. Two heaviest: 2 and 1.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "sorts",
+     3
+    ],
+    [
+     "heaviest",
+     2
+    ],
+    [
+     "second",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    1
+   ],
+   "code": "naive",
+   "line": 5,
+   "note": "Smash 2 vs 1 \u2192 1 back in the pile. Pile now [1, 1, 1].",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "after smash",
+     "[1, 1, 1]"
+    ],
+    [
+     "stones left",
+     3
+    ],
+    [
+     "sorts",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    1
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "Sort \u2192 [1, 1, 1]. Two heaviest: 1 and 1.",
+   "marks": {
+    "0": "dim",
+    "1": "active",
+    "2": "active"
+   },
+   "state": [
+    [
+     "sorts",
+     4
+    ],
+    [
+     "heaviest",
+     1
+    ],
+    [
+     "second",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1
+   ],
+   "code": "naive",
+   "line": 5,
+   "note": "Smash 1 vs 1 \u2192 equal, both gone. Pile now [1].",
+   "marks": {
+    "0": "dim"
+   },
+   "state": [
+    [
+     "after smash",
+     "[1]"
+    ],
+    [
+     "stones left",
+     1
+    ],
+    [
+     "sorts",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 0,
+   "note": "Last stone = 1. But that cost 4 full sorts of a shrinking pile.",
+   "state": [
+    [
+     "last stone",
+     1
+    ],
+    [
+     "full sorts",
+     4
+    ]
+   ],
+   "banner": "last stone = 1"
+  },
+  {
+   "act": 1,
+   "intro": "each round only needs the TWO largest \u2014 re-sorting the rest is waste.",
+   "note": "4 rounds, each an O(n log n) sort, but we only read the top two. The order of everything below is recomputed and thrown away.",
+   "state": [
+    [
+     "rounds",
+     4
+    ],
+    [
+     "per round",
+     "O(n log n)"
+    ],
+    [
+     "read",
+     "top 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "A max-heap keeps the largest on top in O(1) and removes it in O(log n) \u2014 no re-sorting. n rounds \u2192 O(n log n) total.",
+   "state": [
+    [
+     "heap top",
+     "O(1)"
+    ],
+    [
+     "pop",
+     "O(log n)"
+    ],
+    [
+     "total",
+     "O(n log n)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    2,
+    7,
+    4,
+    1,
+    8,
+    1
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the max-heap keeps the two heaviest reachable without any re-sort.",
+   "invariant": "heap[0] (negated) is always the heaviest remaining stone.",
+   "note": "Heapify [2, 7, 4, 1, 8, 1] as a max-heap (store negated). Heaviest is always on top.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "8"
+     ],
+     [
+      "1",
+      "7"
+     ],
+     [
+      "2",
+      "4"
+     ],
+     [
+      "3",
+      "2"
+     ],
+     [
+      "4",
+      "1"
+     ],
+     [
+      "5",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stones",
+     6
+    ],
+    [
+     "heaviest",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Round 1: pop the two heaviest \u2014 8 and 7 \u2014 straight off the top.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "4"
+     ],
+     [
+      "1",
+      "2"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "round",
+     1
+    ],
+    [
+     "heaviest",
+     8
+    ],
+    [
+     "second",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "They differ: push leftover 1 back onto the heap. 5 stone(s) left.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "4"
+     ],
+     [
+      "1",
+      "2"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "1"
+     ],
+     [
+      "4",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "leftover",
+     1
+    ],
+    [
+     "stones left",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Round 2: pop the two heaviest \u2014 4 and 2 \u2014 straight off the top.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "1"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "round",
+     2
+    ],
+    [
+     "heaviest",
+     4
+    ],
+    [
+     "second",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "They differ: push leftover 2 back onto the heap. 4 stone(s) left.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "2"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ],
+     [
+      "3",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "leftover",
+     2
+    ],
+    [
+     "stones left",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Round 3: pop the two heaviest \u2014 2 and 1 \u2014 straight off the top.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "1"
+     ],
+     [
+      "1",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "round",
+     3
+    ],
+    [
+     "heaviest",
+     2
+    ],
+    [
+     "second",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "They differ: push leftover 1 back onto the heap. 3 stone(s) left.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "1"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "leftover",
+     1
+    ],
+    [
+     "stones left",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Round 4: pop the two heaviest \u2014 1 and 1 \u2014 straight off the top.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "round",
+     4
+    ],
+    [
+     "heaviest",
+     1
+    ],
+    [
+     "second",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "They're equal: both destroyed, nothing pushed back. 1 stone(s) left.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "leftover",
+     0
+    ],
+    [
+     "stones left",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "One stone remains: 1. No round ever re-sorted the pile.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "last stone",
+     1
+    ],
+    [
+     "rounds",
+     4
+    ]
+   ],
+   "banner": "last stone = 1"
+  },
+  {
+   "act": 3,
+   "cells": [
+    2,
+    2
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "two equal heaviest cancel completely \u2014 the heap can empty out to 0.",
+   "invariant": "when y == x nothing is pushed back, so the heap can shrink to empty.",
+   "note": "Edge: [2, 2]. The two heaviest are equal.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "top",
+      "2"
+     ],
+     [
+      "1",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stones",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "Pop both: 2 and 2. Equal \u2192 both destroyed, nothing left.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "heaviest",
+     2
+    ],
+    [
+     "second",
+     2
+    ],
+    [
+     "stones left",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 1,
+   "note": "Heap is empty, so the answer is 0.",
+   "sidebar": {
+    "title": "max-heap (heaviest on top)",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "last stone",
+     0
+    ]
+   ],
+   "banner": "last stone = 0"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/1046-last-stone-weight/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;1046. Last Stone Weight — https://leetcode.com/problems/last-stone-weight/
 
 Repeatedly smash the two heaviest stones together; if they differ, the leftover
 weight goes back in. Return the weight of the last stone, or 0 if none remain.

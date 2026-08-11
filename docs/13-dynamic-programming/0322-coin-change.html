@@ -68,7 +68,375 @@ fewest(negative) = infinity   # overshot, dead end</code></pre>
 <h2>Pitfalls</h2>
 <ul><li>Returning <code>0</code> instead of <code>-1</code> when it&#x27;s impossible. Keep &quot;unreachable&quot; as a sentinel (<code>infinity</code>) all the way through, and convert to <code>-1</code> only at the end.</li><li><code>amount == 0</code> must return <code>0</code>, not <code>-1</code> — making nothing needs no coins.</li><li>This is <strong>fewest coins</strong>, not <strong>number of ways</strong> (that&#x27;s a different loop order — see Coin Change II). Don&#x27;t confuse the two.</li><li>Greedy (always grab the biggest coin) is wrong: for coins <code>[1, 3, 4]</code>, amount <code>6</code>, greedy gives <code>4 + 1 + 1 = 3</code> coins but <code>3 + 3 = 2</code> is better. You genuinely need the DP.</li></ul>
 <h2>Transfer</h2>
-<p>This is the <strong>unbounded knapsack</strong> shape: &quot;reach a target using reusable items, optimizing a count or value.&quot; The move — *guess the last item, recurse on the leftover, cache by leftover amount* — reappears in Coin Change II (count ways), <a href="../0139-word-break/">Word Break / 139</a> (reach the end of a string using reusable dictionary words), and Combination Sum.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0322-coin-change/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;322. Coin Change — https://leetcode.com/problems/coin-change/
+<p>This is the <strong>unbounded knapsack</strong> shape: &quot;reach a target using reusable items, optimizing a count or value.&quot; The move — *guess the last item, recurse on the leftover, cache by leftover amount* — reappears in Coin Change II (count ways), <a href="../0139-word-break/">Word Break / 139</a> (reach the end of a string using reusable dictionary words), and Combination Sum.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Coin Change - solve each amount once, smallest first",
+ "acts": [
+  "The recurrence",
+  "Fill dp[0..amount]",
+  "Answer + impossible edge"
+ ],
+ "code": {
+  "dp": [
+   "dp = [0] + [inf]*amount",
+   "for a in range(1, amount+1):",
+   "    for c in coins:",
+   "        if c <= a:",
+   "            dp[a] = min(dp[a], dp[a-c] + 1)",
+   "return dp[amount]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the amount we build on (a-c)"
+  ],
+  [
+   "good",
+   "solved / answer"
+  ],
+  [
+   "bad",
+   "impossible / waste"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "coins"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+   ],
+   "code": null,
+   "intro": "dp[a] answers 'fewest coins to make a', building up from 0.",
+   "invariant": "dp[a] = 1 + the fewest for whatever remains after one coin.",
+   "note": "Coins [1, 2, 5], target 6. To make amount a, try each coin c as the LAST coin used; that leaves a-c to make with the same coins.",
+   "marks": {
+    "0,6": "active"
+   },
+   "state": [
+    [
+     "amount",
+     6
+    ],
+    [
+     "coins",
+     "[1, 2, 5]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "Plain recursion re-solves the same remaining amount along many coin orders (3 = 1+2 and 2+1 both ask for dp[0]). That repetition is the waste; fill each dp[a] once instead.",
+   "marks": {
+    "0,3": "bad",
+    "0,4": "bad"
+   },
+   "state": [
+    [
+     "dp[a]",
+     "recomputed"
+    ],
+    [
+     "fix",
+     "fill once"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "coins"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+   ],
+   "code": "dp",
+   "line": 0,
+   "intro": "each amount solved ONCE, smallest first, so dp[a-c] is always ready.",
+   "invariant": "dp[a] = fewest coins to make exactly a (inf if impossible).",
+   "note": "dp[0] = 0: making zero needs no coins. Everything else starts at inf (unknown / impossible).",
+   "set": {
+    "0,0": 0
+   },
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "dp[0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "dp[1] = fewest. Best last coin is 1: dp[1-1] 0 + 1 = 1.",
+   "set": {
+    "0,1": 1
+   },
+   "marks": {
+    "0,1": "good",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "amount",
+     1
+    ],
+    [
+     "last coin",
+     1
+    ],
+    [
+     "dp[1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "dp[2] = fewest. Best last coin is 2: dp[2-2] 0 + 1 = 1.",
+   "set": {
+    "0,2": 1
+   },
+   "marks": {
+    "0,2": "good",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "amount",
+     2
+    ],
+    [
+     "last coin",
+     2
+    ],
+    [
+     "dp[2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "dp[3] = fewest. Best last coin is 1: dp[3-1] 1 + 1 = 2.",
+   "set": {
+    "0,3": 2
+   },
+   "marks": {
+    "0,3": "good",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "amount",
+     3
+    ],
+    [
+     "last coin",
+     1
+    ],
+    [
+     "dp[3]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "dp[4] = fewest. Best last coin is 2: dp[4-2] 1 + 1 = 2.",
+   "set": {
+    "0,4": 2
+   },
+   "marks": {
+    "0,4": "good",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "amount",
+     4
+    ],
+    [
+     "last coin",
+     2
+    ],
+    [
+     "dp[4]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "dp[5] = fewest. Best last coin is 5: dp[5-5] 0 + 1 = 1.",
+   "set": {
+    "0,5": 1
+   },
+   "marks": {
+    "0,5": "good",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "amount",
+     5
+    ],
+    [
+     "last coin",
+     5
+    ],
+    [
+     "dp[5]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "dp[6] = fewest. Best last coin is 1: dp[6-1] 1 + 1 = 2.",
+   "set": {
+    "0,6": 2
+   },
+   "marks": {
+    "0,6": "good",
+    "0,5": "active"
+   },
+   "state": [
+    [
+     "amount",
+     6
+    ],
+    [
+     "last coin",
+     1
+    ],
+    [
+     "dp[6]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dp",
+   "line": 5,
+   "intro": "dp[amount] is the whole answer, filled once.",
+   "invariant": "every smaller amount was solved before this one.",
+   "note": "dp[6] = 2 \u2014 a 5 and a 1. Each amount was solved exactly once.",
+   "marks": {
+    "0,6": "good",
+    "0,5": "active",
+    "0,1": "active"
+   },
+   "state": [
+    [
+     "answer",
+     2
+    ]
+   ],
+   "banner": "Fewest coins for 6 = 2  (5 + 1)"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     0,
+     "inf",
+     1,
+     "inf"
+    ]
+   ],
+   "rowLabels": [
+    "coins"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "dp",
+   "line": 5,
+   "note": "Edge case: coins [2], amount 3. Odd amounts stay inf forever \u2014 no combination of 2s makes 3 \u2014 so the answer is -1.",
+   "marks": {
+    "0,3": "bad"
+   },
+   "state": [
+    [
+     "dp[3]",
+     "inf"
+    ],
+    [
+     "answer",
+     -1
+    ]
+   ],
+   "banner": "No combination -> -1"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0322-coin-change/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;322. Coin Change — https://leetcode.com/problems/coin-change/
 
 Given coin denominations and an amount, return the fewest coins that sum to that
 amount (coins reusable, unlimited supply), or -1 if no combination works.

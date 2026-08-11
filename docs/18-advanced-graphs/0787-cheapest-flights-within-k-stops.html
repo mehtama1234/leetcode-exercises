@@ -72,7 +72,522 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>k stops = k+1 flights.</strong> Run <code>k+1</code> rounds, not <code>k</code>. Off-by-one here is the classic bug.</li><li><strong>The snapshot copy is mandatory.</strong> Relaxing in place lets a route take extra hops in a single round and corrupts the answer.</li><li>Don&#x27;t reach for plain Dijkstra — it can&#x27;t respect the hop budget without being reworked to carry hop-count, at which point it is no longer the simple version.</li><li>Handle <strong><code>src == dst</code></strong> (answer 0) and a genuinely unreachable <code>dst</code> (-1).</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Relax links in rounds, where round = steps used&quot; is the reusable trick for any step-bounded shortest path. It is Bellman-Ford, which is also the go-to when links can be <strong>negative</strong> (Dijkstra fails there). Compare with <a href="../0743-network-delay-time/">Network Delay Time / 743</a>, the *unbounded* version, which gets to use Dijkstra&#x27;s faster heap. A Dijkstra variant that tracks <code>(cost, city, stops)</code> in the heap solves this too — but the round-based version is easier to reason about.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/18-advanced-graphs/0787-cheapest-flights-within-k-stops/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;787. Cheapest Flights Within K Stops — https://leetcode.com/problems/cheapest-flights-within-k-stops/
+<p>&quot;Relax links in rounds, where round = steps used&quot; is the reusable trick for any step-bounded shortest path. It is Bellman-Ford, which is also the go-to when links can be <strong>negative</strong> (Dijkstra fails there). Compare with <a href="../0743-network-delay-time/">Network Delay Time / 743</a>, the *unbounded* version, which gets to use Dijkstra&#x27;s faster heap. A Dijkstra variant that tracks <code>(cost, city, stops)</code> in the heap solves this too — but the round-based version is easier to reason about.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Cheapest Flights - Dijkstra's trap, relax in rounds, run k+1, then the hop-limit edge case",
+ "acts": [
+  "Dijkstra ignores hops",
+  "The fix: rounds",
+  "Run k+1 rounds",
+  "Edge case: over budget"
+ ],
+ "code": {
+  "dfs": [
+   "dist = [INF]*n; dist[src] = 0",
+   "for _ in range(k + 1):",
+   "    curr = dist[:]        # snapshot",
+   "    for u, v, price in flights:",
+   "        if dist[u] + price < curr[v]:",
+   "            curr[v] = dist[u] + price",
+   "    dist = curr",
+   "return dist[dst]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "relaxing this city"
+  ],
+  [
+   "good",
+   "cheapest price so far"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 0,
+   "x": 20,
+   "y": 40
+  },
+  {
+   "id": 1,
+   "val": 1,
+   "x": 170,
+   "y": 0
+  },
+  {
+   "id": 2,
+   "val": 2,
+   "x": 170,
+   "y": 150
+  },
+  {
+   "id": 3,
+   "val": 3,
+   "x": 320,
+   "y": 70
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   2,
+   0
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   2,
+   3
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 20,
+     "y": 40
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 170,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 170,
+     "y": 150
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 320,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "cheapest-first can lock in a price that used too many flights.",
+   "invariant": "we must count flights, not just price.",
+   "note": "With at most k=1 stop you may take 2 flights. Plain Dijkstra minimizes price but forgets that limit \u2014 it could reach 3 cheaply via a 3-flight route.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "src",
+     0
+    ],
+    [
+     "dst",
+     3
+    ],
+    [
+     "max flights",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "dfs",
+   "line": 0,
+   "note": "The tempting cheap route 0->1->2->3 costs 100+100+200 = 400, but that is 3 flights (2 stops). Over budget. We are only allowed 2 flights here.",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": 0,
+    "1": 100,
+    "2": 200,
+    "3": 400
+   },
+   "state": [
+    [
+     "route 0-1-2-3",
+     400
+    ],
+    [
+     "flights used",
+     3
+    ]
+   ],
+   "banner": "Cheapest by price can break the hop limit. Count flights per round instead."
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 20,
+     "y": 40
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 170,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 170,
+     "y": 150
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 320,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "dfs",
+   "line": 1,
+   "intro": "after round i, a city's price uses at most i flights.",
+   "invariant": "each round adds exactly one more flight, no more.",
+   "note": "Bellman-Ford's structure: run k+1 rounds. Read prices from a snapshot of the previous round so no route sneaks in two flights inside one round.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "rounds to run",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 2,
+   "note": "Round 1: snapshot last round's prices, then relax every flight reading only from that snapshot.",
+   "active": [],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "round",
+     1
+    ],
+    [
+     "reading",
+     "snapshot"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "note": "Flight 0->1 costs 100: 0+100 = 100 beats city 1's old price. Update it.",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": 0,
+    "1": 100
+   },
+   "state": [
+    [
+     "round",
+     1
+    ],
+    [
+     "update",
+     "city 1 = 100"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "End of round 1. These prices each use at most 1 flights.",
+   "active": [],
+   "done": {
+    "0": 0,
+    "1": 100
+   },
+   "state": [
+    [
+     "round done",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 2,
+   "note": "Round 2: snapshot last round's prices, then relax every flight reading only from that snapshot.",
+   "active": [],
+   "done": {
+    "0": 0,
+    "1": 100
+   },
+   "state": [
+    [
+     "round",
+     2
+    ],
+    [
+     "reading",
+     "snapshot"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "note": "Flight 1->2 costs 100: 100+100 = 200 beats city 2's old price. Update it.",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": 0,
+    "1": 100,
+    "2": 200
+   },
+   "state": [
+    [
+     "round",
+     2
+    ],
+    [
+     "update",
+     "city 2 = 200"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "note": "Flight 1->3 costs 600: 100+600 = 700 beats city 3's old price. Update it.",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": 0,
+    "1": 100,
+    "3": 700
+   },
+   "state": [
+    [
+     "round",
+     2
+    ],
+    [
+     "update",
+     "city 3 = 700"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "End of round 2. These prices each use at most 2 flights.",
+   "active": [],
+   "done": {
+    "0": 0,
+    "1": 100,
+    "2": 200,
+    "3": 700
+   },
+   "state": [
+    [
+     "round done",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 7,
+   "note": "After 2 rounds the cheapest price to city 3 using at most 2 flights is 700 (route 0->1->3: 100+600).",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": 0,
+    "1": 100,
+    "2": 200,
+    "3": 700
+   },
+   "state": [
+    [
+     "answer",
+     700
+    ]
+   ],
+   "banner": "Cheapest within 1 stops = 700"
+  },
+  {
+   "act": 3,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 20,
+     "y": 70
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 130,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 250,
+     "y": 0
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 330,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     3
+    ]
+   ],
+   "code": "dfs",
+   "line": 1,
+   "intro": "the hop budget can force a pricier direct flight.",
+   "invariant": "a route only counts if its flight count fits k+1.",
+   "note": "Edge case: 0->1->2->3 costs just 3, but that is 3 flights. With k=1 (2 flights max) it is off-limits, so the direct 0->3 for 10 wins.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "cheap route",
+     3
+    ],
+    [
+     "its flights",
+     3
+    ],
+    [
+     "allowed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "dfs",
+   "line": 7,
+   "note": "Only 2 rounds run, so the 3-flight bargain never reaches city 3 in time. Answer = 10 (the direct flight).",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 10
+   },
+   "state": [
+    [
+     "answer",
+     10
+    ]
+   ],
+   "banner": "Within 1 stop = 10  (cheap 3-hop route ignored)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/18-advanced-graphs/0787-cheapest-flights-within-k-stops/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;787. Cheapest Flights Within K Stops — https://leetcode.com/problems/cheapest-flights-within-k-stops/
 
 Find the cheapest price from `src` to `dst` using at most `k` intermediate stops
 (so at most k+1 flights). Return -1 if no such route exists.

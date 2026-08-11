@@ -47,7 +47,1136 @@
 <h2>Pitfalls</h2>
 <ul><li>Forgetting the length check — without it, <code>(&quot;a&quot;, &quot;aa&quot;)</code> needs the full count scan to reject; with it you bail instantly.</li><li>Assuming lowercase-only. If Unicode or uppercase is allowed, the count map still works unchanged; a fixed 26-slot array does not.</li><li>Going negative mid-pass means <code>t</code> has a letter <code>s</code> can&#x27;t supply — return false right there instead of finishing the loop.</li></ul>
 <h2>Transfer</h2>
-<p><strong>Turn a string into its letter-count signature</strong> is the core move, and it scales: in <a href="../0049-group-anagrams/">Group Anagrams / 49</a> that same signature becomes a dictionary *key*, so all anagrams fall into one bucket. The general idea — compare collections by counting, not sorting — shows up wherever &quot;same elements, order irrelevant&quot; is the real question.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0242-valid-anagram/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;242. Valid Anagram — https://leetcode.com/problems/valid-anagram/
+<p><strong>Turn a string into its letter-count signature</strong> is the core move, and it scales: in <a href="../0049-group-anagrams/">Group Anagrams / 49</a> that same signature becomes a dictionary *key*, so all anagrams fall into one bucket. The general idea — compare collections by counting, not sorting — shows up wherever &quot;same elements, order irrelevant&quot; is the real question.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Valid Anagram \u2014 count the letters, don't sort them",
+ "acts": [
+  "Baseline: sort both",
+  "The insight",
+  "Fast: count map",
+  "Edge case: 'rat' vs 'car'"
+ ],
+ "code": {
+  "sort": [
+   "return sorted(s) == sorted(t)"
+  ],
+  "fast": [
+   "if len(s) != len(t): return False",
+   "counts = {}",
+   "for ch in s: counts[ch] += 1",
+   "for ch in t:",
+   "    counts[ch] -= 1",
+   "    if counts[ch] < 0: return False",
+   "return all(v == 0 for v in counts.values())"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "letter being tallied"
+  ],
+  [
+   "good",
+   "match / all zero"
+  ],
+  [
+   "bad",
+   "count went negative"
+  ],
+  [
+   "dim",
+   "input word"
+  ]
+ ],
+ "cells": [
+  "a",
+  "n",
+  "a",
+  "g",
+  "r",
+  "a",
+  "m"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "a",
+    "n",
+    "a",
+    "g",
+    "r",
+    "a",
+    "m"
+   ],
+   "code": "sort",
+   "line": 0,
+   "intro": "sorting forces both words into one order \u2014 anagrams become the same string.",
+   "invariant": "two words are anagrams exactly when their sorted letters match.",
+   "note": "Baseline: sort 'anagram' and 'nagaram', then compare. Simple, but sorting pays an n log n factor to fully order letters.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "s",
+     "anagram"
+    ],
+    [
+     "t",
+     "nagaram"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "a",
+    "a",
+    "a",
+    "g",
+    "m",
+    "n",
+    "r"
+   ],
+   "code": "sort",
+   "line": 0,
+   "note": "sorted(s) = 'aaagmnr'   sorted(t) = 'aaagmnr'. Equal -> anagram.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good"
+   },
+   "banner": "True (sort) \u2014 but we only ever needed the letter counts, not their order",
+   "state": [
+    [
+     "sorted(s)",
+     "aaagmnr"
+    ],
+    [
+     "sorted(t)",
+     "aaagmnr"
+    ],
+    [
+     "equal?",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "what sorting computes that we don't need \u2014 a full ordering, when a tally is enough.",
+   "note": "Anagrams share one thing: every letter's count matches. So tally s (+1) and t (-1) in one map. If they cancel to all zeros, it's an anagram.",
+   "state": [
+    [
+     "idea",
+     "count, don't sort"
+    ],
+    [
+     "cost",
+     "O(n) vs O(n log n)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "a",
+    "n",
+    "a",
+    "g",
+    "r",
+    "a",
+    "m"
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "s adds, t subtracts \u2014 an anagram makes every tally return to zero.",
+   "invariant": "counts holds (s-letters seen so far) minus (t-letters seen so far).",
+   "note": "Lengths match (7 == 7), so keep going. First pass: +1 for each letter of s.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": []
+   },
+   "state": [
+    [
+     "pass",
+     "s: +1"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "s[0] = 'a'. counts['a'] -> 1.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "a"
+    ],
+    [
+     "counts[ch]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "s[1] = 'n'. counts['n'] -> 1.",
+   "pointers": {
+    "ch": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "1"
+     ],
+     [
+      "n",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "n"
+    ],
+    [
+     "counts[ch]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "s[2] = 'a'. counts['a'] -> 2.",
+   "pointers": {
+    "ch": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "2"
+     ],
+     [
+      "n",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "a"
+    ],
+    [
+     "counts[ch]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "s[3] = 'g'. counts['g'] -> 1.",
+   "pointers": {
+    "ch": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "2"
+     ],
+     [
+      "n",
+      "1"
+     ],
+     [
+      "g",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "g"
+    ],
+    [
+     "counts[ch]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "s[4] = 'r'. counts['r'] -> 1.",
+   "pointers": {
+    "ch": 4
+   },
+   "marks": {
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "2"
+     ],
+     [
+      "n",
+      "1"
+     ],
+     [
+      "g",
+      "1"
+     ],
+     [
+      "r",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "r"
+    ],
+    [
+     "counts[ch]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "s[5] = 'a'. counts['a'] -> 3.",
+   "pointers": {
+    "ch": 5
+   },
+   "marks": {
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "3"
+     ],
+     [
+      "n",
+      "1"
+     ],
+     [
+      "g",
+      "1"
+     ],
+     [
+      "r",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "a"
+    ],
+    [
+     "counts[ch]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "s[6] = 'm'. counts['m'] -> 1.",
+   "pointers": {
+    "ch": 6
+   },
+   "marks": {
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "3"
+     ],
+     [
+      "n",
+      "1"
+     ],
+     [
+      "g",
+      "1"
+     ],
+     [
+      "r",
+      "1"
+     ],
+     [
+      "m",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "m"
+    ],
+    [
+     "counts[ch]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "n",
+    "a",
+    "g",
+    "a",
+    "r",
+    "a",
+    "m"
+   ],
+   "code": "fast",
+   "line": 3,
+   "note": "Second pass over t: -1 for each letter. Watch every tally drain toward zero.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "3"
+     ],
+     [
+      "n",
+      "1"
+     ],
+     [
+      "g",
+      "1"
+     ],
+     [
+      "r",
+      "1"
+     ],
+     [
+      "m",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     "t: -1"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "t[0] = 'n'. counts['n'] -> 0.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "3"
+     ],
+     [
+      "n",
+      "0"
+     ],
+     [
+      "g",
+      "1"
+     ],
+     [
+      "r",
+      "1"
+     ],
+     [
+      "m",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "n"
+    ],
+    [
+     "counts[ch]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "t[1] = 'a'. counts['a'] -> 2.",
+   "pointers": {
+    "ch": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "2"
+     ],
+     [
+      "n",
+      "0"
+     ],
+     [
+      "g",
+      "1"
+     ],
+     [
+      "r",
+      "1"
+     ],
+     [
+      "m",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "a"
+    ],
+    [
+     "counts[ch]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "t[2] = 'g'. counts['g'] -> 0.",
+   "pointers": {
+    "ch": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "2"
+     ],
+     [
+      "n",
+      "0"
+     ],
+     [
+      "g",
+      "0"
+     ],
+     [
+      "r",
+      "1"
+     ],
+     [
+      "m",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "g"
+    ],
+    [
+     "counts[ch]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "t[3] = 'a'. counts['a'] -> 1.",
+   "pointers": {
+    "ch": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "1"
+     ],
+     [
+      "n",
+      "0"
+     ],
+     [
+      "g",
+      "0"
+     ],
+     [
+      "r",
+      "1"
+     ],
+     [
+      "m",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "a"
+    ],
+    [
+     "counts[ch]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "t[4] = 'r'. counts['r'] -> 0.",
+   "pointers": {
+    "ch": 4
+   },
+   "marks": {
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "1"
+     ],
+     [
+      "n",
+      "0"
+     ],
+     [
+      "g",
+      "0"
+     ],
+     [
+      "r",
+      "0"
+     ],
+     [
+      "m",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "r"
+    ],
+    [
+     "counts[ch]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "t[5] = 'a'. counts['a'] -> 0.",
+   "pointers": {
+    "ch": 5
+   },
+   "marks": {
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "0"
+     ],
+     [
+      "n",
+      "0"
+     ],
+     [
+      "g",
+      "0"
+     ],
+     [
+      "r",
+      "0"
+     ],
+     [
+      "m",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "a"
+    ],
+    [
+     "counts[ch]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "t[6] = 'm'. counts['m'] -> 0.",
+   "pointers": {
+    "ch": 6
+   },
+   "marks": {
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "0"
+     ],
+     [
+      "n",
+      "0"
+     ],
+     [
+      "g",
+      "0"
+     ],
+     [
+      "r",
+      "0"
+     ],
+     [
+      "m",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "m"
+    ],
+    [
+     "counts[ch]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "Every tally cancelled back to zero. The two words use the same letters the same number of times.",
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "a",
+      "0"
+     ],
+     [
+      "n",
+      "0"
+     ],
+     [
+      "g",
+      "0"
+     ],
+     [
+      "r",
+      "0"
+     ],
+     [
+      "m",
+      "0"
+     ]
+    ]
+   },
+   "banner": "True \u2014 all counts are zero, so 't' is an anagram of 's'",
+   "state": [
+    [
+     "all zero?",
+     "True"
+    ],
+    [
+     "answer",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    "r",
+    "a",
+    "t"
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "the moment a tally goes below zero we can stop \u2014 t brought a letter s never had.",
+   "invariant": "a negative tally means t over-used a letter, so it cannot be an anagram.",
+   "note": "Edge case: 'rat' vs 'car'. Same length, but different letters.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": []
+   },
+   "state": [
+    [
+     "s",
+     "rat"
+    ],
+    [
+     "t",
+     "car"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "s[0] = 'r'. counts['r'] -> 1.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "r",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "r"
+    ],
+    [
+     "counts[ch]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "s[1] = 'a'. counts['a'] -> 1.",
+   "pointers": {
+    "ch": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "r",
+      "1"
+     ],
+     [
+      "a",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "a"
+    ],
+    [
+     "counts[ch]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "s[2] = 't'. counts['t'] -> 1.",
+   "pointers": {
+    "ch": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "r",
+      "1"
+     ],
+     [
+      "a",
+      "1"
+     ],
+     [
+      "t",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "t"
+    ],
+    [
+     "counts[ch]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    "c",
+    "a",
+    "r"
+   ],
+   "code": "fast",
+   "line": 3,
+   "note": "Now subtract for 'car'.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "r",
+      "1"
+     ],
+     [
+      "a",
+      "1"
+     ],
+     [
+      "t",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pass",
+     "t: -1"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "t[0] = 'c'. counts['c'] -> -1. Below zero \u2014 'car' has a 'c' that 'rat' never had. Stop.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "bad"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "r",
+      "1"
+     ],
+     [
+      "a",
+      "1"
+     ],
+     [
+      "t",
+      "1"
+     ],
+     [
+      "c",
+      "-1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "ch",
+     "c"
+    ],
+    [
+     "counts[ch]",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "banner": "False \u2014 'car' uses a letter 'rat' does not",
+   "note": "A count dropped below zero, so return False immediately.",
+   "marks": {
+    "0": "bad"
+   },
+   "sidebar": {
+    "title": "counts (letter -> tally)",
+    "rows": [
+     [
+      "r",
+      "1"
+     ],
+     [
+      "a",
+      "1"
+     ],
+     [
+      "t",
+      "1"
+     ],
+     [
+      "c",
+      "-1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     "False"
+    ]
+   ]
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0242-valid-anagram/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;242. Valid Anagram — https://leetcode.com/problems/valid-anagram/
 
 Given two strings `s` and `t`, return True if `t` is an anagram of `s` — that
 is, they use exactly the same letters the same number of times.

@@ -61,7 +61,871 @@
 <h2>Pitfalls</h2>
 <ul><li>The classic bug above: checking only parent/child instead of the full inherited range.</li><li>Using <code>&lt;=</code> and letting equal values through (a valid BST here forbids duplicates).</li><li>Node values at the integer extremes: seeding with <code>float(&quot;-inf&quot;)/float(&quot;inf&quot;)</code> sidesteps any boundary confusion.</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Pass an accumulated constraint down the recursion&quot; also gives a clean alternative: an <strong>in-order traversal</strong> of a BST must come out strictly increasing (that walk shows up in <a href="../0230-kth-smallest-element-in-a-bst/">Kth Smallest / 230</a>). The same range-bounding idea drives <a href="https://leetcode.com/problems/trim-a-binary-search-tree/">Trim a BST / 669</a> and <a href="https://leetcode.com/problems/range-sum-of-bst/">Range Sum of BST / 938</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/08-trees/0098-validate-binary-search-tree/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;98. Validate Binary Search Tree — https://leetcode.com/problems/validate-binary-search-tree/
+<p>&quot;Pass an accumulated constraint down the recursion&quot; also gives a clean alternative: an <strong>in-order traversal</strong> of a BST must come out strictly increasing (that walk shows up in <a href="../0230-kth-smallest-element-in-a-bst/">Kth Smallest / 230</a>). The same range-bounding idea drives <a href="https://leetcode.com/problems/trim-a-binary-search-tree/">Trim a BST / 669</a> and <a href="https://leetcode.com/problems/range-sum-of-bst/">Range Sum of BST / 938</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Validate BST - why parent-only fails, the range fix, valid + invalid runs",
+ "acts": [
+  "Naive check fails",
+  "The range fix (valid tree)",
+  "Edge: sneaky invalid"
+ ],
+ "code": {
+  "valid": [
+   "def valid(node, low, high):",
+   "    if node is None:",
+   "        return True",
+   "    if not (low < node.val < high):",
+   "        return False",
+   "    return (valid(node.left, low, node.val)",
+   "            and valid(node.right, node.val, high))"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "checking now"
+  ],
+  [
+   "good",
+   "in range / valid"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 5,
+   "x": 78,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 4,
+   "x": 0,
+   "y": 82
+  },
+  {
+   "id": 2,
+   "val": 6,
+   "x": 234,
+   "y": 82
+  },
+  {
+   "id": 3,
+   "val": 3,
+   "x": 156,
+   "y": 164
+  },
+  {
+   "id": 4,
+   "val": 7,
+   "x": 312,
+   "y": 164
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   2,
+   4
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 5,
+     "x": 78,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 4,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 6,
+     "x": 234,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 156,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 7,
+     "x": 312,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "valid",
+   "line": 3,
+   "intro": "checking only 'left < node < right' at each parent misses a violator.",
+   "invariant": "a value must beat EVERY ancestor, not just its parent.",
+   "note": "Naive idea: at each node check left child < node < right child. Here 6's children 3 and 7 look fine against 6.",
+   "active": [
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "parent check",
+     "3 < 6 < 7 ok"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "valid",
+   "line": 3,
+   "note": "But 3 is in the RIGHT subtree of the root 5, so it must be > 5. The parent-only check never sees that -> the naive rule is wrong.",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": "5",
+    "3": "!"
+   },
+   "state": [
+    [
+     "hidden rule",
+     "3 must be > 5"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 5,
+     "x": 234,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 3,
+     "x": 78,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 8,
+     "x": 390,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 1,
+     "x": 0,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 156,
+     "y": 164
+    },
+    {
+     "id": 5,
+     "val": 7,
+     "x": 312,
+     "y": 164
+    },
+    {
+     "id": 6,
+     "val": 9,
+     "x": 468,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ]
+   ],
+   "code": "valid",
+   "line": 0,
+   "intro": "each node inherits a range; going left lowers the ceiling, right lifts the floor.",
+   "invariant": "a node is valid only if it sits strictly inside its inherited range.",
+   "note": "The fix: carry an allowed (low, high) range down. Root starts with (-inf, +inf). Run it on a valid BST.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "start",
+     "range (-inf, +inf)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 5: allowed range (-inf, +inf). 5 fits.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "node",
+     5
+    ],
+    [
+     "range",
+     "(-inf, +inf)"
+    ],
+    [
+     "fits?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 3: allowed range (-inf, 5). 3 fits.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "node",
+     3
+    ],
+    [
+     "range",
+     "(-inf, 5)"
+    ],
+    [
+     "fits?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 1: allowed range (-inf, 3). 1 fits.",
+   "active": [
+    3
+   ],
+   "done": {},
+   "state": [
+    [
+     "node",
+     1
+    ],
+    [
+     "range",
+     "(-inf, 3)"
+    ],
+    [
+     "fits?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 5,
+   "note": "1 fits and both subtrees are valid under their tightened ranges.",
+   "active": [
+    3
+   ],
+   "done": {
+    "3": "ok"
+   },
+   "state": [
+    [
+     "node",
+     1
+    ],
+    [
+     "subtree",
+     "valid"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 4: allowed range (3, 5). 4 fits.",
+   "active": [
+    4
+   ],
+   "done": {
+    "3": "ok"
+   },
+   "state": [
+    [
+     "node",
+     4
+    ],
+    [
+     "range",
+     "(3, 5)"
+    ],
+    [
+     "fits?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 5,
+   "note": "4 fits and both subtrees are valid under their tightened ranges.",
+   "active": [
+    4
+   ],
+   "done": {
+    "3": "ok",
+    "4": "ok"
+   },
+   "state": [
+    [
+     "node",
+     4
+    ],
+    [
+     "subtree",
+     "valid"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 5,
+   "note": "3 fits and both subtrees are valid under their tightened ranges.",
+   "active": [
+    1
+   ],
+   "done": {
+    "3": "ok",
+    "4": "ok",
+    "1": "ok"
+   },
+   "state": [
+    [
+     "node",
+     3
+    ],
+    [
+     "subtree",
+     "valid"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 8: allowed range (5, +inf). 8 fits.",
+   "active": [
+    2
+   ],
+   "done": {
+    "3": "ok",
+    "4": "ok",
+    "1": "ok"
+   },
+   "state": [
+    [
+     "node",
+     8
+    ],
+    [
+     "range",
+     "(5, +inf)"
+    ],
+    [
+     "fits?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 7: allowed range (5, 8). 7 fits.",
+   "active": [
+    5
+   ],
+   "done": {
+    "3": "ok",
+    "4": "ok",
+    "1": "ok"
+   },
+   "state": [
+    [
+     "node",
+     7
+    ],
+    [
+     "range",
+     "(5, 8)"
+    ],
+    [
+     "fits?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 5,
+   "note": "7 fits and both subtrees are valid under their tightened ranges.",
+   "active": [
+    5
+   ],
+   "done": {
+    "3": "ok",
+    "4": "ok",
+    "1": "ok",
+    "5": "ok"
+   },
+   "state": [
+    [
+     "node",
+     7
+    ],
+    [
+     "subtree",
+     "valid"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 9: allowed range (8, +inf). 9 fits.",
+   "active": [
+    6
+   ],
+   "done": {
+    "3": "ok",
+    "4": "ok",
+    "1": "ok",
+    "5": "ok"
+   },
+   "state": [
+    [
+     "node",
+     9
+    ],
+    [
+     "range",
+     "(8, +inf)"
+    ],
+    [
+     "fits?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 5,
+   "note": "9 fits and both subtrees are valid under their tightened ranges.",
+   "active": [
+    6
+   ],
+   "done": {
+    "3": "ok",
+    "4": "ok",
+    "1": "ok",
+    "5": "ok",
+    "6": "ok"
+   },
+   "state": [
+    [
+     "node",
+     9
+    ],
+    [
+     "subtree",
+     "valid"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 5,
+   "note": "8 fits and both subtrees are valid under their tightened ranges.",
+   "active": [
+    2
+   ],
+   "done": {
+    "3": "ok",
+    "4": "ok",
+    "1": "ok",
+    "5": "ok",
+    "6": "ok",
+    "2": "ok"
+   },
+   "state": [
+    [
+     "node",
+     8
+    ],
+    [
+     "subtree",
+     "valid"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 5,
+   "note": "5 fits and both subtrees are valid under their tightened ranges.",
+   "active": [
+    0
+   ],
+   "done": {
+    "3": "ok",
+    "4": "ok",
+    "1": "ok",
+    "5": "ok",
+    "6": "ok",
+    "2": "ok",
+    "0": "ok"
+   },
+   "state": [
+    [
+     "node",
+     5
+    ],
+    [
+     "subtree",
+     "valid"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "valid",
+   "line": 6,
+   "note": "Every node stayed inside its inherited range -> valid BST: True.",
+   "active": [],
+   "done": {
+    "3": "ok",
+    "4": "ok",
+    "1": "ok",
+    "5": "ok",
+    "6": "ok",
+    "2": "ok",
+    "0": "ok"
+   },
+   "state": [
+    [
+     "valid BST?",
+     true
+    ]
+   ],
+   "banner": "Valid BST = True"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 5,
+     "x": 78,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 4,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 6,
+     "x": 234,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 156,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 7,
+     "x": 312,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "valid",
+   "line": 0,
+   "intro": "the 3 that fooled the naive check now inherits range (5, 6) and fails.",
+   "invariant": "the inherited floor from ancestor 5 is what catches the violator.",
+   "note": "Edge: run the range check on the sneaky tree. Going right at root 5 raises the floor to 5, so 6's left child must be > 5.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "start",
+     "range (-inf, +inf)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 5: allowed range (-inf, +inf). 5 fits.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "node",
+     5
+    ],
+    [
+     "range",
+     "(-inf, +inf)"
+    ],
+    [
+     "fits?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 4: allowed range (-inf, 5). 4 fits.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "node",
+     4
+    ],
+    [
+     "range",
+     "(-inf, 5)"
+    ],
+    [
+     "fits?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "valid",
+   "line": 5,
+   "note": "4 fits and both subtrees are valid under their tightened ranges.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": "ok"
+   },
+   "state": [
+    [
+     "node",
+     4
+    ],
+    [
+     "subtree",
+     "valid"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 6: allowed range (5, +inf). 6 fits.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": "ok"
+   },
+   "state": [
+    [
+     "node",
+     6
+    ],
+    [
+     "range",
+     "(5, +inf)"
+    ],
+    [
+     "fits?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "valid",
+   "line": 3,
+   "note": "Node 3: allowed range (5, 6). 3 is OUT of range -> invalid.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": "ok"
+   },
+   "state": [
+    [
+     "node",
+     3
+    ],
+    [
+     "range",
+     "(5, 6)"
+    ],
+    [
+     "fits?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "valid",
+   "line": 4,
+   "note": "3 breaks its range (5, 6) -> the tree is not a BST.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": "ok",
+    "3": "x"
+   },
+   "state": [
+    [
+     "result",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "valid",
+   "line": 4,
+   "note": "Node 3 needed (5, 6) but 3 < 5 -> caught -> not a BST: False.",
+   "active": [],
+   "done": {
+    "1": "ok",
+    "3": "x"
+   },
+   "state": [
+    [
+     "valid BST?",
+     false
+    ]
+   ],
+   "banner": "Valid BST = False"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/08-trees/0098-validate-binary-search-tree/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;98. Validate Binary Search Tree — https://leetcode.com/problems/validate-binary-search-tree/
 
 Decide whether a binary tree is a valid BST: every node&#x27;s value is greater than
 everything in its left subtree and less than everything in its right subtree.

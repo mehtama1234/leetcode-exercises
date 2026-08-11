@@ -1,0 +1,669 @@
+{
+ "player": "linear",
+ "title": "Car Fleet - an arrival-time stack, sorted nearest the target first",
+ "acts": [
+  "The rule",
+  "Run the stack",
+  "Edge: all merge",
+  "Edge: nobody catches up"
+ ],
+ "code": {
+  "ct": [
+   "cars = sorted(zip(position, speed), reverse=True)",
+   "for pos, spd in cars:          # nearest target first",
+   "    time = (target - pos) / spd",
+   "    if not stack or time > stack[-1]:",
+   "        stack.append(time)     # slower -> new fleet",
+   "    # else: time <= leader -> catches up, merges",
+   "return len(stack)"
+  ]
+ },
+ "legend": [
+  [
+   "good",
+   "new fleet leader"
+  ],
+  [
+   "bad",
+   "merged into fleet ahead"
+  ],
+  [
+   "dim",
+   "sorted, waiting"
+  ]
+ ],
+ "cells": [
+  "1",
+  "1",
+  "7",
+  "3",
+  "12"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "p10 v2",
+    "p8 v4",
+    "p0 v1",
+    "p5 v1",
+    "p3 v3"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "ct",
+   "line": 0,
+   "intro": "a faster car behind a slower one just bunches up \u2014 it can never pass.",
+   "invariant": "cars keep their order to the target; catching up only merges fleets.",
+   "note": "Cars race to target 12. A car that catches the one ahead joins it at the slower speed. We count distinct fleets that arrive.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "target",
+     12
+    ],
+    [
+     "cars",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "p10 v2",
+    "p8 v4",
+    "p5 v1",
+    "p3 v3",
+    "p0 v1"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "ct",
+   "line": 0,
+   "note": "Sort by start position, nearest the target first. Now a car can only be caught by cars behind it (further from target).",
+   "pointers": {},
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "sorted (pos desc)",
+     "[10, 8, 5, 3, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "1",
+    "1",
+    "7",
+    "3",
+    "12"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "ct",
+   "line": 2,
+   "intro": "free-running arrival time = (target - pos) / speed \u2014 the cell values now.",
+   "note": "For each car compute its free-running arrival time (target - pos)/speed. Slower or further cars arrive later.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "arrival times",
+     "['1', '1', '7', '3', '12']"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "1",
+    "1",
+    "7",
+    "3",
+    "12"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "ct",
+   "line": 1,
+   "intro": "the stack holds fleet-leader arrival times, increasing from the target outward.",
+   "invariant": "a car arriving no later than the leader ahead merges into it.",
+   "note": "Walk cars nearest-first. If a car arrives LATER than the current leader it is too slow to catch up -> new fleet. Otherwise it catches the fleet ahead and merges.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {},
+   "sidebar": {
+    "title": "stack: leader arrival times",
+    "rows": []
+   },
+   "state": [
+    [
+     "fleets",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "ct",
+   "line": 4,
+   "note": "car 0 (pos 10, arrives t=1) is slower than the leader ahead -> starts a NEW fleet.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "stack: leader arrival times",
+    "rows": [
+     [
+      "leader 0",
+      "t=1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "car",
+     0
+    ],
+    [
+     "arrival",
+     "1"
+    ],
+    [
+     "fleets",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "ct",
+   "line": 5,
+   "note": "car 1 (pos 8, arrives t=1) reaches the target no later than leader t=1 -> catches up and MERGES.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "bad"
+   },
+   "sidebar": {
+    "title": "stack: leader arrival times",
+    "rows": [
+     [
+      "leader 0",
+      "t=1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "car",
+     1
+    ],
+    [
+     "arrival",
+     "1"
+    ],
+    [
+     "merges into",
+     "t=1"
+    ],
+    [
+     "fleets",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "ct",
+   "line": 4,
+   "note": "car 2 (pos 5, arrives t=7) is slower than the leader ahead -> starts a NEW fleet.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "stack: leader arrival times",
+    "rows": [
+     [
+      "leader 0",
+      "t=1"
+     ],
+     [
+      "leader 1",
+      "t=7"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "car",
+     2
+    ],
+    [
+     "arrival",
+     "7"
+    ],
+    [
+     "fleets",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "ct",
+   "line": 5,
+   "note": "car 3 (pos 3, arrives t=3) reaches the target no later than leader t=7 -> catches up and MERGES.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "bad"
+   },
+   "sidebar": {
+    "title": "stack: leader arrival times",
+    "rows": [
+     [
+      "leader 0",
+      "t=1"
+     ],
+     [
+      "leader 1",
+      "t=7"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "car",
+     3
+    ],
+    [
+     "arrival",
+     "3"
+    ],
+    [
+     "merges into",
+     "t=7"
+    ],
+    [
+     "fleets",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "ct",
+   "line": 4,
+   "note": "car 4 (pos 0, arrives t=12) is slower than the leader ahead -> starts a NEW fleet.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "good"
+   },
+   "sidebar": {
+    "title": "stack: leader arrival times",
+    "rows": [
+     [
+      "leader 0",
+      "t=1"
+     ],
+     [
+      "leader 1",
+      "t=7"
+     ],
+     [
+      "leader 2",
+      "t=12"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "car",
+     4
+    ],
+    [
+     "arrival",
+     "12"
+    ],
+    [
+     "fleets",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "ct",
+   "line": 6,
+   "note": "3 times were pushed -> 3 fleets.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "sidebar": {
+    "title": "stack: leader arrival times",
+    "rows": [
+     [
+      "leader 0",
+      "t=1"
+     ],
+     [
+      "leader 1",
+      "t=7"
+     ],
+     [
+      "leader 2",
+      "t=12"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "fleets",
+     3
+    ]
+   ],
+   "banner": "Fleets = 3"
+  },
+  {
+   "act": 2,
+   "cells": [
+    "96",
+    "49",
+    "25"
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "ct",
+   "line": 1,
+   "intro": "everyone catches the leader ahead \u2014 one fleet.",
+   "invariant": "each car arrives no later than the one ahead, so nothing new is pushed.",
+   "note": "Edge A: target 100, cars fast-to-slow front-to-back. Each catches the fleet ahead, so only one leader is ever pushed.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {},
+   "sidebar": {
+    "title": "stack: leader times",
+    "rows": []
+   },
+   "state": [
+    [
+     "fleets",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "ct",
+   "line": 3,
+   "note": "car 0 arrives t=96 -> new fleet.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "stack: leader times",
+    "rows": [
+     [
+      "leader 0",
+      "t=96"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "arrival",
+     "96"
+    ],
+    [
+     "fleets",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "ct",
+   "line": 3,
+   "note": "car 1 arrives t=49 -> merges.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "bad"
+   },
+   "sidebar": {
+    "title": "stack: leader times",
+    "rows": [
+     [
+      "leader 0",
+      "t=96"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "arrival",
+     "49"
+    ],
+    [
+     "fleets",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "ct",
+   "line": 3,
+   "note": "car 2 arrives t=25 -> merges.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "sidebar": {
+    "title": "stack: leader times",
+    "rows": [
+     [
+      "leader 0",
+      "t=96"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "arrival",
+     "25"
+    ],
+    [
+     "fleets",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "ct",
+   "line": 6,
+   "note": "All merge -> 1 fleet.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "state": [
+    [
+     "fleets",
+     1
+    ]
+   ],
+   "banner": "All merge -> 1 fleet"
+  },
+  {
+   "act": 3,
+   "cells": [
+    "1",
+    "1.33333"
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "code": "ct",
+   "line": 1,
+   "intro": "the car behind is slower and never reaches the leader \u2014 two fleets.",
+   "invariant": "a strictly-later arrival always pushes a new leader.",
+   "note": "Edge B: the trailing car arrives later than the one ahead, so it can never catch up. Two separate fleets.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {},
+   "sidebar": {
+    "title": "stack: leader times",
+    "rows": []
+   },
+   "state": [
+    [
+     "fleets",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "ct",
+   "line": 4,
+   "note": "car 0 arrives t=1 -> new fleet (nobody to catch).",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "stack: leader times",
+    "rows": [
+     [
+      "leader 0",
+      "t=1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "arrival",
+     "1"
+    ],
+    [
+     "fleets",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "ct",
+   "line": 4,
+   "note": "car 1 arrives t=1.33333 -> new fleet (nobody to catch).",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "stack: leader times",
+    "rows": [
+     [
+      "leader 0",
+      "t=1"
+     ],
+     [
+      "leader 1",
+      "t=1.33333"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "arrival",
+     "1.33333"
+    ],
+    [
+     "fleets",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "ct",
+   "line": 6,
+   "note": "Nobody catches up -> 2 fleets.",
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "state": [
+    [
+     "fleets",
+     2
+    ]
+   ],
+   "banner": "No catch-up -> 2 fleets"
+  }
+ ]
+}

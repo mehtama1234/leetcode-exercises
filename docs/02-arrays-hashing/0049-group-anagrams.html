@@ -52,7 +52,894 @@
 <h2>Pitfalls</h2>
 <ul><li>Using a plain <strong>list</strong> as a dict key throws — lists can change, so they can&#x27;t be keys. Convert to a <code>tuple</code> (or a string) first.</li><li>The 26-slot signature bakes in &quot;lowercase a–z only.&quot; For a wider alphabet, key by the sorted string or a set/dict of counts instead.</li><li>The empty string <code>&quot;&quot;</code> is a valid word and its own group — don&#x27;t drop it.</li><li>The order of the groups, and of words within a group, doesn&#x27;t matter; the test normalizes both sides before comparing.</li></ul>
 <h2>Transfer</h2>
-<p>The move is <strong>map each item to a canonical name, then let a dict do the grouping.</strong> It reaches far past anagrams: group points by slope, group numbers by remainder, dedupe shapes by a normalized form. Whenever &quot;these belong together if some derived key matches,&quot; compute the key and bucket. Builds directly on <a href="../0242-valid-anagram/">Valid Anagram / 242</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0049-group-anagrams/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;49. Group Anagrams — https://leetcode.com/problems/group-anagrams/
+<p>The move is <strong>map each item to a canonical name, then let a dict do the grouping.</strong> It reaches far past anagrams: group points by slope, group numbers by remainder, dedupe shapes by a normalized form. Whenever &quot;these belong together if some derived key matches,&quot; compute the key and bucket. Builds directly on <a href="../0242-valid-anagram/">Valid Anagram / 242</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Group Anagrams \u2014 pick a key that anagrams share",
+ "acts": [
+  "Baseline: sorted-letters key",
+  "The insight",
+  "Fast: 26-count key",
+  "Edge case: a singleton"
+ ],
+ "code": {
+  "sort": [
+   "for word in strs:",
+   "    key = \"\".join(sorted(word))",
+   "    buckets[key].append(word)",
+   "return list(buckets.values())"
+  ],
+  "fast": [
+   "for word in strs:",
+   "    counts = [0]*26",
+   "    for ch in word:",
+   "        counts[ord(ch)-ord('a')] += 1",
+   "    buckets[tuple(counts)].append(word)",
+   "return list(buckets.values())"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "letters of the current word"
+  ],
+  [
+   "good",
+   "joined an existing group"
+  ],
+  [
+   "dim",
+   "inactive"
+  ]
+ ],
+ "cells": [
+  "e",
+  "a",
+  "t"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "e",
+    "a",
+    "t"
+   ],
+   "code": "sort",
+   "line": 0,
+   "intro": "two words are anagrams exactly when their sorted letters match \u2014 so sort makes the key.",
+   "invariant": "every word processed so far sits in the bucket named by its sorted letters.",
+   "note": "Baseline: key each word by its sorted letters. Anagrams sort to the same string, so they share a bucket.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (sorted-key -> words)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "eat"
+    ],
+    [
+     "key",
+     "aet"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "e",
+    "a",
+    "t"
+   ],
+   "code": "sort",
+   "line": 2,
+   "note": "'eat' -> sorted 'aet'. New bucket 'aet'.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (sorted-key -> words)",
+    "rows": [
+     [
+      "aet",
+      "eat"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "eat"
+    ],
+    [
+     "key",
+     "aet"
+    ],
+    [
+     "buckets",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "t",
+    "e",
+    "a"
+   ],
+   "code": "sort",
+   "line": 2,
+   "note": "'tea' -> sorted 'aet'. Joins existing bucket 'aet'.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (sorted-key -> words)",
+    "rows": [
+     [
+      "aet",
+      "eat, tea"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "tea"
+    ],
+    [
+     "key",
+     "aet"
+    ],
+    [
+     "buckets",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "t",
+    "a",
+    "n"
+   ],
+   "code": "sort",
+   "line": 2,
+   "note": "'tan' -> sorted 'ant'. New bucket 'ant'.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (sorted-key -> words)",
+    "rows": [
+     [
+      "aet",
+      "eat, tea"
+     ],
+     [
+      "ant",
+      "tan"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "tan"
+    ],
+    [
+     "key",
+     "ant"
+    ],
+    [
+     "buckets",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "a",
+    "t",
+    "e"
+   ],
+   "code": "sort",
+   "line": 2,
+   "note": "'ate' -> sorted 'aet'. Joins existing bucket 'aet'.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (sorted-key -> words)",
+    "rows": [
+     [
+      "aet",
+      "eat, tea, ate"
+     ],
+     [
+      "ant",
+      "tan"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "ate"
+    ],
+    [
+     "key",
+     "aet"
+    ],
+    [
+     "buckets",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "n",
+    "a",
+    "t"
+   ],
+   "code": "sort",
+   "line": 2,
+   "note": "'nat' -> sorted 'ant'. Joins existing bucket 'ant'.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (sorted-key -> words)",
+    "rows": [
+     [
+      "aet",
+      "eat, tea, ate"
+     ],
+     [
+      "ant",
+      "tan, nat"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "nat"
+    ],
+    [
+     "key",
+     "ant"
+    ],
+    [
+     "buckets",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "b",
+    "a",
+    "t"
+   ],
+   "code": "sort",
+   "line": 2,
+   "note": "'bat' -> sorted 'abt'. New bucket 'abt'.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (sorted-key -> words)",
+    "rows": [
+     [
+      "aet",
+      "eat, tea, ate"
+     ],
+     [
+      "ant",
+      "tan, nat"
+     ],
+     [
+      "abt",
+      "bat"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "bat"
+    ],
+    [
+     "key",
+     "abt"
+    ],
+    [
+     "buckets",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 3,
+   "note": "Done: 3 groups. Correct \u2014 but sorting each length-k word costs a k log k factor.",
+   "sidebar": {
+    "title": "buckets (sorted-key -> words)",
+    "rows": [
+     [
+      "aet",
+      "eat, tea, ate"
+     ],
+     [
+      "ant",
+      "tan, nat"
+     ],
+     [
+      "abt",
+      "bat"
+     ]
+    ]
+   },
+   "banner": "[['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']] \u2014 but the key cost a sort per word",
+   "state": [
+    [
+     "groups",
+     3
+    ],
+    [
+     "key cost",
+     "O(k log k)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "anagrams share letter COUNTS, so the 26-count vector is already a canonical name \u2014 no sort.",
+   "note": "From Valid Anagram: anagrams have identical letter counts. So the tuple of 26 counts is a key that is equal for anagrams and different otherwise \u2014 built in O(k), no sorting.",
+   "state": [
+    [
+     "idea",
+     "count signature"
+    ],
+    [
+     "key cost",
+     "O(k) vs O(k log k)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "e",
+    "a",
+    "t"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the count vector is the key \u2014 equal letters, equal key, same bucket.",
+   "invariant": "each word lands in the bucket named by its 26-count signature.",
+   "note": "Build a 26-slot count for each word and use it as the dict key. One O(k) pass per word.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (count-sig -> words)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "eat"
+    ],
+    [
+     "signature",
+     "{a:1,e:1,t:1}"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "e",
+    "a",
+    "t"
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "'eat' -> counts {a:1,e:1,t:1}. New group.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (count-sig -> words)",
+    "rows": [
+     [
+      "{a:1,e:1,t:1}",
+      "eat"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "eat"
+    ],
+    [
+     "signature",
+     "{a:1,e:1,t:1}"
+    ],
+    [
+     "groups",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "t",
+    "e",
+    "a"
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "'tea' -> counts {a:1,e:1,t:1}. Same counts as an earlier word \u2014 same group.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "buckets (count-sig -> words)",
+    "rows": [
+     [
+      "{a:1,e:1,t:1}",
+      "eat, tea"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "tea"
+    ],
+    [
+     "signature",
+     "{a:1,e:1,t:1}"
+    ],
+    [
+     "groups",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "t",
+    "a",
+    "n"
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "'tan' -> counts {a:1,n:1,t:1}. New group.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (count-sig -> words)",
+    "rows": [
+     [
+      "{a:1,e:1,t:1}",
+      "eat, tea"
+     ],
+     [
+      "{a:1,n:1,t:1}",
+      "tan"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "tan"
+    ],
+    [
+     "signature",
+     "{a:1,n:1,t:1}"
+    ],
+    [
+     "groups",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "a",
+    "t",
+    "e"
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "'ate' -> counts {a:1,e:1,t:1}. Same counts as an earlier word \u2014 same group.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "buckets (count-sig -> words)",
+    "rows": [
+     [
+      "{a:1,e:1,t:1}",
+      "eat, tea, ate"
+     ],
+     [
+      "{a:1,n:1,t:1}",
+      "tan"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "ate"
+    ],
+    [
+     "signature",
+     "{a:1,e:1,t:1}"
+    ],
+    [
+     "groups",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "n",
+    "a",
+    "t"
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "'nat' -> counts {a:1,n:1,t:1}. Same counts as an earlier word \u2014 same group.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "buckets (count-sig -> words)",
+    "rows": [
+     [
+      "{a:1,e:1,t:1}",
+      "eat, tea, ate"
+     ],
+     [
+      "{a:1,n:1,t:1}",
+      "tan, nat"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "nat"
+    ],
+    [
+     "signature",
+     "{a:1,n:1,t:1}"
+    ],
+    [
+     "groups",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "b",
+    "a",
+    "t"
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "'bat' -> counts {a:1,b:1,t:1}. New group.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets (count-sig -> words)",
+    "rows": [
+     [
+      "{a:1,e:1,t:1}",
+      "eat, tea, ate"
+     ],
+     [
+      "{a:1,n:1,t:1}",
+      "tan, nat"
+     ],
+     [
+      "{a:1,b:1,t:1}",
+      "bat"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "bat"
+    ],
+    [
+     "signature",
+     "{a:1,b:1,t:1}"
+    ],
+    [
+     "groups",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Same 3 groups, no sorting. The count vector did the canonicalizing for free.",
+   "sidebar": {
+    "title": "buckets (count-sig -> words)",
+    "rows": [
+     [
+      "{a:1,e:1,t:1}",
+      "eat, tea, ate"
+     ],
+     [
+      "{a:1,n:1,t:1}",
+      "tan, nat"
+     ],
+     [
+      "{a:1,b:1,t:1}",
+      "bat"
+     ]
+    ]
+   },
+   "banner": "[['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']] \u2014 grouped in one O(n*k) pass",
+   "state": [
+    [
+     "groups",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    "a",
+    "b",
+    "c"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "a word with no anagram partner simply owns its bucket alone \u2014 that is still a valid group.",
+   "invariant": "a bucket with one word means no other word shares its letters.",
+   "note": "Edge case: 'abc' and 'bca' are anagrams; 'xyz' has no partner and forms a group of one.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "abc"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    "a",
+    "b",
+    "c"
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "'abc' -> {a:1,b:1,c:1}. New group.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets",
+    "rows": [
+     [
+      "{a:1,b:1,c:1}",
+      "abc"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "abc"
+    ],
+    [
+     "signature",
+     "{a:1,b:1,c:1}"
+    ],
+    [
+     "groups",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    "b",
+    "c",
+    "a"
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "'bca' -> {a:1,b:1,c:1}. Joins its anagram.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "buckets",
+    "rows": [
+     [
+      "{a:1,b:1,c:1}",
+      "abc, bca"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "bca"
+    ],
+    [
+     "signature",
+     "{a:1,b:1,c:1}"
+    ],
+    [
+     "groups",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    "x",
+    "y",
+    "z"
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "'xyz' -> {x:1,y:1,z:1}. New group.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "buckets",
+    "rows": [
+     [
+      "{a:1,b:1,c:1}",
+      "abc, bca"
+     ],
+     [
+      "{x:1,y:1,z:1}",
+      "xyz"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "word",
+     "xyz"
+    ],
+    [
+     "signature",
+     "{x:1,y:1,z:1}"
+    ],
+    [
+     "groups",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "Result: [['abc', 'bca'], ['xyz']]. 'xyz' stands alone \u2014 a group of one is fine.",
+   "sidebar": {
+    "title": "buckets",
+    "rows": [
+     [
+      "{a:1,b:1,c:1}",
+      "abc, bca"
+     ],
+     [
+      "{x:1,y:1,z:1}",
+      "xyz"
+     ]
+    ]
+   },
+   "banner": "[['abc', 'bca'], ['xyz']]",
+   "state": [
+    [
+     "groups",
+     2
+    ]
+   ]
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0049-group-anagrams/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;49. Group Anagrams — https://leetcode.com/problems/group-anagrams/
 
 Given a list of strings, group together the ones that are anagrams of each other
 (same letters, any order). Return the groups in any order.

@@ -59,7 +59,1195 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>The whole trick is the &quot;skip if <code>x-1</code> is present&quot; guard.</strong> Without it you re-walk chains and quietly drop to about n × n.</li><li>Put values in a <strong>set</strong>, not a list — the &quot;is it present?&quot; test must be one step, or the whole bound collapses.</li><li>Duplicates must not inflate the count; the set drops them automatically.</li><li>Empty input returns <code>0</code>; a single element returns <code>1</code>.</li></ul>
 <h2>Transfer</h2>
-<p>Two reusable ideas: <strong>dump into a set for one-step presence tests</strong>, and <strong>anchor work at the unique start of a structure so you do it once</strong> (here, &quot;no smaller neighbor&quot; marks a start). The set-membership half is the same tool from <a href="../0217-contains-duplicate/">Contains Duplicate / 217</a> and <a href="../0001-two-sum/">Two Sum / 1</a>; the &quot;count each connected piece once from its edge&quot; idea reappears in grid and island problems.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0128-longest-consecutive-sequence/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;128. Longest Consecutive Sequence — https://leetcode.com/problems/longest-consecutive-sequence/
+<p>Two reusable ideas: <strong>dump into a set for one-step presence tests</strong>, and <strong>anchor work at the unique start of a structure so you do it once</strong> (here, &quot;no smaller neighbor&quot; marks a start). The set-membership half is the same tool from <a href="../0217-contains-duplicate/">Contains Duplicate / 217</a> and <a href="../0001-two-sum/">Two Sum / 1</a>; the &quot;count each connected piece once from its edge&quot; idea reappears in grid and island problems.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Longest Consecutive Sequence \u2014 walk each run once, from its start",
+ "acts": [
+  "Baseline: sort + scan",
+  "The insight",
+  "Fast: set, start-only walk",
+  "Edge case: duplicates"
+ ],
+ "code": {
+  "sort": [
+   "ordered = sorted(set(nums))",
+   "best = current = 1",
+   "for i in range(1, len(ordered)):",
+   "    if ordered[i] == ordered[i-1] + 1:",
+   "        current += 1; best = max(best, current)",
+   "    else:",
+   "        current = 1"
+  ],
+  "fast": [
+   "present = set(nums)",
+   "for x in present:",
+   "    if x - 1 in present:",
+   "        continue            # not a run start",
+   "    length = 1; y = x",
+   "    while y + 1 in present:",
+   "        y += 1; length += 1",
+   "    best = max(best, length)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current value / walking"
+  ],
+  [
+   "good",
+   "part of a counted run"
+  ],
+  [
+   "bad",
+   "skipped (not a start)"
+  ],
+  [
+   "dim",
+   "inactive"
+  ]
+ ],
+ "cells": [
+  100,
+  4,
+  200,
+  1,
+  3,
+  2
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    100,
+    4,
+    200,
+    1,
+    3,
+    2
+   ],
+   "code": "sort",
+   "line": 0,
+   "intro": "once sorted, consecutive integers sit next to each other, so one walk counts runs.",
+   "invariant": "best is the longest +1 run seen in the sorted prefix so far.",
+   "note": "Baseline: sort, then scan for the longest ascending run of +1 steps. Correct, but the sort is n log n.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "nums",
+     "[100, 4, 200, 1, 3, 2]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    2,
+    3,
+    4,
+    100,
+    200
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "code": "sort",
+   "line": 2,
+   "note": "sorted+deduped = [1, 2, 3, 4, 100, 200]. Now walk it, extending the run on each +1 step.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active",
+    "3": "active",
+    "4": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "ordered",
+     "[1, 2, 3, 4, 100, 200]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 4,
+   "note": "1 -> 2: consecutive, run = 2.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "good",
+    "0": "dim"
+   },
+   "state": [
+    [
+     "ordered[i]",
+     2
+    ],
+    [
+     "current run",
+     2
+    ],
+    [
+     "best",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 4,
+   "note": "2 -> 3: consecutive, run = 3.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "good",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "ordered[i]",
+     3
+    ],
+    [
+     "current run",
+     3
+    ],
+    [
+     "best",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 4,
+   "note": "3 -> 4: consecutive, run = 4.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "good",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "ordered[i]",
+     4
+    ],
+    [
+     "current run",
+     4
+    ],
+    [
+     "best",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 6,
+   "note": "4 -> 100: break, run resets to 1.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "bad",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "ordered[i]",
+     100
+    ],
+    [
+     "current run",
+     1
+    ],
+    [
+     "best",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 6,
+   "note": "100 -> 200: break, run resets to 1.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "5": "bad",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "ordered[i]",
+     200
+    ],
+    [
+     "current run",
+     1
+    ],
+    [
+     "best",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 4,
+   "note": "Longest run is 4 (the 1,2,3,4). Right answer \u2014 but sorting cost n log n, and the problem wants O(n).",
+   "banner": "best = 4 \u2014 but we paid a sort we don't need",
+   "state": [
+    [
+     "best",
+     4
+    ],
+    [
+     "cost",
+     "O(n log n)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "a set gives O(1) 'is x+1 here?', so we can walk a run without sorting \u2014 if we start at the right end.",
+   "note": "Put everything in a set. To avoid re-walking a run from its middle, only START counting where a run begins: x is a start exactly when x-1 is NOT in the set.",
+   "state": [
+    [
+     "idea",
+     "set + start-only walk"
+    ],
+    [
+     "start test",
+     "x-1 absent"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Because each run is walked forward exactly once (from its start), total steps ~ number of elements. That is the O(n).",
+   "state": [
+    [
+     "walks per run",
+     1
+    ],
+    [
+     "target",
+     "O(n)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    100,
+    4,
+    200,
+    1,
+    3,
+    2
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "values whose predecessor is present are skipped \u2014 only true starts trigger a walk.",
+   "invariant": "best is the longest run whose start we have already processed.",
+   "note": "All values in a set. Visit each; skip any that is inside a run; walk forward from each start.",
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "best",
+     0
+    ],
+    [
+     "walk steps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "1: 0 is absent, so 1 STARTS a run. Walk forward while y+1 is present.",
+   "marks": {
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "start",
+     1
+    ],
+    [
+     "length",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "2 is present -> extend. Run is now 1..2, length 2.",
+   "marks": {
+    "3": "good",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "run",
+     "1..2"
+    ],
+    [
+     "length",
+     2
+    ],
+    [
+     "walk steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "3 is present -> extend. Run is now 1..3, length 3.",
+   "marks": {
+    "3": "good",
+    "5": "good",
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "run",
+     "1..3"
+    ],
+    [
+     "length",
+     3
+    ],
+    [
+     "walk steps",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "4 is present -> extend. Run is now 1..4, length 4.",
+   "marks": {
+    "3": "good",
+    "5": "good",
+    "4": "good",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "run",
+     "1..4"
+    ],
+    [
+     "length",
+     4
+    ],
+    [
+     "walk steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "Run 1..4 ended at length 4. best = 4.",
+   "marks": {
+    "3": "good",
+    "5": "good",
+    "4": "good",
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "run length",
+     4
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "walk steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "2: 1 is in the set, so 2 is in the middle of a run \u2014 skip it.",
+   "marks": {
+    "5": "bad"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "x-1 present?",
+     "yes"
+    ],
+    [
+     "action",
+     "skip"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "3: 2 is in the set, so 3 is in the middle of a run \u2014 skip it.",
+   "marks": {
+    "4": "bad"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     3
+    ],
+    [
+     "x-1 present?",
+     "yes"
+    ],
+    [
+     "action",
+     "skip"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "4: 3 is in the set, so 4 is in the middle of a run \u2014 skip it.",
+   "marks": {
+    "1": "bad"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     4
+    ],
+    [
+     "x-1 present?",
+     "yes"
+    ],
+    [
+     "action",
+     "skip"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "100: 99 is absent, so 100 STARTS a run. Walk forward while y+1 is present.",
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "start",
+     100
+    ],
+    [
+     "length",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "Run 100..100 ended at length 1. best = 4.",
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "run length",
+     1
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "walk steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "200: 199 is absent, so 200 STARTS a run. Walk forward while y+1 is present.",
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "start",
+     200
+    ],
+    [
+     "length",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "Run 200..200 ended at length 1. best = 4.",
+   "marks": {
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "present (set)",
+    "rows": [
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ],
+     [
+      "3",
+      "in"
+     ],
+     [
+      "4",
+      "in"
+     ],
+     [
+      "100",
+      "in"
+     ],
+     [
+      "200",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "run length",
+     1
+    ],
+    [
+     "best",
+     4
+    ],
+    [
+     "walk steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "Longest run = 4 (1,2,3,4), found in 3 total walk steps \u2014 each run walked once.",
+   "marks": {
+    "3": "good",
+    "5": "good",
+    "4": "good",
+    "1": "good"
+   },
+   "banner": "best = 4 in one linear pass \u2014 no sort",
+   "state": [
+    [
+     "best",
+     4
+    ],
+    [
+     "walk steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    1,
+    2,
+    0,
+    1
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the duplicate 1 collapses in the set, so it cannot pad the run length.",
+   "invariant": "the set holds distinct values, so a repeat is walked at most once.",
+   "note": "Edge case: [1, 2, 0, 1]. Two 1's, but the set keeps one. Longest run is 0,1,2 = 3, not 4.",
+   "sidebar": {
+    "title": "present (set) \u2014 dupes collapse",
+    "rows": [
+     [
+      "0",
+      "in"
+     ],
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ]
+    ]
+   },
+   "marks": {
+    "3": "dim"
+   },
+   "state": [
+    [
+     "edge",
+     "[1, 2, 0, 1]"
+    ],
+    [
+     "set",
+     "[0, 1, 2]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "note": "Start 0: run 0..2, length 3. best = 3.",
+   "marks": {
+    "2": "good",
+    "0": "good",
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "present (set) \u2014 dupes collapse",
+    "rows": [
+     [
+      "0",
+      "in"
+     ],
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "run",
+     "0..2"
+    ],
+    [
+     "length",
+     3
+    ],
+    [
+     "best",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "1: 0 present, so not a start \u2014 skip.",
+   "marks": {
+    "0": "bad"
+   },
+   "sidebar": {
+    "title": "present (set) \u2014 dupes collapse",
+    "rows": [
+     [
+      "0",
+      "in"
+     ],
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     1
+    ],
+    [
+     "action",
+     "skip"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "2: 1 present, so not a start \u2014 skip.",
+   "marks": {
+    "1": "bad"
+   },
+   "sidebar": {
+    "title": "present (set) \u2014 dupes collapse",
+    "rows": [
+     [
+      "0",
+      "in"
+     ],
+     [
+      "1",
+      "in"
+     ],
+     [
+      "2",
+      "in"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "action",
+     "skip"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "note": "best = 3. The duplicate 1 did not inflate the run \u2014 the set saw it once.",
+   "marks": {
+    "2": "good",
+    "0": "good",
+    "1": "good"
+   },
+   "banner": "best = 3 \u2014 duplicates collapse in the set",
+   "state": [
+    [
+     "best",
+     3
+    ]
+   ]
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0128-longest-consecutive-sequence/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;128. Longest Consecutive Sequence — https://leetcode.com/problems/longest-consecutive-sequence/
 
 Given an unsorted array `nums`, return the length of the longest run of
 consecutive integers (like 1,2,3,4) that can be formed from its values. Must run

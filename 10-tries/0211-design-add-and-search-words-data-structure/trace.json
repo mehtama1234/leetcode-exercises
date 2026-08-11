@@ -1,0 +1,1595 @@
+{
+ "player": "tree",
+ "title": "WordDictionary - a trie whose search fans out on '.'",
+ "acts": [
+  "The rule",
+  "Exact walk: 'bad'",
+  "Wildcard: '.ad'",
+  "Edge: '.' needs a real node"
+ ],
+ "code": {
+  "dfs": [
+   "def search(word):",
+   "    def dfs(i, node):",
+   "        if i == len(word):",
+   "            return node.is_word",
+   "        ch = word[i]",
+   "        if ch == '.':",
+   "            return any(dfs(i+1, c) for c in node.children.values())",
+   "        if ch not in node.children: return False",
+   "        return dfs(i+1, node.children[ch])",
+   "    return dfs(0, root)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "node(s) on the current walk"
+  ],
+  [
+   "good",
+   "\u2022 = a word ends here (is_word)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "\u25b2",
+   "x": 0,
+   "y": 0
+  }
+ ],
+ "edges": [],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "a normal trie follows ONE path; a '.' means 'any child could continue', so search becomes a depth-first fan-out.",
+   "invariant": "each node is one character; is_word (\u2022) marks where a word ends.",
+   "note": "Stored: bad, dad, mad \u2014 three branches off the root that all rejoin the shape a-d. addWord is a plain trie insert; the '.' only appears in queries.",
+   "active": [
+    0
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "stored",
+     "bad, dad, mad"
+    ],
+    [
+     "'.'",
+     "matches any 1 char"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "dfs",
+   "line": 5,
+   "note": "At a '.', instead of following one edge we try EVERY child and succeed if any branch reaches a real word. A plain char is just the one-branch case.",
+   "active": [
+    0
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "at '.'",
+     "try all children"
+    ],
+    [
+     "at 'x'",
+     "one child"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 9,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "intro": "first a plain walk (one path), then a '.' lights all three branches at once.",
+   "invariant": "a branch only succeeds if it ends on a \u2022 node.",
+   "note": "search('bad'): an ordinary walk b -> a -> d, then check is_word.",
+   "active": [
+    0
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     "bad"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 8,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "note": "word[0]='b' -> follow the single matching child.",
+   "active": [
+    1
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "on",
+     "b"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 8,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "note": "word[1]='a' -> follow the single matching child.",
+   "active": [
+    2
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "on",
+     "a"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 8,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "note": "word[2]='d' -> follow the single matching child.",
+   "active": [
+    3
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "on",
+     "d"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 3,
+   "note": "reached the end on node 'd' with is_word set -> this branch matches.",
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "active": [
+    3
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "is_word",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 9,
+   "note": "search('bad') = True.",
+   "active": [],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "search('bad')",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "intro": "the '.' at position 0 forces all three first letters to be tried in parallel.",
+   "invariant": "success = ANY branch reaches a \u2022 node; failure only after all fail.",
+   "note": "search('.ad'): the '.' matches b, d, or m. Fan into all three, then each follows a -> d.",
+   "active": [
+    0
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "query",
+     ".ad"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "note": "word[0]='.': fan out into all 3 children (b, d, m) and try each.",
+   "active": [
+    1,
+    4,
+    7
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "wildcard",
+     "try 3"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "note": "word[1]='a' -> follow the single matching child.",
+   "active": [
+    2
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "on",
+     "a"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "note": "word[2]='d' -> follow the single matching child.",
+   "active": [
+    3
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "on",
+     "d"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 3,
+   "note": "reached the end on node 'd' with is_word set -> this branch matches.",
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "b",
+     "x": 0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a",
+     "x": 74,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "d",
+     "x": 148,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "d",
+     "x": 222,
+     "y": 88
+    },
+    {
+     "id": 5,
+     "val": "a",
+     "x": 296,
+     "y": 176
+    },
+    {
+     "id": 6,
+     "val": "d",
+     "x": 370,
+     "y": 264
+    },
+    {
+     "id": 7,
+     "val": "m",
+     "x": 444,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "a",
+     "x": 518,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "d",
+     "x": 592,
+     "y": 264
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "active": [
+    3
+   ],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "is_word",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "a branch reached a \u2022 node -> search('.ad') = True.",
+   "active": [],
+   "done": {
+    "3": "\u2022",
+    "6": "\u2022",
+    "9": "\u2022"
+   },
+   "state": [
+    [
+     "search('.ad')",
+     "True"
+    ]
+   ],
+   "banner": "search('.ad') = True  ('.' matched b / d / m)"
+  },
+  {
+   "act": 3,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "dfs",
+   "line": 5,
+   "intro": "'.' matches a character, but there has to BE a character \u2014 it can't invent a node past the end of a branch.",
+   "invariant": "i must reach len(word) exactly on an is_word node to succeed.",
+   "note": "Edge case: only 'a' is stored. search('.') fans to 'a', ends on a \u2022 node -> True.",
+   "active": [
+    0
+   ],
+   "done": {
+    "1": "\u2022"
+   },
+   "state": [
+    [
+     "stored",
+     "a"
+    ],
+    [
+     "query",
+     "."
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "dfs",
+   "line": 6,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "note": "search('.'): '.' matches child 'a', i reaches the end on a \u2022 node -> True.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": "\u2022"
+   },
+   "state": [
+    [
+     "search('.')",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "dfs",
+   "line": 7,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "\u25b2",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 0,
+     "y": 88
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "note": "search('..'): the first '.' matches 'a', but 'a' has no children, so the second '.' has nothing to fan into -> False. It won't walk off the end.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": "\u2022"
+   },
+   "state": [
+    [
+     "search('..')",
+     "False"
+    ],
+    [
+     "reason",
+     "no child to match"
+    ]
+   ],
+   "banner": "search('.')=True but search('..')=False  (no node past 'a')"
+  }
+ ]
+}

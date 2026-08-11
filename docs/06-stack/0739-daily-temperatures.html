@@ -66,7 +66,1291 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Strict vs. non-strict:</strong> &quot;warmer&quot; means strictly greater. Pop only when the top is *cooler*, so equal temperatures like <code>[50, 50, 50]</code> don&#x27;t count and stay <code>0</code>.</li><li><strong>Store indices, not temperatures:</strong> the answer is a day gap <code>i - prev</code>, so the stack must hold indices.</li><li><strong>Leftovers stay 0:</strong> days still on the stack at the end never warmed up — leave their <code>0</code>.</li><li>Don&#x27;t reset or re-scan; the point is a single pass.</li></ul>
 <h2>Transfer</h2>
-<p>This is the <strong>next-greater-element</strong> template, and the monotonic stack behind it recurs widely: <a href="../../22-monotonic-stack/0496-next-greater-element-i/">Next Greater Element I / 496</a>, <a href="../../22-monotonic-stack/0084-largest-rectangle-in-histogram/">Largest Rectangle in Histogram / 84</a>, <a href="../../22-monotonic-stack/0042-trapping-rain-water/">Trapping Rain Water / 42</a>, <a href="../../22-monotonic-stack/0853-car-fleet/">Car Fleet / 853</a>. Whenever you need, for each item, the next item that beats it, keep a stack that stays sorted and pop as each new item resolves the ones it dominates.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/06-stack/0739-daily-temperatures/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;739. Daily Temperatures — https://leetcode.com/problems/daily-temperatures/
+<p>This is the <strong>next-greater-element</strong> template, and the monotonic stack behind it recurs widely: <a href="../../22-monotonic-stack/0496-next-greater-element-i/">Next Greater Element I / 496</a>, <a href="../../22-monotonic-stack/0084-largest-rectangle-in-histogram/">Largest Rectangle in Histogram / 84</a>, <a href="../../22-monotonic-stack/0042-trapping-rain-water/">Trapping Rain Water / 42</a>, <a href="../../22-monotonic-stack/0853-car-fleet/">Car Fleet / 853</a>. Whenever you need, for each item, the next item that beats it, keep a stack that stays sorted and pop as each new item resolves the ones it dominates.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Daily Temperatures \u2014 a stack of days still waiting to warm",
+ "acts": [
+  "Brute force: scan forward",
+  "The waste",
+  "Fast: monotonic stack",
+  "Edge case: only cooling"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "    for j in range(i+1, n):",
+   "        if temps[j] > temps[i]:",
+   "            answer[i] = j - i",
+   "            break"
+  ],
+  "fast": [
+   "for i, temp in enumerate(temps):",
+   "    while stack and temps[stack[-1]] < temp:",
+   "        prev = stack.pop()",
+   "        answer[prev] = i - prev",
+   "    stack.append(i)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "today"
+  ],
+  [
+   "good",
+   "just answered / resolved"
+  ],
+  [
+   "dim",
+   "still waiting"
+  ],
+  [
+   "bad",
+   "never warms"
+  ]
+ ],
+ "cells": [
+  73,
+  74,
+  75,
+  71,
+  69,
+  72,
+  76,
+  73
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    73,
+    74,
+    75,
+    71,
+    69,
+    72,
+    76,
+    73
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "every day scans forward on its own \u2014 a long cool spell gets re-walked again and again.",
+   "invariant": "answer[k] is set for every day k already fully scanned.",
+   "note": "Brute force: stand on day i and walk forward until a warmer day appears.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "scans",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 0 (73) vs day 1 (74). Warmer \u2014 wait is 1 days.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "marks": {
+    "0": "active",
+    "1": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "scans",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 1 (74) vs day 2 (75). Warmer \u2014 wait is 1 days.",
+   "pointers": {
+    "i": 1,
+    "j": 2
+   },
+   "marks": {
+    "1": "active",
+    "2": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "scans",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 2 (75) vs day 3 (71). Not warmer, keep scanning.",
+   "pointers": {
+    "i": 2,
+    "j": 3
+   },
+   "marks": {
+    "2": "active",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "scans",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 2 (75) vs day 4 (69). Not warmer, keep scanning.",
+   "pointers": {
+    "i": 2,
+    "j": 4
+   },
+   "marks": {
+    "2": "active",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "scans",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 2 (75) vs day 5 (72). Not warmer, keep scanning.",
+   "pointers": {
+    "i": 2,
+    "j": 5
+   },
+   "marks": {
+    "2": "active",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     5
+    ],
+    [
+     "scans",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 2 (75) vs day 6 (76). Warmer \u2014 wait is 4 days.",
+   "pointers": {
+    "i": 2,
+    "j": 6
+   },
+   "marks": {
+    "2": "active",
+    "6": "good"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     6
+    ],
+    [
+     "scans",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 3 (71) vs day 4 (69). Not warmer, keep scanning.",
+   "pointers": {
+    "i": 3,
+    "j": 4
+   },
+   "marks": {
+    "3": "active",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "scans",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 3 (71) vs day 5 (72). Warmer \u2014 wait is 2 days.",
+   "pointers": {
+    "i": 3,
+    "j": 5
+   },
+   "marks": {
+    "3": "active",
+    "5": "good"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "j",
+     5
+    ],
+    [
+     "scans",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 4 (69) vs day 5 (72). Warmer \u2014 wait is 1 days.",
+   "pointers": {
+    "i": 4,
+    "j": 5
+   },
+   "marks": {
+    "4": "active",
+    "5": "good"
+   },
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "j",
+     5
+    ],
+    [
+     "scans",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 5 (72) vs day 6 (76). Warmer \u2014 wait is 1 days.",
+   "pointers": {
+    "i": 5,
+    "j": 6
+   },
+   "marks": {
+    "5": "active",
+    "6": "good"
+   },
+   "state": [
+    [
+     "i",
+     5
+    ],
+    [
+     "j",
+     6
+    ],
+    [
+     "scans",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "Day 6 (76) vs day 7 (73). Not warmer, keep scanning.",
+   "pointers": {
+    "i": 6,
+    "j": 7
+   },
+   "marks": {
+    "6": "active",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "i",
+     6
+    ],
+    [
+     "j",
+     7
+    ],
+    [
+     "scans",
+     11
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "Brute answer = [1, 1, 4, 2, 1, 1, 0, 0]. It cost 11 forward-scans because cool stretches get re-walked.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good",
+    "7": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "[1, 1, 4, 2, 1, 1, 0, 0]"
+    ],
+    [
+     "scans",
+     11
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "days 2, 3, 4 all re-scan the same cooling tail \u2014 that overlap is the waste.",
+   "note": "Each day re-scans a tail earlier days already covered: 11 scans for 8 days. For a long descent this is ~n*n / 2 work.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "scans (brute)",
+     11
+    ],
+    [
+     "pattern",
+     "~ n*n / 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "But a day, once beaten, is answered forever. If we remember the days still waiting, each is resolved exactly once. That is a stack.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "state": [
+    [
+     "idea",
+     "remember waiters"
+    ],
+    [
+     "target",
+     "O(n)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    73,
+    74,
+    75,
+    71,
+    69,
+    72,
+    76,
+    73
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "today is the 'next warmer day' for every waiting day it beats \u2014 pop and answer them all.",
+   "invariant": "the stack holds waiting days with strictly decreasing temperatures (top = coolest).",
+   "note": "One pass. Keep a stack of days still waiting for something warmer.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pops",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 0 (73\u00b0) now waits for its own warmer day. Push it.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 0",
+      "73\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     1
+    ],
+    [
+     "answer so far",
+     "[0, 0, 0, 0, 0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Day 1 (74\u00b0) is warmer than waiting day 0 (73\u00b0). Answer[0] = 1 - 0 = 1. Pop it.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   },
+   "state": [
+    [
+     "today",
+     "day 1 = 74\u00b0"
+    ],
+    [
+     "resolved",
+     "day 0 -> 1"
+    ],
+    [
+     "pops",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 1 (74\u00b0) now waits for its own warmer day. Push it.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 1",
+      "74\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     1
+    ],
+    [
+     "answer so far",
+     "[1, 0, 0, 0, 0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Day 2 (75\u00b0) is warmer than waiting day 1 (74\u00b0). Answer[1] = 2 - 1 = 1. Pop it.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "1": "good",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   },
+   "state": [
+    [
+     "today",
+     "day 2 = 75\u00b0"
+    ],
+    [
+     "resolved",
+     "day 1 -> 1"
+    ],
+    [
+     "pops",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 2 (75\u00b0) now waits for its own warmer day. Push it.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 2",
+      "75\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     1
+    ],
+    [
+     "answer so far",
+     "[1, 1, 0, 0, 0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 3 (71\u00b0) now waits for its own warmer day. Push it.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "2": "dim",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 2",
+      "75\u00b0"
+     ],
+     [
+      "day 3",
+      "71\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     2
+    ],
+    [
+     "answer so far",
+     "[1, 1, 0, 0, 0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 4 (69\u00b0) now waits for its own warmer day. Push it.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "2": "dim",
+    "3": "dim",
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 2",
+      "75\u00b0"
+     ],
+     [
+      "day 3",
+      "71\u00b0"
+     ],
+     [
+      "day 4",
+      "69\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     3
+    ],
+    [
+     "answer so far",
+     "[1, 1, 0, 0, 0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Day 5 (72\u00b0) is warmer than waiting day 4 (69\u00b0). Answer[4] = 5 - 4 = 1. Pop it.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "2": "dim",
+    "3": "dim",
+    "4": "good",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 2",
+      "75\u00b0"
+     ],
+     [
+      "day 3",
+      "71\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "today",
+     "day 5 = 72\u00b0"
+    ],
+    [
+     "resolved",
+     "day 4 -> 1"
+    ],
+    [
+     "pops",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Day 5 (72\u00b0) is warmer than waiting day 3 (71\u00b0). Answer[3] = 5 - 3 = 2. Pop it.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "2": "dim",
+    "4": "good",
+    "3": "good",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 2",
+      "75\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "today",
+     "day 5 = 72\u00b0"
+    ],
+    [
+     "resolved",
+     "day 3 -> 2"
+    ],
+    [
+     "pops",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 5 (72\u00b0) now waits for its own warmer day. Push it.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "2": "dim",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 2",
+      "75\u00b0"
+     ],
+     [
+      "day 5",
+      "72\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     2
+    ],
+    [
+     "answer so far",
+     "[1, 1, 0, 2, 1, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Day 6 (76\u00b0) is warmer than waiting day 5 (72\u00b0). Answer[5] = 6 - 5 = 1. Pop it.",
+   "pointers": {
+    "i": 6
+   },
+   "marks": {
+    "2": "dim",
+    "5": "good",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 2",
+      "75\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "today",
+     "day 6 = 76\u00b0"
+    ],
+    [
+     "resolved",
+     "day 5 -> 1"
+    ],
+    [
+     "pops",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Day 6 (76\u00b0) is warmer than waiting day 2 (75\u00b0). Answer[2] = 6 - 2 = 4. Pop it.",
+   "pointers": {
+    "i": 6
+   },
+   "marks": {
+    "5": "good",
+    "2": "good",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   },
+   "state": [
+    [
+     "today",
+     "day 6 = 76\u00b0"
+    ],
+    [
+     "resolved",
+     "day 2 -> 4"
+    ],
+    [
+     "pops",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 6 (76\u00b0) now waits for its own warmer day. Push it.",
+   "pointers": {
+    "i": 6
+   },
+   "marks": {
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 6",
+      "76\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     1
+    ],
+    [
+     "answer so far",
+     "[1, 1, 4, 2, 1, 1, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 7 (73\u00b0) now waits for its own warmer day. Push it.",
+   "pointers": {
+    "i": 7
+   },
+   "marks": {
+    "6": "dim",
+    "7": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 6",
+      "76\u00b0"
+     ],
+     [
+      "day 7",
+      "73\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     2
+    ],
+    [
+     "answer so far",
+     "[1, 1, 4, 2, 1, 1, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Done in one pass. answer = [1, 1, 4, 2, 1, 1, 0, 0]. Days [6, 7] never warmed, so they stay 0. 6 pops + 8 pushes vs 11 brute scans.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good",
+    "7": "good"
+   },
+   "sidebar": {
+    "title": "stack: days waiting (cool->warm bottom->top... top=coolest)",
+    "rows": [
+     [
+      "day 6",
+      "76\u00b0"
+     ],
+     [
+      "day 7",
+      "73\u00b0"
+     ]
+    ]
+   },
+   "banner": "answer = [1, 1, 4, 2, 1, 1, 0, 0]   \u2014 14 stack ops vs 11 brute scans",
+   "state": [
+    [
+     "answer",
+     "[1, 1, 4, 2, 1, 1, 0, 0]"
+    ],
+    [
+     "total ops",
+     14
+    ],
+    [
+     "vs brute",
+     11
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    90,
+    80,
+    70,
+    60
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "if it only ever cools, nobody is beaten \u2014 the stack just grows and every answer stays 0.",
+   "invariant": "a day leaves the stack only when a later, warmer day arrives.",
+   "note": "Edge case: temperatures strictly decreasing. No day ever finds a warmer one.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     "[0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 0 (90\u00b0) is cooler than the top, so nothing pops. Push it and keep waiting.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting",
+    "rows": [
+     [
+      "day 0",
+      "90\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     1
+    ],
+    [
+     "answer",
+     "[0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 1 (80\u00b0) is cooler than the top, so nothing pops. Push it and keep waiting.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting",
+    "rows": [
+     [
+      "day 0",
+      "90\u00b0"
+     ],
+     [
+      "day 1",
+      "80\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     2
+    ],
+    [
+     "answer",
+     "[0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 2 (70\u00b0) is cooler than the top, so nothing pops. Push it and keep waiting.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting",
+    "rows": [
+     [
+      "day 0",
+      "90\u00b0"
+     ],
+     [
+      "day 1",
+      "80\u00b0"
+     ],
+     [
+      "day 2",
+      "70\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     3
+    ],
+    [
+     "answer",
+     "[0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "Day 3 (60\u00b0) is cooler than the top, so nothing pops. Push it and keep waiting.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "stack: days waiting",
+    "rows": [
+     [
+      "day 0",
+      "90\u00b0"
+     ],
+     [
+      "day 1",
+      "80\u00b0"
+     ],
+     [
+      "day 2",
+      "70\u00b0"
+     ],
+     [
+      "day 3",
+      "60\u00b0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "stack depth",
+     4
+    ],
+    [
+     "answer",
+     "[0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "The pass ends with all 4 days still on the stack. None warmed, so answer = [0, 0, 0, 0].",
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad"
+   },
+   "sidebar": {
+    "title": "stack: never resolved",
+    "rows": [
+     [
+      "day 0",
+      "90\u00b0"
+     ],
+     [
+      "day 1",
+      "80\u00b0"
+     ],
+     [
+      "day 2",
+      "70\u00b0"
+     ],
+     [
+      "day 3",
+      "60\u00b0"
+     ]
+    ]
+   },
+   "banner": "answer = [0, 0, 0, 0] \u2014 a cooling run leaves every day at 0",
+   "state": [
+    [
+     "answer",
+     "[0, 0, 0, 0]"
+    ]
+   ]
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/06-stack/0739-daily-temperatures/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;739. Daily Temperatures — https://leetcode.com/problems/daily-temperatures/
 
 Given daily temperatures, for each day return how many days you must wait until a
 warmer day. If no warmer day ever comes, that day&#x27;s answer is 0.

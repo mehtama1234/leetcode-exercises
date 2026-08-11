@@ -75,7 +75,396 @@ for i in range(n):
 <h2>Pitfalls</h2>
 <ul><li>Forgetting the even-length centers. You need both <code>expand(i, i)</code> and <code>expand(i, i+1)</code>; missing the second undercounts palindromes like <code>&quot;aa&quot;</code>.</li><li>In the table version, filling in the wrong order so <code>dp[i+1][j-1]</code> isn&#x27;t ready yet. Fill by length (or <code>i</code> descending).</li><li>Counting each substring once by *value* instead of by *position* — the problem wants every start/end pair, so <code>&quot;aaa&quot;</code> is 6, not 3.</li></ul>
 <h2>Transfer</h2>
-<p>The &quot;ends match + inner is already solved&quot; recurrence and the expand-around-center trick carry straight over to <a href="../0005-longest-palindromic-substring/">Longest Palindromic Substring / 5</a> — same centers, but you track the widest instead of counting. The interval-DP shape (<code>dp[i][j]</code> built from a smaller interval inside it) also underlies problems like Longest Palindromic Subsequence and matrix-chain-style DPs.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0647-palindromic-substrings/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;647. Palindromic Substrings — https://leetcode.com/problems/palindromic-substrings/
+<p>The &quot;ends match + inner is already solved&quot; recurrence and the expand-around-center trick carry straight over to <a href="../0005-longest-palindromic-substring/">Longest Palindromic Substring / 5</a> — same centers, but you track the widest instead of counting. The interval-DP shape (<code>dp[i][j]</code> built from a smaller interval inside it) also underlies problems like Longest Palindromic Subsequence and matrix-chain-style DPs.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Palindromic Substrings - decide each span once and count the Trues",
+ "acts": [
+  "The ends+inside rule",
+  "Fill + count",
+  "Answer + edge"
+ ],
+ "code": {
+  "dp": [
+   "dp = [[False]*n for _ in range(n)]",
+   "count = 0",
+   "for i in range(n-1, -1, -1):",
+   "    for j in range(i, n):",
+   "        if s[i]==s[j] and (j-i < 2 or dp[i+1][j-1]):",
+   "            dp[i][j] = True",
+   "            count += 1",
+   "return count"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the inside dp[i+1][j-1]"
+  ],
+  [
+   "good",
+   "palindrome (counted)"
+  ],
+  [
+   "dim",
+   "not a palindrome"
+  ],
+  [
+   "bad",
+   "would be recomputed"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "0:a",
+    "1:a",
+    "2:a"
+   ],
+   "colLabels": [
+    "0:a",
+    "1:a",
+    "2:a"
+   ],
+   "code": null,
+   "intro": "dp[i][j] marks whether s[i..j] is a palindrome; we count the Trues.",
+   "invariant": "each (start, end) pair counts separately.",
+   "note": "String \"aaa\". Every distinct (i, j) that reads the same both ways is one palindromic substring. \"aaa\" should give 6: a, a, a, aa, aa, aaa.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "s",
+     "aaa"
+    ],
+    [
+     "count",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "dp[i][j] = (s[i]==s[j]) and (j-i < 2 or dp[i+1][j-1]). The inside term is a shorter stretch, so filling shortest-first makes every lookup ready \u2014 no recomputation. Add 1 to count for each True.",
+   "marks": {
+    "0,2": "active",
+    "1,1": "bad"
+   },
+   "state": [
+    [
+     "rule",
+     "ends + inside"
+    ],
+    [
+     "order",
+     "shortest first"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "0:a",
+    "1:a",
+    "2:a"
+   ],
+   "colLabels": [
+    "0:a",
+    "1:a",
+    "2:a"
+   ],
+   "code": "dp",
+   "line": 0,
+   "intro": "fill i descending / j ascending; every True is one more palindrome.",
+   "invariant": "count = number of True cells decided so far.",
+   "note": "Diagonal cells (single characters) are palindromes, so each adds 1.",
+   "marks": {},
+   "state": [
+    [
+     "count",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "s[2..2]=\"a\": length <= 2, ends match -> True.  count -> 1",
+   "set": {
+    "2,2": "T"
+   },
+   "marks": {
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "span",
+     "[2..2]"
+    ],
+    [
+     "palindrome?",
+     true
+    ],
+    [
+     "count",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "s[1..1]=\"a\": length <= 2, ends match -> True.  count -> 2",
+   "set": {
+    "1,1": "T"
+   },
+   "marks": {
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "span",
+     "[1..1]"
+    ],
+    [
+     "palindrome?",
+     true
+    ],
+    [
+     "count",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "s[1..2]=\"aa\": length <= 2, ends match -> True.  count -> 3",
+   "set": {
+    "1,2": "T"
+   },
+   "marks": {
+    "1,2": "good"
+   },
+   "state": [
+    [
+     "span",
+     "[1..2]"
+    ],
+    [
+     "palindrome?",
+     true
+    ],
+    [
+     "count",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "s[0..0]=\"a\": length <= 2, ends match -> True.  count -> 4",
+   "set": {
+    "0,0": "T"
+   },
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "span",
+     "[0..0]"
+    ],
+    [
+     "palindrome?",
+     true
+    ],
+    [
+     "count",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "s[0..1]=\"aa\": length <= 2, ends match -> True.  count -> 5",
+   "set": {
+    "0,1": "T"
+   },
+   "marks": {
+    "0,1": "good"
+   },
+   "state": [
+    [
+     "span",
+     "[0..1]"
+    ],
+    [
+     "palindrome?",
+     true
+    ],
+    [
+     "count",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 6,
+   "note": "s[0..2]=\"aaa\": ends match and inside dp[1][1] True -> True.  count -> 6",
+   "set": {
+    "0,2": "T"
+   },
+   "marks": {
+    "1,1": "active",
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "span",
+     "[0..2]"
+    ],
+    [
+     "palindrome?",
+     true
+    ],
+    [
+     "count",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dp",
+   "line": 7,
+   "intro": "the answer is the total number of True cells.",
+   "invariant": "every span was decided exactly once.",
+   "note": "All 6 upper-triangle cells are True, so \"aaa\" has 6 palindromic substrings.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good",
+    "1,1": "good",
+    "1,2": "good",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "answer",
+     6
+    ]
+   ],
+   "banner": "\"aaa\" -> 6 palindromic substrings"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     "T",
+     "F",
+     "F"
+    ],
+    [
+     null,
+     "T",
+     "F"
+    ],
+    [
+     null,
+     null,
+     "T"
+    ]
+   ],
+   "rowLabels": [
+    "0:a",
+    "1:b",
+    "2:c"
+   ],
+   "colLabels": [
+    "0:a",
+    "1:b",
+    "2:c"
+   ],
+   "code": "dp",
+   "line": 7,
+   "note": "Edge case: \"abc\", all distinct. Only the three single characters are palindromes; every longer span has mismatched ends -> the answer is 3.",
+   "marks": {
+    "0,0": "good",
+    "1,1": "good",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "answer",
+     3
+    ]
+   ],
+   "banner": "\"abc\" -> 3"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0647-palindromic-substrings/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;647. Palindromic Substrings — https://leetcode.com/problems/palindromic-substrings/
 
 Count how many substrings of `s` are palindromes. Each start/end pair counts
 separately, so &quot;aaa&quot; has 6 palindromic substrings: a, a, a, aa, aa, aaa.

@@ -1,0 +1,652 @@
+{
+ "player": "linear",
+ "title": "Min Stack - carry the running minimum instead of scanning for it",
+ "acts": [
+  "Naive: scan for the min (O(n))",
+  "The trick: a parallel mins stack",
+  "Edge: duplicate minimums"
+ ],
+ "code": {
+  "naive": [
+   "def getMin():           # naive",
+   "    m = stack[0]",
+   "    for x in stack:     # scan every element",
+   "        m = min(m, x)",
+   "    return m"
+  ],
+  "trick": [
+   "def push(val):",
+   "    stack.append(val)",
+   "    cur = val if not mins else min(val, mins[-1])",
+   "    mins.append(cur)     # min so far, at this level",
+   "def pop():",
+   "    stack.pop(); mins.pop()",
+   "def getMin():",
+   "    return mins[-1]      # O(1), no scan"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "top / element scanned"
+  ],
+  [
+   "good",
+   "the current min"
+  ],
+  [
+   "dim",
+   "below the top"
+  ]
+ ],
+ "cells": [],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    -2,
+    0,
+    -3
+   ],
+   "code": "naive",
+   "line": 0,
+   "intro": "each getMin re-walks the ENTIRE stack \u2014 the work counter is the cost we delete.",
+   "invariant": "the true minimum is somewhere in the stack; naive re-finds it each time.",
+   "note": "A plain stack (push/pop/top) can't answer getMin without looking. The naive fix: scan all of stack for the smallest. That is O(n) per query.",
+   "pointers": {
+    "top": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active"
+   },
+   "state": [
+    [
+     "stack",
+     "[-2, 0, -3]"
+    ],
+    [
+     "scans",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "Compare element -2: running min = -2. One more step of the scan.",
+   "pointers": {
+    "top": 2,
+    "i": 0
+   },
+   "marks": {
+    "0": "active",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "element",
+     -2
+    ],
+    [
+     "min so far",
+     -2
+    ],
+    [
+     "scans",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "Compare element 0: running min = -2. One more step of the scan.",
+   "pointers": {
+    "top": 2,
+    "i": 1
+   },
+   "marks": {
+    "1": "active",
+    "0": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "element",
+     0
+    ],
+    [
+     "min so far",
+     -2
+    ],
+    [
+     "scans",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "Compare element -3: running min = -3. One more step of the scan.",
+   "pointers": {
+    "top": 2,
+    "i": 2
+   },
+   "marks": {
+    "2": "active",
+    "0": "dim",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "element",
+     -3
+    ],
+    [
+     "min so far",
+     -3
+    ],
+    [
+     "scans",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 4,
+   "note": "getMin returned -3, but it cost 3 comparisons. Call getMin a million times and you re-scan a million times \u2014 pure repeated work.",
+   "pointers": {
+    "top": 2
+   },
+   "marks": {
+    "2": "good",
+    "0": "dim",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "getMin",
+     -3
+    ],
+    [
+     "cost",
+     "O(n) each call"
+    ],
+    [
+     "scans",
+     3
+    ]
+   ],
+   "banner": "Naive getMin = -3  \u2014  3 comparisons for one query"
+  },
+  {
+   "act": 1,
+   "cells": [],
+   "code": "trick",
+   "line": 0,
+   "intro": "a second stack records the min-so-far at every level \u2014 getMin just reads its top.",
+   "invariant": "mins[i] is always the minimum of stack[0..i]; mins[-1] is the current min.",
+   "note": "The trick: alongside each pushed value, remember the minimum of everything at or below it. Push -2, 0, -3 and watch mins track it.",
+   "pointers": {},
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": []
+   },
+   "state": [
+    [
+     "stack",
+     "[]"
+    ],
+    [
+     "mins",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    -2
+   ],
+   "code": "trick",
+   "line": 2,
+   "note": "push(-2): min so far = -2 (stack was empty).",
+   "pointers": {
+    "top": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": [
+     [
+      "0",
+      "-2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pushed",
+     -2
+    ],
+    [
+     "cur min",
+     -2
+    ],
+    [
+     "mins top",
+     -2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    -2,
+    0
+   ],
+   "code": "trick",
+   "line": 2,
+   "note": "push(0): min so far = min(0, -2) = -2.",
+   "pointers": {
+    "top": 1
+   },
+   "marks": {
+    "1": "active",
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": [
+     [
+      "0",
+      "-2"
+     ],
+     [
+      "1",
+      "-2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pushed",
+     0
+    ],
+    [
+     "cur min",
+     -2
+    ],
+    [
+     "mins top",
+     -2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    -2,
+    0,
+    -3
+   ],
+   "code": "trick",
+   "line": 2,
+   "note": "push(-3): min so far = min(-3, -2) = -3.",
+   "pointers": {
+    "top": 2
+   },
+   "marks": {
+    "2": "active",
+    "0": "dim",
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": [
+     [
+      "0",
+      "-2"
+     ],
+     [
+      "1",
+      "-2"
+     ],
+     [
+      "2",
+      "-3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pushed",
+     -3
+    ],
+    [
+     "cur min",
+     -3
+    ],
+    [
+     "mins top",
+     -3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "trick",
+   "line": 7,
+   "note": "getMin just reads mins[-1] = -3 \u2014 no scan, O(1). The smallest value was tracked as we went.",
+   "pointers": {
+    "top": 2
+   },
+   "marks": {
+    "2": "good",
+    "0": "dim",
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": [
+     [
+      "0",
+      "-2"
+     ],
+     [
+      "1",
+      "-2"
+     ],
+     [
+      "2",
+      "-3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "getMin",
+     -3
+    ],
+    [
+     "cost",
+     "O(1)"
+    ]
+   ],
+   "banner": "getMin = -3  in one read (mins[-1]) vs a full scan"
+  },
+  {
+   "act": 1,
+   "cells": [
+    -2,
+    0
+   ],
+   "code": "trick",
+   "line": 5,
+   "note": "pop() removes -3 from BOTH stacks. mins[-1] drops back to -2 \u2014 the min of what remains, with no work.",
+   "pointers": {
+    "top": 1
+   },
+   "marks": {
+    "1": "good",
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": [
+     [
+      "0",
+      "-2"
+     ],
+     [
+      "1",
+      "-2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "popped",
+     -3
+    ],
+    [
+     "getMin now",
+     -2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [],
+   "code": "trick",
+   "line": 0,
+   "intro": "two equal minimums must both be recorded \u2014 popping one must not lose the min.",
+   "invariant": "every level stores its own min-so-far, so duplicates are counted separately.",
+   "note": "Edge: duplicate minimums. Push 1, 1, 0. If we only stored ONE copy of the min we'd lose it on the first pop \u2014 the parallel stack avoids that.",
+   "pointers": {},
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": []
+   },
+   "state": [
+    [
+     "stack",
+     "[]"
+    ],
+    [
+     "mins",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1
+   ],
+   "code": "trick",
+   "line": 2,
+   "note": "push(1): min so far = 1. Each level keeps its own min, so both 1s are recorded independently.",
+   "pointers": {
+    "top": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": [
+     [
+      "0",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pushed",
+     1
+    ],
+    [
+     "cur min",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    1
+   ],
+   "code": "trick",
+   "line": 2,
+   "note": "push(1): min so far = 1. Each level keeps its own min, so both 1s are recorded independently.",
+   "pointers": {
+    "top": 1
+   },
+   "marks": {
+    "1": "active",
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": [
+     [
+      "0",
+      "1"
+     ],
+     [
+      "1",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pushed",
+     1
+    ],
+    [
+     "cur min",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    1,
+    0
+   ],
+   "code": "trick",
+   "line": 2,
+   "note": "push(0): 0 is the new minimum; mins top = 0.",
+   "pointers": {
+    "top": 2
+   },
+   "marks": {
+    "2": "active",
+    "0": "dim",
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": [
+     [
+      "0",
+      "1"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "pushed",
+     0
+    ],
+    [
+     "cur min",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "trick",
+   "line": 7,
+   "note": "getMin = 0 (the 0 on top).",
+   "pointers": {
+    "top": 2
+   },
+   "marks": {
+    "2": "good",
+    "0": "dim",
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": [
+     [
+      "0",
+      "1"
+     ],
+     [
+      "1",
+      "1"
+     ],
+     [
+      "2",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "getMin",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    1
+   ],
+   "code": "trick",
+   "line": 5,
+   "note": "pop() removes the 0. mins[-1] is now 1 \u2014 still correct, because the second 1 recorded its own min-so-far. Nothing had to be re-scanned.",
+   "pointers": {
+    "top": 1
+   },
+   "marks": {
+    "1": "good",
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "mins  (min of stack[0..i])",
+    "rows": [
+     [
+      "0",
+      "1"
+     ],
+     [
+      "1",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "popped",
+     0
+    ],
+    [
+     "getMin now",
+     1
+    ]
+   ],
+   "banner": "After popping the 0, getMin = 1 \u2014 the duplicate 1 kept the min"
+  }
+ ]
+}

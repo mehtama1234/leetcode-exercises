@@ -1,0 +1,995 @@
+{
+ "player": "tree",
+ "title": "Permutations II \u2014 place each number, prune duplicate siblings",
+ "acts": [
+  "The rule",
+  "Walk the tree ([1,1,2])",
+  "Edge case: all identical"
+ ],
+ "code": {
+  "backtrack": [
+   "def backtrack():",
+   "    if len(path) == n:",
+   "        result.append(path[:])",
+   "        return",
+   "    for i in range(n):",
+   "        if used[i]:",
+   "            continue",
+   "        if i>0 and nums[i]==nums[i-1] and not used[i-1]:",
+   "            continue          # skip duplicate sibling",
+   "        used[i] = True        # choose",
+   "        path.append(nums[i])",
+   "        backtrack()           # explore",
+   "        path.pop()            # un-choose",
+   "        used[i] = False"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current path"
+  ],
+  [
+   "good",
+   "finished permutation (leaf)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "start",
+   "x": 124.0,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": "[1]",
+   "x": 31.0,
+   "y": 88
+  },
+  {
+   "id": 2,
+   "val": "[1,1]",
+   "x": 0.0,
+   "y": 176
+  },
+  {
+   "id": 3,
+   "val": "[1,1,2]",
+   "x": 0,
+   "y": 264
+  },
+  {
+   "id": 4,
+   "val": "[1,2]",
+   "x": 62.0,
+   "y": 176
+  },
+  {
+   "id": 5,
+   "val": "[1,2,1]",
+   "x": 62,
+   "y": 264
+  },
+  {
+   "id": 6,
+   "val": "[1]",
+   "x": 124,
+   "y": 88
+  },
+  {
+   "id": 7,
+   "val": "[2]",
+   "x": 217.0,
+   "y": 88
+  },
+  {
+   "id": 8,
+   "val": "[2,1]",
+   "x": 186.0,
+   "y": 176
+  },
+  {
+   "id": 9,
+   "val": "[2,1,1]",
+   "x": 186,
+   "y": 264
+  },
+  {
+   "id": 10,
+   "val": "[2,1]",
+   "x": 248,
+   "y": 176
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   4,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   0,
+   7
+  ],
+  [
+   7,
+   8
+  ],
+  [
+   8,
+   9
+  ],
+  [
+   7,
+   10
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 124.0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "[1]",
+     "x": 31.0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "[1,1]",
+     "x": 0.0,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "[1,1,2]",
+     "x": 0,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "[1,2]",
+     "x": 62.0,
+     "y": 176
+    },
+    {
+     "id": 5,
+     "val": "[1,2,1]",
+     "x": 62,
+     "y": 264
+    },
+    {
+     "id": 6,
+     "val": "[1]",
+     "x": 124,
+     "y": 88
+    },
+    {
+     "id": 7,
+     "val": "[2]",
+     "x": 217.0,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "[2,1]",
+     "x": 186.0,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "[2,1,1]",
+     "x": 186,
+     "y": 264
+    },
+    {
+     "id": 10,
+     "val": "[2,1]",
+     "x": 248,
+     "y": 176
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     7,
+     10
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "each level places one unused number; equal copies are kept in order.",
+   "invariant": "depth = how many numbers placed; a bottom-row leaf is a full permutation.",
+   "note": "The rule: sort so equal values sit together, then at each slot try every unused number \u2014 but refuse a value equal to the one just before it in the array unless that earlier copy is already placed.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "sorted nums",
+     "[1, 1, 2]"
+    ],
+    [
+     "slots",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "backtrack",
+   "line": 7,
+   "note": "That single skip is the whole trick: it fixes one order among equal copies, so the same arrangement is never built two different ways. Skipped branches are marked \u2715.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "prune",
+     "dup sibling"
+    ],
+    [
+     "unique perms",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 124.0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "[1]",
+     "x": 31.0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "[1,1]",
+     "x": 0.0,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "[1,1,2]",
+     "x": 0,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "[1,2]",
+     "x": 62.0,
+     "y": 176
+    },
+    {
+     "id": 5,
+     "val": "[1,2,1]",
+     "x": 62,
+     "y": 264
+    },
+    {
+     "id": 6,
+     "val": "[1]",
+     "x": 124,
+     "y": 88
+    },
+    {
+     "id": 7,
+     "val": "[2]",
+     "x": 217.0,
+     "y": 88
+    },
+    {
+     "id": 8,
+     "val": "[2,1]",
+     "x": 186.0,
+     "y": 176
+    },
+    {
+     "id": 9,
+     "val": "[2,1,1]",
+     "x": 186,
+     "y": 264
+    },
+    {
+     "id": 10,
+     "val": "[2,1]",
+     "x": 248,
+     "y": 176
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     7,
+     10
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "the active path is the numbers placed so far; leaves light green, \u2715 = pruned.",
+   "invariant": "a green leaf holds one full ordering; no two greens are equal.",
+   "note": "Run it on [1,1,2]. Watch a duplicate sibling get pruned (\u2715) so we don't rebuild the same ordering.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "placed",
+     "start"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 4,
+   "note": "At the root, no number placed yet \u2014 loop over the choices.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "placed",
+     "start"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 10,
+   "note": "Place 1 (choose): path is now [1]. Recurse to fill the next slot.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "placed",
+     1
+    ],
+    [
+     "path",
+     "[1]"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 10,
+   "note": "Place 1 (choose): path is now [1,1]. Recurse to fill the next slot.",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "placed",
+     1
+    ],
+    [
+     "path",
+     "[1,1]"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "All 3 slots filled -> record the permutation [1,1,2]. (1 of 3 unique so far.)",
+   "active": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "done": {
+    "3": "[1,1,2]"
+   },
+   "state": [
+    [
+     "permutation",
+     "[1,1,2]"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 10,
+   "note": "Place 2 (choose): path is now [1,2]. Recurse to fill the next slot.",
+   "active": [
+    0,
+    1,
+    4
+   ],
+   "done": {
+    "3": "[1,1,2]"
+   },
+   "state": [
+    [
+     "placed",
+     2
+    ],
+    [
+     "path",
+     "[1,2]"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "All 3 slots filled -> record the permutation [1,2,1]. (2 of 3 unique so far.)",
+   "active": [
+    0,
+    1,
+    4,
+    5
+   ],
+   "done": {
+    "3": "[1,1,2]",
+    "5": "[1,2,1]"
+   },
+   "state": [
+    [
+     "permutation",
+     "[1,2,1]"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Trying to place another 1 here would repeat an ordering \u2014 its equal earlier copy isn't placed yet. Skip it (\u2715).",
+   "active": [
+    0
+   ],
+   "done": {
+    "3": "[1,1,2]",
+    "5": "[1,2,1]",
+    "6": "\u2715"
+   },
+   "state": [
+    [
+     "would place",
+     1
+    ],
+    [
+     "decision",
+     "prune"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 10,
+   "note": "Place 2 (choose): path is now [2]. Recurse to fill the next slot.",
+   "active": [
+    0,
+    7
+   ],
+   "done": {
+    "3": "[1,1,2]",
+    "5": "[1,2,1]",
+    "6": "\u2715"
+   },
+   "state": [
+    [
+     "placed",
+     2
+    ],
+    [
+     "path",
+     "[2]"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 10,
+   "note": "Place 1 (choose): path is now [2,1]. Recurse to fill the next slot.",
+   "active": [
+    0,
+    7,
+    8
+   ],
+   "done": {
+    "3": "[1,1,2]",
+    "5": "[1,2,1]",
+    "6": "\u2715"
+   },
+   "state": [
+    [
+     "placed",
+     1
+    ],
+    [
+     "path",
+     "[2,1]"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "All 3 slots filled -> record the permutation [2,1,1]. (3 of 3 unique so far.)",
+   "active": [
+    0,
+    7,
+    8,
+    9
+   ],
+   "done": {
+    "3": "[1,1,2]",
+    "5": "[1,2,1]",
+    "6": "\u2715",
+    "9": "[2,1,1]"
+   },
+   "state": [
+    [
+     "permutation",
+     "[2,1,1]"
+    ],
+    [
+     "found",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Trying to place another 1 here would repeat an ordering \u2014 its equal earlier copy isn't placed yet. Skip it (\u2715).",
+   "active": [
+    0,
+    7
+   ],
+   "done": {
+    "3": "[1,1,2]",
+    "5": "[1,2,1]",
+    "6": "\u2715",
+    "9": "[2,1,1]",
+    "10": "\u2715"
+   },
+   "state": [
+    [
+     "would place",
+     1
+    ],
+    [
+     "decision",
+     "prune"
+    ],
+    [
+     "found",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Tree exhausted -> exactly 3 unique permutations. The \u2715 branch is what kept [1,1,2] built from the second 1 first from ever appearing twice.",
+   "active": [],
+   "done": {
+    "3": "[1,1,2]",
+    "5": "[1,2,1]",
+    "6": "\u2715",
+    "9": "[2,1,1]",
+    "10": "\u2715"
+   },
+   "state": [
+    [
+     "unique perms",
+     3
+    ]
+   ],
+   "banner": "3 unique permutations of [1,1,2] (a naive n! would give 6, half duplicates)"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 108.5,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "[2]",
+     "x": 31.0,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "[2,2]",
+     "x": 0.0,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "[2,2,2]",
+     "x": 0,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "[2,2]",
+     "x": 62,
+     "y": 176
+    },
+    {
+     "id": 5,
+     "val": "[2]",
+     "x": 124,
+     "y": 88
+    },
+    {
+     "id": 6,
+     "val": "[2]",
+     "x": 186,
+     "y": 88
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     6
+    ]
+   ],
+   "code": "backtrack",
+   "line": 7,
+   "intro": "with every value equal, only ONE order survives \u2014 the rest are \u2715.",
+   "invariant": "a duplicate may only follow its already-placed twin, so one chain.",
+   "note": "Edge case: [2,2,2]. At every slot only the leftmost unused 2 is allowed; each other 2 is a duplicate sibling and gets pruned.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "all equal",
+     "2,2,2"
+    ],
+    [
+     "expected",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 10,
+   "note": "Place the leftmost unused 2: path [2].",
+   "active": [
+    0,
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "path",
+     "[2]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 10,
+   "note": "Place the leftmost unused 2: path [2,2].",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "path",
+     "[2,2]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "The one surviving chain fills all slots -> [2,2,2].",
+   "active": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "done": {
+    "3": "[2,2,2]"
+   },
+   "state": [
+    [
+     "permutation",
+     "[2,2,2]"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Another 2 here would just repeat the one ordering \u2014 skip (\u2715).",
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "3": "[2,2,2]",
+    "4": "\u2715"
+   },
+   "state": [
+    [
+     "would place",
+     2
+    ],
+    [
+     "decision",
+     "prune"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Another 2 here would just repeat the one ordering \u2014 skip (\u2715).",
+   "active": [
+    0
+   ],
+   "done": {
+    "3": "[2,2,2]",
+    "4": "\u2715",
+    "5": "\u2715"
+   },
+   "state": [
+    [
+     "would place",
+     2
+    ],
+    [
+     "decision",
+     "prune"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 8,
+   "note": "Another 2 here would just repeat the one ordering \u2014 skip (\u2715).",
+   "active": [
+    0
+   ],
+   "done": {
+    "3": "[2,2,2]",
+    "4": "\u2715",
+    "5": "\u2715",
+    "6": "\u2715"
+   },
+   "state": [
+    [
+     "would place",
+     2
+    ],
+    [
+     "decision",
+     "prune"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Every duplicate sibling pruned -> exactly one permutation of all-equal input, instead of 3! = 6 identical copies.",
+   "active": [],
+   "done": {
+    "3": "[2,2,2]",
+    "4": "\u2715",
+    "5": "\u2715",
+    "6": "\u2715"
+   },
+   "state": [
+    [
+     "unique perms",
+     1
+    ]
+   ],
+   "banner": "All identical -> exactly 1 permutation"
+  }
+ ]
+}

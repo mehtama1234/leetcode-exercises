@@ -72,7 +72,792 @@
 <h2>Pitfalls</h2>
 <ul><li>Returning the *first* edge of a cycle instead of the redundant one. Processing in input order and returning the edge that fails to merge gives the last edge, which is what&#x27;s asked.</li><li>Skipping path compression or union by rank — without them a degenerate chain makes <code>find</code> slow toward <code>O(n)</code>.</li><li>Node labels here are 1-indexed; sizing the parent/rank arrays for <code>0..n</code> avoids an off-by-one.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is <strong>detect a cycle by asking Union-Find whether an edge&#x27;s endpoints are already connected before you add it.</strong> The same structure counts groups in <a href="../0547-number-of-provinces/">Number of Provinces / 547</a>, and this exact &quot;reject the edge that closes a loop&quot; test is the cycle guard inside Kruskal&#x27;s minimum-spanning-tree algorithm.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/26-advanced-ds/0684-redundant-connection/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;684. Redundant Connection — https://leetcode.com/problems/redundant-connection/
+<p>The reusable move is <strong>detect a cycle by asking Union-Find whether an edge&#x27;s endpoints are already connected before you add it.</strong> The same structure counts groups in <a href="../0547-number-of-provinces/">Number of Provinces / 547</a>, and this exact &quot;reject the edge that closes a loop&quot; test is the cycle guard inside Kruskal&#x27;s minimum-spanning-tree algorithm.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Redundant Connection - the first edge that joins two already-linked nodes",
+ "acts": [
+  "The rule",
+  "Find the cycle-closer",
+  "Edge: doubled edge"
+ ],
+ "code": {
+  "rc": [
+   "uf = UnionFind(n)",
+   "for (u, v) in edges:",
+   "    if not uf.union(u, v):     # already connected?",
+   "        return [u, v]          # this edge closes the cycle",
+   "return []"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "endpoints being checked"
+  ],
+  [
+   "good",
+   "in the same group already"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 1,
+   "val": 1,
+   "x": 0,
+   "y": 70
+  },
+  {
+   "id": 2,
+   "val": 2,
+   "x": 90,
+   "y": 70
+  },
+  {
+   "id": 3,
+   "val": 3,
+   "x": 180,
+   "y": 70
+  },
+  {
+   "id": 4,
+   "val": 4,
+   "x": 270,
+   "y": 70
+  },
+  {
+   "id": 5,
+   "val": 5,
+   "x": 360,
+   "y": 70
+  }
+ ],
+ "edges": [],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 180,
+     "y": 70
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 270,
+     "y": 70
+    },
+    {
+     "id": 5,
+     "val": 5,
+     "x": 360,
+     "y": 70
+    }
+   ],
+   "edges": [],
+   "code": "rc",
+   "line": 0,
+   "intro": "a tree has no cycles; the one extra edge is the first that links two already-linked nodes.",
+   "invariant": "two nodes are in the same group iff Union-Find gives them the same root.",
+   "note": "A tree on n nodes has n-1 edges; we get n, so exactly one edge closes a cycle. Process edges in order and ask: are these two ends already connected?",
+   "active": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "done": {},
+   "state": [
+    [
+     "nodes",
+     5
+    ],
+    [
+     "edges",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 180,
+     "y": 70
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 270,
+     "y": 70
+    },
+    {
+     "id": 5,
+     "val": 5,
+     "x": 360,
+     "y": 70
+    }
+   ],
+   "edges": [],
+   "code": "rc",
+   "line": 1,
+   "intro": "each accepted edge joins two groups; the first that can't is the redundant one.",
+   "invariant": "the forest stays acyclic as long as every edge merges different groups.",
+   "note": "Union each edge in input order. The first time union reports 'already connected,' that edge is the answer.",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "edge",
+     "-"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rc",
+   "line": 2,
+   "note": "edge 1-2: root(1) = 1, root(2) = 2. Different groups -> safe to add.",
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 180,
+     "y": 70
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 270,
+     "y": 70
+    },
+    {
+     "id": 5,
+     "val": 5,
+     "x": 360,
+     "y": 70
+    }
+   ],
+   "edges": [],
+   "active": [
+    1,
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "edge",
+     "1-2"
+    ],
+    [
+     "roots",
+     "1,2"
+    ],
+    [
+     "same group?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rc",
+   "line": 2,
+   "note": "Added 1-2 to the forest; the two groups are now one.",
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 180,
+     "y": 70
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 270,
+     "y": 70
+    },
+    {
+     "id": 5,
+     "val": 5,
+     "x": 360,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ]
+   ],
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "edges kept",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rc",
+   "line": 2,
+   "note": "edge 2-3: root(2) = 1, root(3) = 3. Different groups -> safe to add.",
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 180,
+     "y": 70
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 270,
+     "y": 70
+    },
+    {
+     "id": 5,
+     "val": 5,
+     "x": 360,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ]
+   ],
+   "active": [
+    2,
+    3
+   ],
+   "done": {},
+   "state": [
+    [
+     "edge",
+     "2-3"
+    ],
+    [
+     "roots",
+     "1,3"
+    ],
+    [
+     "same group?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rc",
+   "line": 2,
+   "note": "Added 2-3 to the forest; the two groups are now one.",
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 180,
+     "y": 70
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 270,
+     "y": 70
+    },
+    {
+     "id": 5,
+     "val": 5,
+     "x": 360,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "edges kept",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rc",
+   "line": 2,
+   "note": "edge 3-4: root(3) = 1, root(4) = 4. Different groups -> safe to add.",
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 180,
+     "y": 70
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 270,
+     "y": 70
+    },
+    {
+     "id": 5,
+     "val": 5,
+     "x": 360,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "active": [
+    3,
+    4
+   ],
+   "done": {},
+   "state": [
+    [
+     "edge",
+     "3-4"
+    ],
+    [
+     "roots",
+     "1,4"
+    ],
+    [
+     "same group?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rc",
+   "line": 2,
+   "note": "Added 3-4 to the forest; the two groups are now one.",
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 180,
+     "y": 70
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 270,
+     "y": 70
+    },
+    {
+     "id": 5,
+     "val": 5,
+     "x": 360,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "edges kept",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rc",
+   "line": 2,
+   "note": "edge 1-4: root(1) = 1, root(4) = 1. Same group -> this edge closes a cycle!",
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 180,
+     "y": 70
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 270,
+     "y": 70
+    },
+    {
+     "id": 5,
+     "val": 5,
+     "x": 360,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "active": [
+    1,
+    4
+   ],
+   "done": {},
+   "state": [
+    [
+     "edge",
+     "1-4"
+    ],
+    [
+     "roots",
+     "1,1"
+    ],
+    [
+     "same group?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rc",
+   "line": 3,
+   "note": "1 and 4 were already connected through the path we built. Edge [1, 4] is the redundant one.",
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 180,
+     "y": 70
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 270,
+     "y": 70
+    },
+    {
+     "id": 5,
+     "val": 5,
+     "x": 360,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     1,
+     4
+    ]
+   ],
+   "active": [
+    1,
+    4
+   ],
+   "done": {
+    "1": "X",
+    "4": "X"
+   },
+   "state": [
+    [
+     "answer",
+     "[1, 4]"
+    ]
+   ],
+   "banner": "Redundant connection = [1, 4]"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    }
+   ],
+   "edges": [],
+   "code": "rc",
+   "line": 1,
+   "intro": "the smallest cycle: two nodes joined by two edges.",
+   "invariant": "the second edge between the same pair is always redundant.",
+   "note": "Edge case: nodes 1 and 2 joined twice. The first edge merges them; the second finds them already connected.",
+   "active": [
+    1,
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "edges",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rc",
+   "line": 2,
+   "note": "Edge 1-2: merges the two singletons into one group.",
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ]
+   ],
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "kept",
+     "1-2"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rc",
+   "line": 3,
+   "note": "Second edge 1-2: root(1) == root(2) already -> [1, 2] is redundant.",
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 70
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 90,
+     "y": 70
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ]
+   ],
+   "active": [
+    1,
+    2
+   ],
+   "done": {
+    "1": "X",
+    "2": "X"
+   },
+   "state": [
+    [
+     "answer",
+     "[1, 2]"
+    ]
+   ],
+   "banner": "Redundant = [1, 2]"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/26-advanced-ds/0684-redundant-connection/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;684. Redundant Connection — https://leetcode.com/problems/redundant-connection/
 
 A tree on n nodes has exactly n-1 edges. We&#x27;re given n edges (one extra), which
 creates exactly one cycle. Return the last edge (in input order) that can be

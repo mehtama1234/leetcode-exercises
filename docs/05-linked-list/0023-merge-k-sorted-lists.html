@@ -67,7 +67,980 @@
 <h2>Pitfalls</h2>
 <ul><li>Empty inputs: an empty <code>lists</code> array, or lists that are individually empty. The pairwise loop and the <code>merge_two</code> dummy handle both, but test them.</li><li>Odd count: when the number of lists is odd, the last one has no partner. Pair it with <code>None</code> (merging a list with nothing returns the list unchanged).</li><li>Heap version: don&#x27;t push raw nodes — Python can&#x27;t compare them when values tie. Push <code>(node.val, unique_counter, node)</code>.</li></ul>
 <h2>Transfer</h2>
-<p>The pairwise-merge idea is the top of merge sort — the same tournament shape you use in Sort List / 148 and any k-way merge (external sorting). Each pair uses <a href="../0021-merge-two-sorted-lists/">merge two lists / 21</a> directly. The heap variant is the general &quot;merge k sorted streams&quot; tool, showing up in Smallest Range Covering Elements from K Lists / 632 and Kth Smallest Element in a Sorted Matrix / 378.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0023-merge-k-sorted-lists/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;23. Merge k Sorted Lists — https://leetcode.com/problems/merge-k-sorted-lists/
+<p>The pairwise-merge idea is the top of merge sort — the same tournament shape you use in Sort List / 148 and any k-way merge (external sorting). Each pair uses <a href="../0021-merge-two-sorted-lists/">merge two lists / 21</a> directly. The heap variant is the general &quot;merge k sorted streams&quot; tool, showing up in Smallest Range Covering Elements from K Lists / 632 and Kth Smallest Element in a Sorted Matrix / 378.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linkedlist",
+ "title": "Merge k Sorted Lists - pair up instead of folding one at a time",
+ "acts": [
+  "Naive: fold into one accumulator",
+  "The waste",
+  "Divide & conquer",
+  "Edge: empty lists"
+ ],
+ "code": {
+  "naive": [
+   "result = None",
+   "for lst in lists:",
+   "    result = merge_two(result, lst)",
+   "return result"
+  ],
+  "dc": [
+   "while len(lists) > 1:",
+   "    merged = []",
+   "    for i in range(0, len(lists), 2):",
+   "        a = lists[i]; b = lists[i+1] if i+1 < len else None",
+   "        merged.append(merge_two(a, b))",
+   "    lists = merged",
+   "return lists[0]"
+  ]
+ },
+ "legend": [
+  [
+   "good",
+   "in this round's merged result"
+  ],
+  [
+   "active",
+   "being merged now"
+  ],
+  [
+   "dim",
+   "already merged earlier"
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "vals": [
+    1,
+    4,
+    5,
+    1,
+    3,
+    4,
+    2,
+    6,
+    3,
+    8
+   ],
+   "labels": [
+    "A",
+    "A",
+    "A",
+    "B",
+    "B",
+    "B",
+    "C",
+    "C",
+    "D",
+    "D"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     null
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     null
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     null
+    ]
+   ],
+   "code": "naive",
+   "line": 0,
+   "intro": "watch the accumulator get re-walked from the start on every round.",
+   "invariant": "result always holds every node merged so far, in sorted order.",
+   "note": "Four sorted lists A B C D in one row. The obvious plan: merge them into one accumulator, one list at a time.",
+   "pointers": {},
+   "state": [
+    [
+     "lists left",
+     4
+    ],
+    [
+     "nodes re-walked",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "note": "Merge list A into result. But the 0 nodes already in result get walked again \u2014 that re-walk is the cost.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "state": [
+    [
+     "lists left",
+     3
+    ],
+    [
+     "result size",
+     3
+    ],
+    [
+     "nodes re-walked",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "edges": [
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     1
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "note": "Merge list B into result. But the 3 nodes already in result get walked again \u2014 that re-walk is the cost.",
+   "marks": {
+    "0": "dim",
+    "3": "active",
+    "4": "active",
+    "1": "dim",
+    "5": "active",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "lists left",
+     2
+    ],
+    [
+     "result size",
+     6
+    ],
+    [
+     "nodes re-walked",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "edges": [
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     4
+    ],
+    [
+     4,
+     1
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     7,
+     null
+    ]
+   ],
+   "note": "Merge list C into result. But the 6 nodes already in result get walked again \u2014 that re-walk is the cost.",
+   "marks": {
+    "0": "dim",
+    "3": "dim",
+    "6": "active",
+    "4": "dim",
+    "1": "dim",
+    "5": "dim",
+    "2": "dim",
+    "7": "active"
+   },
+   "state": [
+    [
+     "lists left",
+     1
+    ],
+    [
+     "result size",
+     8
+    ],
+    [
+     "nodes re-walked",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "edges": [
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     4
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     8,
+     1
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     9,
+     null
+    ]
+   ],
+   "note": "Merge list D into result. But the 8 nodes already in result get walked again \u2014 that re-walk is the cost.",
+   "marks": {
+    "0": "dim",
+    "3": "dim",
+    "6": "dim",
+    "4": "dim",
+    "8": "active",
+    "1": "dim",
+    "5": "dim",
+    "2": "dim",
+    "7": "dim",
+    "9": "active"
+   },
+   "state": [
+    [
+     "lists left",
+     0
+    ],
+    [
+     "result size",
+     10
+    ],
+    [
+     "nodes re-walked",
+     17
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "edges": [
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     4
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     8,
+     1
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     9,
+     null
+    ]
+   ],
+   "note": "Merged, but the accumulator was re-swept over and over \u2014 17 redundant node touches for 10 nodes. That grows toward O(k*N).",
+   "marks": {
+    "0": "good",
+    "3": "good",
+    "6": "good",
+    "4": "good",
+    "8": "good",
+    "1": "good",
+    "5": "good",
+    "2": "good",
+    "7": "good",
+    "9": "good"
+   },
+   "state": [
+    [
+     "result",
+     "1 1 2 3 3 4 4 5 6 8"
+    ],
+    [
+     "nodes re-walked",
+     17
+    ]
+   ],
+   "banner": "Naive fold: correct but re-walks the accumulator"
+  },
+  {
+   "act": 1,
+   "vals": [
+    1,
+    4,
+    5,
+    1,
+    3,
+    4,
+    2,
+    6,
+    3,
+    8
+   ],
+   "labels": [
+    "A",
+    "A",
+    "A",
+    "B",
+    "B",
+    "B",
+    "C",
+    "C",
+    "D",
+    "D"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     null
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     null
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     null
+    ]
+   ],
+   "code": "naive",
+   "line": 1,
+   "intro": "pairing lists up means each node is touched once per round, and rounds halve.",
+   "invariant": "after each round the number of lists is halved.",
+   "note": "The waste: one growing accumulator gets re-read every step. Instead, merge in PAIRS so each round halves how many lists remain: 4 -> 2 -> 1. log k rounds, each touching every node once -> O(N log k).",
+   "pointers": {},
+   "state": [
+    [
+     "fold",
+     "O(k*N)"
+    ],
+    [
+     "pairwise",
+     "O(N log k)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "vals": [
+    1,
+    4,
+    5,
+    1,
+    3,
+    4,
+    2,
+    6,
+    3,
+    8
+   ],
+   "labels": [
+    "A",
+    "A",
+    "A",
+    "B",
+    "B",
+    "B",
+    "C",
+    "C",
+    "D",
+    "D"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     null
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     null
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     null
+    ]
+   ],
+   "code": "dc",
+   "line": 0,
+   "intro": "round 1 pairs (A,B) and (C,D); round 2 merges the two results.",
+   "invariant": "every node is touched exactly once per round.",
+   "note": "Divide and conquer. Round 1: merge A with B, and C with D \u2014 two independent merges.",
+   "pointers": {},
+   "state": [
+    [
+     "round",
+     1
+    ],
+    [
+     "lists",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dc",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     1
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     null
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     null
+    ]
+   ],
+   "note": "A + B -> 1 1 3 4 4 5.",
+   "marks": {
+    "0": "good",
+    "3": "good",
+    "4": "good",
+    "1": "good",
+    "5": "good",
+    "2": "good"
+   },
+   "state": [
+    [
+     "round",
+     1
+    ],
+    [
+     "merged",
+     "A+B"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dc",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     1
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     6,
+     8
+    ],
+    [
+     8,
+     7
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     9,
+     null
+    ]
+   ],
+   "note": "C + D -> 2 3 6 8. Round 1 done: 4 lists became 2.",
+   "marks": {
+    "0": "dim",
+    "3": "dim",
+    "4": "dim",
+    "1": "dim",
+    "5": "dim",
+    "2": "dim",
+    "6": "good",
+    "8": "good",
+    "7": "good",
+    "9": "good"
+   },
+   "state": [
+    [
+     "round",
+     1
+    ],
+    [
+     "lists",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dc",
+   "line": 0,
+   "edges": [
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     1
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     2,
+     null
+    ],
+    [
+     6,
+     8
+    ],
+    [
+     8,
+     7
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     9,
+     null
+    ]
+   ],
+   "note": "Round 2: merge the two survivors (A+B) and (C+D) into one.",
+   "marks": {
+    "0": "active",
+    "3": "active",
+    "4": "active",
+    "1": "active",
+    "5": "active",
+    "2": "active",
+    "6": "active",
+    "8": "active",
+    "7": "active",
+    "9": "active"
+   },
+   "state": [
+    [
+     "round",
+     2
+    ],
+    [
+     "lists",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dc",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     4
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     8,
+     1
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     9,
+     null
+    ]
+   ],
+   "note": "Final merge -> 1 1 2 3 3 4 4 5 6 8. Two rounds (log 4) and each node touched once per round.",
+   "marks": {
+    "0": "good",
+    "3": "good",
+    "6": "good",
+    "4": "good",
+    "8": "good",
+    "1": "good",
+    "5": "good",
+    "2": "good",
+    "7": "good",
+    "9": "good"
+   },
+   "state": [
+    [
+     "round",
+     2
+    ],
+    [
+     "lists",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dc",
+   "line": 6,
+   "edges": [
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     6,
+     4
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     8,
+     1
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     9,
+     null
+    ]
+   ],
+   "note": "One sorted list, in O(N log k). The accumulator re-walking is gone.",
+   "marks": {
+    "0": "good",
+    "3": "good",
+    "6": "good",
+    "4": "good",
+    "8": "good",
+    "1": "good",
+    "5": "good",
+    "2": "good",
+    "7": "good",
+    "9": "good"
+   },
+   "state": [
+    [
+     "result",
+     "1 1 2 3 3 4 4 5 6 8"
+    ]
+   ],
+   "banner": "Divide & conquer: merged in log k rounds"
+  },
+  {
+   "act": 3,
+   "vals": [
+    1
+   ],
+   "labels": [
+    "B"
+   ],
+   "edges": [
+    [
+     0,
+     null
+    ]
+   ],
+   "code": "dc",
+   "line": 0,
+   "intro": "empty lists just drop out; a lone list is already the answer.",
+   "invariant": "merging with None returns the other list unchanged.",
+   "note": "Edge case: [[], [1], []]. The empty lists contribute nothing, so pairing them with [1] leaves [1] as the whole result.",
+   "pointers": {},
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "result",
+     "1"
+    ]
+   ],
+   "banner": "Empties drop out: result is 1"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0023-merge-k-sorted-lists/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;23. Merge k Sorted Lists — https://leetcode.com/problems/merge-k-sorted-lists/
 
 Given an array of k sorted linked lists, merge them all into one sorted list
 and return its head.

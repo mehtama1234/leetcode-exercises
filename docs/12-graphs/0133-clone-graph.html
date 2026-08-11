@@ -57,7 +57,875 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Forgetting the map</strong> → the walk spins forever on any loop, or makes duplicate nodes.</li><li><strong>Adding to the map too late</strong> (after recursing) → the loop re-enters before the copy is registered, and you still spin. Register *first*.</li><li><strong><code>None</code> input.</strong> An empty graph must return <code>None</code>, not crash.</li><li><strong>Shallow copy.</strong> Copying the neighbor *list* but reusing the same Node objects isn&#x27;t a deep copy — the &quot;copy&quot; would share nodes with the original.</li></ul>
 <h2>Transfer</h2>
-<p>The &quot;walk + remember by identity&quot; move copies any linked structure with sharing or loops: deep-copying a <a href="https://leetcode.com/problems/copy-list-with-random-pointer/">linked list with random pointers / 138</a>, serializing a graph, or any walk where you must not revisit a node — see <a href="../0200-number-of-islands/">Number of Islands / 200</a> for the visited-marker idea and <a href="../0207-course-schedule/">Course Schedule / 207</a> for loop-aware traversal.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/12-graphs/0133-clone-graph/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;133. Clone Graph — https://leetcode.com/problems/clone-graph/
+<p>The &quot;walk + remember by identity&quot; move copies any linked structure with sharing or loops: deep-copying a <a href="https://leetcode.com/problems/copy-list-with-random-pointer/">linked list with random pointers / 138</a>, serializing a graph, or any walk where you must not revisit a node — see <a href="../0200-number-of-islands/">Number of Islands / 200</a> for the visited-marker idea and <a href="../0207-course-schedule/">Course Schedule / 207</a> for loop-aware traversal.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Clone Graph - record each clone before recursing so cycles terminate",
+ "acts": [
+  "The rule: map + record first",
+  "DFS the square graph",
+  "Edge: a 2-node cycle"
+ ],
+ "code": {
+  "dfs": [
+   "def dfs(original):",
+   "    if original in clones:",
+   "        return clones[original]   # already copied",
+   "    copy = Node(original.val)",
+   "    clones[original] = copy       # record BEFORE recursing",
+   "    for nb in original.neighbors:",
+   "        copy.neighbors.append(dfs(nb))",
+   "    return copy"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "visiting now"
+  ],
+  [
+   "good",
+   "cloned (badge = clone)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 1,
+   "val": 1,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 2,
+   "val": 2,
+   "x": 150,
+   "y": 0
+  },
+  {
+   "id": 3,
+   "val": 3,
+   "x": 150,
+   "y": 130
+  },
+  {
+   "id": 4,
+   "val": 4,
+   "x": 0,
+   "y": 130
+  }
+ ],
+ "edges": [
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   3,
+   4
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 150,
+     "y": 0
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 150,
+     "y": 130
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 0,
+     "y": 130
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "dfs",
+   "line": 4,
+   "intro": "each node gets ONE clone, recorded in the map before we recurse.",
+   "invariant": "a node in the map is never cloned again \u2014 that's what stops cycles.",
+   "note": "Deep-copy means new node objects with the same wiring. The trick is a map 'original -> clone'. Record the clone BEFORE visiting neighbors, so a cycle finds the clone already there instead of looping forever.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "rule",
+     "clone once, record first"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "dfs",
+   "line": 1,
+   "note": "The map is also the done-list: the first line of dfs checks it. If the original was seen, hand back its existing clone and stop.",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "map",
+     "original -> clone"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 150,
+     "y": 0
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 150,
+     "y": 130
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 0,
+     "y": 130
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "clones (badges) appear once per node, then revisits just return them.",
+   "invariant": "every node's clone is created exactly once.",
+   "note": "Run it from node 1. Watch each node get cloned once; later arrivals just return the existing clone.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "start",
+     "node 1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "First time at node 1: make its clone and record it in the map NOW, before touching neighbors.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": 1
+   },
+   "state": [
+    [
+     "cloned",
+     1
+    ],
+    [
+     "clones",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 6,
+   "note": "From clone 1, copy the edge to neighbor 2 by cloning 2.",
+   "active": [
+    1,
+    2
+   ],
+   "done": {
+    "1": 1
+   },
+   "state": [
+    [
+     "at",
+     1
+    ],
+    [
+     "recurse into",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "First time at node 2: make its clone and record it in the map NOW, before touching neighbors.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": 1,
+    "2": 2
+   },
+   "state": [
+    [
+     "cloned",
+     2
+    ],
+    [
+     "clones",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 2,
+   "note": "Reached node 1 again, but its clone already exists \u2014 return it, don't recurse. This is what makes the cycle safe.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": 1,
+    "2": 2
+   },
+   "state": [
+    [
+     "revisit",
+     1
+    ],
+    [
+     "clones",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 6,
+   "note": "From clone 2, copy the edge to neighbor 3 by cloning 3.",
+   "active": [
+    2,
+    3
+   ],
+   "done": {
+    "1": 1,
+    "2": 2
+   },
+   "state": [
+    [
+     "at",
+     2
+    ],
+    [
+     "recurse into",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "First time at node 3: make its clone and record it in the map NOW, before touching neighbors.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3
+   },
+   "state": [
+    [
+     "cloned",
+     3
+    ],
+    [
+     "clones",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 2,
+   "note": "Reached node 2 again, but its clone already exists \u2014 return it, don't recurse. This is what makes the cycle safe.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3
+   },
+   "state": [
+    [
+     "revisit",
+     2
+    ],
+    [
+     "clones",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 6,
+   "note": "From clone 3, copy the edge to neighbor 4 by cloning 4.",
+   "active": [
+    3,
+    4
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3
+   },
+   "state": [
+    [
+     "at",
+     3
+    ],
+    [
+     "recurse into",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "First time at node 4: make its clone and record it in the map NOW, before touching neighbors.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "cloned",
+     4
+    ],
+    [
+     "clones",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 2,
+   "note": "Reached node 1 again, but its clone already exists \u2014 return it, don't recurse. This is what makes the cycle safe.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "revisit",
+     1
+    ],
+    [
+     "clones",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 2,
+   "note": "Reached node 3 again, but its clone already exists \u2014 return it, don't recurse. This is what makes the cycle safe.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "revisit",
+     3
+    ],
+    [
+     "clones",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 2,
+   "note": "Reached node 4 again, but its clone already exists \u2014 return it, don't recurse. This is what makes the cycle safe.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "revisit",
+     4
+    ],
+    [
+     "clones",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 7,
+   "note": "All 4 nodes cloned exactly once; every edge copied to point at clones. The new graph mirrors the old one with brand-new objects.",
+   "active": [],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "nodes cloned",
+     4
+    ]
+   ],
+   "banner": "Deep copy done: 4 new nodes, same square wiring"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 150,
+     "y": 0
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "the back-edge 2->1 arrives at an already-cloned node.",
+   "invariant": "record-before-recurse turns the cycle into a map lookup.",
+   "note": "Edge case: two nodes pointing at each other. Without the record-first map, this loops forever. With it, the cycle just returns the existing clone.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "shape",
+     "1 <-> 2 cycle"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 4,
+   "note": "First time at node 1: make its clone and record it in the map NOW, before touching neighbors.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": 1
+   },
+   "state": [
+    [
+     "cloned",
+     1
+    ],
+    [
+     "clones",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "From clone 1, copy the edge to neighbor 2 by cloning 2.",
+   "active": [
+    1,
+    2
+   ],
+   "done": {
+    "1": 1
+   },
+   "state": [
+    [
+     "at",
+     1
+    ],
+    [
+     "recurse into",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 4,
+   "note": "First time at node 2: make its clone and record it in the map NOW, before touching neighbors.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": 1,
+    "2": 2
+   },
+   "state": [
+    [
+     "cloned",
+     2
+    ],
+    [
+     "clones",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 2,
+   "note": "Reached node 1 again, but its clone already exists \u2014 return it, don't recurse. This is what makes the cycle safe.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": 1,
+    "2": 2
+   },
+   "state": [
+    [
+     "revisit",
+     1
+    ],
+    [
+     "clones",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "From clone 2, copy the edge to neighbor 3 by cloning 3.",
+   "active": [
+    2,
+    3
+   ],
+   "done": {
+    "1": 1,
+    "2": 2
+   },
+   "state": [
+    [
+     "at",
+     2
+    ],
+    [
+     "recurse into",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 4,
+   "note": "First time at node 3: make its clone and record it in the map NOW, before touching neighbors.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3
+   },
+   "state": [
+    [
+     "cloned",
+     3
+    ],
+    [
+     "clones",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 2,
+   "note": "Reached node 2 again, but its clone already exists \u2014 return it, don't recurse. This is what makes the cycle safe.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3
+   },
+   "state": [
+    [
+     "revisit",
+     2
+    ],
+    [
+     "clones",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 6,
+   "note": "From clone 3, copy the edge to neighbor 4 by cloning 4.",
+   "active": [
+    3,
+    4
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3
+   },
+   "state": [
+    [
+     "at",
+     3
+    ],
+    [
+     "recurse into",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 4,
+   "note": "First time at node 4: make its clone and record it in the map NOW, before touching neighbors.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "cloned",
+     4
+    ],
+    [
+     "clones",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 2,
+   "note": "Reached node 1 again, but its clone already exists \u2014 return it, don't recurse. This is what makes the cycle safe.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "revisit",
+     1
+    ],
+    [
+     "clones",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 2,
+   "note": "Reached node 3 again, but its clone already exists \u2014 return it, don't recurse. This is what makes the cycle safe.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "revisit",
+     3
+    ],
+    [
+     "clones",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 2,
+   "note": "Reached node 4 again, but its clone already exists \u2014 return it, don't recurse. This is what makes the cycle safe.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "revisit",
+     4
+    ],
+    [
+     "clones",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 7,
+   "note": "Node 1 cloned, node 2 cloned, then 2's edge back to 1 found 1's clone already in the map \u2014 done, no infinite loop.",
+   "active": [],
+   "done": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "clones",
+     4
+    ]
+   ],
+   "banner": "Cycle handled: 2 clones, no infinite recursion"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/12-graphs/0133-clone-graph/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;133. Clone Graph — https://leetcode.com/problems/clone-graph/
 
 Given a reference to a node in a connected, undirected graph, return a deep copy:
 a brand-new graph with the same shape but all-new node objects.

@@ -62,7 +62,847 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Seeding the walk.</strong> The traversal is over *values as next-pointers*; seed both pointers with <code>nums[0]</code>. The algorithm relies on 0 never being a value (guaranteed, since values are ≥ 1), so index 0 is a safe start outside the loop.</li><li><strong>Fusing the two phases.</strong> Phase 1 finds a meeting point *inside* the loop, not the entrance. You must run phase 2 (equal speed from the start) to get the answer.</li><li><strong>Reaching for the sign-flip trick.</strong> Constant memory, yes, but it mutates the input — disqualified here.</li><li>**Assuming exactly one duplicated *slot*.** The value may repeat many times; the loop argument still pins down the single repeated *value*.</li></ul>
 <h2>Transfer</h2>
-<p>Two transferable ideas live here. First, *index-as-hash* ties it to its chapter siblings <a href="../0442-find-all-duplicates-in-an-array/">Find All Duplicates / 442</a> and <a href="../0448-find-all-numbers-disappeared-in-an-array/">Find All Numbers Disappeared / 448</a> — but the read-only rule blocks their sign trick. Second, *Floyd&#x27;s cycle detection*, which powers <a href="../../05-linked-list/0141-linked-list-cycle/">Linked List Cycle / 141</a> and <a href="../../05-linked-list/0142-linked-list-cycle-ii/">Linked List Cycle II / 142</a>: whenever &quot;for each x, jump to f(x)&quot; over a finite set must eventually repeat, two pointers at 1× and 2× speed find where the repetition begins in constant space.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/24-cyclic-sort/0287-find-the-duplicate-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;287. Find the Duplicate Number — https://leetcode.com/problems/find-the-duplicate-number/
+<p>Two transferable ideas live here. First, *index-as-hash* ties it to its chapter siblings <a href="../0442-find-all-duplicates-in-an-array/">Find All Duplicates / 442</a> and <a href="../0448-find-all-numbers-disappeared-in-an-array/">Find All Numbers Disappeared / 448</a> — but the read-only rule blocks their sign trick. Second, *Floyd&#x27;s cycle detection*, which powers <a href="../../05-linked-list/0141-linked-list-cycle/">Linked List Cycle / 141</a> and <a href="../../05-linked-list/0142-linked-list-cycle-ii/">Linked List Cycle II / 142</a>: whenever &quot;for each x, jump to f(x)&quot; over a finite set must eventually repeat, two pointers at 1× and 2× speed find where the repetition begins in constant space.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Find the Duplicate \u2014 a cycle in the jumps, found read-only",
+ "acts": [
+  "Brute: every pair",
+  "The constraints",
+  "Floyd's tortoise & hare",
+  "Edge case: [1, 1]"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "    for j in range(i+1, n):",
+   "        if nums[i] == nums[j]:",
+   "            return nums[i]"
+  ],
+  "fast": [
+   "slow = fast = nums[0]",
+   "while True:                 # phase 1: find a meeting point",
+   "    slow = nums[slow]",
+   "    fast = nums[nums[fast]]",
+   "    if slow == fast: break",
+   "slow = nums[0]              # phase 2: find the entrance",
+   "while slow != fast:",
+   "    slow = nums[slow]",
+   "    fast = nums[fast]",
+   "return slow"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "slow pointer"
+  ],
+  [
+   "bad",
+   "fast pointer"
+  ],
+  [
+   "good",
+   "meeting point / the duplicate"
+  ],
+  [
+   "dim",
+   "other indices"
+  ]
+ ],
+ "cells": [
+  1,
+  3,
+  4,
+  2,
+  2
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    1,
+    3,
+    4,
+    2,
+    2
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "every i re-compares against the whole tail \u2014 the same pairs, over and over.",
+   "invariant": "every pair before (i, j) has been compared and differed.",
+   "note": "Brute force: compare every pair; the first equal pair is the duplicate. O(n^2) time.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "marks": {
+    "0": "active",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "comparisons",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[0]=1 vs nums[1]=3. Different.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "comparisons",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[0]=1 vs nums[2]=4. Different.",
+   "pointers": {
+    "i": 0,
+    "j": 2
+   },
+   "arc": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "comparisons",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[0]=1 vs nums[3]=2. Different.",
+   "pointers": {
+    "i": 0,
+    "j": 3
+   },
+   "arc": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "comparisons",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[0]=1 vs nums[4]=2. Different.",
+   "pointers": {
+    "i": 0,
+    "j": 4
+   },
+   "arc": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "active",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "comparisons",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[1]=3 vs nums[2]=4. Different.",
+   "pointers": {
+    "i": 1,
+    "j": 2
+   },
+   "arc": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "active",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "comparisons",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[1]=3 vs nums[3]=2. Different.",
+   "pointers": {
+    "i": 1,
+    "j": 3
+   },
+   "arc": [
+    1,
+    3
+   ],
+   "marks": {
+    "1": "active",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "comparisons",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[1]=3 vs nums[4]=2. Different.",
+   "pointers": {
+    "i": 1,
+    "j": 4
+   },
+   "arc": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "active",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "comparisons",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[2]=4 vs nums[3]=2. Different.",
+   "pointers": {
+    "i": 2,
+    "j": 3
+   },
+   "arc": [
+    2,
+    3
+   ],
+   "marks": {
+    "2": "active",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "comparisons",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[2]=4 vs nums[4]=2. Different.",
+   "pointers": {
+    "i": 2,
+    "j": 4
+   },
+   "arc": [
+    2,
+    4
+   ],
+   "marks": {
+    "2": "active",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "comparisons",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 2,
+   "note": "nums[3]=2 vs nums[4]=2. Equal \u2014 duplicate found.",
+   "pointers": {
+    "i": 3,
+    "j": 4
+   },
+   "arc": [
+    3,
+    4
+   ],
+   "marks": {
+    "3": "active",
+    "4": "good"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "j",
+     4
+    ],
+    [
+     "comparisons",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "Duplicate is 2, but it took 10 comparisons \u2014 about n^2/2, and it gives us no O(1)-space, no-mutation guarantee.",
+   "marks": {
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "answer",
+     2
+    ],
+    [
+     "comparisons",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "no extra memory AND no mutation \u2014 that pair is what forces Floyd.",
+   "note": "A set would find it in O(n) but uses O(n) memory. Sign-flipping (like #442) is O(1) memory but MUTATES the array. #287 forbids both.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "set",
+     "O(n) memory \u2717"
+    ],
+    [
+     "sign-flip",
+     "mutates array \u2717"
+    ],
+    [
+     "need",
+     "O(1) space, read-only"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "read index i as an arrow to nums[i]; a repeated value = two arrows into one node.",
+   "note": "Read the array as jumps: from index i, go to index nums[i]. Two indices hold the duplicate, so two arrows land on the same node \u2014 the path must loop, and the loop's entrance IS the duplicate.",
+   "cells": [
+    1,
+    3,
+    4,
+    2,
+    2
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "index 3 \u2192 nums[3]",
+     "2"
+    ],
+    [
+     "index 4 \u2192 nums[4]",
+     "2"
+    ],
+    [
+     "shared target",
+     "index 2 = a cycle"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    3,
+    4,
+    2,
+    2
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "slow hops one arrow, fast hops two; inside the loop they must collide.",
+   "invariant": "both pointers are following the same jump function from index 0.",
+   "note": "Phase 1: slow = nums[slow] (one jump), fast = nums[nums[fast]] (two jumps). They start together, then chase around the loop.",
+   "pointers": {
+    "slow": 1,
+    "fast": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "slow at",
+     1
+    ],
+    [
+     "fast at",
+     1
+    ],
+    [
+     "phase",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "slow jumps once \u2192 index 3. fast jumps twice \u2192 index 2. Not yet.",
+   "pointers": {
+    "slow": 3,
+    "fast": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "bad",
+    "3": "active",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "slow at",
+     3
+    ],
+    [
+     "fast at",
+     2
+    ],
+    [
+     "hops",
+     1
+    ],
+    [
+     "met?",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "slow jumps once \u2192 index 2. fast jumps twice \u2192 index 2. They meet! A point inside the cycle.",
+   "pointers": {
+    "slow": 2,
+    "fast": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "slow at",
+     2
+    ],
+    [
+     "fast at",
+     2
+    ],
+    [
+     "hops",
+     2
+    ],
+    [
+     "met?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "intro": "reset slow to the start; now both step ONE at a time \u2014 they meet at the entrance.",
+   "invariant": "the distance math guarantees they collide exactly at the cycle entrance.",
+   "note": "Phase 2: leave fast at the meeting point (index 2); reset slow to nums[0] = 1. Now both step one jump at a time.",
+   "pointers": {
+    "slow": 1,
+    "fast": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active",
+    "2": "bad",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "slow reset to",
+     1
+    ],
+    [
+     "fast at",
+     2
+    ],
+    [
+     "phase",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "slow \u2192 index 3, fast \u2192 index 4. Keep stepping.",
+   "pointers": {
+    "slow": 3,
+    "fast": 4
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active",
+    "4": "bad"
+   },
+   "state": [
+    [
+     "slow at",
+     3
+    ],
+    [
+     "fast at",
+     4
+    ],
+    [
+     "met?",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "slow \u2192 index 2, fast \u2192 index 2. They meet \u2014 this index is the cycle entrance.",
+   "pointers": {
+    "slow": 2,
+    "fast": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "slow at",
+     2
+    ],
+    [
+     "fast at",
+     2
+    ],
+    [
+     "met?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 9,
+   "note": "Entrance index = 2, and that value is the duplicate: 2. O(1) space, array never touched.",
+   "pointers": {
+    "slow": 2,
+    "fast": 2
+   },
+   "marks": {
+    "2": "good",
+    "0": "dim",
+    "1": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     2
+    ],
+    [
+     "extra memory",
+     "O(1)"
+    ],
+    [
+     "array modified?",
+     "no"
+    ]
+   ],
+   "banner": "Duplicate = 2   \u2014 O(1) space, read-only (brute took 10 compares)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    1,
+    1
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the tiniest cycle: index 1 points to itself, and that's the duplicate.",
+   "invariant": "two positions holding 1 both jump to index 1 \u2014 an immediate loop.",
+   "note": "Edge case: [1, 1], n = 1. Both index 0 and index 1 jump to index 1, so the loop entrance is index 1 \u2192 duplicate 1.",
+   "pointers": {
+    "slow": 1,
+    "fast": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active"
+   },
+   "state": [
+    [
+     "slow at",
+     1
+    ],
+    [
+     "fast at",
+     1
+    ],
+    [
+     "phase",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "slow \u2192 index 1, fast \u2192 index 1. Already equal \u2014 meeting point is index 1.",
+   "pointers": {
+    "slow": 1,
+    "fast": 1
+   },
+   "marks": {
+    "1": "good",
+    "0": "dim"
+   },
+   "state": [
+    [
+     "slow at",
+     1
+    ],
+    [
+     "fast at",
+     1
+    ],
+    [
+     "met?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "Phase 2: reset slow to nums[0] = 1. slow == fast already at index 1.",
+   "pointers": {
+    "slow": 1,
+    "fast": 1
+   },
+   "marks": {
+    "1": "good",
+    "0": "dim"
+   },
+   "state": [
+    [
+     "slow at",
+     1
+    ],
+    [
+     "fast at",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 9,
+   "note": "Entrance index = 1, duplicate value = 1. The smallest case works too.",
+   "pointers": {
+    "slow": 1,
+    "fast": 1
+   },
+   "marks": {
+    "1": "good",
+    "0": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     1
+    ],
+    [
+     "extra memory",
+     "O(1)"
+    ]
+   ],
+   "banner": "Smallest case [1, 1] \u2192 duplicate = 1"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/24-cyclic-sort/0287-find-the-duplicate-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;287. Find the Duplicate Number — https://leetcode.com/problems/find-the-duplicate-number/
 
 Given `nums` of length n+1 where every value is in 1..n, exactly one value is
 repeated (possibly many times). Find that repeated value WITHOUT modifying the

@@ -58,7 +58,1507 @@
 <h2>Pitfalls</h2>
 <ul><li>The comparison is <code>&lt;=</code>, not <code>&lt;</code>: equal prices are part of the span and must be absorbed (see <code>[30,30,30] -&gt; 1,2,3</code>).</li><li>Store the running <strong>span</strong> in each block, not just the price — that&#x27;s what lets a pop swallow a whole run in one step instead of re-counting it.</li><li>One slow <code>next</code> (many pops) does not break the bound. The cost is spread out: those pops were bought by earlier pushes.</li><li>Every span is at least <code>1</code> (today counts itself); forgetting that undercounts.</li></ul>
 <h2>Transfer</h2>
-<p>This is the live, look-<strong>left</strong> version of the next-greater-element stack. Siblings: <a href="../0496-next-greater-element-i/">Next Greater Element I / 496</a> (look right, all at once), <a href="https://leetcode.com/problems/daily-temperatures/">Daily Temperatures / 739</a> (distance to the next warmer day), and the resolve-on-pop core of <a href="../0084-largest-rectangle-in-histogram/">Largest Rectangle in Histogram / 84</a>. Whenever a stream needs a bounded-cost &quot;how far back until something bigger,&quot; reach for a monotonic stack that stores collapsed runs.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/22-monotonic-stack/0901-online-stock-span/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;901. Online Stock Span — https://leetcode.com/problems/online-stock-span/
+<p>This is the live, look-<strong>left</strong> version of the next-greater-element stack. Siblings: <a href="../0496-next-greater-element-i/">Next Greater Element I / 496</a> (look right, all at once), <a href="https://leetcode.com/problems/daily-temperatures/">Daily Temperatures / 739</a> (distance to the next warmer day), and the resolve-on-pop core of <a href="../0084-largest-rectangle-in-histogram/">Largest Rectangle in Histogram / 84</a>. Whenever a stream needs a bounded-cost &quot;how far back until something bigger,&quot; reach for a monotonic stack that stores collapsed runs.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Online Stock Span - absorb dominated days into one growing span",
+ "acts": [
+  "Naive walk & waste",
+  "The block rule",
+  "Run the stream",
+  "Edges: rising / falling"
+ ],
+ "code": {
+  "naive": [
+   "def next(price):        # naive",
+   "    count = 1",
+   "    walk back over stored prices",
+   "    while prev <= price: count += 1",
+   "    return count"
+  ],
+  "fast": [
+   "def next(price):",
+   "    span = 1",
+   "    while stack and stack[-1].price <= price:",
+   "        span += stack.pop().span",
+   "    stack.append((price, span))",
+   "    return span"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "today's price"
+  ],
+  [
+   "good",
+   "days inside the span"
+  ],
+  [
+   "bad",
+   "blocked (span 1)"
+  ],
+  [
+   "dim",
+   "earlier days"
+  ]
+ ],
+ "cells": [
+  100,
+  80,
+  60,
+  70,
+  60,
+  75,
+  85
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    100,
+    80,
+    60,
+    70,
+    60,
+    75,
+    85
+   ],
+   "code": "naive",
+   "line": 0,
+   "intro": "each new price walks backward over ALL earlier days it can see.",
+   "invariant": "span = consecutive days back with price <= today, then a taller day stops it.",
+   "note": "Naive span: for each new price, walk back counting days that were <= today's, stopping at the first strictly higher day.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "day",
+     0
+    ],
+    [
+     "steps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "day 0 price 100: walk back 0 day(s) that were <= 100, stopped by the start.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "window": [
+    0,
+    0
+   ],
+   "state": [
+    [
+     "day",
+     0
+    ],
+    [
+     "span",
+     1
+    ],
+    [
+     "back-steps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "day 1 price 80: walk back 0 day(s) that were <= 80, stopped by day 0 price 100.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active"
+   },
+   "window": [
+    1,
+    1
+   ],
+   "state": [
+    [
+     "day",
+     1
+    ],
+    [
+     "span",
+     1
+    ],
+    [
+     "back-steps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "day 2 price 60: walk back 0 day(s) that were <= 60, stopped by day 1 price 80.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active"
+   },
+   "window": [
+    2,
+    2
+   ],
+   "state": [
+    [
+     "day",
+     2
+    ],
+    [
+     "span",
+     1
+    ],
+    [
+     "back-steps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "day 3 price 70: walk back 1 day(s) that were <= 70, stopped by day 1 price 80.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "window": [
+    2,
+    3
+   ],
+   "state": [
+    [
+     "day",
+     3
+    ],
+    [
+     "span",
+     2
+    ],
+    [
+     "back-steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "day 4 price 60: walk back 0 day(s) that were <= 60, stopped by day 3 price 70.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "active"
+   },
+   "window": [
+    4,
+    4
+   ],
+   "state": [
+    [
+     "day",
+     4
+    ],
+    [
+     "span",
+     1
+    ],
+    [
+     "back-steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "day 5 price 75: walk back 3 day(s) that were <= 75, stopped by day 1 price 80.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "active"
+   },
+   "window": [
+    2,
+    5
+   ],
+   "state": [
+    [
+     "day",
+     5
+    ],
+    [
+     "span",
+     4
+    ],
+    [
+     "back-steps",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "day 6 price 85: walk back 5 day(s) that were <= 85, stopped by day 0 price 100.",
+   "pointers": {
+    "i": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "active"
+   },
+   "window": [
+    1,
+    6
+   ],
+   "state": [
+    [
+     "day",
+     6
+    ],
+    [
+     "span",
+     6
+    ],
+    [
+     "back-steps",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 4,
+   "note": "Correct, but re-walking earlier days cost 9 steps \u2014 day 75 re-counted 60 and 70 that day 70 already swallowed. That overlap is the waste.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "back-steps",
+     9
+    ],
+    [
+     "pattern",
+     "~ n * n worst case"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    100,
+    80,
+    60,
+    70,
+    60,
+    75,
+    85
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "when today >= an earlier day, that day can never block a future day again.",
+   "invariant": "stack prices strictly decrease bottom -> top; each block carries its own span.",
+   "note": "Rule: keep a stack of (price, span) blocks. A new price absorbs every block with price <= today, adding their spans into today's \u2014 each day is popped once, so it is amortized O(1).",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": []
+   },
+   "state": [
+    [
+     "idea",
+     "absorb dominated days"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    100,
+    80,
+    60,
+    70,
+    60,
+    75,
+    85
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "watch the stack absorb shorter runs and hand back a growing span.",
+   "invariant": "a popped block's whole span folds into today's span.",
+   "note": "Run the official stream. Each new price pops every block it dominates, sums their spans, then pushes itself.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {},
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": []
+   },
+   "state": [
+    [
+     "spans",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "day 0, price 100. Absorb every stacked block with price <= 100.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": []
+   },
+   "state": [
+    [
+     "day",
+     0
+    ],
+    [
+     "price",
+     100
+    ],
+    [
+     "span so far",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Push (100, 1); span for day 0 is 1.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "window": [
+    0,
+    0
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     0
+    ],
+    [
+     "span",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "day 1, price 80. Absorb every stacked block with price <= 80.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     1
+    ],
+    [
+     "price",
+     80
+    ],
+    [
+     "span so far",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Push (80, 1); span for day 1 is 1.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "good"
+   },
+   "window": [
+    1,
+    1
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     1
+    ],
+    [
+     "span",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "day 2, price 60. Absorb every stacked block with price <= 60.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     2
+    ],
+    [
+     "price",
+     60
+    ],
+    [
+     "span so far",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Push (60, 1); span for day 2 is 1.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good"
+   },
+   "window": [
+    2,
+    2
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ],
+     [
+      "60",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     2
+    ],
+    [
+     "span",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "day 3, price 70. Absorb every stacked block with price <= 70.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ],
+     [
+      "60",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     3
+    ],
+    [
+     "price",
+     70
+    ],
+    [
+     "span so far",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "70 >= block price 60: absorb its span 1 -> running span 2.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "absorbed",
+     "(60, 1)"
+    ],
+    [
+     "span so far",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Push (70, 2); span for day 3 is 2.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good",
+    "3": "good"
+   },
+   "window": [
+    2,
+    3
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ],
+     [
+      "70",
+      "span 2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     3
+    ],
+    [
+     "span",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "day 4, price 60. Absorb every stacked block with price <= 60.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ],
+     [
+      "70",
+      "span 2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     4
+    ],
+    [
+     "price",
+     60
+    ],
+    [
+     "span so far",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Push (60, 1); span for day 4 is 1.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "good"
+   },
+   "window": [
+    4,
+    4
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ],
+     [
+      "70",
+      "span 2"
+     ],
+     [
+      "60",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     4
+    ],
+    [
+     "span",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "day 5, price 75. Absorb every stacked block with price <= 75.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ],
+     [
+      "70",
+      "span 2"
+     ],
+     [
+      "60",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     5
+    ],
+    [
+     "price",
+     75
+    ],
+    [
+     "span so far",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "75 >= block price 60: absorb its span 1 -> running span 2.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ],
+     [
+      "70",
+      "span 2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "absorbed",
+     "(60, 1)"
+    ],
+    [
+     "span so far",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "75 >= block price 70: absorb its span 2 -> running span 4.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "absorbed",
+     "(70, 2)"
+    ],
+    [
+     "span so far",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Push (75, 4); span for day 5 is 4.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good"
+   },
+   "window": [
+    2,
+    5
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ],
+     [
+      "75",
+      "span 4"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     5
+    ],
+    [
+     "span",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "day 6, price 85. Absorb every stacked block with price <= 85.",
+   "pointers": {
+    "i": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ],
+     [
+      "75",
+      "span 4"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     6
+    ],
+    [
+     "price",
+     85
+    ],
+    [
+     "span so far",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "85 >= block price 75: absorb its span 4 -> running span 5.",
+   "pointers": {
+    "i": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "80",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "absorbed",
+     "(75, 4)"
+    ],
+    [
+     "span so far",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "85 >= block price 80: absorb its span 1 -> running span 6.",
+   "pointers": {
+    "i": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "absorbed",
+     "(80, 1)"
+    ],
+    [
+     "span so far",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Push (85, 6); span for day 6 is 6.",
+   "pointers": {
+    "i": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good"
+   },
+   "window": [
+    1,
+    6
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "85",
+      "span 6"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "day",
+     6
+    ],
+    [
+     "span",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Spans = [1, 1, 1, 2, 1, 4, 6]. Each day was pushed and popped once across the whole stream.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "100",
+      "span 1"
+     ],
+     [
+      "85",
+      "span 6"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "spans",
+     "[1, 1, 1, 2, 1, 4, 6]"
+    ],
+    [
+     "vs naive steps",
+     9
+    ]
+   ],
+   "banner": "Spans = [1, 1, 1, 2, 1, 4, 6]   amortized O(1) per day"
+  },
+  {
+   "act": 3,
+   "cells": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "a strictly rising stream absorbs everything each step: spans 1,2,3,...",
+   "invariant": "each new high pops the whole stack.",
+   "note": "Edge case A: strictly rising [1,2,3,4,5]. Every price beats all before it, so each span is one longer: 1,2,3,4,5.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {},
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": []
+   },
+   "state": [
+    [
+     "spans",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "day 0 price 1 absorbs all before it -> span 1.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "window": [
+    0,
+    0
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "1",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "span",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "day 1 price 2 absorbs all before it -> span 2.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "window": [
+    0,
+    1
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "2",
+      "span 2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "span",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "day 2 price 3 absorbs all before it -> span 3.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "window": [
+    0,
+    2
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "3",
+      "span 3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "span",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "day 3 price 4 absorbs all before it -> span 4.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "window": [
+    0,
+    3
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "4",
+      "span 4"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "span",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "day 4 price 5 absorbs all before it -> span 5.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "window": [
+    0,
+    4
+   ],
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "5",
+      "span 5"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "span",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "note": "Edge case B: strictly falling [5,4,3,2,1] \u2014 nothing is ever <= today, so every span is 1.",
+   "cells": [
+    5,
+    4,
+    3,
+    2,
+    1
+   ],
+   "code": "fast",
+   "line": 5,
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "bad"
+   },
+   "sidebar": {
+    "title": "stack (price, span)",
+    "rows": [
+     [
+      "5",
+      "span 1"
+     ],
+     [
+      "4",
+      "span 1"
+     ],
+     [
+      "3",
+      "span 1"
+     ],
+     [
+      "2",
+      "span 1"
+     ],
+     [
+      "1",
+      "span 1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "spans",
+     "[1, 1, 1, 1, 1]"
+    ]
+   ],
+   "banner": "Rising -> 1,2,3,4,5   Falling -> all 1"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/22-monotonic-stack/0901-online-stock-span/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;901. Online Stock Span — https://leetcode.com/problems/online-stock-span/
 
 Stream stock prices one at a time. For each new price, return its &quot;span&quot;: how many
 consecutive days back (including today) the price was &lt;= today&#x27;s price, stopping

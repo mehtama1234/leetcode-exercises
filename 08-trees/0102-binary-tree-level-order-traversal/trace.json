@@ -1,0 +1,867 @@
+{
+ "player": "tree",
+ "title": "Level Order Traversal - freeze the level size, run BFS, then a chain",
+ "acts": [
+  "The rule: freeze the size",
+  "Run BFS level by level",
+  "Edge: a chain"
+ ],
+ "code": {
+  "bfs": [
+   "queue = [root]",
+   "while queue:",
+   "    level_size = len(queue)   # frozen now",
+   "    level = []",
+   "    for _ in range(level_size):",
+   "        node = queue.pop(0)",
+   "        level.append(node.val)",
+   "        if node.left:  queue.append(node.left)",
+   "        if node.right: queue.append(node.right)",
+   "    result.append(level)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current level / popping"
+  ],
+  [
+   "good",
+   "read (level badge)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 3,
+   "x": 72,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 9,
+   "x": 0,
+   "y": 82
+  },
+  {
+   "id": 2,
+   "val": 20,
+   "x": 216,
+   "y": 82
+  },
+  {
+   "id": 3,
+   "val": 15,
+   "x": 144,
+   "y": 164
+  },
+  {
+   "id": 4,
+   "val": 7,
+   "x": 288,
+   "y": 164
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   2,
+   4
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 3,
+     "x": 72,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 20,
+     "x": 216,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 15,
+     "x": 144,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 7,
+     "x": 288,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "bfs",
+   "line": 2,
+   "intro": "each round handles exactly one level \u2014 the frozen count is the trick.",
+   "invariant": "level_size counts only the nodes already in the queue this round.",
+   "note": "The rule: at the start of each round, freeze how many nodes are in the queue. That count is exactly one level. Pop that many, no more.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "frozen size",
+     1
+    ],
+    [
+     "level",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "bfs",
+   "line": 7,
+   "note": "As we pop a level we enqueue its children \u2014 they become the NEXT level, but the frozen count keeps them out of this round.",
+   "active": [
+    1,
+    2
+   ],
+   "done": {
+    "0": "L0"
+   },
+   "state": [
+    [
+     "next queue",
+     "9, 20"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 3,
+     "x": 72,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 20,
+     "x": 216,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 15,
+     "x": 144,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 7,
+     "x": 288,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "bfs",
+   "line": 0,
+   "intro": "nodes light up a whole level at once, then drain one at a time.",
+   "invariant": "every node ends badged with the level it was read on.",
+   "note": "Run it on [3,9,20,null,null,15,7]. Read top to bottom, left to right.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "start",
+     "queue = [3]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 2,
+   "note": "Start level 0: freeze size = 1. These 1 node(s) form this level.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "level",
+     0
+    ],
+    [
+     "frozen size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 6,
+   "note": "Pop 3 -> add to level 0. Enqueue its children for the next level.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "L0"
+   },
+   "state": [
+    [
+     "popped",
+     3
+    ],
+    [
+     "level so far",
+     [
+      3
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 9,
+   "note": "Level 0 complete: [3].",
+   "active": [],
+   "done": {
+    "0": "L0"
+   },
+   "state": [
+    [
+     "result",
+     [
+      [
+       3
+      ],
+      [
+       9,
+       20
+      ],
+      [
+       15,
+       7
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 2,
+   "note": "Start level 1: freeze size = 2. These 2 node(s) form this level.",
+   "active": [
+    1,
+    2
+   ],
+   "done": {
+    "0": "L0"
+   },
+   "state": [
+    [
+     "level",
+     1
+    ],
+    [
+     "frozen size",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 6,
+   "note": "Pop 9 -> add to level 1. It's a leaf, nothing to enqueue.",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": "L0",
+    "1": "L1"
+   },
+   "state": [
+    [
+     "popped",
+     9
+    ],
+    [
+     "level so far",
+     [
+      9,
+      20
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 6,
+   "note": "Pop 20 -> add to level 1. Enqueue its children for the next level.",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": "L0",
+    "1": "L1",
+    "2": "L1"
+   },
+   "state": [
+    [
+     "popped",
+     20
+    ],
+    [
+     "level so far",
+     [
+      9,
+      20
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 9,
+   "note": "Level 1 complete: [9, 20].",
+   "active": [],
+   "done": {
+    "0": "L0",
+    "1": "L1",
+    "2": "L1"
+   },
+   "state": [
+    [
+     "result",
+     [
+      [
+       3
+      ],
+      [
+       9,
+       20
+      ],
+      [
+       15,
+       7
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 2,
+   "note": "Start level 2: freeze size = 2. These 2 node(s) form this level.",
+   "active": [
+    3,
+    4
+   ],
+   "done": {
+    "0": "L0",
+    "1": "L1",
+    "2": "L1"
+   },
+   "state": [
+    [
+     "level",
+     2
+    ],
+    [
+     "frozen size",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 6,
+   "note": "Pop 15 -> add to level 2. It's a leaf, nothing to enqueue.",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": "L0",
+    "1": "L1",
+    "2": "L1",
+    "3": "L2"
+   },
+   "state": [
+    [
+     "popped",
+     15
+    ],
+    [
+     "level so far",
+     [
+      15,
+      7
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 6,
+   "note": "Pop 7 -> add to level 2. It's a leaf, nothing to enqueue.",
+   "active": [
+    4
+   ],
+   "done": {
+    "0": "L0",
+    "1": "L1",
+    "2": "L1",
+    "3": "L2",
+    "4": "L2"
+   },
+   "state": [
+    [
+     "popped",
+     7
+    ],
+    [
+     "level so far",
+     [
+      15,
+      7
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 9,
+   "note": "Level 2 complete: [15, 7].",
+   "active": [],
+   "done": {
+    "0": "L0",
+    "1": "L1",
+    "2": "L1",
+    "3": "L2",
+    "4": "L2"
+   },
+   "state": [
+    [
+     "result",
+     [
+      [
+       3
+      ],
+      [
+       9,
+       20
+      ],
+      [
+       15,
+       7
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "bfs",
+   "line": 9,
+   "note": "Queue empty -> done. Levels: [[3], [9, 20], [15, 7]].",
+   "active": [],
+   "done": {
+    "0": "L0",
+    "1": "L1",
+    "2": "L1",
+    "3": "L2",
+    "4": "L2"
+   },
+   "state": [
+    [
+     "result",
+     [
+      [
+       3
+      ],
+      [
+       9,
+       20
+      ],
+      [
+       15,
+       7
+      ]
+     ]
+    ]
+   ],
+   "banner": "Level order = [[3], [9, 20], [15, 7]]"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 144,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 72,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "code": "bfs",
+   "line": 2,
+   "intro": "with no branching the frozen size is always 1 -> one node per level.",
+   "invariant": "the same freeze-and-drain rule, now with single-node levels.",
+   "note": "Edge: a left-leaning tree [1,2,null,3]. Each level holds just one node.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "shape",
+     "single chain"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bfs",
+   "line": 2,
+   "note": "Start level 0: freeze size = 1. These 1 node(s) form this level.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "level",
+     0
+    ],
+    [
+     "frozen size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bfs",
+   "line": 6,
+   "note": "Pop 1 -> add to level 0. Enqueue its children for the next level.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "L0"
+   },
+   "state": [
+    [
+     "popped",
+     1
+    ],
+    [
+     "level so far",
+     [
+      1
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bfs",
+   "line": 9,
+   "note": "Level 0 complete: [1].",
+   "active": [],
+   "done": {
+    "0": "L0"
+   },
+   "state": [
+    [
+     "result",
+     [
+      [
+       1
+      ],
+      [
+       2
+      ],
+      [
+       3
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bfs",
+   "line": 2,
+   "note": "Start level 1: freeze size = 1. These 1 node(s) form this level.",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": "L0"
+   },
+   "state": [
+    [
+     "level",
+     1
+    ],
+    [
+     "frozen size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bfs",
+   "line": 6,
+   "note": "Pop 2 -> add to level 1. Enqueue its children for the next level.",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": "L0",
+    "1": "L1"
+   },
+   "state": [
+    [
+     "popped",
+     2
+    ],
+    [
+     "level so far",
+     [
+      2
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bfs",
+   "line": 9,
+   "note": "Level 1 complete: [2].",
+   "active": [],
+   "done": {
+    "0": "L0",
+    "1": "L1"
+   },
+   "state": [
+    [
+     "result",
+     [
+      [
+       1
+      ],
+      [
+       2
+      ],
+      [
+       3
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bfs",
+   "line": 2,
+   "note": "Start level 2: freeze size = 1. These 1 node(s) form this level.",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": "L0",
+    "1": "L1"
+   },
+   "state": [
+    [
+     "level",
+     2
+    ],
+    [
+     "frozen size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bfs",
+   "line": 6,
+   "note": "Pop 3 -> add to level 2. It's a leaf, nothing to enqueue.",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": "L0",
+    "1": "L1",
+    "2": "L2"
+   },
+   "state": [
+    [
+     "popped",
+     3
+    ],
+    [
+     "level so far",
+     [
+      3
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bfs",
+   "line": 9,
+   "note": "Level 2 complete: [3].",
+   "active": [],
+   "done": {
+    "0": "L0",
+    "1": "L1",
+    "2": "L2"
+   },
+   "state": [
+    [
+     "result",
+     [
+      [
+       1
+      ],
+      [
+       2
+      ],
+      [
+       3
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "bfs",
+   "line": 9,
+   "note": "One node per level all the way down: [[1], [2], [3]].",
+   "active": [],
+   "done": {
+    "0": "L0",
+    "1": "L1",
+    "2": "L2"
+   },
+   "state": [
+    [
+     "result",
+     [
+      [
+       1
+      ],
+      [
+       2
+      ],
+      [
+       3
+      ]
+     ]
+    ]
+   ],
+   "banner": "Level order = [[1], [2], [3]]"
+  }
+ ]
+}

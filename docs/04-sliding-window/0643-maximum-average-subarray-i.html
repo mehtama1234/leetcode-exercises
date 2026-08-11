@@ -65,7 +65,652 @@ return best / k</code></pre>
 <h2>Pitfalls</h2>
 <ul><li>Re-summing the whole block each step — the accidental <code>n × k</code> trap the running sum exists to remove.</li><li>Returning the <strong>sum</strong> instead of the average. Divide by <code>k</code> once at the end.</li><li>Integer division: divide by <code>float(k)</code> (or use <code>/</code> in Python 3), or you&#x27;ll floor the answer.</li><li>Starting <code>best</code> at <code>0</code> instead of <code>-infinity</code> (or the first block&#x27;s sum). An all-negative array would wrongly report <code>0</code>.</li><li>Comparing averages with <code>==</code> in tests — they&#x27;re floating point, so compare within a tiny tolerance.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is: <strong>carry a running total and update it as the window slides — one in, one out.</strong> That&#x27;s the whole fixed-size sliding-window pattern. It shows up anywhere you&#x27;re asked about every block of a set length: maximum sum of <code>k</code> consecutive numbers, counting vowels or distinct values in each window, moving averages over a stream. Whenever a slow solution re-scans overlapping blocks, reach for add-one / drop-one first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/04-sliding-window/0643-maximum-average-subarray-i/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;643. Maximum Average Subarray I — https://leetcode.com/problems/maximum-average-subarray-i/
+<p>The reusable move is: <strong>carry a running total and update it as the window slides — one in, one out.</strong> That&#x27;s the whole fixed-size sliding-window pattern. It shows up anywhere you&#x27;re asked about every block of a set length: maximum sum of <code>k</code> consecutive numbers, counting vowels or distinct values in each window, moving averages over a stream. Whenever a slow solution re-scans overlapping blocks, reach for add-one / drop-one first.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Maximum Average Subarray I \u2014 from re-summing to a running sum",
+ "acts": [
+  "Brute force: re-sum each window",
+  "The waste",
+  "Fast: slide a running sum",
+  "Edge case: k = 1"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n - k + 1):",
+   "    window_sum = sum(nums[i:i+k])",
+   "    best = max(best, window_sum)",
+   "return best / k"
+  ],
+  "fast": [
+   "window_sum = sum(nums[:k])",
+   "best = window_sum",
+   "for i in range(k, n):",
+   "    window_sum += nums[i] - nums[i-k]",
+   "    best = max(best, window_sum)",
+   "return best / k"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current window"
+  ],
+  [
+   "good",
+   "best window so far"
+  ],
+  [
+   "bad",
+   "number leaving the window"
+  ],
+  [
+   "dim",
+   "inactive"
+  ]
+ ],
+ "cells": [
+  1,
+  12,
+  -5,
+  -6,
+  50,
+  3
+ ],
+ "labels": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    1,
+    12,
+    -5,
+    -6,
+    50,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "every window is summed from zero \u2014 neighbours share k-1 numbers, re-added each time.",
+   "invariant": "best holds the largest window sum among windows starting before i.",
+   "note": "Brute force: for each start, add all 4 numbers fresh. Keep the biggest sum.",
+   "pointers": {
+    "start": 0
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "start",
+     0
+    ],
+    [
+     "best sum",
+     "-inf"
+    ],
+    [
+     "additions",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 1,
+   "note": "start 0: sum(nums[0..3]) = 2 (4 fresh adds). New best 2.",
+   "pointers": {
+    "start": 0
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "state": [
+    [
+     "start",
+     0
+    ],
+    [
+     "window sum",
+     2
+    ],
+    [
+     "best sum",
+     2
+    ],
+    [
+     "additions",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 1,
+   "note": "start 1: sum(nums[1..4]) = 51 (4 fresh adds). New best 51.",
+   "pointers": {
+    "start": 1
+   },
+   "window": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "start",
+     1
+    ],
+    [
+     "window sum",
+     51
+    ],
+    [
+     "best sum",
+     51
+    ],
+    [
+     "additions",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 1,
+   "note": "start 2: sum(nums[2..5]) = 42 (4 fresh adds). Best stays 51.",
+   "pointers": {
+    "start": 2
+   },
+   "window": [
+    2,
+    5
+   ],
+   "marks": {
+    "2": "active",
+    "3": "active",
+    "4": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "start",
+     2
+    ],
+    [
+     "window sum",
+     42
+    ],
+    [
+     "best sum",
+     51
+    ],
+    [
+     "additions",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "Best sum 51 at start 1 \u2192 average 12.75. But it did 12 additions for 6 numbers.",
+   "pointers": {
+    "start": 1
+   },
+   "window": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "best average",
+     12.75
+    ],
+    [
+     "additions",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the addition counter \u2014 k adds per window when only 2 ever change.",
+   "note": "12 additions. Two neighbouring windows share 3 numbers; brute re-adds them every single step. That overlap is the whole waste.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "additions (brute)",
+     12
+    ],
+    [
+     "pattern",
+     "~ n*k"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Sliding a window one step drops just the leftmost number and gains one on the right. Keep a running sum and update it with two operations \u2014 never re-sum.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "adds per step",
+     2
+    ],
+    [
+     "pattern",
+     "~ n"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    12,
+    -5,
+    -6,
+    50,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the sum is carried, not rebuilt \u2014 each slide is one add and one subtract.",
+   "invariant": "window_sum always equals the sum of the current k-wide window.",
+   "note": "Sum the first window once: [1, 12, -5, -6] = 2. Now slide.",
+   "pointers": {
+    "L": 0,
+    "R": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "window sum",
+     2
+    ],
+    [
+     "best sum",
+     2
+    ],
+    [
+     "ops",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "slide right: drop nums[0]=1, add nums[4]=50. sum 51. New best 51.",
+   "pointers": {
+    "L": 1,
+    "R": 4
+   },
+   "window": [
+    1,
+    4
+   ],
+   "marks": {
+    "0": "bad",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "dropped",
+     1
+    ],
+    [
+     "added",
+     50
+    ],
+    [
+     "window sum",
+     51
+    ],
+    [
+     "best sum",
+     51
+    ],
+    [
+     "ops",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "slide right: drop nums[1]=12, add nums[5]=3. sum 42. Best 51.",
+   "pointers": {
+    "L": 2,
+    "R": 5
+   },
+   "window": [
+    2,
+    5
+   ],
+   "marks": {
+    "1": "bad",
+    "2": "active",
+    "3": "active",
+    "4": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "dropped",
+     12
+    ],
+    [
+     "added",
+     3
+    ],
+    [
+     "window sum",
+     42
+    ],
+    [
+     "best sum",
+     51
+    ],
+    [
+     "ops",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "Best window sum 51 at start 1 \u2192 average 12.75. One add + one subtract per step.",
+   "pointers": {
+    "L": 1,
+    "R": 4
+   },
+   "window": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "best average",
+     12.75
+    ],
+    [
+     "ops",
+     8
+    ],
+    [
+     "vs brute",
+     12
+    ]
+   ],
+   "banner": "Max average 12.75   window [12, -5, -6, 50]   \u2014 8 ops vs 12 brute"
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    4,
+    0,
+    3,
+    2
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "a width-1 window has no overlap to reuse \u2014 it just walks the array picking the max.",
+   "invariant": "window_sum equals the single element under the window.",
+   "note": "Edge case: k = 1. Each window is one number, so the answer is just the maximum.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "window sum",
+     0
+    ],
+    [
+     "best sum",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "window = [4]. New best 4.",
+   "pointers": {
+    "L": 1,
+    "R": 1
+   },
+   "window": [
+    1,
+    1
+   ],
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "value",
+     4
+    ],
+    [
+     "best sum",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "window = [0]. Best 4.",
+   "pointers": {
+    "L": 2,
+    "R": 2
+   },
+   "window": [
+    2,
+    2
+   ],
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "value",
+     0
+    ],
+    [
+     "best sum",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "window = [3]. Best 4.",
+   "pointers": {
+    "L": 3,
+    "R": 3
+   },
+   "window": [
+    3,
+    3
+   ],
+   "marks": {
+    "3": "active"
+   },
+   "state": [
+    [
+     "value",
+     3
+    ],
+    [
+     "best sum",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "window = [2]. Best 4.",
+   "pointers": {
+    "L": 4,
+    "R": 4
+   },
+   "window": [
+    4,
+    4
+   ],
+   "marks": {
+    "4": "active"
+   },
+   "state": [
+    [
+     "value",
+     2
+    ],
+    [
+     "best sum",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "Largest single value 4 \u2192 average 4.0.",
+   "pointers": {
+    "L": 1,
+    "R": 1
+   },
+   "window": [
+    1,
+    1
+   ],
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "best average",
+     4.0
+    ]
+   ],
+   "banner": "Max average 4.0   (k=1, just the max element)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/04-sliding-window/0643-maximum-average-subarray-i/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;643. Maximum Average Subarray I — https://leetcode.com/problems/maximum-average-subarray-i/
 
 Given an array `nums` and an integer `k`, find the contiguous block of exactly
 `k` numbers with the largest average, and return that average.

@@ -1,0 +1,660 @@
+{
+ "player": "linkedlist",
+ "title": "LRU Cache - a dict finds the node, the linked list re-orders it",
+ "acts": [
+  "The rule: dict + recency list",
+  "Run get / put",
+  "Eviction + capacity-1 edge"
+ ],
+ "code": {
+  "ops": [
+   "def get(key):",
+   "    node = map[key]        # dict jumps to the node",
+   "    move_to_front(node)    # mark most-recent",
+   "    return node.val",
+   "def put(key, value):",
+   "    if full: evict tail.prev  # least-recent",
+   "    add_front(new node)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the node we touched"
+  ],
+  [
+   "good",
+   "live cache node"
+  ],
+  [
+   "bad",
+   "evicted"
+  ],
+  [
+   "dim",
+   "HEAD / TAIL sentinel"
+  ]
+ ],
+ "vals": [
+  "HEAD",
+  "1:1",
+  "2:2",
+  "TAIL"
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   3,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "vals": [
+    "HEAD",
+    "1:1",
+    "2:2",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 0,
+   "marks": {
+    "1": "good",
+    "2": "good",
+    "0": "dim",
+    "3": "dim"
+   },
+   "note": "An LRU cache = a dict (key -> node) plus a doubly linked list ordered by recency. Left of HEAD-side is most recent; right by TAIL is least recent.",
+   "state": [
+    [
+     "capacity",
+     2
+    ],
+    [
+     "size",
+     2
+    ],
+    [
+     "map",
+     "{1, 2}"
+    ],
+    [
+     "order",
+     "MRU 2,1 LRU"
+    ]
+   ],
+   "intro": "the dict jumps straight to a node; the list only re-orders it. No scan.",
+   "invariant": "the list reads most-recent (left) to least-recent (right, by tail)."
+  },
+  {
+   "act": 0,
+   "vals": [
+    "HEAD",
+    "1:1",
+    "2:2",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 1,
+   "marks": {
+    "1": "active",
+    "2": "good",
+    "0": "dim",
+    "3": "dim"
+   },
+   "note": "A get(key) uses the dict to land on the node in O(1) \u2014 no walking the list to find it. Then the list moves it to the front.",
+   "state": [
+    [
+     "capacity",
+     2
+    ],
+    [
+     "size",
+     2
+    ],
+    [
+     "map",
+     "{1, 2}"
+    ],
+    [
+     "get",
+     "dict -> node"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "vals": [
+    "HEAD",
+    "2:2",
+    "1:1",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 4,
+   "marks": {
+    "1": "good",
+    "2": "good",
+    "0": "dim",
+    "3": "dim"
+   },
+   "note": "Start: put(1,1) then put(2,2). Most recent is 2 (front), least recent is 1 (by TAIL).",
+   "state": [
+    [
+     "capacity",
+     2
+    ],
+    [
+     "size",
+     2
+    ],
+    [
+     "map",
+     "{2, 1}"
+    ],
+    [
+     "last op",
+     "put(2,2)"
+    ]
+   ],
+   "intro": "watch a used key jump to the front, and the size climb to capacity.",
+   "invariant": "the node right before TAIL is always the next to be evicted."
+  },
+  {
+   "act": 1,
+   "vals": [
+    "HEAD",
+    "2:2",
+    "1:1",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 1,
+   "marks": {
+    "1": "good",
+    "2": "active",
+    "0": "dim",
+    "3": "dim"
+   },
+   "note": "get(1): the dict lands on node 1:1 directly (it's the LRU node here).",
+   "state": [
+    [
+     "capacity",
+     2
+    ],
+    [
+     "size",
+     2
+    ],
+    [
+     "map",
+     "{2, 1}"
+    ],
+    [
+     "get(1)",
+     "-> 1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "vals": [
+    "HEAD",
+    "1:1",
+    "2:2",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 2,
+   "marks": {
+    "1": "active",
+    "2": "good",
+    "0": "dim",
+    "3": "dim"
+   },
+   "note": "Unlink 1 and re-add it just after HEAD. Now 1 is most recent, 2 is least recent \u2014 its arrow moved to the front of the chain.",
+   "state": [
+    [
+     "capacity",
+     2
+    ],
+    [
+     "size",
+     2
+    ],
+    [
+     "map",
+     "{1, 2}"
+    ],
+    [
+     "order",
+     "MRU 1,2 LRU"
+    ],
+    [
+     "returned",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "vals": [
+    "HEAD",
+    "1:1",
+    "2:2",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 5,
+   "marks": {
+    "1": "good",
+    "2": "bad",
+    "0": "dim",
+    "3": "dim"
+   },
+   "note": "put(3,3): cache is full (size 2 = capacity). The node before TAIL is 2 \u2014 the least recently used. Evict it.",
+   "state": [
+    [
+     "capacity",
+     2
+    ],
+    [
+     "size",
+     2
+    ],
+    [
+     "map",
+     "{1, 2}"
+    ],
+    [
+     "evict",
+     "key 2 (LRU)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "vals": [
+    "HEAD",
+    "3:3",
+    "1:1",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 6,
+   "marks": {
+    "1": "active",
+    "2": "good",
+    "0": "dim",
+    "3": "dim"
+   },
+   "note": "Drop 2 from the list and the dict, then add 3 at the front. Key 2 is gone.",
+   "state": [
+    [
+     "capacity",
+     2
+    ],
+    [
+     "size",
+     2
+    ],
+    [
+     "map",
+     "{3, 1}"
+    ],
+    [
+     "order",
+     "MRU 3,1 LRU"
+    ],
+    [
+     "get(2) now",
+     -1
+    ]
+   ],
+   "banner": "put(3,3) evicted key 2 \u2014 the least recently used"
+  },
+  {
+   "act": 2,
+   "vals": [
+    "HEAD",
+    "3:3",
+    "1:1",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 5,
+   "marks": {
+    "1": "good",
+    "2": "good",
+    "0": "dim",
+    "3": "dim"
+   },
+   "note": "Because two sentinels (HEAD, TAIL) bracket the real nodes, the least-recent node is always exactly tail.prev \u2014 found in O(1), never searched for.",
+   "state": [
+    [
+     "capacity",
+     2
+    ],
+    [
+     "size",
+     2
+    ],
+    [
+     "map",
+     "{3, 1}"
+    ],
+    [
+     "LRU node",
+     "tail.prev = 1"
+    ]
+   ],
+   "intro": "the sentinels HEAD/TAIL mean 'evict' is always just tail.prev \u2014 no edge cases at the ends.",
+   "invariant": "eviction never scans: it is always the one fixed node before TAIL."
+  },
+  {
+   "act": 2,
+   "vals": [
+    "HEAD",
+    "5:50",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 6,
+   "marks": {
+    "1": "good",
+    "0": "dim",
+    "2": "dim"
+   },
+   "note": "Edge: capacity 1. put(5,50) fills the one slot.",
+   "state": [
+    [
+     "capacity",
+     1
+    ],
+    [
+     "size",
+     1
+    ],
+    [
+     "map",
+     "{5}"
+    ],
+    [
+     "order",
+     "just 5"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "vals": [
+    "HEAD",
+    "5:50",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 5,
+   "marks": {
+    "1": "bad",
+    "0": "dim",
+    "2": "dim"
+   },
+   "note": "put(9,90): full at capacity 1, so the single node 5 is both MRU and LRU \u2014 evict it.",
+   "state": [
+    [
+     "capacity",
+     1
+    ],
+    [
+     "size",
+     1
+    ],
+    [
+     "map",
+     "{5}"
+    ],
+    [
+     "evict",
+     "key 5"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "vals": [
+    "HEAD",
+    "9:90",
+    "TAIL"
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     null
+    ]
+   ],
+   "code": "ops",
+   "line": 6,
+   "marks": {
+    "1": "active",
+    "0": "dim",
+    "2": "dim"
+   },
+   "note": "Every new key evicts the previous one. get(5) now returns -1; only 9 remains.",
+   "state": [
+    [
+     "capacity",
+     1
+    ],
+    [
+     "size",
+     1
+    ],
+    [
+     "map",
+     "{9}"
+    ],
+    [
+     "get(5)",
+     -1
+    ],
+    [
+     "get(9)",
+     90
+    ]
+   ],
+   "banner": "Capacity 1: each put evicts the one prior key"
+  }
+ ]
+}

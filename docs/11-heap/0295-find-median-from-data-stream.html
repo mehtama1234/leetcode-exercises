@@ -79,7 +79,674 @@ else:              median = (low.max + high.min)/2  # even count -&gt; average t
 <h2>Pitfalls</h2>
 <ul><li><strong>Max-heap in a min-heap language.</strong> <code>heapq</code> only does min-heaps; negate on the way in and negate again on the way out for <code>low</code>. Forgetting one negation flips the whole split.</li><li><strong>Which heap holds the extra element.</strong> Pick a rule (here: <code>low</code> &gt;= <code>high</code> in size) and apply it *identically* in both <code>addNum</code>&#x27;s rebalance and <code>findMedian</code>, or the odd-count case reads the wrong heap.</li><li><strong>Even-count division.</strong> Return a float — <code>(a + b) / 2</code>, not integer <code>//</code> — or <code>[2, 3]</code> reports <code>2</code> instead of <code>2.5</code>.</li><li><strong>Skipping the cross-over push in <code>addNum</code>.</strong> Just pushing x onto whichever heap &quot;looks right&quot; by value can break invariant 1 on later inserts; routing every new number through <code>low -&gt; high</code> is what keeps the two halves cleanly separated.</li></ul>
 <h2>Transfer</h2>
-<p>The move is: **when you only need the extreme(s) of a set, hold it in a heap; and when you need a value at a *moving boundary*, hold each side in its own heap so the boundary is always at a top.** This &quot;balanced two-heap&quot; idea shows up in <a href="https://leetcode.com/problems/sliding-window-median/">Sliding Window Median / 480</a> and <a href="https://leetcode.com/problems/ipo/">IPO / 502</a>, and the single-heap version powers <a href="../0703-kth-largest-element-in-a-stream/">Kth Largest Element in a Stream / 703</a> and <a href="../1046-last-stone-weight/">Last Stone Weight / 1046</a>. Whenever a brute force keeps re-sorting or re-scanning for &quot;the top / the middle&quot;, reach for a heap first.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0295-find-median-from-data-stream/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;295. Find Median from Data Stream — https://leetcode.com/problems/find-median-from-data-stream/
+<p>The move is: **when you only need the extreme(s) of a set, hold it in a heap; and when you need a value at a *moving boundary*, hold each side in its own heap so the boundary is always at a top.** This &quot;balanced two-heap&quot; idea shows up in <a href="https://leetcode.com/problems/sliding-window-median/">Sliding Window Median / 480</a> and <a href="https://leetcode.com/problems/ipo/">IPO / 502</a>, and the single-heap version powers <a href="../0703-kth-largest-element-in-a-stream/">Kth Largest Element in a Stream / 703</a> and <a href="../1046-last-stone-weight/">Last Stone Weight / 1046</a>. Whenever a brute force keeps re-sorting or re-scanning for &quot;the top / the middle&quot;, reach for a heap first.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Find Median from a Stream \u2014 two heaps split at the middle",
+ "acts": [
+  "Naive: sorted list + O(n) shift",
+  "The waste",
+  "Fast: two heaps",
+  "Edge: single / crossing zero"
+ ],
+ "code": {
+  "naive": [
+   "lo, hi = binary search insert point",
+   "self._nums.insert(lo, num)   # O(n) shift",
+   "# median = middle by index"
+  ],
+  "fast": [
+   "heappush(low, -num)              # into max-heap",
+   "heappush(high, -heappop(low))    # move top across",
+   "if len(high) > len(low):",
+   "    heappush(low, -heappop(high))  # rebalance",
+   "# median from the two tops, O(1)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the number just added"
+  ],
+  [
+   "good",
+   "the middle value(s)"
+  ],
+  [
+   "dim",
+   "settled into a half"
+  ]
+ ],
+ "cells": [],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [],
+   "code": "naive",
+   "line": 1,
+   "intro": "every add keeps the WHOLE stream sorted \u2014 an O(n) shift each time.",
+   "invariant": "_nums is fully sorted after every add.",
+   "note": "Naive: keep a sorted list. Binary-search the spot (O(log n)) but shift the tail to insert (O(n)).",
+   "state": [
+    [
+     "stored",
+     0
+    ],
+    [
+     "per add",
+     "O(n) shift"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    1
+   ],
+   "labels": [
+    0
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "add(1): insert at index 0, shifting the tail. Sorted \u2192 [1]. median = 1.0.",
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "added",
+     1
+    ],
+    [
+     "stored",
+     1
+    ],
+    [
+     "median",
+     1.0
+    ]
+   ],
+   "banner": "add(1) \u2192 median 1.0"
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "add(2): insert at index 1, shifting the tail. Sorted \u2192 [1, 2]. median = 1.5.",
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "state": [
+    [
+     "added",
+     2
+    ],
+    [
+     "stored",
+     2
+    ],
+    [
+     "median",
+     1.5
+    ]
+   ],
+   "banner": "add(2) \u2192 median 1.5"
+  },
+  {
+   "act": 0,
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "naive",
+   "line": 1,
+   "note": "add(3): insert at index 2, shifting the tail. Sorted \u2192 [1, 2, 3]. median = 2.0.",
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "added",
+     3
+    ],
+    [
+     "stored",
+     3
+    ],
+    [
+     "median",
+     2.0
+    ]
+   ],
+   "banner": "add(3) \u2192 median 2.0"
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 1,
+   "note": "Each add pays an O(n) shift to keep everything sorted \u2014 but the median only needs the one or two middle values.",
+   "state": [
+    [
+     "kept sorted",
+     "all n"
+    ],
+    [
+     "median needs",
+     "middle 1\u20132"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "we sort the entire stream but only ever read the center.",
+   "note": "Keeping all n numbers in order costs O(n) per insert. The median never reads anything but the middle \u2014 the rest of the order is waste.",
+   "state": [
+    [
+     "per add",
+     "O(n)"
+    ],
+    [
+     "median reads",
+     "1\u20132 middle values"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Split the stream in two: a max-heap `low` (smaller half, its LARGEST on top) and a min-heap `high` (larger half, its SMALLEST on top). The two tops are the middle \u2014 median in O(1), each add O(log n).",
+   "state": [
+    [
+     "low",
+     "max-heap (smaller half)"
+    ],
+    [
+     "high",
+     "min-heap (larger half)"
+    ],
+    [
+     "per add",
+     "O(log n)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [],
+   "code": "fast",
+   "line": 4,
+   "intro": "watch the split stay balanced: low never smaller than high, tops = middle.",
+   "invariant": "every value in low \u2264 every value in high; sizes differ by \u2264 1 (low holds the extra).",
+   "note": "Two empty heaps. Each add: push to low, shove low's top across to high, then rebalance sizes.",
+   "sidebar": {
+    "title": "two heaps (empty)",
+    "rows": [
+     [
+      "low",
+      "(empty)"
+     ],
+     [
+      "high",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "low size",
+     0
+    ],
+    [
+     "high size",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1
+   ],
+   "labels": [
+    0
+   ],
+   "code": "fast",
+   "line": 1,
+   "marks": {
+    "0": "active"
+   },
+   "note": "add(1): push into low, then move low's largest across to high \u2014 this guarantees low \u2264 high.",
+   "sidebar": {
+    "title": "two heaps split at the middle  (median (rebalancing))",
+    "rows": [
+     [
+      "\u2500\u2500 low (max-heap) \u2500\u2500",
+      "0 vals"
+     ],
+     [
+      "\u2500\u2500 high (min-heap) \u2500\u2500",
+      "1 vals"
+     ],
+     [
+      "top \u2192 1",
+      "\u2265 median"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     1
+    ],
+    [
+     "low size",
+     0
+    ],
+    [
+     "high size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1
+   ],
+   "labels": [
+    0
+   ],
+   "code": "fast",
+   "line": 3,
+   "note": "high grew bigger \u2014 hand its smallest back to low. median = low's top = 1.0.",
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "two heaps split at the middle  (median 1.0)",
+    "rows": [
+     [
+      "\u2500\u2500 low (max-heap) \u2500\u2500",
+      "1 vals"
+     ],
+     [
+      "top \u2192 1",
+      "\u2264 median"
+     ],
+     [
+      "\u2500\u2500 high (min-heap) \u2500\u2500",
+      "0 vals"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "low size",
+     1
+    ],
+    [
+     "high size",
+     0
+    ],
+    [
+     "median",
+     1.0
+    ]
+   ],
+   "banner": "add(1) \u2192 median 1.0   (O(1) from the two tops)"
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "code": "fast",
+   "line": 1,
+   "marks": {
+    "1": "active"
+   },
+   "note": "add(2): push into low, then move low's largest across to high \u2014 this guarantees low \u2264 high.",
+   "sidebar": {
+    "title": "two heaps split at the middle  (median (rebalancing))",
+    "rows": [
+     [
+      "\u2500\u2500 low (max-heap) \u2500\u2500",
+      "1 vals"
+     ],
+     [
+      "top \u2192 1",
+      "\u2264 median"
+     ],
+     [
+      "\u2500\u2500 high (min-heap) \u2500\u2500",
+      "1 vals"
+     ],
+     [
+      "top \u2192 2",
+      "\u2265 median"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     2
+    ],
+    [
+     "low size",
+     1
+    ],
+    [
+     "high size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "Sizes already balanced. median = (low top + high top)/2 = 1.5.",
+   "marks": {
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "two heaps split at the middle  (median 1.5)",
+    "rows": [
+     [
+      "\u2500\u2500 low (max-heap) \u2500\u2500",
+      "1 vals"
+     ],
+     [
+      "top \u2192 1",
+      "\u2264 median"
+     ],
+     [
+      "\u2500\u2500 high (min-heap) \u2500\u2500",
+      "1 vals"
+     ],
+     [
+      "top \u2192 2",
+      "\u2265 median"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "low size",
+     1
+    ],
+    [
+     "high size",
+     1
+    ],
+    [
+     "median",
+     1.5
+    ]
+   ],
+   "banner": "add(2) \u2192 median 1.5   (O(1) from the two tops)"
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "fast",
+   "line": 1,
+   "marks": {
+    "2": "active"
+   },
+   "note": "add(3): push into low, then move low's largest across to high \u2014 this guarantees low \u2264 high.",
+   "sidebar": {
+    "title": "two heaps split at the middle  (median (rebalancing))",
+    "rows": [
+     [
+      "\u2500\u2500 low (max-heap) \u2500\u2500",
+      "1 vals"
+     ],
+     [
+      "top \u2192 1",
+      "\u2264 median"
+     ],
+     [
+      "\u2500\u2500 high (min-heap) \u2500\u2500",
+      "2 vals"
+     ],
+     [
+      "top \u2192 2",
+      "\u2265 median"
+     ],
+     [
+      "   3",
+      "\u2265 median"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "added",
+     3
+    ],
+    [
+     "low size",
+     1
+    ],
+    [
+     "high size",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "fast",
+   "line": 3,
+   "note": "high grew bigger \u2014 hand its smallest back to low. median = low's top = 2.0.",
+   "marks": {
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "two heaps split at the middle  (median 2.0)",
+    "rows": [
+     [
+      "\u2500\u2500 low (max-heap) \u2500\u2500",
+      "2 vals"
+     ],
+     [
+      "top \u2192 2",
+      "\u2264 median"
+     ],
+     [
+      "   1",
+      "\u2264 median"
+     ],
+     [
+      "\u2500\u2500 high (min-heap) \u2500\u2500",
+      "1 vals"
+     ],
+     [
+      "top \u2192 3",
+      "\u2265 median"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "low size",
+     2
+    ],
+    [
+     "high size",
+     1
+    ],
+    [
+     "median",
+     2.0
+    ]
+   ],
+   "banner": "add(3) \u2192 median 2.0   (O(1) from the two tops)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    5
+   ],
+   "labels": [
+    0
+   ],
+   "code": "fast",
+   "line": 4,
+   "intro": "one number is its own median \u2014 low holds it, high is empty.",
+   "invariant": "when the count is odd, low has the extra and its top IS the median.",
+   "note": "Edge: a single add(5). low holds 5, high is empty, so median = low's top = 5.0.",
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "two heaps split at the middle  (median 5.0)",
+    "rows": [
+     [
+      "\u2500\u2500 low (max-heap) \u2500\u2500",
+      "1 vals"
+     ],
+     [
+      "top \u2192 5",
+      "\u2264 median"
+     ],
+     [
+      "\u2500\u2500 high (min-heap) \u2500\u2500",
+      "0 vals"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "low size",
+     1
+    ],
+    [
+     "high size",
+     0
+    ],
+    [
+     "median",
+     5.0
+    ]
+   ],
+   "banner": "add(5) \u2192 median 5.0"
+  },
+  {
+   "act": 3,
+   "cells": [
+    -3,
+    -3,
+    4,
+    4
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "code": "fast",
+   "line": 4,
+   "note": "Even count across zero: [-3,-3,4,4]. low top = -3, high top = 4, median = (-3 + 4)/2 = 0.5.",
+   "marks": {
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "two heaps split at the middle  (median 0.5)",
+    "rows": [
+     [
+      "\u2500\u2500 low (max-heap) \u2500\u2500",
+      "2 vals"
+     ],
+     [
+      "top \u2192 -3",
+      "\u2264 median"
+     ],
+     [
+      "   -3",
+      "\u2264 median"
+     ],
+     [
+      "\u2500\u2500 high (min-heap) \u2500\u2500",
+      "2 vals"
+     ],
+     [
+      "top \u2192 4",
+      "\u2265 median"
+     ],
+     [
+      "   4",
+      "\u2265 median"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "low top",
+     -3
+    ],
+    [
+     "high top",
+     4
+    ],
+    [
+     "median",
+     0.5
+    ]
+   ],
+   "banner": "median = 0.5"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0295-find-median-from-data-stream/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;295. Find Median from Data Stream — https://leetcode.com/problems/find-median-from-data-stream/
 
 Design a structure that accepts numbers one at a time and can report the median
 of everything seen so far at any moment. The median is the middle value of the

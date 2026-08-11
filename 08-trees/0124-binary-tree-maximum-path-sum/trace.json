@@ -1,0 +1,658 @@
+{
+ "player": "tree",
+ "title": "Max Path Sum - the two roles, run it, then all negatives",
+ "acts": [
+  "Two roles of a node",
+  "Run: best peak wins",
+  "Edge: all negatives"
+ ],
+ "code": {
+  "pathsum": [
+   "def gain(node):",
+   "    if node is None: return 0",
+   "    left  = max(gain(node.left), 0)   # drop negative arms",
+   "    right = max(gain(node.right), 0)",
+   "    best = max(best, node.val + left + right)  # peak here",
+   "    return node.val + max(left, right)         # extend up"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "visiting now"
+  ],
+  [
+   "good",
+   "gain handed up"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": -10,
+   "x": 74,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 9,
+   "x": 0,
+   "y": 82
+  },
+  {
+   "id": 2,
+   "val": 20,
+   "x": 222,
+   "y": 82
+  },
+  {
+   "id": 3,
+   "val": 15,
+   "x": 148,
+   "y": 164
+  },
+  {
+   "id": 4,
+   "val": 7,
+   "x": 296,
+   "y": 164
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   2,
+   4
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": -10,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 7,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "pathsum",
+   "line": 4,
+   "intro": "a node peaks a path with BOTH arms, but hands up only ONE arm.",
+   "invariant": "best tracks full peaks; the return value is a straight line upward.",
+   "note": "The twist: each node plays two roles. As a path's peak it may use both arms (val + left + right). But it can hand its parent only one arm.",
+   "active": [
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "peak here",
+     "val + L + R"
+    ],
+    [
+     "give up",
+     "val + max(L,R)"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "pathsum",
+   "line": 2,
+   "note": "A negative arm is never worth taking, so clamp each side at 0 before using it. Track a global best separate from what we return.",
+   "active": [
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "rule",
+     "clamp arms at 0"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": -10,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 7,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "pathsum",
+   "line": 0,
+   "intro": "each badge is the value a node hands upward; the best is a separate tally.",
+   "invariant": "best only grows; it captures the largest peak seen anywhere.",
+   "note": "Run it on [-10,9,20,null,null,15,7]. The winning path 15-20-7 never touches the root.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "best",
+     "-inf"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 0,
+   "note": "Enter node -10. Ask both arms for their best downward gain.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     -10
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 0,
+   "note": "Enter node 9. Ask both arms for their best downward gain.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 4,
+   "note": "Node 9: arms clamped to L=0, R=0. Peak here = 9 (best so far 9). Hand up 9.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": 9
+   },
+   "state": [
+    [
+     "node",
+     9
+    ],
+    [
+     "peak",
+     9
+    ],
+    [
+     "give up",
+     9
+    ],
+    [
+     "best",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 0,
+   "note": "Enter node 20. Ask both arms for their best downward gain.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": 9
+   },
+   "state": [
+    [
+     "visiting",
+     20
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 0,
+   "note": "Enter node 15. Ask both arms for their best downward gain.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": 9
+   },
+   "state": [
+    [
+     "visiting",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 4,
+   "note": "Node 15: arms clamped to L=0, R=0. Peak here = 15 (best so far 15). Hand up 15.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": 9,
+    "3": 15
+   },
+   "state": [
+    [
+     "node",
+     15
+    ],
+    [
+     "peak",
+     15
+    ],
+    [
+     "give up",
+     15
+    ],
+    [
+     "best",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 0,
+   "note": "Enter node 7. Ask both arms for their best downward gain.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": 9,
+    "3": 15
+   },
+   "state": [
+    [
+     "visiting",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 4,
+   "note": "Node 7: arms clamped to L=0, R=0. Peak here = 7 (best so far 15). Hand up 7.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": 9,
+    "3": 15,
+    "4": 7
+   },
+   "state": [
+    [
+     "node",
+     7
+    ],
+    [
+     "peak",
+     7
+    ],
+    [
+     "give up",
+     7
+    ],
+    [
+     "best",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 4,
+   "note": "Node 20: arms clamped to L=15, R=7. Peak here = 42 (best so far 42). Hand up 35.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": 9,
+    "3": 15,
+    "4": 7,
+    "2": 35
+   },
+   "state": [
+    [
+     "node",
+     20
+    ],
+    [
+     "peak",
+     42
+    ],
+    [
+     "give up",
+     35
+    ],
+    [
+     "best",
+     42
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 4,
+   "note": "Node -10: arms clamped to L=9, R=35. Peak here = 34 (best so far 42). Hand up 25.",
+   "active": [
+    0
+   ],
+   "done": {
+    "1": 9,
+    "3": 15,
+    "4": 7,
+    "2": 35,
+    "0": 25
+   },
+   "state": [
+    [
+     "node",
+     -10
+    ],
+    [
+     "peak",
+     34
+    ],
+    [
+     "give up",
+     25
+    ],
+    [
+     "best",
+     42
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "pathsum",
+   "line": 4,
+   "note": "The best peak found is at node 20: 15 + 20 + 7 = 42. The root -10 was never part of the winner.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": 9,
+    "3": 15,
+    "4": 7,
+    "2": 35,
+    "0": 25
+   },
+   "state": [
+    [
+     "max path sum",
+     42
+    ]
+   ],
+   "banner": "Maximum path sum = 42"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": -2,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": -1,
+     "x": 0,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "pathsum",
+   "line": 2,
+   "intro": "every arm clamps to 0, so the best path is a single least-bad node.",
+   "invariant": "clamping means we never add a negative neighbour.",
+   "note": "Edge: all negatives [-2,-1]. Both arms clamp to 0, so each node's peak is just itself -> pick the least negative.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "best",
+     "-inf"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "pathsum",
+   "line": 0,
+   "note": "Enter node -2. Ask both arms for their best downward gain.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     -2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "pathsum",
+   "line": 0,
+   "note": "Enter node -1. Ask both arms for their best downward gain.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "visiting",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "pathsum",
+   "line": 4,
+   "note": "Node -1: arms clamped to L=0, R=0. Peak here = -1 (best so far -1). Hand up -1.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": -1
+   },
+   "state": [
+    [
+     "node",
+     -1
+    ],
+    [
+     "peak",
+     -1
+    ],
+    [
+     "give up",
+     -1
+    ],
+    [
+     "best",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "pathsum",
+   "line": 4,
+   "note": "Node -2: arms clamped to L=0, R=0. Peak here = -2 (best so far -1). Hand up -2.",
+   "active": [
+    0
+   ],
+   "done": {
+    "1": -1,
+    "0": -2
+   },
+   "state": [
+    [
+     "node",
+     -2
+    ],
+    [
+     "peak",
+     -2
+    ],
+    [
+     "give up",
+     -2
+    ],
+    [
+     "best",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "pathsum",
+   "line": 4,
+   "note": "Single-node peaks are -2 and -1 -> the best is -1.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": -1,
+    "0": -2
+   },
+   "state": [
+    [
+     "max path sum",
+     -1
+    ]
+   ],
+   "banner": "Maximum path sum = -1"
+  }
+ ]
+}

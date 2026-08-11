@@ -1,0 +1,860 @@
+{
+ "player": "linear",
+ "title": "Queue using Stacks - two reversals restore arrival order",
+ "acts": [
+  "The problem: LIFO vs FIFO",
+  "The trick: two reversals",
+  "Edge: transfer mid-stream"
+ ],
+ "code": {
+  "ops": [
+   "def _shift():",
+   "    if not s_out:            # only when out is empty",
+   "        while s_in:",
+   "            s_out.append(s_in.pop())",
+   "def push(x): s_in.append(x)",
+   "def pop():  _shift(); return s_out.pop()",
+   "def peek(): _shift(); return s_out[-1]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "element being moved / served"
+  ],
+  [
+   "good",
+   "served / front"
+  ],
+  [
+   "bad",
+   "wrong order (one stack)"
+  ],
+  [
+   "dim",
+   "waiting"
+  ]
+ ],
+ "cells": [
+  1
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "code": "ops",
+   "line": 4,
+   "intro": "push 1,2,3 and read the stack top-down \u2014 it comes out 3,2,1, the WRONG order for a queue.",
+   "invariant": "s_in holds arrivals with the newest on top (highest index).",
+   "note": "A queue serves oldest-first (FIFO). A stack serves newest-first (LIFO). Push 1, 2, 3 onto the 'in' stack and watch the order.",
+   "marks": {
+    "0": "dim"
+   },
+   "state": [
+    [
+     "s_in",
+     "[]"
+    ],
+    [
+     "want first out",
+     1
+    ]
+   ],
+   "cells": [
+    null
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 0,
+   "code": "ops",
+   "line": 4,
+   "note": "push(1): 1 lands on TOP of s_in (index 0).",
+   "pointers": {
+    "top": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "s_in",
+     "[1]"
+    ],
+    [
+     "top",
+     1
+    ]
+   ],
+   "cells": [
+    1
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 0,
+   "code": "ops",
+   "line": 4,
+   "note": "push(2): 2 lands on TOP of s_in (index 1).",
+   "pointers": {
+    "top": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "s_in",
+     "[1, 2]"
+    ],
+    [
+     "top",
+     2
+    ]
+   ],
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 0,
+   "code": "ops",
+   "line": 4,
+   "note": "push(3): 3 lands on TOP of s_in (index 2).",
+   "pointers": {
+    "top": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "s_in",
+     "[1, 2, 3]"
+    ],
+    [
+     "top",
+     3
+    ]
+   ],
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 0,
+   "code": "ops",
+   "line": 4,
+   "note": "s_in top-to-bottom is 3,2,1 \u2014 a single stack would serve 3 first, but a queue owes us 1 first. One reversal is backward; we need a second.",
+   "marks": {
+    "2": "bad"
+   },
+   "state": [
+    [
+     "s_in top",
+     3
+    ],
+    [
+     "owed first",
+     1
+    ]
+   ],
+   "banner": "One stack alone serves 3,2,1 \u2014 reversed from FIFO",
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 1,
+   "code": "ops",
+   "line": 5,
+   "intro": "a pop with an empty s_out pours all of s_in across \u2014 reversing again, so the true front (1) ends up on TOP of s_out.",
+   "invariant": "each element is moved from s_in to s_out at most once, ever.",
+   "note": "pop() is called. s_out is empty, so _shift runs: pour s_in into s_out one at a time. A second reversal restores 1,2,3 order.",
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "s_out",
+     "[]"
+    ],
+    [
+     "action",
+     "transfer"
+    ]
+   ],
+   "cells": [
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 1,
+   "code": "ops",
+   "line": 3,
+   "note": "Move 3: pop it off s_in's top, push it onto s_out. s_out front is now 3.",
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "moved",
+     3
+    ],
+    [
+     "s_in",
+     "[1, 2]"
+    ],
+    [
+     "s_out front",
+     3
+    ]
+   ],
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "front",
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "act": 1,
+   "code": "ops",
+   "line": 3,
+   "note": "Move 2: pop it off s_in's top, push it onto s_out. s_out front is now 2.",
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "moved",
+     2
+    ],
+    [
+     "s_in",
+     "[1]"
+    ],
+    [
+     "s_out front",
+     2
+    ]
+   ],
+   "cells": [
+    1
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "front",
+      2
+     ],
+     [
+      "",
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "act": 1,
+   "code": "ops",
+   "line": 3,
+   "note": "Move 1: pop it off s_in's top, push it onto s_out. s_out front is now 1.",
+   "marks": {},
+   "state": [
+    [
+     "moved",
+     1
+    ],
+    [
+     "s_in",
+     "[]"
+    ],
+    [
+     "s_out front",
+     1
+    ]
+   ],
+   "cells": [
+    null
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "front",
+      1
+     ],
+     [
+      "",
+      2
+     ],
+     [
+      "",
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "act": 1,
+   "code": "ops",
+   "line": 5,
+   "note": "After the transfer, s_out top is 1 \u2014 the oldest arrival. pop() returns 1. Two reversals gave back FIFO order.",
+   "state": [
+    [
+     "returned",
+     1
+    ],
+    [
+     "s_out",
+     "[3, 2]"
+    ]
+   ],
+   "banner": "pop() -> 1  (oldest arrival served first)",
+   "cells": [
+    null
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "front",
+      2
+     ],
+     [
+      "",
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "act": 1,
+   "code": "ops",
+   "line": 6,
+   "note": "peek() now finds s_out non-empty, so NO transfer \u2014 it just reads the top: 2. The remaining 2,3 stay ready in order.",
+   "state": [
+    [
+     "peek()",
+     2
+    ],
+    [
+     "s_out",
+     "[3, 2]"
+    ]
+   ],
+   "cells": [
+    null
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "front",
+      2
+     ],
+     [
+      "",
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "act": 1,
+   "code": "ops",
+   "line": 1,
+   "note": "Amortized O(1): each element is pushed to s_in once, moved to s_out once, and popped once \u2014 three constant steps over its whole life, even though the one pop that triggers a transfer looks O(n).",
+   "state": [
+    [
+     "per element",
+     "push+move+pop"
+    ],
+    [
+     "amortized",
+     "O(1)"
+    ]
+   ],
+   "cells": [
+    null
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "front",
+      2
+     ],
+     [
+      "",
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "code": "ops",
+   "line": 4,
+   "intro": "pushes keep going to s_in even while s_out still has items \u2014 4 arrives after a transfer and must still leave last.",
+   "invariant": "_shift only fires when s_out is empty, so half-drained s_out is safe.",
+   "note": "Edge: interleave. push(1).",
+   "marks": {
+    "0": "dim"
+   },
+   "state": [
+    [
+     "s_in",
+     "[]"
+    ],
+    [
+     "s_out",
+     "[]"
+    ]
+   ],
+   "cells": [
+    null
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "code": "ops",
+   "line": 4,
+   "note": "push(1): s_in = [1].",
+   "pointers": {
+    "top": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "s_in",
+     "[1]"
+    ]
+   ],
+   "cells": [
+    1
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "code": "ops",
+   "line": 5,
+   "note": "pop(): s_out empty -> shift 1 across, then serve it. Returns 1. Both stacks empty again.",
+   "state": [
+    [
+     "returned",
+     1
+    ],
+    [
+     "s_in",
+     "[]"
+    ],
+    [
+     "s_out",
+     "[]"
+    ]
+   ],
+   "banner": "pop() -> 1",
+   "cells": [
+    null
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "code": "ops",
+   "line": 4,
+   "note": "push(2): s_in = [2].",
+   "pointers": {
+    "top": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "s_in",
+     "[2]"
+    ]
+   ],
+   "cells": [
+    2
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "code": "ops",
+   "line": 4,
+   "note": "push(3): s_in = [2, 3].",
+   "pointers": {
+    "top": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "s_in",
+     "[2, 3]"
+    ]
+   ],
+   "cells": [
+    2,
+    3
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "code": "ops",
+   "line": 6,
+   "note": "peek(): s_out empty -> shift 2,3 across (now s_out front is 2). Returns 2 without removing it \u2014 2 arrived before 3.",
+   "state": [
+    [
+     "peek()",
+     2
+    ],
+    [
+     "s_out front",
+     2
+    ]
+   ],
+   "cells": [
+    null
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "front",
+      2
+     ],
+     [
+      "",
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "code": "ops",
+   "line": 4,
+   "note": "push(4): s_out still has 2,3 waiting, so 4 goes to s_in and does NOT jump the line. No transfer fires (s_out isn't empty).",
+   "pointers": {
+    "top": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "s_in",
+     "[4]"
+    ],
+    [
+     "s_out front",
+     2
+    ]
+   ],
+   "cells": [
+    4
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "front",
+      2
+     ],
+     [
+      "",
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "code": "ops",
+   "line": 5,
+   "note": "pop(): s_out non-empty, no shift. Serve 2.",
+   "state": [
+    [
+     "returned",
+     2
+    ],
+    [
+     "s_out",
+     "[3]"
+    ]
+   ],
+   "banner": "pop() -> 2",
+   "cells": [
+    4
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "front",
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "code": "ops",
+   "line": 5,
+   "note": "pop(): still no shift, serve 3. Now s_out is empty and only 4 remains in s_in.",
+   "state": [
+    [
+     "returned",
+     3
+    ],
+    [
+     "s_in",
+     "[4]"
+    ],
+    [
+     "s_out",
+     "[]"
+    ]
+   ],
+   "banner": "pop() -> 3",
+   "cells": [
+    4
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "act": 2,
+   "code": "ops",
+   "line": 5,
+   "note": "pop(): s_out empty -> shift 4 across, serve 4. It arrived after the transfer yet still leaves last \u2014 FIFO held.",
+   "state": [
+    [
+     "returned",
+     4
+    ],
+    [
+     "s_in",
+     "[]"
+    ],
+    [
+     "s_out",
+     "[]"
+    ]
+   ],
+   "banner": "pop() -> 4  (pushed after a transfer, still served last)",
+   "cells": [
+    null
+   ],
+   "labels": [
+    0
+   ],
+   "sidebar": {
+    "title": "s_out (serves; front on top)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,652 @@
+{
+ "player": "linear",
+ "title": "Meeting Rooms II \u2014 rooms = peak overlap",
+ "acts": [
+  "The question: peak overlap",
+  "Fast: sweep line",
+  "Heap view: reuse rooms",
+  "Edge case: back-to-back"
+ ],
+ "code": {
+  "sweep": [
+   "starts = sorted(iv[0] for iv in intervals)",
+   "ends   = sorted(iv[1] for iv in intervals)",
+   "rooms = peak = 0; i = j = 0",
+   "while i < n:",
+   "    if starts[i] < ends[j]:   # a meeting begins",
+   "        rooms += 1; peak = max(peak, rooms); i += 1",
+   "    else:                     # a meeting frees a room",
+   "        rooms -= 1; j += 1",
+   "return peak"
+  ],
+  "heap": [
+   "ordered = sorted(intervals, key=lambda iv: iv[0])",
+   "ends = []                       # min-heap of busy end times",
+   "for start, end in ordered:",
+   "    if ends and ends[0] <= start:   # a room is free \u2014 reuse",
+   "        heapq.heapreplace(ends, end)",
+   "    else:                           # all busy \u2014 open a room",
+   "        heapq.heappush(ends, end)",
+   "return len(ends)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "meeting being placed"
+  ],
+  [
+   "good",
+   "resolved / answer"
+  ],
+  [
+   "bad",
+   "live at this instant (counts toward rooms)"
+  ],
+  [
+   "dim",
+   "not live"
+  ]
+ ],
+ "cells": [
+  0,
+  1,
+  2
+ ],
+ "labels": [
+  "0-30",
+  "5-10",
+  "15-20"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "intro": "the answer is the most meetings live at the same instant, no more.",
+   "invariant": "a room is needed only while a meeting is actually running.",
+   "note": "Minimum rooms = peak concurrency. Forget which room is which; just count how many meetings are running at once, and take the high-water mark.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "state": [
+    [
+     "meetings",
+     3
+    ],
+    [
+     "want",
+     "peak overlap"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "sweep",
+   "line": 0,
+   "intro": "each meeting becomes a +1 start event and a -1 end event on a timeline.",
+   "invariant": "rooms = starts seen so far minus ends seen so far.",
+   "note": "Split into sorted starts [0, 5, 15] and ends [10, 20, 30]. Sweep both, ends before starts on a tie so a freed room can be reused.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "starts",
+     "[0, 5, 15]"
+    ],
+    [
+     "ends",
+     "[10, 20, 30]"
+    ],
+    [
+     "rooms",
+     0
+    ],
+    [
+     "peak",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "sweep",
+   "line": 5,
+   "note": "A meeting begins at t=0. rooms -> 1. New peak 1.",
+   "marks": {
+    "0": "bad",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "event",
+     "start @ 0"
+    ],
+    [
+     "rooms",
+     1
+    ],
+    [
+     "peak",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "sweep",
+   "line": 5,
+   "note": "A meeting begins at t=5. rooms -> 2. New peak 2.",
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "event",
+     "start @ 5"
+    ],
+    [
+     "rooms",
+     2
+    ],
+    [
+     "peak",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "sweep",
+   "line": 7,
+   "note": "A meeting ends at t=10. A room frees up. rooms -> 1.",
+   "marks": {
+    "0": "bad",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "event",
+     "end @ 10"
+    ],
+    [
+     "rooms",
+     1
+    ],
+    [
+     "peak",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "sweep",
+   "line": 5,
+   "note": "A meeting begins at t=15. rooms -> 2. New peak 2.",
+   "marks": {
+    "0": "bad",
+    "1": "dim",
+    "2": "bad"
+   },
+   "state": [
+    [
+     "event",
+     "start @ 15"
+    ],
+    [
+     "rooms",
+     2
+    ],
+    [
+     "peak",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "sweep",
+   "line": 7,
+   "note": "A meeting ends at t=20. A room frees up. rooms -> 1.",
+   "marks": {
+    "0": "bad",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "event",
+     "end @ 20"
+    ],
+    [
+     "rooms",
+     1
+    ],
+    [
+     "peak",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "sweep",
+   "line": 7,
+   "note": "A meeting ends at t=30. A room frees up. rooms -> 0.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "event",
+     "end @ 30"
+    ],
+    [
+     "rooms",
+     0
+    ],
+    [
+     "peak",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "sweep",
+   "line": 8,
+   "note": "Highest the room count ever reached was 2. That is the answer.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "banner": "['0-30', '5-10', '15-20']: minimum rooms = 2   (peak concurrency)",
+   "state": [
+    [
+     "answer",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "heap",
+   "line": 1,
+   "intro": "the heap holds end times of busy rooms; its size never exceeds the peak.",
+   "invariant": "heap size = rooms currently in use.",
+   "note": "Same answer, rooms made concrete: a min-heap of end times. Reuse the earliest-freeing room when it's done, else open a new one.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "busy rooms (end times, min-heap)",
+    "rows": []
+   },
+   "state": [
+    [
+     "rooms in use",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "heap",
+   "line": 6,
+   "note": "0-30: no room free by 0 \u2014 open a new room.",
+   "pointers": {
+    "read": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "busy rooms (end times, min-heap)",
+    "rows": [
+     [
+      "30",
+      "in use"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "opened room",
+     "yes"
+    ],
+    [
+     "rooms in use",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "heap",
+   "line": 6,
+   "note": "5-10: no room free by 5 (earliest frees at 10) \u2014 open a new room.",
+   "pointers": {
+    "read": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "busy rooms (end times, min-heap)",
+    "rows": [
+     [
+      "10",
+      "in use"
+     ],
+     [
+      "30",
+      "in use"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "opened room",
+     "yes"
+    ],
+    [
+     "rooms in use",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "heap",
+   "line": 4,
+   "note": "15-20: earliest room freed at 10 <= 15 \u2014 reuse it. No new room.",
+   "pointers": {
+    "read": 2
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "busy rooms (end times, min-heap)",
+    "rows": [
+     [
+      "20",
+      "in use"
+     ],
+     [
+      "30",
+      "in use"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "reused room freeing at",
+     10
+    ],
+    [
+     "rooms in use",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "heap",
+   "line": 7,
+   "note": "The heap peaked at 2 busy rooms \u2014 same 2 the sweep found.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "busy rooms (end times, min-heap)",
+    "rows": [
+     [
+      "20",
+      "in use"
+     ],
+     [
+      "30",
+      "in use"
+     ]
+    ]
+   },
+   "banner": "heap agrees: minimum rooms = 2",
+   "state": [
+    [
+     "answer",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    1
+   ],
+   "labels": [
+    "1-5",
+    "5-10"
+   ],
+   "code": "heap",
+   "line": 3,
+   "intro": "one ending exactly when the next begins shares a single room.",
+   "invariant": "reuse fires when the earliest end <= the new start (<= , not <).",
+   "note": "Edge case: ['1-5', '5-10']. The first frees its room at 5; the second starts at 5.",
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "busy rooms",
+    "rows": [
+     [
+      "5",
+      "in use"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "rooms in use",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    1
+   ],
+   "labels": [
+    "1-5",
+    "5-10"
+   ],
+   "code": "heap",
+   "line": 4,
+   "note": "5-10 starts at 5, the room frees at 5 (<=) \u2014 reuse it. Never two rooms.",
+   "pointers": {
+    "read": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "busy rooms",
+    "rows": [
+     [
+      "10",
+      "in use"
+     ]
+    ]
+   },
+   "banner": "1-5, 5-10: minimum rooms = 1   (back-to-back reuse)",
+   "state": [
+    [
+     "answer",
+     1
+    ]
+   ]
+  }
+ ]
+}

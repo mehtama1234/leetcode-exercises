@@ -59,7 +59,989 @@
 <h2>Pitfalls</h2>
 <ul><li>The loop guard must be <code>while fast and fast.next</code>. Drop the <code>fast.next</code> check and <code>fast.next.next</code> crashes on even-length lists.</li><li>Off-by-one: starting both pointers at <code>head</code> (not one at <code>head.next</code>) is what gives the *second* middle. To get the first middle instead, start <code>fast</code> one node ahead.</li><li>Empty list: the loop never runs and <code>slow</code> stays <code>None</code>, which is correct.</li></ul>
 <h2>Transfer</h2>
-<p>Fast/slow pointers are the backbone of many list problems: cycle detection (<a href="../0141-linked-list-cycle/">141</a>, <a href="../0142-linked-list-cycle-ii/">142</a>), finding the nth-from-end node (<a href="../0019-remove-nth-node-from-end-of-list/">19</a>), and splitting a list in half for <a href="../0143-reorder-list/">reorder / 143</a>. Whenever you need a position defined *relative to the end* without knowing the length up front, reach for two pointers moving at different speeds.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0876-middle-of-the-linked-list/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;876. Middle of the Linked List — https://leetcode.com/problems/middle-of-the-linked-list/
+<p>Fast/slow pointers are the backbone of many list problems: cycle detection (<a href="../0141-linked-list-cycle/">141</a>, <a href="../0142-linked-list-cycle-ii/">142</a>), finding the nth-from-end node (<a href="../0019-remove-nth-node-from-end-of-list/">19</a>), and splitting a list in half for <a href="../0143-reorder-list/">reorder / 143</a>. Whenever you need a position defined *relative to the end* without knowing the length up front, reach for two pointers moving at different speeds.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linkedlist",
+ "title": "Middle of the Linked List - fast/slow finds it in one pass",
+ "acts": [
+  "Brute: count then re-walk",
+  "The waste",
+  "Fast/slow one pass",
+  "Edge: even length"
+ ],
+ "code": {
+  "slow": [
+   "n = 0",
+   "node = head",
+   "while node:",
+   "    n += 1",
+   "    node = node.next",
+   "node = head",
+   "for _ in range(n // 2):",
+   "    node = node.next",
+   "return node"
+  ],
+  "fast": [
+   "slow = head",
+   "fast = head",
+   "while fast and fast.next:",
+   "    slow = slow.next",
+   "    fast = fast.next.next",
+   "return slow"
+  ]
+ },
+ "legend": [
+  [
+   "good",
+   "the middle"
+  ],
+  [
+   "bad",
+   "re-walked node"
+  ],
+  [
+   "dim",
+   "counted node"
+  ],
+  [
+   "active",
+   "slow is here"
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "vals": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "code": "slow",
+   "line": 0,
+   "intro": "watch the same nodes get walked a second time \u2014 that repeat is the waste.",
+   "invariant": "you cannot know the middle index until you know the length.",
+   "note": "The literal reading: the middle is at index n // 2, but we do not know n yet. So pass one just counts.",
+   "pointers": {
+    "node": 0
+   },
+   "state": [
+    [
+     "n",
+     0
+    ],
+    [
+     "walks",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "slow",
+   "line": 3,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Counting node 1. n is now 1.",
+   "pointers": {
+    "node": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "state": [
+    [
+     "n",
+     1
+    ],
+    [
+     "walks",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "slow",
+   "line": 3,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Counting node 2. n is now 2.",
+   "pointers": {
+    "node": 1
+   },
+   "marks": {
+    "1": "dim"
+   },
+   "state": [
+    [
+     "n",
+     2
+    ],
+    [
+     "walks",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "slow",
+   "line": 3,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Counting node 3. n is now 3.",
+   "pointers": {
+    "node": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "state": [
+    [
+     "n",
+     3
+    ],
+    [
+     "walks",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "slow",
+   "line": 3,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Counting node 4. n is now 4.",
+   "pointers": {
+    "node": 3
+   },
+   "marks": {
+    "3": "dim"
+   },
+   "state": [
+    [
+     "n",
+     4
+    ],
+    [
+     "walks",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "slow",
+   "line": 3,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Counting node 5. n is now 5.",
+   "pointers": {
+    "node": 4
+   },
+   "marks": {
+    "4": "dim"
+   },
+   "state": [
+    [
+     "n",
+     5
+    ],
+    [
+     "walks",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "slow",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "First pass done: length is 5. Now go back to the head and walk again.",
+   "pointers": {
+    "node": 0
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "n",
+     5
+    ],
+    [
+     "walks",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "slow",
+   "line": 7,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Second walk, step 1 of 2. Re-touching node 2.",
+   "pointers": {
+    "node": 1
+   },
+   "marks": {
+    "1": "bad"
+   },
+   "state": [
+    [
+     "target idx",
+     2
+    ],
+    [
+     "walks",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "slow",
+   "line": 7,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Second walk, step 2 of 2. Re-touching node 3.",
+   "pointers": {
+    "node": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "state": [
+    [
+     "target idx",
+     2
+    ],
+    [
+     "walks",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "slow",
+   "line": 8,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "Landed on index 2: the middle is 3. But we walked 7 node-steps for a 5-node list \u2014 most nodes twice.",
+   "pointers": {
+    "node": 2
+   },
+   "marks": {
+    "2": "good"
+   },
+   "state": [
+    [
+     "middle",
+     3
+    ],
+    [
+     "walks",
+     7
+    ]
+   ],
+   "banner": "Two passes: 3 is the middle"
+  },
+  {
+   "act": 1,
+   "vals": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "code": "slow",
+   "line": 6,
+   "intro": "the fast version never needs the length \u2014 one pointer measures it live.",
+   "invariant": "fast is always twice as far along as slow.",
+   "note": "The waste: pass one only existed to learn the length. If one pointer moved twice as fast, it would reach the end exactly when a slower one reached the middle \u2014 length learned for free.",
+   "pointers": {
+    "slow": 0,
+    "fast": 0
+   },
+   "state": [
+    [
+     "idea",
+     "fast = 2x slow"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "vals": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "slow moves 1, fast moves 2; when fast runs out, slow is halfway.",
+   "invariant": "distance(head, slow) is always half distance(head, fast).",
+   "note": "Both start at the head. Each turn slow takes one step, fast takes two.",
+   "pointers": {
+    "slow": 0,
+    "fast": 0
+   },
+   "state": [
+    [
+     "slow",
+     1
+    ],
+    [
+     "fast",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "slow -> 2, fast -> 3.",
+   "pointers": {
+    "slow": 1,
+    "fast": 2
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "slow",
+     2
+    ],
+    [
+     "fast",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "slow -> 3, fast -> 5.",
+   "pointers": {
+    "slow": 2,
+    "fast": 4
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "slow",
+     3
+    ],
+    [
+     "fast",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     null
+    ]
+   ],
+   "note": "fast ran off the end after one pass. slow sits on 3 \u2014 the middle.",
+   "pointers": {
+    "slow": 2
+   },
+   "marks": {
+    "2": "good"
+   },
+   "state": [
+    [
+     "middle",
+     3
+    ],
+    [
+     "passes",
+     1
+    ]
+   ],
+   "banner": "One pass: 3 is the middle"
+  },
+  {
+   "act": 3,
+   "vals": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     null
+    ]
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "with an even count there are two middles \u2014 this returns the second.",
+   "invariant": "fast lands exactly on null; slow lands on the second middle.",
+   "note": "Edge case: an even-length list. There are two middle nodes (3 and 4); the problem wants the second one.",
+   "pointers": {
+    "slow": 0,
+    "fast": 0
+   },
+   "state": [
+    [
+     "slow",
+     1
+    ],
+    [
+     "fast",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     null
+    ]
+   ],
+   "note": "slow -> 2, fast -> 3.",
+   "pointers": {
+    "slow": 1,
+    "fast": 2
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "slow",
+     2
+    ],
+    [
+     "fast",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     null
+    ]
+   ],
+   "note": "slow -> 3, fast -> 5.",
+   "pointers": {
+    "slow": 2,
+    "fast": 4
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "slow",
+     3
+    ],
+    [
+     "fast",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     null
+    ]
+   ],
+   "note": "slow -> 4, fast -> null.",
+   "pointers": {
+    "slow": 3,
+    "fast": null
+   },
+   "marks": {
+    "3": "active"
+   },
+   "state": [
+    [
+     "slow",
+     4
+    ],
+    [
+     "fast",
+     "null"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     null
+    ]
+   ],
+   "note": "fast is null and slow rests on 4 \u2014 the second of the two middles, exactly as asked.",
+   "pointers": {
+    "slow": 3
+   },
+   "marks": {
+    "3": "good"
+   },
+   "state": [
+    [
+     "middle",
+     4
+    ]
+   ],
+   "banner": "Even length: 4 is the (second) middle"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/05-linked-list/0876-middle-of-the-linked-list/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;876. Middle of the Linked List — https://leetcode.com/problems/middle-of-the-linked-list/
 
 Return the middle node of a singly linked list. If there are two middle nodes
 (even length), return the second one.

@@ -64,7 +64,675 @@
 <h2>Pitfalls</h2>
 <ul><li>Scanning the whole grid when it&#x27;s symmetric — you only need the upper triangle (<code>j &gt; i</code>), since a road from <code>i</code> to <code>j</code> is the same as <code>j</code> to <code>i</code>.</li><li>Skipping path compression or union by rank — without them a chain can grow to length <code>n</code> and <code>find</code> degrades toward <code>O(n)</code>.</li><li>Recounting groups at the end by scanning roots, when the running <code>count</code> (decremented on each real merge) already holds the answer.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is <strong>merge things into groups with Union-Find, and read the group count straight off the merges.</strong> The exact same structure answers <a href="../0684-redundant-connection/">Redundant Connection / 684</a> (spot the edge that joins two already-connected nodes) and <a href="https://leetcode.com/problems/number-of-islands/">Number of Islands / 200</a>, and it underlies Kruskal&#x27;s minimum-spanning-tree algorithm.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/26-advanced-ds/0547-number-of-provinces/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;547. Number of Provinces — https://leetcode.com/problems/number-of-provinces/
+<p>The reusable move is <strong>merge things into groups with Union-Find, and read the group count straight off the merges.</strong> The exact same structure answers <a href="../0684-redundant-connection/">Redundant Connection / 684</a> (spot the edge that joins two already-connected nodes) and <a href="https://leetcode.com/problems/number-of-islands/">Number of Islands / 200</a>, and it underlies Kruskal&#x27;s minimum-spanning-tree algorithm.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Number of Provinces - Union-Find forest, count the groups",
+ "acts": [
+  "The rule",
+  "Merge the chain",
+  "Edge: an isolated city"
+ ],
+ "code": {
+  "uf": [
+   "uf = UnionFind(n)          # count = n singleton groups",
+   "for i in range(n):",
+   "    for j in range(i+1, n):",
+   "        if isConnected[i][j]:",
+   "            uf.union(i, j)  # merge -> count -= 1 if new",
+   "return uf.count"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "roots being merged"
+  ],
+  [
+   "good",
+   "current group root"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 0,
+   "x": 0,
+   "y": 60
+  },
+  {
+   "id": 1,
+   "val": 1,
+   "x": 90,
+   "y": 60
+  },
+  {
+   "id": 2,
+   "val": 2,
+   "x": 180,
+   "y": 60
+  },
+  {
+   "id": 3,
+   "val": 3,
+   "x": 270,
+   "y": 60
+  }
+ ],
+ "edges": [],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 270,
+     "y": 60
+    }
+   ],
+   "edges": [],
+   "code": "uf",
+   "line": 0,
+   "intro": "each city starts as its own group; the group count starts at n.",
+   "invariant": "number of provinces = current number of disjoint groups.",
+   "note": "Number of provinces = connected components. Start with 4 singleton groups. Every merge of two DIFFERENT groups drops the count by one.",
+   "active": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "done": {
+    "0": "group",
+    "1": "group",
+    "2": "group",
+    "3": "group"
+   },
+   "state": [
+    [
+     "groups",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 270,
+     "y": 60
+    }
+   ],
+   "edges": [],
+   "code": "uf",
+   "line": 4,
+   "intro": "each edge unions two cities; watch roots redirect and the count fall.",
+   "invariant": "a merge only lowers the count when the two roots differ.",
+   "note": "Scan the upper triangle. For each connection, union the two cities.",
+   "active": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "done": {},
+   "state": [
+    [
+     "groups",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 3,
+   "note": "cities 0 and 1 are connected. Their roots are 0 and 1.",
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 270,
+     "y": 60
+    }
+   ],
+   "edges": [],
+   "active": [
+    0,
+    1
+   ],
+   "done": {
+    "0": "root",
+    "1": "root",
+    "2": "root",
+    "3": "root"
+   },
+   "state": [
+    [
+     "union",
+     "0,1"
+    ],
+    [
+     "roots",
+     "0,1"
+    ],
+    [
+     "groups",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 4,
+   "note": "Different groups: attach root 1 under root 0. Groups 4 -> 3.",
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 270,
+     "y": 60
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "root",
+    "2": "root",
+    "3": "root"
+   },
+   "state": [
+    [
+     "merged",
+     true
+    ],
+    [
+     "groups",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 3,
+   "note": "cities 1 and 2 are connected. Their roots are 0 and 2.",
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 270,
+     "y": 60
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "active": [
+    0,
+    2
+   ],
+   "done": {
+    "0": "root",
+    "2": "root",
+    "3": "root"
+   },
+   "state": [
+    [
+     "union",
+     "1,2"
+    ],
+    [
+     "roots",
+     "0,2"
+    ],
+    [
+     "groups",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 4,
+   "note": "Different groups: attach root 2 under root 0. Groups 3 -> 2.",
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 270,
+     "y": 60
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "root",
+    "3": "root"
+   },
+   "state": [
+    [
+     "merged",
+     true
+    ],
+    [
+     "groups",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 3,
+   "note": "cities 2 and 3 are connected. Their roots are 0 and 3.",
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 270,
+     "y": 60
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "active": [
+    0,
+    3
+   ],
+   "done": {
+    "0": "root",
+    "3": "root"
+   },
+   "state": [
+    [
+     "union",
+     "2,3"
+    ],
+    [
+     "roots",
+     "0,3"
+    ],
+    [
+     "groups",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 4,
+   "note": "Different groups: attach root 3 under root 0. Groups 2 -> 1.",
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 270,
+     "y": 60
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ]
+   ],
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "root"
+   },
+   "state": [
+    [
+     "merged",
+     true
+    ],
+    [
+     "groups",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "uf",
+   "line": 5,
+   "note": "All cities fused into one tree -> 1 province.",
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 270,
+     "y": 60
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ]
+   ],
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "root"
+   },
+   "state": [
+    [
+     "provinces",
+     1
+    ]
+   ],
+   "banner": "Chain of 4 -> 1 province"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    }
+   ],
+   "edges": [],
+   "code": "uf",
+   "line": 0,
+   "intro": "one connection, one isolated city -> two provinces.",
+   "invariant": "a city with no connections stays its own province.",
+   "note": "Edge case: cities 0 and 1 connected, city 2 alone. One merge, one lonely group.",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {
+    "0": "root",
+    "1": "root",
+    "2": "root"
+   },
+   "state": [
+    [
+     "groups",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "uf",
+   "line": 4,
+   "note": "Union 0 and 1: count 3 -> 2. City 2 has no connection, so it stays its own province.",
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 180,
+     "y": 60
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "active": [
+    0,
+    2
+   ],
+   "done": {
+    "0": "root",
+    "2": "root"
+   },
+   "state": [
+    [
+     "provinces",
+     2
+    ]
+   ],
+   "banner": "2 groups -> 2 provinces"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/26-advanced-ds/0547-number-of-provinces/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;547. Number of Provinces — https://leetcode.com/problems/number-of-provinces/
 
 You&#x27;re given an n x n matrix where isConnected[i][j] == 1 means city i and city j
 are directly connected. A &quot;province&quot; is a group of cities connected directly or

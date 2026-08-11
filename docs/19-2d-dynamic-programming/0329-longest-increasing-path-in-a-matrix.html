@@ -67,7 +67,455 @@
 <h2>Pitfalls</h2>
 <ul><li>Using <code>&gt;=</code> instead of <code>&gt;</code>. The step must be *strictly* increasing; a plateau of equal values gives no move, so a grid of equal numbers has answer 1.</li><li>Adding a visited-set like ordinary DFS. You don&#x27;t need one — the strictly-uphill rule already forbids revisiting, and a visited-set would wrongly block valid paths.</li><li>Recomputing instead of caching. Without the cache this is exponential; the cache is the whole point.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is *turn a monotonic-constraint grid into a DAG, then do longest-path via memoized DFS (solve each node once, ignore arrival path).* Siblings: <a href="https://leetcode.com/problems/course-schedule/">Course Schedule / 207</a> (DAG detection/topo order), <a href="https://leetcode.com/problems/word-break/">Word Break / 139</a> (memoized DFS over overlapping subproblems), and any &quot;longest chain of increasing X&quot; such as <a href="https://leetcode.com/problems/longest-increasing-subsequence/">Longest Increasing Subsequence / 300</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0329-longest-increasing-path-in-a-matrix/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;329. Longest Increasing Path in a Matrix —
+<p>The reusable move is *turn a monotonic-constraint grid into a DAG, then do longest-path via memoized DFS (solve each node once, ignore arrival path).* Siblings: <a href="https://leetcode.com/problems/course-schedule/">Course Schedule / 207</a> (DAG detection/topo order), <a href="https://leetcode.com/problems/word-break/">Word Break / 139</a> (memoized DFS over overlapping subproblems), and any &quot;longest chain of increasing X&quot; such as <a href="https://leetcode.com/problems/longest-increasing-subsequence/">Longest Increasing Subsequence / 300</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Longest Increasing Path - memoize the DAG, fill by value",
+ "acts": [
+  "Brute: DFS from every cell",
+  "Memoize (fill by value)",
+  "Answer + edge"
+ ],
+ "code": {
+  "tab": [
+   "@lru_cache(None)",
+   "def best(r, c):",
+   "    longest = 1",
+   "    for nr, nc in neighbours(r, c):",
+   "        if matrix[nr][nc] > matrix[r][c]:",
+   "            longest = max(longest, 1 + best(nr, nc))",
+   "    return longest",
+   "return max(best(r, c) for all cells)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "larger neighbours read"
+  ],
+  [
+   "good",
+   "solved best(r,c) / answer"
+  ],
+  [
+   "bad",
+   "recomputed downstream (waste)"
+  ]
+ ],
+ "rows": [
+  [
+   9,
+   9,
+   4
+  ],
+  [
+   6,
+   6,
+   8
+  ],
+  [
+   2,
+   1,
+   1
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     9,
+     9,
+     4
+    ],
+    [
+     6,
+     6,
+     8
+    ],
+    [
+     2,
+     1,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": null,
+   "intro": "how the same cell's downstream path gets recomputed from every start.",
+   "invariant": "best(r,c) = length of the longest strictly-increasing path starting there.",
+   "note": "Brute force: from each cell walk to any larger neighbour and take 1 + the best of those. Cells values shown; every start launches its own full DFS.",
+   "marks": {
+    "2,1": "active"
+   },
+   "state": [
+    [
+     "from",
+     "(2,1) value 1"
+    ],
+    [
+     "step",
+     "to a larger neighbour"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "A cell reachable from many places \u2014 like (1,0) value 6 \u2014 has its whole downstream re-explored each time. That repeated tail is the exponential waste.",
+   "marks": {
+    "1,0": "bad",
+    "2,1": "active"
+   },
+   "state": [
+    [
+     "recomputed",
+     "best(1,0) \u2026"
+    ],
+    [
+     "cost",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     9,
+     9,
+     4
+    ],
+    [
+     6,
+     6,
+     8
+    ],
+    [
+     2,
+     1,
+     1
+    ]
+   ],
+   "code": "tab",
+   "line": 1,
+   "intro": "fill best(r,c) from the largest values down, so every larger neighbour is already done.",
+   "invariant": "best(r,c) = 1 + max best over strictly-larger neighbours (or 1 if none).",
+   "note": "Because each step goes strictly uphill in value, there are no cycles \u2014 the grid is a DAG. Solve the biggest values first (they are the path ends) and cache each once.",
+   "marks": {},
+   "state": [
+    [
+     "order",
+     "largest value first"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "cell (0,1) value 9: no larger neighbour, best = 1 (a peak).",
+   "set": {
+    "0,1": 1
+   },
+   "marks": {
+    "0,1": "good"
+   },
+   "state": [
+    [
+     "value",
+     9
+    ],
+    [
+     "larger neighbours",
+     0
+    ],
+    [
+     "best(0,1)",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "cell (0,0) value 9: no larger neighbour, best = 1 (a peak).",
+   "set": {
+    "0,0": 1
+   },
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "value",
+     9
+    ],
+    [
+     "larger neighbours",
+     0
+    ],
+    [
+     "best(0,0)",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "cell (1,2) value 8: no larger neighbour, best = 1 (a peak).",
+   "set": {
+    "1,2": 1
+   },
+   "marks": {
+    "1,2": "good"
+   },
+   "state": [
+    [
+     "value",
+     8
+    ],
+    [
+     "larger neighbours",
+     0
+    ],
+    [
+     "best(1,2)",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "cell (1,1) value 6: 1 + max of larger neighbours [best(0,1)=1, best(1,2)=1] = 2.",
+   "set": {
+    "1,1": 2
+   },
+   "marks": {
+    "1,1": "good",
+    "0,1": "active",
+    "1,2": "active"
+   },
+   "state": [
+    [
+     "value",
+     6
+    ],
+    [
+     "larger neighbours",
+     2
+    ],
+    [
+     "best(1,1)",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "cell (1,0) value 6: 1 + max of larger neighbours [best(0,0)=1] = 2.",
+   "set": {
+    "1,0": 2
+   },
+   "marks": {
+    "1,0": "good",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "value",
+     6
+    ],
+    [
+     "larger neighbours",
+     1
+    ],
+    [
+     "best(1,0)",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "cell (0,2) value 4: 1 + max of larger neighbours [best(1,2)=1, best(0,1)=1] = 2.",
+   "set": {
+    "0,2": 2
+   },
+   "marks": {
+    "0,2": "good",
+    "1,2": "active",
+    "0,1": "active"
+   },
+   "state": [
+    [
+     "value",
+     4
+    ],
+    [
+     "larger neighbours",
+     2
+    ],
+    [
+     "best(0,2)",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "cell (2,0) value 2: 1 + max of larger neighbours [best(1,0)=2] = 3.",
+   "set": {
+    "2,0": 3
+   },
+   "marks": {
+    "2,0": "good",
+    "1,0": "active"
+   },
+   "state": [
+    [
+     "value",
+     2
+    ],
+    [
+     "larger neighbours",
+     1
+    ],
+    [
+     "best(2,0)",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "cell (2,2) value 1: 1 + max of larger neighbours [best(1,2)=1] = 2.",
+   "set": {
+    "2,2": 2
+   },
+   "marks": {
+    "2,2": "good",
+    "1,2": "active"
+   },
+   "state": [
+    [
+     "value",
+     1
+    ],
+    [
+     "larger neighbours",
+     1
+    ],
+    [
+     "best(2,2)",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "cell (2,1) value 1: 1 + max of larger neighbours [best(1,1)=2, best(2,0)=3] = 4.",
+   "set": {
+    "2,1": 4
+   },
+   "marks": {
+    "2,1": "good",
+    "1,1": "active",
+    "2,0": "active"
+   },
+   "state": [
+    [
+     "value",
+     1
+    ],
+    [
+     "larger neighbours",
+     2
+    ],
+    [
+     "best(2,1)",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "tab",
+   "line": 7,
+   "intro": "the answer is the largest best(r,c) over all cells.",
+   "invariant": "each cell solved exactly once; total work is linear in cells and edges.",
+   "note": "The longest increasing path has length 4, starting at (2,1): 1 -> 2 -> 6 -> 9.",
+   "marks": {
+    "2,1": "good"
+   },
+   "state": [
+    [
+     "answer",
+     4
+    ]
+   ],
+   "banner": "Longest increasing path = 4"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     1,
+     1,
+     1
+    ],
+    [
+     1,
+     1,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "tab",
+   "line": 7,
+   "note": "Edge case: every cell equals 7. No neighbour is strictly larger, so no step is allowed anywhere \u2014 each best is 1 and the answer is 1.",
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "answer",
+     1
+    ]
+   ],
+   "banner": "All-equal grid \u2192 path length 1"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0329-longest-increasing-path-in-a-matrix/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;329. Longest Increasing Path in a Matrix —
 https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
 
 Find the length of the longest path in a grid where each step moves to an adjacent

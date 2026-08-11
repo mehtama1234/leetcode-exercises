@@ -1,0 +1,643 @@
+{
+ "player": "linear",
+ "title": "Two Sum II \u2014 using the sort to converge in one pass",
+ "acts": [
+  "Brute force: every pair",
+  "The waste",
+  "Fast: converge from the ends",
+  "Edge case: duplicates"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "    for j in range(i+1, n):",
+   "        if numbers[i] + numbers[j] == target:",
+   "            return [i+1, j+1]"
+  ],
+  "fast": [
+   "left, right = 0, n-1",
+   "while left < right:",
+   "    s = numbers[left] + numbers[right]",
+   "    if s == target: return [left+1, right+1]",
+   "    if s < target: left += 1",
+   "    else: right -= 1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the two pointers"
+  ],
+  [
+   "good",
+   "the matching pair"
+  ],
+  [
+   "dim",
+   "discarded"
+  ]
+ ],
+ "cells": [
+  2,
+  7,
+  11,
+  15
+ ],
+ "labels": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    2,
+    7,
+    11,
+    15
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "the pairs are tested blind \u2014 the fact that the array is sorted is thrown away.",
+   "invariant": "every pair before this i,j has been tested in order.",
+   "note": "Brute force: test every pair against target 9, ignoring that it's sorted.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "marks": {
+    "0": "active",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "target",
+     9
+    ],
+    [
+     "pairs",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "numbers[0]+numbers[1] = 2+7 = 9. Match.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "sum",
+     9
+    ],
+    [
+     "pairs",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "Found [1, 2] \u2014 but it cost 1 pairs and used nothing about the array being sorted.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "[1, 2]"
+    ],
+    [
+     "pairs",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the sort is a free fact \u2014 brute paid nothing for it, so it earned nothing.",
+   "note": "1 pairs here, but ~n*n/2 in general. The array is sorted: the sum at the two ends already tells us which way to move. Brute never asked.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "pairs (brute)",
+     1
+    ],
+    [
+     "pattern",
+     "~ n*n / 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Put one pointer at the smallest value, one at the largest. Too big? shrink the big end. Too small? grow the small end. Each move drops a value that can't be in any answer.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "at n=1000",
+     "~500,000"
+    ],
+    [
+     "what we want",
+     "~1,000"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    2,
+    7,
+    11,
+    15
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the sum steers the pointers \u2014 no value is ever revisited.",
+   "invariant": "the answer, if any, lies within [left, right].",
+   "note": "Two pointers at the ends. The end sum tells us which side to move.",
+   "pointers": {
+    "L": 0,
+    "R": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "target",
+     9
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "2 + 15 = 17. Too big \u2014 shrink the right end.",
+   "pointers": {
+    "L": 0,
+    "R": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "arc": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     3
+    ],
+    [
+     "sum",
+     17
+    ],
+    [
+     "target",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "2 + 11 = 13. Too big \u2014 shrink the right end.",
+   "pointers": {
+    "L": 0,
+    "R": 2
+   },
+   "window": [
+    0,
+    2
+   ],
+   "arc": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "2": "active"
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     2
+    ],
+    [
+     "sum",
+     13
+    ],
+    [
+     "target",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "2 + 7 = 9. Exactly the target.",
+   "pointers": {
+    "L": 0,
+    "R": 1
+   },
+   "window": [
+    0,
+    1
+   ],
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "[1, 2]"
+    ],
+    [
+     "steps",
+     "one pass"
+    ],
+    [
+     "vs brute",
+     1
+    ]
+   ],
+   "banner": "Found [1, 2]   2 + 7 = 9"
+  },
+  {
+   "act": 3,
+   "cells": [
+    1,
+    2,
+    3,
+    4,
+    4,
+    9,
+    56,
+    90
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "duplicates don't confuse it \u2014 the sum still points the way to the two 4s.",
+   "invariant": "the answer, if any, lies within [left, right].",
+   "note": "Edge case: duplicates and the answer buried in the middle. Target 8.",
+   "pointers": {
+    "L": 0,
+    "R": 7
+   },
+   "window": [
+    0,
+    7
+   ],
+   "marks": {
+    "0": "active",
+    "7": "active"
+   },
+   "state": [
+    [
+     "target",
+     8
+    ],
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "1 + 90 = 91. Too big \u2014 move right in.",
+   "pointers": {
+    "L": 0,
+    "R": 7
+   },
+   "window": [
+    0,
+    7
+   ],
+   "marks": {
+    "0": "active",
+    "7": "active"
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     7
+    ],
+    [
+     "sum",
+     91
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "1 + 56 = 57. Too big \u2014 move right in.",
+   "pointers": {
+    "L": 0,
+    "R": 6
+   },
+   "window": [
+    0,
+    6
+   ],
+   "marks": {
+    "0": "active",
+    "6": "active"
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     6
+    ],
+    [
+     "sum",
+     57
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "1 + 9 = 10. Too big \u2014 move right in.",
+   "pointers": {
+    "L": 0,
+    "R": 5
+   },
+   "window": [
+    0,
+    5
+   ],
+   "marks": {
+    "0": "active",
+    "5": "active"
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     5
+    ],
+    [
+     "sum",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "1 + 4 = 5. Too small \u2014 move left in.",
+   "pointers": {
+    "L": 0,
+    "R": 4
+   },
+   "window": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "active",
+    "4": "active"
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "right",
+     4
+    ],
+    [
+     "sum",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "2 + 4 = 6. Too small \u2014 move left in.",
+   "pointers": {
+    "L": 1,
+    "R": 4
+   },
+   "window": [
+    1,
+    4
+   ],
+   "marks": {
+    "1": "active",
+    "4": "active"
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "right",
+     4
+    ],
+    [
+     "sum",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "3 + 4 = 7. Too small \u2014 move left in.",
+   "pointers": {
+    "L": 2,
+    "R": 4
+   },
+   "window": [
+    2,
+    4
+   ],
+   "marks": {
+    "2": "active",
+    "4": "active"
+   },
+   "state": [
+    [
+     "left",
+     2
+    ],
+    [
+     "right",
+     4
+    ],
+    [
+     "sum",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 3,
+   "note": "4 + 4 = 8. The two 4s in the middle.",
+   "pointers": {
+    "L": 3,
+    "R": 4
+   },
+   "window": [
+    3,
+    4
+   ],
+   "arc": [
+    3,
+    4
+   ],
+   "marks": {
+    "3": "good",
+    "4": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "[4, 5]"
+    ]
+   ],
+   "banner": "Found [4, 5]   4 + 4 = 8"
+  }
+ ]
+}

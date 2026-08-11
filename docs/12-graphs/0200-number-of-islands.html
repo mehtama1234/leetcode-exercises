@@ -57,7 +57,583 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Diagonals don&#x27;t connect.</strong> <code>[[&quot;1&quot;,&quot;0&quot;],[&quot;0&quot;,&quot;1&quot;]]</code> is *two* islands. Only the 4 straight neighbors count as edges.</li><li><strong>Recursion depth.</strong> Recursive flood fill overflows on one large island — use an explicit stack (or a queue).</li><li><strong>Mutating the caller&#x27;s grid.</strong> Sinking edits the input in place. In tests we pass a copy so the original survives for the next check.</li><li><strong>Empty input.</strong> An empty grid, or an empty first row, must return <code>0</code> — check before you index.</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Scan the grid, and every time you hit an unvisited region, flood-fill it and count or measure it&quot; is the reusable move. It powers <a href="https://leetcode.com/problems/max-area-of-island/">Max Area of Island / 695</a>, <a href="https://leetcode.com/problems/surrounded-regions/">Surrounded Regions / 130</a>, and <a href="../0323-number-of-connected-components-in-an-undirected-graph/">Number of Connected Components / 323</a> — the same connected-clump idea on an explicit graph instead of a grid.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/12-graphs/0200-number-of-islands/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;200. Number of Islands — https://leetcode.com/problems/number-of-islands/
+<p>&quot;Scan the grid, and every time you hit an unvisited region, flood-fill it and count or measure it&quot; is the reusable move. It powers <a href="https://leetcode.com/problems/max-area-of-island/">Max Area of Island / 695</a>, <a href="https://leetcode.com/problems/surrounded-regions/">Surrounded Regions / 130</a>, and <a href="../0323-number-of-connected-components-in-an-undirected-graph/">Number of Connected Components / 323</a> — the same connected-clump idea on an explicit graph instead of a grid.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Number of Islands - scan for fresh land, sink each blob once",
+ "acts": [
+  "The idea: scan + sink",
+  "Run it: count blobs",
+  "Edge: diagonal doesn't connect"
+ ],
+ "code": {
+  "scan": [
+   "for r in range(rows):",
+   "    for c in range(cols):",
+   "        if grid[r][c] == '1':",
+   "            count += 1",
+   "            sink(r, c)   # DFS the whole blob",
+   "return count"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "fresh land found"
+  ],
+  [
+   "good",
+   "sunk (this blob)"
+  ]
+ ],
+ "rows": [
+  [
+   1,
+   1,
+   0
+  ],
+  [
+   1,
+   1,
+   0
+  ],
+  [
+   0,
+   0,
+   1
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     1,
+     1,
+     0
+    ],
+    [
+     1,
+     1,
+     0
+    ],
+    [
+     0,
+     0,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2"
+   ],
+   "code": "scan",
+   "line": 2,
+   "intro": "each blob of connected land gets sunk exactly once, and counted once.",
+   "invariant": "counted land is already water \u2014 it can never be counted twice.",
+   "note": "An island is a group of 1s joined up/down/left/right. Idea: scan for a 1, count it, then flood-fill (sink) the entire blob so it's gone.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "islands",
+     0
+    ],
+    [
+     "rule",
+     "scan + sink blob"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     1,
+     1,
+     0
+    ],
+    [
+     1,
+     1,
+     0
+    ],
+    [
+     0,
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 0,
+   "marks": {},
+   "state": [
+    [
+     "islands",
+     0
+    ]
+   ],
+   "intro": "watch the counter tick only on FRESH land; sinking clears each blob.",
+   "invariant": "every island bumps the counter exactly once.",
+   "note": "Run it. Scan row by row; a 1 that's still land means a new island we haven't seen."
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     1,
+     1,
+     0
+    ],
+    [
+     1,
+     1,
+     0
+    ],
+    [
+     0,
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 3,
+   "note": "Fresh land at (0,0) \u2014 it can't belong to an island we already counted (that one would have sunk it). Island #1.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "islands",
+     1
+    ],
+    [
+     "found land",
+     "(0,0)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     0,
+     1,
+     0
+    ],
+    [
+     1,
+     1,
+     0
+    ],
+    [
+     0,
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 4,
+   "note": "Sink (0,0) into water. Its land neighbors go on the stack so the whole blob gets flooded as one island.",
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "island",
+     1
+    ],
+    [
+     "sinking",
+     "(0,0)"
+    ],
+    [
+     "stack",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     1,
+     1,
+     0
+    ],
+    [
+     0,
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 4,
+   "note": "Sink (0,1) into water. Its land neighbors go on the stack so the whole blob gets flooded as one island.",
+   "marks": {
+    "0,1": "good"
+   },
+   "state": [
+    [
+     "island",
+     1
+    ],
+    [
+     "sinking",
+     "(0,1)"
+    ],
+    [
+     "stack",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 4,
+   "note": "Sink (1,1) into water. Its land neighbors go on the stack so the whole blob gets flooded as one island.",
+   "marks": {
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "island",
+     1
+    ],
+    [
+     "sinking",
+     "(1,1)"
+    ],
+    [
+     "stack",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 4,
+   "note": "Sink (1,0) into water. Its land neighbors go on the stack so the whole blob gets flooded as one island.",
+   "marks": {
+    "1,0": "good"
+   },
+   "state": [
+    [
+     "island",
+     1
+    ],
+    [
+     "sinking",
+     "(1,0)"
+    ],
+    [
+     "stack",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 3,
+   "note": "Fresh land at (2,2) \u2014 it can't belong to an island we already counted (that one would have sunk it). Island #2.",
+   "marks": {
+    "2,2": "active"
+   },
+   "state": [
+    [
+     "islands",
+     2
+    ],
+    [
+     "found land",
+     "(2,2)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "code": "scan",
+   "line": 4,
+   "note": "Sink (2,2) into water. Its land neighbors go on the stack so the whole blob gets flooded as one island.",
+   "marks": {
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "island",
+     2
+    ],
+    [
+     "sinking",
+     "(2,2)"
+    ],
+    [
+     "stack",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "scan",
+   "line": 5,
+   "note": "Grid fully scanned, everything sunk. Two separate blobs were found: the top-left square and the lone cell at (2,2).",
+   "marks": {},
+   "state": [
+    [
+     "islands",
+     2
+    ]
+   ],
+   "banner": "Number of islands = 2"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 0,
+   "marks": {},
+   "state": [
+    [
+     "islands",
+     0
+    ]
+   ],
+   "intro": "diagonal neighbors are NOT connected \u2014 only 4-directional counts.",
+   "invariant": "a flood-fill only steps up/down/left/right.",
+   "note": "Edge case: two 1s touching only at a corner. Flood-fill moves in 4 directions, never diagonally."
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 3,
+   "note": "Fresh land at (0,0) \u2014 it can't belong to an island we already counted (that one would have sunk it). Island #1.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "islands",
+     1
+    ],
+    [
+     "found land",
+     "(0,0)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 4,
+   "note": "Sink (0,0) into water. Its land neighbors go on the stack so the whole blob gets flooded as one island.",
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "island",
+     1
+    ],
+    [
+     "sinking",
+     "(0,0)"
+    ],
+    [
+     "stack",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "scan",
+   "line": 3,
+   "note": "Fresh land at (1,1) \u2014 it can't belong to an island we already counted (that one would have sunk it). Island #2.",
+   "marks": {
+    "1,1": "active"
+   },
+   "state": [
+    [
+     "islands",
+     2
+    ],
+    [
+     "found land",
+     "(1,1)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     0
+    ]
+   ],
+   "code": "scan",
+   "line": 4,
+   "note": "Sink (1,1) into water. Its land neighbors go on the stack so the whole blob gets flooded as one island.",
+   "marks": {
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "island",
+     2
+    ],
+    [
+     "sinking",
+     "(1,1)"
+    ],
+    [
+     "stack",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "scan",
+   "line": 5,
+   "note": "The cell at (0,0) sinks without reaching (1,1) \u2014 corners don't connect. So they count as 2 separate islands.",
+   "marks": {},
+   "state": [
+    [
+     "islands",
+     2
+    ]
+   ],
+   "banner": "Diagonal touch -> 2 islands (not 1)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/12-graphs/0200-number-of-islands/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;200. Number of Islands — https://leetcode.com/problems/number-of-islands/
 
 Given a grid of &#x27;1&#x27; (land) and &#x27;0&#x27; (water), count the islands. An island is a
 group of land cells connected horizontally or vertically (not diagonally).

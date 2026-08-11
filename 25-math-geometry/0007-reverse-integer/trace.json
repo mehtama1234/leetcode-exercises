@@ -1,0 +1,746 @@
+{
+ "player": "linear",
+ "title": "Reverse Integer - peel digits, push onto result, guard the 32-bit limit",
+ "acts": [
+  "The rule",
+  "Run a clean case",
+  "Edge: overflow -> 0"
+ ],
+ "code": {
+  "rev": [
+   "sign, x = sign_of(x), abs(x)",
+   "result = 0",
+   "while x != 0:",
+   "    x, digit = divmod(x, 10)   # peel last digit",
+   "    if result would exceed limit: return 0",
+   "    result = result * 10 + digit",
+   "return sign * result"
+  ]
+ },
+ "legend": [
+  [
+   "good",
+   "digit consumed into result"
+  ],
+  [
+   "bad",
+   "would overflow -> 0"
+  ],
+  [
+   "dim",
+   "already peeled"
+  ]
+ ],
+ "cells": [
+  "1",
+  "2",
+  "3"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "1",
+    "2",
+    "3"
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "rev",
+   "line": 0,
+   "intro": "pull the last digit off x, push it onto result \u2014 the number turns around.",
+   "invariant": "result holds the digits seen so far, already reversed.",
+   "note": "Reverse 123: repeatedly peel the last digit with divmod by 10 and push it onto result as result*10 + digit.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "state",
+    "rows": [
+     [
+      "result",
+      "0"
+     ],
+     [
+      "INT_MAX",
+      "2147483647"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     123
+    ],
+    [
+     "result",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "1",
+    "2",
+    "3"
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "rev",
+   "line": 2,
+   "intro": "each step consumes one digit from the right and grows result on the left.",
+   "invariant": "result * 10 + digit stays within the 32-bit range here.",
+   "note": "Run it. Watch result build 3 -> 32 -> 321 as digits peel off x.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "state",
+    "rows": [
+     [
+      "result",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     123
+    ],
+    [
+     "result",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 5,
+   "note": "peel digit 3: result = 0*10 + 3 = 3. x is now 12.",
+   "pointers": {
+    "d": 2
+   },
+   "marks": {
+    "2": "good",
+    "0": "dim",
+    "1": "dim"
+   },
+   "cells": [
+    "1",
+    "2",
+    "3"
+   ],
+   "sidebar": {
+    "title": "state",
+    "rows": [
+     [
+      "result",
+      "3"
+     ],
+     [
+      "x left",
+      "12"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     3
+    ],
+    [
+     "result",
+     3
+    ],
+    [
+     "x",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 5,
+   "note": "peel digit 2: result = 3*10 + 2 = 32. x is now 1.",
+   "pointers": {
+    "d": 1
+   },
+   "marks": {
+    "1": "good",
+    "0": "dim"
+   },
+   "cells": [
+    "1",
+    "2",
+    "3"
+   ],
+   "sidebar": {
+    "title": "state",
+    "rows": [
+     [
+      "result",
+      "32"
+     ],
+     [
+      "x left",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     2
+    ],
+    [
+     "result",
+     32
+    ],
+    [
+     "x",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 5,
+   "note": "peel digit 1: result = 32*10 + 1 = 321. x is now 0.",
+   "pointers": {
+    "d": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "cells": [
+    "1",
+    "2",
+    "3"
+   ],
+   "sidebar": {
+    "title": "state",
+    "rows": [
+     [
+      "result",
+      "321"
+     ],
+     [
+      "x left",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     1
+    ],
+    [
+     "result",
+     321
+    ],
+    [
+     "x",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "rev",
+   "line": 6,
+   "note": "x hit 0. Reversed 123 = 321.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "state",
+    "rows": [
+     [
+      "result",
+      "321"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     321
+    ]
+   ],
+   "banner": "reverse(123) = 321"
+  },
+  {
+   "act": 2,
+   "cells": [
+    "1",
+    "5",
+    "3",
+    "4",
+    "2",
+    "3",
+    "6",
+    "4",
+    "6",
+    "9"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "code": "rev",
+   "line": 0,
+   "intro": "the reversed value can pass INT_MAX even when x fits \u2014 we check BEFORE multiplying.",
+   "invariant": "if result > INT_MAX//10, or ties it with a digit > 7, the next step overflows.",
+   "note": "Edge case: 1534236469. Its reversal 9646324351 is larger than INT_MAX (2147483647). A fixed-width machine would overflow, so we must catch it.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "INT_MAX//10",
+      "214748364"
+     ],
+     [
+      "result",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     1534236469
+    ],
+    [
+     "result",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 5,
+   "note": "peel 9: result = 9. Still within range.",
+   "pointers": {
+    "d": 9
+   },
+   "marks": {
+    "9": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "dim"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "result",
+      "9"
+     ],
+     [
+      "INT_MAX//10",
+      "214748364"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     9
+    ],
+    [
+     "result",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 5,
+   "note": "peel 6: result = 96. Still within range.",
+   "pointers": {
+    "d": 8
+   },
+   "marks": {
+    "8": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "result",
+      "96"
+     ],
+     [
+      "INT_MAX//10",
+      "214748364"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     6
+    ],
+    [
+     "result",
+     96
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 5,
+   "note": "peel 4: result = 964. Still within range.",
+   "pointers": {
+    "d": 7
+   },
+   "marks": {
+    "7": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "result",
+      "964"
+     ],
+     [
+      "INT_MAX//10",
+      "214748364"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     4
+    ],
+    [
+     "result",
+     964
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 5,
+   "note": "peel 6: result = 9646. Still within range.",
+   "pointers": {
+    "d": 6
+   },
+   "marks": {
+    "6": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "result",
+      "9646"
+     ],
+     [
+      "INT_MAX//10",
+      "214748364"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     6
+    ],
+    [
+     "result",
+     9646
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 5,
+   "note": "peel 3: result = 96463. Still within range.",
+   "pointers": {
+    "d": 5
+   },
+   "marks": {
+    "5": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "result",
+      "96463"
+     ],
+     [
+      "INT_MAX//10",
+      "214748364"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     3
+    ],
+    [
+     "result",
+     96463
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 5,
+   "note": "peel 2: result = 964632. Still within range.",
+   "pointers": {
+    "d": 4
+   },
+   "marks": {
+    "4": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "result",
+      "964632"
+     ],
+     [
+      "INT_MAX//10",
+      "214748364"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     2
+    ],
+    [
+     "result",
+     964632
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 5,
+   "note": "peel 4: result = 9646324. Still within range.",
+   "pointers": {
+    "d": 3
+   },
+   "marks": {
+    "3": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "result",
+      "9646324"
+     ],
+     [
+      "INT_MAX//10",
+      "214748364"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     4
+    ],
+    [
+     "result",
+     9646324
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 5,
+   "note": "peel 3: result = 96463243. Still within range.",
+   "pointers": {
+    "d": 2
+   },
+   "marks": {
+    "2": "good",
+    "0": "dim",
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "result",
+      "96463243"
+     ],
+     [
+      "INT_MAX//10",
+      "214748364"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     3
+    ],
+    [
+     "result",
+     96463243
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 5,
+   "note": "peel 5: result = 964632435. Still within range.",
+   "pointers": {
+    "d": 1
+   },
+   "marks": {
+    "1": "good",
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "result",
+      "964632435"
+     ],
+     [
+      "INT_MAX//10",
+      "214748364"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "digit",
+     5
+    ],
+    [
+     "result",
+     964632435
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "rev",
+   "line": 4,
+   "note": "About to do 964632435*10 + 1, but result 964632435 already exceeds INT_MAX//10 = 214748364. That would overflow -> return 0.",
+   "pointers": {
+    "d": 0
+   },
+   "marks": {
+    "0": "bad"
+   },
+   "sidebar": {
+    "title": "guard",
+    "rows": [
+     [
+      "result",
+      "964632435"
+     ],
+     [
+      "limit//10",
+      "214748364"
+     ],
+     [
+      "digit",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "result",
+     964632435
+    ],
+    [
+     "overflow",
+     "yes"
+    ],
+    [
+     "answer",
+     0
+    ]
+   ],
+   "banner": "reverse(1534236469) overflows 32-bit -> 0"
+  }
+ ]
+}

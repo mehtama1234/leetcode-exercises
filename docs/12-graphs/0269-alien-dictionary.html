@@ -66,7 +66,960 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>The prefix trap</strong> above — the most-missed case.</li><li><strong>Only the first difference counts.</strong> After the first differing position, stop; later letters carry no ordering info for that pair.</li><li><strong>Seed all letters.</strong> A letter that appears in no rule still belongs in the output; start the graph from *every* character first.</li><li><strong>Loop = invalid.</strong> If the sort emits fewer than all the letters, return <code>&quot;&quot;</code>.</li><li><strong>Duplicate arrows.</strong> Adding the same <code>a -&gt; b</code> twice would inflate the in-count and break the sort — guard with a set before counting it.</li></ul>
 <h2>Transfer</h2>
-<p>&quot;Turn ordering hints into arrows, then peel-sort&quot; is the reusable engine, shared with <a href="../0207-course-schedule/">Course Schedule / 207</a> and <a href="https://leetcode.com/problems/course-schedule-ii/">Course Schedule II / 210</a> (finish order), <a href="https://leetcode.com/problems/sequence-reconstruction/">Sequence Reconstruction / 444</a>, and any &quot;recover a global order from local comparisons&quot; task.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/12-graphs/0269-alien-dictionary/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;269. Alien Dictionary — https://leetcode.com/problems/alien-dictionary/
+<p>&quot;Turn ordering hints into arrows, then peel-sort&quot; is the reusable engine, shared with <a href="../0207-course-schedule/">Course Schedule / 207</a> and <a href="https://leetcode.com/problems/course-schedule-ii/">Course Schedule II / 210</a> (finish order), <a href="https://leetcode.com/problems/sequence-reconstruction/">Sequence Reconstruction / 444</a>, and any &quot;recover a global order from local comparisons&quot; task.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Alien Dictionary - read 'before' facts from words, then topo-sort letters",
+ "acts": [
+  "Extract constraints",
+  "Topo-sort the letters",
+  "Edge: a contradiction"
+ ],
+ "code": {
+  "alien": [
+   "for first, second in zip(words, words[1:]):",
+   "    for a, b in zip(first, second):",
+   "        if a != b:",
+   "            adj[a].add(b)      # a comes before b",
+   "            indegree[b] += 1",
+   "            break              # only the FIRST diff matters",
+   "ready = [c for c in letters if indegree[c] == 0]",
+   "while ready:",
+   "    c = ready.popleft(); order.append(c)",
+   "    for nxt in adj[c]:",
+   "        indegree[nxt] -= 1",
+   "        if indegree[nxt] == 0: ready.append(nxt)",
+   "return order if len(order)==len(letters) else ''"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "letters being compared / placed"
+  ],
+  [
+   "good",
+   "in-degree, then order position (badge)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": "w",
+   "val": "w",
+   "x": 0,
+   "y": 60
+  },
+  {
+   "id": "e",
+   "val": "e",
+   "x": 90,
+   "y": 60
+  },
+  {
+   "id": "r",
+   "val": "r",
+   "x": 180,
+   "y": 60
+  },
+  {
+   "id": "t",
+   "val": "t",
+   "x": 270,
+   "y": 60
+  },
+  {
+   "id": "f",
+   "val": "f",
+   "x": 360,
+   "y": 60
+  }
+ ],
+ "edges": [],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": "w",
+     "val": "w",
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": "e",
+     "val": "e",
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": "r",
+     "val": "r",
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": "t",
+     "val": "t",
+     "x": 270,
+     "y": 60
+    },
+    {
+     "id": "f",
+     "val": "f",
+     "x": 360,
+     "y": 60
+    }
+   ],
+   "edges": [],
+   "code": "alien",
+   "line": 0,
+   "intro": "each adjacent word pair leaks ONE fact: the first place they differ.",
+   "invariant": "letters before the first difference are equal and tell us nothing.",
+   "note": "The words are sorted by an unknown alphabet. Compare each adjacent pair; their first differing letter proves 'this comes before that'. Badge = in-degree.",
+   "active": [],
+   "done": {
+    "w": 0,
+    "e": 0,
+    "r": 0,
+    "t": 0,
+    "f": 0
+   },
+   "state": [
+    [
+     "words",
+     "wrt wrf er ett rftt"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "alien",
+   "line": 3,
+   "edges": [
+    [
+     "t",
+     "f"
+    ]
+   ],
+   "note": "'wrt' before 'wrf': first difference is 't' vs 'f', so 't' comes before 'f'. Add edge t -> f.",
+   "active": [
+    "t",
+    "f"
+   ],
+   "done": {
+    "w": 0,
+    "e": 0,
+    "r": 0,
+    "t": 0,
+    "f": 1
+   },
+   "state": [
+    [
+     "pair",
+     "wrt < wrf"
+    ],
+    [
+     "fact",
+     "t < f"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "alien",
+   "line": 3,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ]
+   ],
+   "note": "'wrf' before 'er': first difference is 'w' vs 'e', so 'w' comes before 'e'. Add edge w -> e.",
+   "active": [
+    "w",
+    "e"
+   ],
+   "done": {
+    "w": 0,
+    "e": 1,
+    "r": 0,
+    "t": 0,
+    "f": 1
+   },
+   "state": [
+    [
+     "pair",
+     "wrf < er"
+    ],
+    [
+     "fact",
+     "w < e"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "alien",
+   "line": 3,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ]
+   ],
+   "note": "'er' before 'ett': first difference is 'r' vs 't', so 'r' comes before 't'. Add edge r -> t.",
+   "active": [
+    "r",
+    "t"
+   ],
+   "done": {
+    "w": 0,
+    "e": 1,
+    "r": 0,
+    "t": 1,
+    "f": 1
+   },
+   "state": [
+    [
+     "pair",
+     "er < ett"
+    ],
+    [
+     "fact",
+     "r < t"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "alien",
+   "line": 3,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "'ett' before 'rftt': first difference is 'e' vs 'r', so 'e' comes before 'r'. Add edge e -> r.",
+   "active": [
+    "e",
+    "r"
+   ],
+   "done": {
+    "w": 0,
+    "e": 1,
+    "r": 1,
+    "t": 1,
+    "f": 1
+   },
+   "state": [
+    [
+     "pair",
+     "ett < rftt"
+    ],
+    [
+     "fact",
+     "e < r"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "alien",
+   "line": 5,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "All pairs read. Constraints: t<f, w<e, r<t, e<r. These edges form a directed graph over the letters.",
+   "active": [],
+   "done": {
+    "w": 0,
+    "e": 1,
+    "r": 1,
+    "t": 1,
+    "f": 1
+   },
+   "state": [
+    [
+     "edges",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": "w",
+     "val": "w",
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": "e",
+     "val": "e",
+     "x": 90,
+     "y": 60
+    },
+    {
+     "id": "r",
+     "val": "r",
+     "x": 180,
+     "y": 60
+    },
+    {
+     "id": "t",
+     "val": "t",
+     "x": 270,
+     "y": 60
+    },
+    {
+     "id": "f",
+     "val": "f",
+     "x": 360,
+     "y": 60
+    }
+   ],
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "code": "alien",
+   "line": 6,
+   "intro": "a letter is placeable once nothing is required before it (in-degree 0).",
+   "invariant": "the growing order respects every 'a before b' edge.",
+   "note": "Topological sort (Kahn's). Start with letters that have nothing before them, place one, then relax its out-edges.",
+   "active": [],
+   "done": {
+    "w": 0,
+    "e": 1,
+    "r": 1,
+    "t": 1,
+    "f": 1
+   },
+   "state": [
+    [
+     "placed",
+     0
+    ],
+    [
+     "of",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 6,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "Letters with in-degree 0 (nothing required first): ['w'].",
+   "active": [
+    "w"
+   ],
+   "done": {
+    "w": 0,
+    "e": 1,
+    "r": 1,
+    "t": 1,
+    "f": 1
+   },
+   "state": [
+    [
+     "ready",
+     "['w']"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 8,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "Place 'w' at position 1. Order so far: w.",
+   "active": [
+    "w"
+   ],
+   "done": {
+    "w": 1,
+    "e": 1,
+    "r": 1,
+    "t": 1,
+    "f": 1
+   },
+   "state": [
+    [
+     "placed",
+     "w"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 10,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "'w' done: drop in-degree of 'e' to 0.  Now ready.",
+   "active": [
+    "w",
+    "e"
+   ],
+   "done": {
+    "w": 1,
+    "e": 0,
+    "r": 1,
+    "t": 1,
+    "f": 1
+   },
+   "state": [
+    [
+     "relax",
+     "e -> 0"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 8,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "Place 'e' at position 2. Order so far: we.",
+   "active": [
+    "e"
+   ],
+   "done": {
+    "w": 1,
+    "e": 2,
+    "r": 1,
+    "t": 1,
+    "f": 1
+   },
+   "state": [
+    [
+     "placed",
+     "we"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 10,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "'e' done: drop in-degree of 'r' to 0.  Now ready.",
+   "active": [
+    "e",
+    "r"
+   ],
+   "done": {
+    "w": 1,
+    "e": 2,
+    "r": 0,
+    "t": 1,
+    "f": 1
+   },
+   "state": [
+    [
+     "relax",
+     "r -> 0"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 8,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "Place 'r' at position 3. Order so far: wer.",
+   "active": [
+    "r"
+   ],
+   "done": {
+    "w": 1,
+    "e": 2,
+    "r": 3,
+    "t": 1,
+    "f": 1
+   },
+   "state": [
+    [
+     "placed",
+     "wer"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 10,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "'r' done: drop in-degree of 't' to 0.  Now ready.",
+   "active": [
+    "r",
+    "t"
+   ],
+   "done": {
+    "w": 1,
+    "e": 2,
+    "r": 3,
+    "t": 0,
+    "f": 1
+   },
+   "state": [
+    [
+     "relax",
+     "t -> 0"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 8,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "Place 't' at position 4. Order so far: wert.",
+   "active": [
+    "t"
+   ],
+   "done": {
+    "w": 1,
+    "e": 2,
+    "r": 3,
+    "t": 4,
+    "f": 1
+   },
+   "state": [
+    [
+     "placed",
+     "wert"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 10,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "'t' done: drop in-degree of 'f' to 0.  Now ready.",
+   "active": [
+    "t",
+    "f"
+   ],
+   "done": {
+    "w": 1,
+    "e": 2,
+    "r": 3,
+    "t": 4,
+    "f": 0
+   },
+   "state": [
+    [
+     "relax",
+     "f -> 0"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 8,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "Place 'f' at position 5. Order so far: wertf.",
+   "active": [
+    "f"
+   ],
+   "done": {
+    "w": 1,
+    "e": 2,
+    "r": 3,
+    "t": 4,
+    "f": 5
+   },
+   "state": [
+    [
+     "placed",
+     "wertf"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "alien",
+   "line": 12,
+   "edges": [
+    [
+     "t",
+     "f"
+    ],
+    [
+     "w",
+     "e"
+    ],
+    [
+     "r",
+     "t"
+    ],
+    [
+     "e",
+     "r"
+    ]
+   ],
+   "note": "All 5 letters placed with no contradiction. The alien alphabet is wertf.",
+   "active": [],
+   "done": {
+    "w": 1,
+    "e": 2,
+    "r": 3,
+    "t": 4,
+    "f": 5
+   },
+   "state": [
+    [
+     "order",
+     "wertf"
+    ]
+   ],
+   "banner": "Alien order = wertf"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": "z",
+     "val": "z",
+     "x": 0,
+     "y": 60
+    },
+    {
+     "id": "x",
+     "val": "x",
+     "x": 150,
+     "y": 60
+    }
+   ],
+   "edges": [
+    [
+     "z",
+     "x"
+    ],
+    [
+     "x",
+     "z"
+    ]
+   ],
+   "code": "alien",
+   "line": 3,
+   "intro": "two pairs demand opposite orders \u2014 the graph has a cycle.",
+   "invariant": "a cycle means no letter can be placed first; topo sort stalls.",
+   "note": "Edge case: words z, x, z. Pair 1 says z<x; pair 2 says x<z. Both edges exist, forming a 2-cycle z <-> x.",
+   "active": [
+    "z",
+    "x"
+   ],
+   "done": {
+    "z": 1,
+    "x": 1
+   },
+   "state": [
+    [
+     "z < x",
+     "pair 1"
+    ],
+    [
+     "x < z",
+     "pair 2"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "alien",
+   "line": 6,
+   "edges": [
+    [
+     "z",
+     "x"
+    ],
+    [
+     "x",
+     "z"
+    ]
+   ],
+   "note": "Both letters have in-degree 1, so the ready queue is empty. Nothing can be placed first.",
+   "active": [
+    "z",
+    "x"
+   ],
+   "done": {
+    "z": 1,
+    "x": 1
+   },
+   "state": [
+    [
+     "ready",
+     "[] (empty)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "alien",
+   "line": 12,
+   "edges": [
+    [
+     "z",
+     "x"
+    ],
+    [
+     "x",
+     "z"
+    ]
+   ],
+   "note": "0 letters placed but 2 exist: the cycle blocks the sort. The constraints contradict, so there's no valid order -> return \"\".",
+   "active": [
+    "z",
+    "x"
+   ],
+   "done": {
+    "z": 1,
+    "x": 1
+   },
+   "state": [
+    [
+     "placed",
+     0
+    ],
+    [
+     "of",
+     2
+    ]
+   ],
+   "banner": "Contradiction: no valid order -> \"\""
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/12-graphs/0269-alien-dictionary/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;269. Alien Dictionary — https://leetcode.com/problems/alien-dictionary/
 
 You&#x27;re given a list of words sorted according to some unknown alien alphabet.
 Deduce a valid ordering of the alien letters. Return &quot;&quot; if no valid order exists.

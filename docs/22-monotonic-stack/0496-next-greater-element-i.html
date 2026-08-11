@@ -61,7 +61,850 @@
 <h2>Pitfalls</h2>
 <ul><li><code>&lt;</code> vs <code>&lt;=</code> in the pop test: values are distinct here so it doesn&#x27;t bite, but with duplicates the strictness decides whether equal values resolve each other.</li><li>Forgetting the <code>-1</code> default for values that never get popped.</li><li><code>nums2.index(x)</code> inside the brute force is itself a full scan — part of why it&#x27;s slow.</li><li>Assuming <code>nums1</code> is a contiguous chunk of <code>nums2</code>; it&#x27;s only a *subset of values*, which is exactly why &quot;precompute once, then look up&quot; is the clean shape.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move: <strong>sweep once, keep a stack of items still waiting for a bigger one, and resolve each item the moment its bigger neighbor appears.</strong> The same stack, reworded, drives <a href="https://leetcode.com/problems/next-greater-element-ii/">Next Greater Element II / 503</a> (circular array), <a href="https://leetcode.com/problems/daily-temperatures/">Daily Temperatures / 739</a> (distance to the next warmer day), and <a href="../0901-online-stock-span/">Online Stock Span / 901</a> (nearest bigger to the *left*, on a stream). The histogram and rainwater problems are the &quot;nearest smaller&quot; mirror. Whenever you need &quot;the next bigger/smaller thing for everyone,&quot; reach for a monotonic stack.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/22-monotonic-stack/0496-next-greater-element-i/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;496. Next Greater Element I — https://leetcode.com/problems/next-greater-element-i/
+<p>The reusable move: <strong>sweep once, keep a stack of items still waiting for a bigger one, and resolve each item the moment its bigger neighbor appears.</strong> The same stack, reworded, drives <a href="https://leetcode.com/problems/next-greater-element-ii/">Next Greater Element II / 503</a> (circular array), <a href="https://leetcode.com/problems/daily-temperatures/">Daily Temperatures / 739</a> (distance to the next warmer day), and <a href="../0901-online-stock-span/">Online Stock Span / 901</a> (nearest bigger to the *left*, on a stream). The histogram and rainwater problems are the &quot;nearest smaller&quot; mirror. Whenever you need &quot;the next bigger/smaller thing for everyone,&quot; reach for a monotonic stack.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Next Greater Element - one stack sweep instead of a scan per query",
+ "acts": [
+  "Brute: scan per query",
+  "The waste",
+  "One monotonic sweep",
+  "Answer queries",
+  "Edge: falling [3,2,1]"
+ ],
+ "code": {
+  "brute": [
+   "for x in nums1:",
+   "    j = nums2.index(x)",
+   "    for k in range(j+1, len(nums2)):",
+   "        if nums2[k] > x:",
+   "            ans = nums2[k]; break"
+  ],
+  "fast": [
+   "for x in nums2:",
+   "    while stack and stack[-1] < x:",
+   "        next_greater[stack.pop()] = x",
+   "    stack.append(x)",
+   "# unresolved values default to -1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current value"
+  ],
+  [
+   "good",
+   "resolved / answer"
+  ],
+  [
+   "bad",
+   "no greater element (-1)"
+  ],
+  [
+   "dim",
+   "pushed, waiting"
+  ]
+ ],
+ "cells": [
+  1,
+  3,
+  4,
+  2
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    1,
+    3,
+    4,
+    2
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "each query starts a fresh rightward scan of nums2 from scratch.",
+   "invariant": "answer(x) = first value right of x in nums2 that is bigger.",
+   "note": "Brute force: for every query value, find it in nums2, then scan right until something strictly bigger shows up.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "queries",
+     [
+      4,
+      1,
+      2
+     ]
+    ],
+    [
+     "scans",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "query 4 sits at index 2; scan right -> nothing bigger, -1.",
+   "pointers": {
+    "x": 2,
+    "scan": 3
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "query",
+     4
+    ],
+    [
+     "answer",
+     -1
+    ],
+    [
+     "scans",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "query 1 sits at index 0; scan right -> next greater is 3 at 1.",
+   "pointers": {
+    "x": 0,
+    "scan": 1
+   },
+   "marks": {
+    "0": "active",
+    "1": "good"
+   },
+   "state": [
+    [
+     "query",
+     1
+    ],
+    [
+     "answer",
+     3
+    ],
+    [
+     "scans",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "query 2 sits at index 3; scan right -> nothing bigger, -1.",
+   "pointers": {
+    "x": 3,
+    "scan": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "state": [
+    [
+     "query",
+     2
+    ],
+    [
+     "answer",
+     -1
+    ],
+    [
+     "scans",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "Answers [-1, 3, -1], but every query re-walked nums2 \u2014 2 scan-steps, re-discovering relationships that never change.",
+   "marks": {},
+   "state": [
+    [
+     "answers",
+     "[-1, 3, -1]"
+    ],
+    [
+     "scans",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the 'next greater' of every value in nums2 is fixed \u2014 compute them all once.",
+   "note": "Each query rescans the same array. 2 steps here; with q queries over m values that is q*m work.",
+   "marks": {},
+   "state": [
+    [
+     "scans (brute)",
+     2
+    ],
+    [
+     "pattern",
+     "~ q * m"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Instead sweep nums2 ONE time with a decreasing stack: when a bigger value arrives it resolves every smaller value still waiting behind it.",
+   "marks": {},
+   "state": [
+    [
+     "what we want",
+     "one sweep"
+    ],
+    [
+     "then queries",
+     "O(1) each"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    3,
+    4,
+    2
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the stack holds values still hunting for a bigger neighbour to the right.",
+   "invariant": "stack values strictly decrease bottom -> top.",
+   "note": "Sweep nums2. Each new value pops (and answers) every smaller value waiting on the stack, then joins the stack itself.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {},
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": []
+   },
+   "state": [
+    [
+     "resolved",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "i=0, value 1. Pop every waiting value smaller than 1.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": []
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "value",
+     1
+    ],
+    [
+     "resolved",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "1 has no answer yet; push it to wait.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "1",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "waiting",
+     "[1]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "i=1, value 3. Pop every waiting value smaller than 3.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "1",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "value",
+     3
+    ],
+    [
+     "resolved",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "3 is the next greater element of 1 -> record 1:3.",
+   "pointers": {
+    "i": 1
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "good",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": []
+   },
+   "state": [
+    [
+     "resolved",
+     "1->3"
+    ],
+    [
+     "total resolved",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "3 has no answer yet; push it to wait.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "3",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "waiting",
+     "[3]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "i=2, value 4. Pop every waiting value smaller than 4.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "3",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "value",
+     4
+    ],
+    [
+     "resolved",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "4 is the next greater element of 3 -> record 3:4.",
+   "pointers": {
+    "i": 2
+   },
+   "arc": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "good",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": []
+   },
+   "state": [
+    [
+     "resolved",
+     "3->4"
+    ],
+    [
+     "total resolved",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "4 has no answer yet; push it to wait.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "4",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "waiting",
+     "[4]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "i=3, value 2. Pop every waiting value smaller than 2.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "4",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "value",
+     2
+    ],
+    [
+     "resolved",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "2 has no answer yet; push it to wait.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "dim"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "4",
+      "waiting"
+     ],
+     [
+      "2",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "waiting",
+     "[4, 2]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Sweep done. Left on the stack: [4, 2] \u2014 no greater element to their right, so they default to -1.",
+   "marks": {},
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "4",
+      "waiting"
+     ],
+     [
+      "2",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "map",
+     "{1: 3, 3: 4}"
+    ],
+    [
+     "default",
+     "-1"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    4,
+    1,
+    2
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "fast",
+   "line": 4,
+   "intro": "each query is now a single dictionary lookup.",
+   "invariant": "value -> next-greater was precomputed in one sweep.",
+   "note": "Answer each query from the map: found -> that value, missing -> -1.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "map",
+     "{1: 3, 3: 4}"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "query 4: map -> -1.",
+   "pointers": {
+    "q": 0
+   },
+   "marks": {
+    "0": "bad"
+   },
+   "state": [
+    [
+     "query",
+     4
+    ],
+    [
+     "answer",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "query 1: map -> 3.",
+   "pointers": {
+    "q": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "query",
+     1
+    ],
+    [
+     "answer",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "query 2: map -> -1.",
+   "pointers": {
+    "q": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "state": [
+    [
+     "query",
+     2
+    ],
+    [
+     "answer",
+     -1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "Answers = [-1, 3, -1]. One sweep built the map; each query was O(1).",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "[-1, 3, -1]"
+    ],
+    [
+     "vs brute scans",
+     2
+    ]
+   ],
+   "banner": "Next greater = [-1, 3, -1]   (one sweep + O(1) lookups)"
+  },
+  {
+   "act": 4,
+   "cells": [
+    3,
+    2,
+    1
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "in a falling sequence nothing is ever bigger than what waits \u2014 no pops.",
+   "invariant": "every value keeps stacking; none gets resolved.",
+   "note": "Edge case: nums2 = [3,2,1]. Each value is smaller than the last, so nothing pops and every value's next-greater is -1.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {},
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": []
+   },
+   "state": [
+    [
+     "resolved",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 4,
+   "code": "fast",
+   "line": 3,
+   "note": "3 pops nothing (all earlier values are bigger); push it. Still 0 resolved.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "dim"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "3",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "waiting",
+     "[3]"
+    ],
+    [
+     "resolved",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 4,
+   "code": "fast",
+   "line": 3,
+   "note": "2 pops nothing (all earlier values are bigger); push it. Still 0 resolved.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "dim"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "3",
+      "waiting"
+     ],
+     [
+      "2",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "waiting",
+     "[3, 2]"
+    ],
+    [
+     "resolved",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 4,
+   "code": "fast",
+   "line": 3,
+   "note": "1 pops nothing (all earlier values are bigger); push it. Still 0 resolved.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "stack (waiting values)",
+    "rows": [
+     [
+      "3",
+      "waiting"
+     ],
+     [
+      "2",
+      "waiting"
+     ],
+     [
+      "1",
+      "waiting"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "waiting",
+     "[3, 2, 1]"
+    ],
+    [
+     "resolved",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 4,
+   "code": "fast",
+   "line": 4,
+   "note": "All three stay unresolved -> every answer is -1.",
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad"
+   },
+   "state": [
+    [
+     "answer",
+     "[-1, -1, -1]"
+    ]
+   ],
+   "banner": "Falling sequence -> all -1"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/22-monotonic-stack/0496-next-greater-element-i/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;496. Next Greater Element I — https://leetcode.com/problems/next-greater-element-i/
 
 For each value in `nums1` (a subset of `nums2`), find the first number to its
 right in `nums2` that is strictly greater. If there is none, report -1.

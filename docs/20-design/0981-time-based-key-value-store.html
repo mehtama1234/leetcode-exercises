@@ -57,7 +57,501 @@
 <h2>Pitfalls</h2>
 <ul><li>Reaching for <code>bisect_left</code> when you want <code>bisect_right</code>. For &quot;largest timestamp at or before <code>t</code>,&quot; use <code>bisect_right</code> then step back one; getting this wrong breaks exact-timestamp hits.</li><li>Forgetting the &quot;nothing set yet&quot; case — index 0 means return <code>&quot;&quot;</code>.</li><li>Assuming timestamps are sorted when they might not be. Here the problem guarantees increasing timestamps; without that you&#x27;d need to insert in order (or sort), which changes the cost.</li><li>Storing <code>(ts, value)</code> tuples and re-sorting on every read — needless given the ordering guarantee.</li></ul>
 <h2>Transfer</h2>
-<p>The &quot;binary-search a sorted structure for a boundary&quot; move is broad. See <a href="https://leetcode.com/problems/search-insert-position/">Search Insert Position / 35</a>, <a href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/">Find First and Last Position / 34</a>, and <a href="https://leetcode.com/problems/snapshot-array/">Snapshot Array / 1146</a>, which is nearly the same versioned-read idea. Whenever data is kept in sorted order and you need &quot;the last thing at or before X,&quot; reach for a binary search.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0981-time-based-key-value-store/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;981. Time Based Key-Value Store — https://leetcode.com/problems/time-based-key-value-store/
+<p>The &quot;binary-search a sorted structure for a boundary&quot; move is broad. See <a href="https://leetcode.com/problems/search-insert-position/">Search Insert Position / 35</a>, <a href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/">Find First and Last Position / 34</a>, and <a href="https://leetcode.com/problems/snapshot-array/">Snapshot Array / 1146</a>, which is nearly the same versioned-read idea. Whenever data is kept in sorted order and you need &quot;the last thing at or before X,&quot; reach for a binary search.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Time Based Key-Value Store - binary-search the floor timestamp",
+ "acts": [
+  "Naive: scan history back",
+  "Binary search the floor",
+  "Edge: before any value"
+ ],
+ "code": {
+  "naive": [
+   "# get(key, t): scan history backward",
+   "for i in range(len(ts) - 1, -1, -1):",
+   "    if ts[i] <= t:",
+   "        return values[i]",
+   "return ''"
+  ],
+  "fast": [
+   "# times are already sorted (set() increases t)",
+   "i = bisect_right(ts, t)   # first ts strictly > t",
+   "if i == 0: return ''      # everything is later",
+   "return values[i - 1]      # the floor: largest ts <= t"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "timestamp we're testing"
+  ],
+  [
+   "good",
+   "the floor / answer"
+  ],
+  [
+   "bad",
+   "too new / no floor"
+  ],
+  [
+   "dim",
+   "not in play"
+  ]
+ ],
+ "cells": [
+  10,
+  20,
+  30
+ ],
+ "labels": [
+  10,
+  20,
+  30
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    10,
+    20,
+    30
+   ],
+   "labels": [
+    10,
+    20,
+    30
+   ],
+   "code": "naive",
+   "line": 0,
+   "intro": "how many entries the naive scan walks to answer one get \u2014 the work we delete.",
+   "invariant": "the history is stored in time order (set() timestamps only grow).",
+   "note": "get('k', 25): find the value in effect at time 25 \u2014 the one set at the largest timestamp <= 25. Naive: scan history from newest back.",
+   "pointers": {
+    "t?": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "query t",
+     25
+    ],
+    [
+     "history",
+     "10,20,30"
+    ],
+    [
+     "compares",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "sidebar": {
+    "title": "values[key] (by time)",
+    "rows": [
+     [
+      "t=10",
+      "v1"
+     ],
+     [
+      "t=20",
+      "v2"
+     ],
+     [
+      "t=30",
+      "v3"
+     ]
+    ]
+   },
+   "note": "ts[2] = 30. Is 30 <= 25? No, too new \u2014 keep going back.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "ts[2]",
+     30
+    ],
+    [
+     "compares",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "sidebar": {
+    "title": "values[key] (by time)",
+    "rows": [
+     [
+      "t=10",
+      "v1"
+     ],
+     [
+      "t=20",
+      "v2 <-"
+     ],
+     [
+      "t=30",
+      "v3"
+     ]
+    ]
+   },
+   "note": "ts[1] = 20. Is 20 <= 25? Yes \u2014 this is the floor.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "ts[1]",
+     20
+    ],
+    [
+     "compares",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 3,
+   "note": "Answer: values[1] = 'v2'. It cost 2 steps here; on a long history a far-back query walks the whole list \u2014 O(n).",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "values[key] (by time)",
+    "rows": [
+     [
+      "t=10",
+      "v1"
+     ],
+     [
+      "t=20",
+      "v2 <-"
+     ],
+     [
+      "t=30",
+      "v3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     "v2"
+    ],
+    [
+     "compares",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    10,
+    20,
+    30
+   ],
+   "labels": [
+    10,
+    20,
+    30
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the history is SORTED, so we jump to the boundary instead of walking to it.",
+   "invariant": "bisect_right returns the first index with ts strictly greater than t.",
+   "note": "Same get('k', 25). Timestamps are already sorted, so binary-search the boundary: the first timestamp strictly greater than 25.",
+   "pointers": {
+    "t?": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "values[key] (by time)",
+    "rows": [
+     [
+      "t=10",
+      "v1"
+     ],
+     [
+      "t=20",
+      "v2"
+     ],
+     [
+      "t=30",
+      "v3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "query t",
+     25
+    ],
+    [
+     "method",
+     "bisect_right"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 1,
+   "note": "bisect_right(ts, 25) = 2: index of the first timestamp (>25). ts[2] = 30 is the first one too new.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "sidebar": {
+    "title": "values[key] (by time)",
+    "rows": [
+     [
+      "t=10",
+      "v1"
+     ],
+     [
+      "t=20",
+      "v2"
+     ],
+     [
+      "t=30",
+      "v3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i (bisect)",
+     2
+    ],
+    [
+     "ts[i]",
+     30
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 3,
+   "note": "The entry just before it, index 1, is the floor: ts[1] = 20 <= 25. Return values[1] = 'v2' in O(log n) \u2014 no scan.",
+   "pointers": {
+    "floor": 1
+   },
+   "marks": {
+    "1": "good",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "values[key] (by time)",
+    "rows": [
+     [
+      "t=10",
+      "v1"
+     ],
+     [
+      "t=20",
+      "v2 <-"
+     ],
+     [
+      "t=30",
+      "v3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "floor idx",
+     1
+    ],
+    [
+     "answer",
+     "v2"
+    ]
+   ],
+   "banner": "get('k', 25) = 'v2'  (largest timestamp <= 25 is 20)"
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 3,
+   "note": "Exact hit: get('k', 20). bisect_right lands past the equal timestamp, so index 1 = ts 20 is returned: 'v2'.",
+   "pointers": {
+    "floor": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "values[key] (by time)",
+    "rows": [
+     [
+      "t=10",
+      "v1"
+     ],
+     [
+      "t=20",
+      "v2 <-"
+     ],
+     [
+      "t=30",
+      "v3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "get('k',20)",
+     "v2"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    10,
+    20,
+    30
+   ],
+   "labels": [
+    10,
+    20,
+    30
+   ],
+   "code": "fast",
+   "line": 2,
+   "intro": "if every stored time is later than t, bisect returns 0 and there is no floor.",
+   "invariant": "i == 0 means no timestamp is <= t, so the answer is the empty string.",
+   "note": "Edge: get('k', 9), before the first set at t=10.",
+   "pointers": {
+    "t?": 0
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "sidebar": {
+    "title": "values[key] (by time)",
+    "rows": [
+     [
+      "t=10",
+      "v1"
+     ],
+     [
+      "t=20",
+      "v2"
+     ],
+     [
+      "t=30",
+      "v3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "query t",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "bisect_right(ts, 9) = 0. i == 0 means every stored timestamp is later than 9 \u2014 nothing was in effect yet. Return ''.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "bad"
+   },
+   "sidebar": {
+    "title": "values[key] (by time)",
+    "rows": [
+     [
+      "t=10",
+      "v1"
+     ],
+     [
+      "t=20",
+      "v2"
+     ],
+     [
+      "t=30",
+      "v3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "answer",
+     "\"\""
+    ]
+   ],
+   "banner": "get('k', 9) = ''  (no timestamp <= 9)"
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "A missing key behaves the same: no history, so ''. set() is O(1) (just append); get() is O(log n) binary search.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "set",
+     "O(1) append"
+    ],
+    [
+     "get",
+     "O(log n)"
+    ]
+   ]
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0981-time-based-key-value-store/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;981. Time Based Key-Value Store — https://leetcode.com/problems/time-based-key-value-store/
 
 Store multiple timestamped values per key. `get(key, t)` returns the value that
 was set at the largest timestamp &lt;= t (the value &quot;in effect&quot; at time t), or &quot;&quot; if

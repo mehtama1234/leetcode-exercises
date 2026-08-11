@@ -1,0 +1,896 @@
+{
+ "player": "grid",
+ "title": "Coin Change II - count combinations, one coin per row",
+ "acts": [
+  "Brute: skip / take",
+  "Fill the table",
+  "Answer + edge"
+ ],
+ "code": {
+  "tab": [
+   "dp = [0]*(amount+1); dp[0] = 1",
+   "for coin in coins:",
+   "    for a in range(coin, amount+1):",
+   "        dp[a] += dp[a-coin]     # ways that use this coin",
+   "return dp[amount]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "skip(up) + take(left)"
+  ],
+  [
+   "good",
+   "filled / answer"
+  ],
+  [
+   "bad",
+   "recomputed (waste)"
+  ],
+  [
+   "dim",
+   "zero / unreachable"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "\u00b7",
+    "1",
+    "2",
+    "5"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5"
+   ],
+   "code": null,
+   "intro": "how the same (coin index, remaining amount) state gets re-counted.",
+   "invariant": "ways(i, a) = combinations of coins[i:] that sum to a.",
+   "note": "Brute force: for each coin, either skip it and move on, or take one more of it and stay. Fixing the coin order stops 1+2 and 2+1 counting twice.",
+   "marks": {
+    "3,5": "active"
+   },
+   "state": [
+    [
+     "make",
+     "5 from {1,2,5}"
+    ],
+    [
+     "choice",
+     "skip / take"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "Many skip/take paths reach the same (coin, remaining) pair \u2014 e.g. make 3 from {1,2} \u2014 and re-solve it. That repeated work is the waste.",
+   "marks": {
+    "2,3": "bad",
+    "3,5": "active"
+   },
+   "state": [
+    [
+     "recomputed",
+     "ways(coin2, 3) \u2026"
+    ],
+    [
+     "cost",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "code": "tab",
+   "line": 0,
+   "intro": "each cell = skip (cell directly above) + take (this row, coin steps left).",
+   "invariant": "dp[i][a] = dp[i-1][a] + dp[i][a-coin].",
+   "note": "Seed the base row: with NO coins there is exactly one way to make 0 (take nothing) and no way to make any positive amount.",
+   "marks": {
+    "0,0": "good"
+   },
+   "set": {
+    "0,0": 1
+   },
+   "state": [
+    [
+     "dp[\u00b7][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "dp[\u00b7][1] = 0 (no coins, can't make 1).",
+   "set": {
+    "0,1": 0
+   },
+   "marks": {
+    "0,1": "dim"
+   },
+   "state": [
+    [
+     "dp[\u00b7][1]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "dp[\u00b7][2] = 0 (no coins, can't make 2).",
+   "set": {
+    "0,2": 0
+   },
+   "marks": {
+    "0,2": "dim"
+   },
+   "state": [
+    [
+     "dp[\u00b7][2]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "dp[\u00b7][3] = 0 (no coins, can't make 3).",
+   "set": {
+    "0,3": 0
+   },
+   "marks": {
+    "0,3": "dim"
+   },
+   "state": [
+    [
+     "dp[\u00b7][3]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "dp[\u00b7][4] = 0 (no coins, can't make 4).",
+   "set": {
+    "0,4": 0
+   },
+   "marks": {
+    "0,4": "dim"
+   },
+   "state": [
+    [
+     "dp[\u00b7][4]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 0,
+   "note": "dp[\u00b7][5] = 0 (no coins, can't make 5).",
+   "set": {
+    "0,5": 0
+   },
+   "marks": {
+    "0,5": "dim"
+   },
+   "state": [
+    [
+     "dp[\u00b7][5]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 1 > amount 0: can't use it, dp[1][0] = skip 1 = 1.",
+   "set": {
+    "1,0": 1
+   },
+   "marks": {
+    "0,0": "active",
+    "1,0": "good"
+   },
+   "state": [
+    [
+     "coin",
+     1
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "dp[1][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 1, amount 1: skip 0 + take dp[1][0]=1 = 1.",
+   "set": {
+    "1,1": 1
+   },
+   "marks": {
+    "0,1": "active",
+    "1,0": "active",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "coin",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(left)",
+     1
+    ],
+    [
+     "dp[1][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 1, amount 2: skip 0 + take dp[1][1]=1 = 1.",
+   "set": {
+    "1,2": 1
+   },
+   "marks": {
+    "0,2": "active",
+    "1,1": "active",
+    "1,2": "good"
+   },
+   "state": [
+    [
+     "coin",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(left)",
+     1
+    ],
+    [
+     "dp[1][2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 1, amount 3: skip 0 + take dp[1][2]=1 = 1.",
+   "set": {
+    "1,3": 1
+   },
+   "marks": {
+    "0,3": "active",
+    "1,2": "active",
+    "1,3": "good"
+   },
+   "state": [
+    [
+     "coin",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(left)",
+     1
+    ],
+    [
+     "dp[1][3]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 1, amount 4: skip 0 + take dp[1][3]=1 = 1.",
+   "set": {
+    "1,4": 1
+   },
+   "marks": {
+    "0,4": "active",
+    "1,3": "active",
+    "1,4": "good"
+   },
+   "state": [
+    [
+     "coin",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(left)",
+     1
+    ],
+    [
+     "dp[1][4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 1, amount 5: skip 0 + take dp[1][4]=1 = 1.",
+   "set": {
+    "1,5": 1
+   },
+   "marks": {
+    "0,5": "active",
+    "1,4": "active",
+    "1,5": "good"
+   },
+   "state": [
+    [
+     "coin",
+     1
+    ],
+    [
+     "skip(up)",
+     0
+    ],
+    [
+     "take(left)",
+     1
+    ],
+    [
+     "dp[1][5]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 2 > amount 0: can't use it, dp[2][0] = skip 1 = 1.",
+   "set": {
+    "2,0": 1
+   },
+   "marks": {
+    "1,0": "active",
+    "2,0": "good"
+   },
+   "state": [
+    [
+     "coin",
+     2
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "dp[2][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 2 > amount 1: can't use it, dp[2][1] = skip 1 = 1.",
+   "set": {
+    "2,1": 1
+   },
+   "marks": {
+    "1,1": "active",
+    "2,1": "good"
+   },
+   "state": [
+    [
+     "coin",
+     2
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "dp[2][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 2, amount 2: skip 1 + take dp[2][0]=1 = 2.",
+   "set": {
+    "2,2": 2
+   },
+   "marks": {
+    "1,2": "active",
+    "2,0": "active",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "coin",
+     2
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "take(left)",
+     1
+    ],
+    [
+     "dp[2][2]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 2, amount 3: skip 1 + take dp[2][1]=1 = 2.",
+   "set": {
+    "2,3": 2
+   },
+   "marks": {
+    "1,3": "active",
+    "2,1": "active",
+    "2,3": "good"
+   },
+   "state": [
+    [
+     "coin",
+     2
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "take(left)",
+     1
+    ],
+    [
+     "dp[2][3]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 2, amount 4: skip 1 + take dp[2][2]=2 = 3.",
+   "set": {
+    "2,4": 3
+   },
+   "marks": {
+    "1,4": "active",
+    "2,2": "active",
+    "2,4": "good"
+   },
+   "state": [
+    [
+     "coin",
+     2
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "take(left)",
+     2
+    ],
+    [
+     "dp[2][4]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 2, amount 5: skip 1 + take dp[2][3]=2 = 3.",
+   "set": {
+    "2,5": 3
+   },
+   "marks": {
+    "1,5": "active",
+    "2,3": "active",
+    "2,5": "good"
+   },
+   "state": [
+    [
+     "coin",
+     2
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "take(left)",
+     2
+    ],
+    [
+     "dp[2][5]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 5 > amount 0: can't use it, dp[3][0] = skip 1 = 1.",
+   "set": {
+    "3,0": 1
+   },
+   "marks": {
+    "2,0": "active",
+    "3,0": "good"
+   },
+   "state": [
+    [
+     "coin",
+     5
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "dp[3][0]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 5 > amount 1: can't use it, dp[3][1] = skip 1 = 1.",
+   "set": {
+    "3,1": 1
+   },
+   "marks": {
+    "2,1": "active",
+    "3,1": "good"
+   },
+   "state": [
+    [
+     "coin",
+     5
+    ],
+    [
+     "skip(up)",
+     1
+    ],
+    [
+     "dp[3][1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 5 > amount 2: can't use it, dp[3][2] = skip 2 = 2.",
+   "set": {
+    "3,2": 2
+   },
+   "marks": {
+    "2,2": "active",
+    "3,2": "good"
+   },
+   "state": [
+    [
+     "coin",
+     5
+    ],
+    [
+     "skip(up)",
+     2
+    ],
+    [
+     "dp[3][2]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 5 > amount 3: can't use it, dp[3][3] = skip 2 = 2.",
+   "set": {
+    "3,3": 2
+   },
+   "marks": {
+    "2,3": "active",
+    "3,3": "good"
+   },
+   "state": [
+    [
+     "coin",
+     5
+    ],
+    [
+     "skip(up)",
+     2
+    ],
+    [
+     "dp[3][3]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 5 > amount 4: can't use it, dp[3][4] = skip 3 = 3.",
+   "set": {
+    "3,4": 3
+   },
+   "marks": {
+    "2,4": "active",
+    "3,4": "good"
+   },
+   "state": [
+    [
+     "coin",
+     5
+    ],
+    [
+     "skip(up)",
+     3
+    ],
+    [
+     "dp[3][4]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 3,
+   "note": "coin 5, amount 5: skip 3 + take dp[3][0]=1 = 4.",
+   "set": {
+    "3,5": 4
+   },
+   "marks": {
+    "2,5": "active",
+    "3,0": "active",
+    "3,5": "good"
+   },
+   "state": [
+    [
+     "coin",
+     5
+    ],
+    [
+     "skip(up)",
+     3
+    ],
+    [
+     "take(left)",
+     1
+    ],
+    [
+     "dp[3][5]",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "tab",
+   "line": 4,
+   "intro": "the bottom-right cell: all coins available, full amount.",
+   "invariant": "dp[K][amount] folded in every coin once, no order double-counted.",
+   "note": "dp[3][5] = 4 \u2014 the number of coin combinations that make 5: 5, 1+2+2, 1+1+1+2, 1+1+1+1+1.",
+   "marks": {
+    "3,5": "good"
+   },
+   "state": [
+    [
+     "answer",
+     4
+    ]
+   ],
+   "banner": "Ways to make 5 from [1, 2, 5] = 4"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     1,
+     0,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     1,
+     0
+    ]
+   ],
+   "rowLabels": [
+    "\u00b7",
+    "2"
+   ],
+   "colLabels": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "code": "tab",
+   "line": 4,
+   "note": "Edge case: make 3 using only a coin worth 2. Even amounts are reachable (0, 2) but 3 is not \u2014 the corner stays 0.",
+   "marks": {
+    "1,3": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     0
+    ]
+   ],
+   "banner": "Make 3 from {2} \u2192 0 ways"
+  }
+ ]
+}

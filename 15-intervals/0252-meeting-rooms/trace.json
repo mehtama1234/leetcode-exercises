@@ -1,0 +1,490 @@
+{
+ "player": "linear",
+ "title": "Meeting Rooms \u2014 sort, then only neighbors can clash",
+ "acts": [
+  "Brute: every pair",
+  "The fix: sort by start",
+  "Fast: neighbor scan",
+  "Edge case: back-to-back"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "    for j in range(i+1, n):",
+   "        if overlap(iv[i], iv[j]):",
+   "            return False",
+   "return True"
+  ],
+  "fast": [
+   "ordered = sorted(intervals, key=lambda iv: iv[0])",
+   "for i in range(1, len(ordered)):",
+   "    if ordered[i][0] < ordered[i-1][1]:   # starts before last ends",
+   "        return False",
+   "return True"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "pair being checked / clear"
+  ],
+  [
+   "good",
+   "no overlap"
+  ],
+  [
+   "bad",
+   "overlap \u2014 can't attend both"
+  ],
+  [
+   "dim",
+   "skipped"
+  ]
+ ],
+ "cells": [
+  0,
+  1,
+  2
+ ],
+ "labels": [
+  "0-30",
+  "5-10",
+  "15-20"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "every unordered pair tested for overlap \u2014 most compares are avoidable.",
+   "invariant": "no ordering assumed, so a clash could be any two meetings.",
+   "note": "Brute: test all pairs for overlap. Any overlap means one person can't attend everything.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "marks": {
+    "0": "active",
+    "1": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "comparisons",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "brute",
+   "line": 2,
+   "note": "0-30 vs 5-10: they overlap \u2014 can't attend both.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "bad"
+   },
+   "state": [
+    [
+     "pair",
+     "0-30 , 5-10"
+    ],
+    [
+     "overlap",
+     true
+    ],
+    [
+     "comparisons",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "brute",
+   "line": 2,
+   "note": "0-30 vs 15-20: they overlap \u2014 can't attend both.",
+   "pointers": {
+    "i": 0,
+    "j": 2
+   },
+   "arc": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "2": "bad"
+   },
+   "state": [
+    [
+     "pair",
+     "0-30 , 15-20"
+    ],
+    [
+     "overlap",
+     true
+    ],
+    [
+     "comparisons",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "brute",
+   "line": 2,
+   "note": "5-10 vs 15-20: no overlap.",
+   "pointers": {
+    "i": 1,
+    "j": 2
+   },
+   "arc": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "active",
+    "2": "good"
+   },
+   "state": [
+    [
+     "pair",
+     "5-10 , 15-20"
+    ],
+    [
+     "overlap",
+     false
+    ],
+    [
+     "comparisons",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "brute",
+   "line": 3,
+   "note": "Answer is False, but it cost 3 pair checks. For n meetings that is n(n-1)/2 \u2014 many between meetings that can't possibly touch.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     "False"
+    ],
+    [
+     "comparisons",
+     3
+    ],
+    [
+     "pattern",
+     "~ n*n / 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "intro": "after sorting by start, if any two overlap then two ADJACENT ones do.",
+   "note": "The waste is comparing meetings far apart in time. Sort by start: the earliest-starting meeting that could overlap you is the very next one.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "idea",
+     "sort by start"
+    ],
+    [
+     "then",
+     "check neighbors only"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "fast",
+   "line": 0,
+   "invariant": "starts increase left to right, so only neighbors can be the first clash.",
+   "note": "Sorted by start: ['0-30', '5-10', '15-20']. Now one linear scan over neighbors settles it.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active"
+   },
+   "state": [
+    [
+     "order",
+     "by start"
+    ],
+    [
+     "scan cost",
+     "O(n)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "a clash is next_start < current_end; equality is back-to-back, fine.",
+   "invariant": "everything left of i has been confirmed non-overlapping.",
+   "note": "Walk neighbors: each meeting must end no later than the next one starts.",
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "checks",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "fast",
+   "line": 3,
+   "pointers": {
+    "prev": 0,
+    "next": 1
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "note": "5-10 starts at 5 < 30 (prev end) \u2014 they overlap. Answer False.",
+   "marks": {
+    "0": "good",
+    "1": "bad"
+   },
+   "state": [
+    [
+     "next start",
+     5
+    ],
+    [
+     "prev end",
+     30
+    ],
+    [
+     "clash",
+     true
+    ],
+    [
+     "checks",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "0-30",
+    "5-10",
+    "15-20"
+   ],
+   "code": "fast",
+   "line": 3,
+   "note": "First clash found at neighbor 1 \u2014 stop early. Only 1 check(s) vs 3 brute comparisons.",
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "dim"
+   },
+   "banner": "['0-30', '5-10', '15-20']: can attend all -> False   (1 checks vs 3 brute)",
+   "state": [
+    [
+     "answer",
+     "False"
+    ],
+    [
+     "checks",
+     1
+    ],
+    [
+     "vs brute",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    1
+   ],
+   "labels": [
+    "1-5",
+    "5-10"
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "one ending exactly when the next begins is NOT an overlap.",
+   "invariant": "the test is strict <, so touching endpoints pass.",
+   "note": "Edge case: ['1-5', '5-10']. The first ends at 5, the second starts at 5.",
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "prev end",
+     5
+    ],
+    [
+     "next start",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    1
+   ],
+   "labels": [
+    "1-5",
+    "5-10"
+   ],
+   "code": "fast",
+   "line": 2,
+   "note": "next start 5 is NOT < prev end 5 \u2014 back-to-back, no overlap. Answer True.",
+   "pointers": {
+    "prev": 0,
+    "next": 1
+   },
+   "arc": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "banner": "1-5, 5-10: can attend all -> True   (touching endpoints are fine)",
+   "state": [
+    [
+     "answer",
+     "True"
+    ]
+   ]
+  }
+ ]
+}

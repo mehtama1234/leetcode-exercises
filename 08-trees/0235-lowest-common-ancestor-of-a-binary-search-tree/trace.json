@@ -1,0 +1,783 @@
+{
+ "player": "tree",
+ "title": "LCA in a BST - follow the order, deep split, root split, then self-ancestor",
+ "acts": [
+  "The rule",
+  "Run: deep split",
+  "They split at the root",
+  "Edge: one is an ancestor"
+ ],
+ "code": {
+  "lca": [
+   "node = root",
+   "while node:",
+   "    if p.val > node.val and q.val > node.val:",
+   "        node = node.right      # both bigger -> right",
+   "    elif p.val < node.val and q.val < node.val:",
+   "        node = node.left       # both smaller -> left",
+   "    else:",
+   "        return node            # they split here"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current node"
+  ],
+  [
+   "good",
+   "path / LCA"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 6,
+   "x": 330,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 2,
+   "x": 66,
+   "y": 82
+  },
+  {
+   "id": 2,
+   "val": 8,
+   "x": 462,
+   "y": 82
+  },
+  {
+   "id": 3,
+   "val": 0,
+   "x": 0,
+   "y": 164
+  },
+  {
+   "id": 4,
+   "val": 4,
+   "x": 198,
+   "y": 164
+  },
+  {
+   "id": 5,
+   "val": 7,
+   "x": 396,
+   "y": 164
+  },
+  {
+   "id": 6,
+   "val": 9,
+   "x": 528,
+   "y": 164
+  },
+  {
+   "id": 7,
+   "val": 3,
+   "x": 132,
+   "y": 246
+  },
+  {
+   "id": 8,
+   "val": 5,
+   "x": 264,
+   "y": 246
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   2,
+   5
+  ],
+  [
+   2,
+   6
+  ],
+  [
+   4,
+   7
+  ],
+  [
+   4,
+   8
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 6,
+     "x": 330,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 8,
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 0,
+     "x": 0,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 198,
+     "y": 164
+    },
+    {
+     "id": 5,
+     "val": 7,
+     "x": 396,
+     "y": 164
+    },
+    {
+     "id": 6,
+     "val": 9,
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": 5,
+     "x": 264,
+     "y": 246
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     4,
+     8
+    ]
+   ],
+   "code": "lca",
+   "line": 2,
+   "intro": "the BST order alone points you toward both targets \u2014 no full search.",
+   "invariant": "the LCA is the first node where the two targets fall on opposite sides.",
+   "note": "The rule: from any node, if both targets are bigger, the answer is to the right; if both smaller, to the left. When they split, that's the LCA.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "idea",
+     "follow BST order"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "lca",
+   "line": 7,
+   "note": "The split point is the deepest node that still has both targets below it \u2014 exactly the lowest common ancestor.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "?"
+   },
+   "state": [
+    [
+     "stop when",
+     "targets split"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 6,
+     "x": 330,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 8,
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 0,
+     "x": 0,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 198,
+     "y": 164
+    },
+    {
+     "id": 5,
+     "val": 7,
+     "x": 396,
+     "y": 164
+    },
+    {
+     "id": 6,
+     "val": 9,
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": 5,
+     "x": 264,
+     "y": 246
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     4,
+     8
+    ]
+   ],
+   "code": "lca",
+   "line": 0,
+   "intro": "each step commits to one side; the walk stops the moment they diverge.",
+   "invariant": "only nodes on the path from root to the LCA are ever visited.",
+   "note": "Find LCA of 3 and 5. Both are under 6 on the left, then both under 4 on the right of 2 \u2014 we descend until they split.",
+   "active": [
+    0
+   ],
+   "done": {
+    "7": "p",
+    "8": "q"
+   },
+   "state": [
+    [
+     "targets",
+     "3 and 5"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "lca",
+   "line": 4,
+   "note": "At 6: both 3 and 5 are smaller -> go left.",
+   "active": [
+    0
+   ],
+   "done": {
+    "7": "p",
+    "8": "q",
+    "0": "->L"
+   },
+   "state": [
+    [
+     "at",
+     6
+    ],
+    [
+     "move",
+     "left"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "lca",
+   "line": 2,
+   "note": "At 2: both 3 and 5 are bigger -> go right.",
+   "active": [
+    1
+   ],
+   "done": {
+    "7": "p",
+    "8": "q",
+    "0": "->L",
+    "1": "->R"
+   },
+   "state": [
+    [
+     "at",
+     2
+    ],
+    [
+     "move",
+     "right"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "lca",
+   "line": 7,
+   "note": "At 4: 3 and 5 fall on opposite sides (or one equals 4) -> 4 is the LCA.",
+   "active": [
+    4
+   ],
+   "done": {
+    "7": "p",
+    "8": "q",
+    "0": "->L",
+    "1": "->R",
+    "4": "LCA"
+   },
+   "state": [
+    [
+     "LCA",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "lca",
+   "line": 7,
+   "note": "3 and 5 split at 4 (3 < 4 < 5) -> LCA = 4.",
+   "active": [
+    4
+   ],
+   "done": {
+    "7": "p",
+    "8": "q",
+    "0": "->L",
+    "1": "->R",
+    "4": "LCA"
+   },
+   "state": [
+    [
+     "LCA",
+     4
+    ]
+   ],
+   "banner": "LCA(3, 5) = 4"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 6,
+     "x": 330,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 8,
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 0,
+     "x": 0,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 198,
+     "y": 164
+    },
+    {
+     "id": 5,
+     "val": 7,
+     "x": 396,
+     "y": 164
+    },
+    {
+     "id": 6,
+     "val": 9,
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": 5,
+     "x": 264,
+     "y": 246
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     4,
+     8
+    ]
+   ],
+   "code": "lca",
+   "line": 2,
+   "intro": "targets on opposite sides of the very first node stop the walk at once.",
+   "invariant": "the split can happen at the root itself.",
+   "note": "Find LCA of 2 and 8. At root 6: 2 < 6 and 8 > 6 -> they already split.",
+   "active": [
+    0
+   ],
+   "done": {
+    "1": "p",
+    "2": "q"
+   },
+   "state": [
+    [
+     "targets",
+     "2 and 8"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "lca",
+   "line": 7,
+   "note": "At 6: 2 and 8 fall on opposite sides (or one equals 6) -> 6 is the LCA.",
+   "active": [
+    0
+   ],
+   "done": {
+    "1": "p",
+    "2": "q",
+    "0": "LCA"
+   },
+   "state": [
+    [
+     "LCA",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "lca",
+   "line": 7,
+   "note": "They split at the root -> LCA = 6.",
+   "active": [
+    0
+   ],
+   "done": {
+    "1": "p",
+    "2": "q",
+    "0": "LCA"
+   },
+   "state": [
+    [
+     "LCA",
+     6
+    ]
+   ],
+   "banner": "LCA(2, 8) = 6"
+  },
+  {
+   "act": 3,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 6,
+     "x": 330,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 66,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 8,
+     "x": 462,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 0,
+     "x": 0,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 198,
+     "y": 164
+    },
+    {
+     "id": 5,
+     "val": 7,
+     "x": 396,
+     "y": 164
+    },
+    {
+     "id": 6,
+     "val": 9,
+     "x": 528,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 3,
+     "x": 132,
+     "y": 246
+    },
+    {
+     "id": 8,
+     "val": 5,
+     "x": 264,
+     "y": 246
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     4,
+     8
+    ]
+   ],
+   "code": "lca",
+   "line": 6,
+   "intro": "when one target sits on the path to the other, it is its own ancestor.",
+   "invariant": "the 'else' branch also fires when a target equals the current node.",
+   "note": "Edge: LCA of 2 and 4. From 6 go left to 2; now 4 > 2 while 2 = 2, so they no longer both go the same way -> stop at 2.",
+   "active": [
+    0
+   ],
+   "done": {
+    "1": "p",
+    "4": "q"
+   },
+   "state": [
+    [
+     "targets",
+     "2 and 4"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "lca",
+   "line": 4,
+   "note": "At 6: both 2 and 4 are smaller -> go left.",
+   "active": [
+    0
+   ],
+   "done": {
+    "1": "p",
+    "4": "q",
+    "0": "->L"
+   },
+   "state": [
+    [
+     "at",
+     6
+    ],
+    [
+     "move",
+     "left"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "lca",
+   "line": 7,
+   "note": "At 2: 2 and 4 fall on opposite sides (or one equals 2) -> 2 is the LCA.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": "LCA",
+    "4": "q",
+    "0": "->L"
+   },
+   "state": [
+    [
+     "LCA",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "lca",
+   "line": 7,
+   "note": "A node is an ancestor of itself -> LCA = 2.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": "LCA",
+    "4": "q",
+    "0": "->L"
+   },
+   "state": [
+    [
+     "LCA",
+     2
+    ]
+   ],
+   "banner": "LCA(2, 4) = 2"
+  }
+ ]
+}

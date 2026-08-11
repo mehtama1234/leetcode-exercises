@@ -73,7 +73,888 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Max-heap in a min-heap language.</strong> <code>heapq</code> is min-only; store <strong>negated</strong> counts so the most-remaining task is on top.</li><li><strong>Cooldown bookkeeping.</strong> A task just run can&#x27;t rejoin the heap until <code>time + n</code>; releasing it too early (or off by one) breaks the spacing rule. Use a queue keyed by ready-time.</li><li><strong>Idle slots still advance the clock.</strong> When nothing is available but tasks remain, that slot counts toward the total.</li><li><strong>The <code>max(len(tasks), frame)</code> guard.</strong> With many distinct tasks the gaps fill and overflow — forgetting the guard *under*counts by ignoring that there are no idle slots. With <code>n = 0</code> the formula must reduce to the number of tasks, and it does.</li><li><strong>Ties at the top.</strong> Multiple tasks sharing <code>f_max</code> all sit in the final column; add one per tie, or you undercount the tail.</li></ul>
 <h2>Transfer</h2>
-<p>The move is: <strong>serve the highest-demand item first via a max-heap when you must simulate, but look for the counting shortcut once you see which item paces the whole schedule.</strong> The greedy-max-heap half is the same engine as <a href="../1046-last-stone-weight/">Last Stone Weight / 1046</a> and <a href="https://leetcode.com/problems/reorganize-string/">Reorganize String / 767</a> (space out the most frequent character); the &quot;derive a formula from the bottleneck&quot; half is the transferable insight for spacing and interval-packing problems. Whenever a greedy simulation keeps re-picking the current maximum, reach for a heap — then ask whether the answer has a closed form.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0621-task-scheduler/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;621. Task Scheduler — https://leetcode.com/problems/task-scheduler/
+<p>The move is: <strong>serve the highest-demand item first via a max-heap when you must simulate, but look for the counting shortcut once you see which item paces the whole schedule.</strong> The greedy-max-heap half is the same engine as <a href="../1046-last-stone-weight/">Last Stone Weight / 1046</a> and <a href="https://leetcode.com/problems/reorganize-string/">Reorganize String / 767</a> (space out the most frequent character); the &quot;derive a formula from the bottleneck&quot; half is the transferable insight for spacing and interval-packing problems. Whenever a greedy simulation keeps re-picking the current maximum, reach for a heap — then ask whether the answer has a closed form.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Task Scheduler \u2014 greedy heap simulation, then the formula",
+ "acts": [
+  "The greedy rule",
+  "Simulate with a max-heap",
+  "The O(1) formula",
+  "Edge: n = 0"
+ ],
+ "code": {
+  "sim": [
+   "while heap or wait:",
+   "    time += 1",
+   "    if heap:",
+   "        remaining = heappop(heap) + 1   # run one",
+   "        if remaining < 0:",
+   "            wait.append((time+n, remaining))",
+   "    if wait and wait[0][0] == time:",
+   "        heappush(heap, wait.popleft()[1])"
+  ],
+  "formula": [
+   "f_max = max(counts.values())",
+   "ties = #(counts == f_max)",
+   "frame = (f_max - 1) * (n + 1) + ties",
+   "return max(len(tasks), frame)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "task run this slot"
+  ],
+  [
+   "good",
+   "placed task / anchor"
+  ],
+  [
+   "bad",
+   "idle slot"
+  ],
+  [
+   "dim",
+   "gap to fill"
+  ]
+ ],
+ "cells": [],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [],
+   "code": "sim",
+   "line": 0,
+   "intro": "each slot: run the task with the MOST copies left; cool it down after.",
+   "invariant": "the most-frequent task never gets stuck waiting at the very end.",
+   "note": "Tasks ['A', 'A', 'A', 'B', 'B', 'B'], cooldown n=2. Greedy: always run the most-remaining task, then park it for n slots.",
+   "state": [
+    [
+     "n",
+     2
+    ],
+    [
+     "counts",
+     "A:3 B:3"
+    ],
+    [
+     "slots used",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [],
+   "code": "sim",
+   "line": 0,
+   "intro": "the clock ticks one slot at a time; watch the heap drain and refill.",
+   "invariant": "a task sits in the cooldown queue for exactly n slots before returning.",
+   "note": "Heapify the counts (most on top) and start the clock at 0.",
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "top",
+      "3 left"
+     ],
+     [
+      "1",
+      "3 left"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     0
+    ],
+    [
+     "heap",
+     "A:3 B:3"
+    ],
+    [
+     "waiting",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A"
+   ],
+   "labels": [
+    1
+   ],
+   "code": "sim",
+   "line": 3,
+   "note": "t=1: run A (had 3 left). 2 left \u2192 cool down until t=3.",
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "top",
+      "3 left"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     1
+    ],
+    [
+     "ran",
+     "A"
+    ],
+    [
+     "waiting",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B"
+   ],
+   "labels": [
+    1,
+    2
+   ],
+   "code": "sim",
+   "line": 3,
+   "note": "t=2: run B (had 3 left). 2 left \u2192 cool down until t=4.",
+   "marks": {
+    "0": "active",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     2
+    ],
+    [
+     "ran",
+     "B"
+    ],
+    [
+     "waiting",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle"
+   ],
+   "labels": [
+    1,
+    2,
+    3
+   ],
+   "code": "sim",
+   "line": 2,
+   "note": "t=3: heap empty but tasks still cooling \u2014 IDLE slot.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "bad"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     3
+    ],
+    [
+     "ran",
+     "idle"
+    ],
+    [
+     "waiting",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle"
+   ],
+   "labels": [
+    1,
+    2,
+    3
+   ],
+   "code": "sim",
+   "line": 7,
+   "note": "t=3: A's cooldown expired \u2014 back on the heap.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "bad"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "top",
+      "2 left"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     3
+    ],
+    [
+     "released",
+     "A"
+    ],
+    [
+     "waiting",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle",
+    "A"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "sim",
+   "line": 3,
+   "note": "t=4: run A (had 2 left). 1 left \u2192 cool down until t=6.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "bad",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     4
+    ],
+    [
+     "ran",
+     "A"
+    ],
+    [
+     "waiting",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle",
+    "A"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "sim",
+   "line": 7,
+   "note": "t=4: B's cooldown expired \u2014 back on the heap.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "bad",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "top",
+      "2 left"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     4
+    ],
+    [
+     "released",
+     "B"
+    ],
+    [
+     "waiting",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle",
+    "A",
+    "B"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "code": "sim",
+   "line": 3,
+   "note": "t=5: run B (had 2 left). 1 left \u2192 cool down until t=7.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "bad",
+    "3": "active",
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     5
+    ],
+    [
+     "ran",
+     "B"
+    ],
+    [
+     "waiting",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle",
+    "A",
+    "B",
+    "idle"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "code": "sim",
+   "line": 2,
+   "note": "t=6: heap empty but tasks still cooling \u2014 IDLE slot.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "bad",
+    "3": "active",
+    "4": "active",
+    "5": "bad"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     6
+    ],
+    [
+     "ran",
+     "idle"
+    ],
+    [
+     "waiting",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle",
+    "A",
+    "B",
+    "idle"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "code": "sim",
+   "line": 7,
+   "note": "t=6: A's cooldown expired \u2014 back on the heap.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "bad",
+    "3": "active",
+    "4": "active",
+    "5": "bad"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "top",
+      "1 left"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     6
+    ],
+    [
+     "released",
+     "A"
+    ],
+    [
+     "waiting",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle",
+    "A",
+    "B",
+    "idle",
+    "A"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "code": "sim",
+   "line": 3,
+   "note": "t=7: run A (had 1 left). last copy of it done.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "bad",
+    "3": "active",
+    "4": "active",
+    "5": "bad",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     7
+    ],
+    [
+     "ran",
+     "A"
+    ],
+    [
+     "waiting",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle",
+    "A",
+    "B",
+    "idle",
+    "A"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "code": "sim",
+   "line": 7,
+   "note": "t=7: B's cooldown expired \u2014 back on the heap.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "bad",
+    "3": "active",
+    "4": "active",
+    "5": "bad",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "top",
+      "1 left"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     7
+    ],
+    [
+     "released",
+     "B"
+    ],
+    [
+     "waiting",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle",
+    "A",
+    "B",
+    "idle",
+    "A",
+    "B"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "code": "sim",
+   "line": 3,
+   "note": "t=8: run B (had 1 left). last copy of it done.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "bad",
+    "3": "active",
+    "4": "active",
+    "5": "bad",
+    "6": "active",
+    "7": "active"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "time",
+     8
+    ],
+    [
+     "ran",
+     "B"
+    ],
+    [
+     "waiting",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "A",
+    "B",
+    "idle",
+    "A",
+    "B",
+    "idle",
+    "A",
+    "B"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "code": "sim",
+   "line": 0,
+   "note": "Done at t=8. Schedule: A B idle A B idle A B. That's 8 slots.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "bad",
+    "3": "good",
+    "4": "good",
+    "5": "bad",
+    "6": "good",
+    "7": "good"
+   },
+   "sidebar": {
+    "title": "max-heap: remaining counts",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "total slots",
+     8
+    ],
+    [
+     "idles",
+     2
+    ]
+   ],
+   "banner": "minimum slots = 8"
+  },
+  {
+   "act": 2,
+   "cells": [
+    "A",
+    "\u00b7",
+    "\u00b7",
+    "A",
+    "\u00b7",
+    "\u00b7",
+    "A"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "code": "formula",
+   "line": 2,
+   "intro": "the answer is set by the most frequent task alone \u2014 no simulation.",
+   "invariant": "the skeleton spans (f_max-1) blocks of (n+1), plus a final column.",
+   "note": "Most frequent = 3 (A). Lay them out with n=2 gaps: 2 blocks of 3 + final column.",
+   "marks": {
+    "0": "good",
+    "1": "dim",
+    "2": "dim",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good"
+   },
+   "state": [
+    [
+     "f_max",
+     3
+    ],
+    [
+     "ties at max",
+     2
+    ],
+    [
+     "frame",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "formula",
+   "line": 3,
+   "note": "frame = (3-1)*(2+1) + 2 = 8. Other tasks fill the gaps. answer = max(len(tasks)=6, 8) = 8.",
+   "marks": {
+    "0": "good",
+    "1": "dim",
+    "2": "dim",
+    "3": "good",
+    "4": "dim",
+    "5": "dim",
+    "6": "good"
+   },
+   "state": [
+    [
+     "frame",
+     8
+    ],
+    [
+     "len(tasks)",
+     6
+    ],
+    [
+     "answer",
+     8
+    ]
+   ],
+   "banner": "minimum slots = 8   (matches the simulation)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    "A",
+    "A",
+    "A",
+    "B",
+    "B",
+    "B"
+   ],
+   "labels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "code": "formula",
+   "line": 3,
+   "intro": "with no cooldown there are no gaps, so len(tasks) wins.",
+   "invariant": "answer is the LARGER of the frame and len(tasks); here len(tasks) dominates.",
+   "note": "Edge: same tasks, n=0. frame = (3-1)*1 + 2 = 4, but len(tasks) = 6. Answer = max = 6 \u2014 just run them all.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good"
+   },
+   "state": [
+    [
+     "n",
+     0
+    ],
+    [
+     "frame",
+     4
+    ],
+    [
+     "len(tasks)",
+     6
+    ],
+    [
+     "answer",
+     6
+    ]
+   ],
+   "banner": "minimum slots = 6"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0621-task-scheduler/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;621. Task Scheduler — https://leetcode.com/problems/task-scheduler/
 
 Given task labels and a cooldown n, the same task must be at least n slots apart.
 Each slot runs one task or is idle. Return the minimum number of slots to finish.

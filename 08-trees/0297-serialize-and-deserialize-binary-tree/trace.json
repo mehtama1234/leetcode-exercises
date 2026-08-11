@@ -1,0 +1,1564 @@
+{
+ "player": "tree",
+ "title": "Serialize / Deserialize - '#' keeps the shape, then rebuild it back",
+ "acts": [
+  "Why a value list fails",
+  "Serialize with '#'",
+  "Deserialize: rebuild"
+ ],
+ "code": {
+  "serialize": [
+   "def serialize(node):",
+   "    if node is None: emit('#'); return",
+   "    emit(node.val)",
+   "    serialize(node.left)   # preorder: root, left, right",
+   "    serialize(node.right)",
+   "# --- deserialize ---",
+   "def build():",
+   "    val = next(tokens)",
+   "    if val == '#': return None",
+   "    node.left  = build()",
+   "    node.right = build()"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current node"
+  ],
+  [
+   "good",
+   "written / rebuilt"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 1,
+   "x": 74,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 2,
+   "x": 0,
+   "y": 82
+  },
+  {
+   "id": 2,
+   "val": 3,
+   "x": 222,
+   "y": 82
+  },
+  {
+   "id": 3,
+   "val": 4,
+   "x": 148,
+   "y": 164
+  },
+  {
+   "id": 4,
+   "val": 5,
+   "x": 296,
+   "y": 164
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   2,
+   4
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 1,
+   "intro": "empty children must be recorded too, or the shape is ambiguous.",
+   "invariant": "every node, present or missing, gets exactly one token.",
+   "note": "A plain list of values loses the tree's shape: you can't tell where a child is missing. The fix is to write a '#' for every empty child.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "problem",
+     "shape is lost"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 0,
+   "note": "Preorder (root, left, right) with '#' markers is unambiguous: reading tokens front-to-back rebuilds the exact same tree.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "format",
+     "preorder + '#'"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 0,
+   "intro": "each node writes its value; each empty slot writes a '#'.",
+   "invariant": "the token string grows in preorder as we descend.",
+   "note": "Serialize [1,2,3,null,null,4,5]. Walk preorder, emitting tokens.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "tokens",
+     ""
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 2,
+   "note": "Visit 1 -> write '1', then recurse left, then right.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "w"
+   },
+   "state": [
+    [
+     "emit",
+     1
+    ],
+    [
+     "so far",
+     "1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 2,
+   "note": "Visit 2 -> write '2', then recurse left, then right.",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": "w",
+    "1": "w"
+   },
+   "state": [
+    [
+     "emit",
+     2
+    ],
+    [
+     "so far",
+     "1,2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 1,
+   "note": "Empty child -> write '#'.",
+   "active": [],
+   "done": {
+    "0": "w",
+    "1": "w"
+   },
+   "state": [
+    [
+     "emit",
+     "#"
+    ],
+    [
+     "so far",
+     "1,2,#"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 1,
+   "note": "Empty child -> write '#'.",
+   "active": [],
+   "done": {
+    "0": "w",
+    "1": "w"
+   },
+   "state": [
+    [
+     "emit",
+     "#"
+    ],
+    [
+     "so far",
+     "1,2,#,#"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 2,
+   "note": "Visit 3 -> write '3', then recurse left, then right.",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": "w",
+    "1": "w",
+    "2": "w"
+   },
+   "state": [
+    [
+     "emit",
+     3
+    ],
+    [
+     "so far",
+     "1,2,#,#,3"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 2,
+   "note": "Visit 4 -> write '4', then recurse left, then right.",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": "w",
+    "1": "w",
+    "2": "w",
+    "3": "w"
+   },
+   "state": [
+    [
+     "emit",
+     4
+    ],
+    [
+     "so far",
+     "1,2,#,#,3,4"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 1,
+   "note": "Empty child -> write '#'.",
+   "active": [],
+   "done": {
+    "0": "w",
+    "1": "w",
+    "2": "w",
+    "3": "w"
+   },
+   "state": [
+    [
+     "emit",
+     "#"
+    ],
+    [
+     "so far",
+     "1,2,#,#,3,4,#"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 1,
+   "note": "Empty child -> write '#'.",
+   "active": [],
+   "done": {
+    "0": "w",
+    "1": "w",
+    "2": "w",
+    "3": "w"
+   },
+   "state": [
+    [
+     "emit",
+     "#"
+    ],
+    [
+     "so far",
+     "1,2,#,#,3,4,#,#"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 2,
+   "note": "Visit 5 -> write '5', then recurse left, then right.",
+   "active": [
+    4
+   ],
+   "done": {
+    "0": "w",
+    "1": "w",
+    "2": "w",
+    "3": "w",
+    "4": "w"
+   },
+   "state": [
+    [
+     "emit",
+     5
+    ],
+    [
+     "so far",
+     "1,2,#,#,3,4,#,#,5"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 1,
+   "note": "Empty child -> write '#'.",
+   "active": [],
+   "done": {
+    "0": "w",
+    "1": "w",
+    "2": "w",
+    "3": "w",
+    "4": "w"
+   },
+   "state": [
+    [
+     "emit",
+     "#"
+    ],
+    [
+     "so far",
+     "1,2,#,#,3,4,#,#,5,#"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "serialize",
+   "line": 1,
+   "note": "Empty child -> write '#'.",
+   "active": [],
+   "done": {
+    "0": "w",
+    "1": "w",
+    "2": "w",
+    "3": "w",
+    "4": "w"
+   },
+   "state": [
+    [
+     "emit",
+     "#"
+    ],
+    [
+     "so far",
+     "1,2,#,#,3,4,#,#,5,#,#"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 4,
+   "note": "Done. The string is: 1,2,#,#,3,4,#,#,5,#,#",
+   "active": [],
+   "done": {
+    "0": "w",
+    "1": "w",
+    "2": "w",
+    "3": "w",
+    "4": "w"
+   },
+   "state": [
+    [
+     "serialized",
+     "1,2,#,#,3,4,#,#,5,#,#"
+    ]
+   ],
+   "banner": "serialize -> 1,2,#,#,3,4,#,#,5,#,#"
+  },
+  {
+   "act": 2,
+   "nodes": [],
+   "edges": [],
+   "code": "serialize",
+   "line": 6,
+   "intro": "tokens are consumed front-to-back; the same preorder rebuilds the tree.",
+   "invariant": "a '#' closes a branch; a value opens a new node and two more reads.",
+   "note": "Deserialize '1,2,#,#,3,4,#,#,5,#,#'. Consume tokens in order; the tree grows back.",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "tokens",
+     "1,2,#,#,3,4,#,#,5,#,#"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "serialize",
+   "line": 7,
+   "note": "Token '1' -> make a node, then build its left, then its right.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "read",
+     "1"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "serialize",
+   "line": 7,
+   "note": "Token '2' -> make a node, then build its left, then its right.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "read",
+     "2"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "serialize",
+   "line": 8,
+   "note": "Token '#' -> this child is empty (None).",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "read",
+     "#"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "serialize",
+   "line": 8,
+   "note": "Token '#' -> this child is empty (None).",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "read",
+     "#"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "serialize",
+   "line": 10,
+   "note": "Node 2's children are both attached -> it's complete.",
+   "active": [
+    1
+   ],
+   "done": {
+    "1": "ok"
+   },
+   "state": [
+    [
+     "placed",
+     "2"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "code": "serialize",
+   "line": 7,
+   "note": "Token '3' -> make a node, then build its left, then its right.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": "ok"
+   },
+   "state": [
+    [
+     "read",
+     "3"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "serialize",
+   "line": 7,
+   "note": "Token '4' -> make a node, then build its left, then its right.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": "ok"
+   },
+   "state": [
+    [
+     "read",
+     "4"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "serialize",
+   "line": 8,
+   "note": "Token '#' -> this child is empty (None).",
+   "active": [],
+   "done": {
+    "1": "ok"
+   },
+   "state": [
+    [
+     "read",
+     "#"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "serialize",
+   "line": 8,
+   "note": "Token '#' -> this child is empty (None).",
+   "active": [],
+   "done": {
+    "1": "ok"
+   },
+   "state": [
+    [
+     "read",
+     "#"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "serialize",
+   "line": 10,
+   "note": "Node 4's children are both attached -> it's complete.",
+   "active": [
+    3
+   ],
+   "done": {
+    "1": "ok",
+    "3": "ok"
+   },
+   "state": [
+    [
+     "placed",
+     "4"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 7,
+   "note": "Token '5' -> make a node, then build its left, then its right.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": "ok",
+    "3": "ok"
+   },
+   "state": [
+    [
+     "read",
+     "5"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 8,
+   "note": "Token '#' -> this child is empty (None).",
+   "active": [],
+   "done": {
+    "1": "ok",
+    "3": "ok"
+   },
+   "state": [
+    [
+     "read",
+     "#"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 8,
+   "note": "Token '#' -> this child is empty (None).",
+   "active": [],
+   "done": {
+    "1": "ok",
+    "3": "ok"
+   },
+   "state": [
+    [
+     "read",
+     "#"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 10,
+   "note": "Node 5's children are both attached -> it's complete.",
+   "active": [
+    4
+   ],
+   "done": {
+    "1": "ok",
+    "3": "ok",
+    "4": "ok"
+   },
+   "state": [
+    [
+     "placed",
+     "5"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 10,
+   "note": "Node 3's children are both attached -> it's complete.",
+   "active": [
+    2
+   ],
+   "done": {
+    "1": "ok",
+    "3": "ok",
+    "4": "ok",
+    "2": "ok"
+   },
+   "state": [
+    [
+     "placed",
+     "3"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 10,
+   "note": "Node 1's children are both attached -> it's complete.",
+   "active": [
+    0
+   ],
+   "done": {
+    "1": "ok",
+    "3": "ok",
+    "4": "ok",
+    "2": "ok",
+    "0": "ok"
+   },
+   "state": [
+    [
+     "placed",
+     "1"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 3,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 4,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 5,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "code": "serialize",
+   "line": 10,
+   "note": "All tokens consumed -> the original tree [1,2,3,null,null,4,5] is back.",
+   "active": [],
+   "done": {
+    "1": "ok",
+    "3": "ok",
+    "4": "ok",
+    "2": "ok",
+    "0": "ok"
+   },
+   "state": [
+    [
+     "round-trip",
+     "exact match"
+    ]
+   ],
+   "banner": "deserialize -> [1,2,3,null,null,4,5]  (round-trips)"
+  }
+ ]
+}

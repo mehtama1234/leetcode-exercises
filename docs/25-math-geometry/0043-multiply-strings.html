@@ -62,7 +62,960 @@
 <h2>Pitfalls</h2>
 <ul><li>Getting the place wrong. The partial product of digits at positions <code>i</code> and <code>j</code> (counted from the right) lands at slot <code>i + j</code>, not <code>i * j</code>.</li><li>Forgetting the <code>&quot;0&quot;</code> case — if either input is <code>&quot;0&quot;</code>, the answer is <code>&quot;0&quot;</code>, not a string of leading zeros.</li><li>Trimming leading zeros too eagerly (or not at all). The top slot may or may not carry, so strip leading zeros but leave a single <code>0</code> if that&#x27;s all there is.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is <strong>store a big number as a digit array, place each partial result by its position, and settle carries in one final pass.</strong> It shares its carry machinery with <a href="../0066-plus-one/">Plus One / 66</a> and <a href="https://leetcode.com/problems/add-binary/">Add Binary / 67</a>, and it&#x27;s the schoolbook multiply that every arbitrary-precision integer library is built on.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/25-math-geometry/0043-multiply-strings/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;43. Multiply Strings — https://leetcode.com/problems/multiply-strings/
+<p>The reusable move is <strong>store a big number as a digit array, place each partial result by its position, and settle carries in one final pass.</strong> It shares its carry machinery with <a href="../0066-plus-one/">Plus One / 66</a> and <a href="https://leetcode.com/problems/add-binary/">Add Binary / 67</a>, and it&#x27;s the schoolbook multiply that every arbitrary-precision integer library is built on.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Multiply Strings - grade-school long multiplication, place by place",
+ "acts": [
+  "The place rule",
+  "Accumulate partials",
+  "Settle carries",
+  "Read off + edge"
+ ],
+ "code": {
+  "mul": [
+   "result = [0] * (m + n)",
+   "for i in reversed(range(m)):",
+   "    for j in reversed(range(n)):",
+   "        low = (m-1-i) + (n-1-j)",
+   "        result[low] += d1 * d2",
+   "for k in range(m+n):        # settle carries",
+   "    result[k], carry = (result[k]+carry) % 10, ...",
+   "return trimmed big-endian string"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "place being written"
+  ],
+  [
+   "good",
+   "final digit / answer"
+  ],
+  [
+   "dim",
+   "settled / dropped zero"
+  ]
+ ],
+ "cells": [
+  "0",
+  "0",
+  "0",
+  "0",
+  "0",
+  "0"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "labels": [
+    "10^0",
+    "10^1",
+    "10^2",
+    "10^3",
+    "10^4",
+    "10^5"
+   ],
+   "code": "mul",
+   "line": 0,
+   "intro": "digit i of num1 times digit j of num2 always lands in place (i+j) from the right.",
+   "invariant": "an m-digit by n-digit product has at most m+n places.",
+   "note": "Multiply 123 x 456 on paper. Allocate 6 places (units on the left cell). Each single-digit product drops into one place by its position.",
+   "pointers": {},
+   "marks": {},
+   "state": [
+    [
+     "num1",
+     "123"
+    ],
+    [
+     "num2",
+     "456"
+    ],
+    [
+     "places",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "labels": [
+    "10^0",
+    "10^1",
+    "10^2",
+    "10^3",
+    "10^4",
+    "10^5"
+   ],
+   "code": "mul",
+   "line": 3,
+   "note": "Counting from the right: units*units -> place 0, tens*units -> place 1, and so on. That place-shift is exactly stacking numbers on paper.",
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "units*units",
+     "place 0"
+    ],
+    [
+     "tens*units",
+     "place 1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "labels": [
+    "10^0",
+    "10^1",
+    "10^2",
+    "10^3",
+    "10^4",
+    "10^5"
+   ],
+   "code": "mul",
+   "line": 4,
+   "intro": "every digit pair adds its product into one place; carries wait till the end.",
+   "invariant": "result[place] holds the running (un-normalized) total for that place.",
+   "note": "Accumulate: for each digit pair, add d1*d2 into place (i+j)-from-right. Places may exceed 9 for now \u2014 we fix carries after.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "partial products",
+    "rows": []
+   },
+   "state": [
+    [
+     "result",
+     "[0, 0, 0, 0, 0, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mul",
+   "line": 4,
+   "note": "3(place 0) x 6(place 0) = 18 -> add to place 0; place 0 now 18.",
+   "pointers": {
+    "place": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "feeding place 0",
+    "rows": [
+     [
+      "3x6=18",
+      ""
+     ]
+    ]
+   },
+   "cells": [
+    "18",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "d1*d2",
+     18
+    ],
+    [
+     "place 0",
+     18
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mul",
+   "line": 4,
+   "note": "3(place 0) x 5(place 1) = 15 -> add to place 1; place 1 now 15.",
+   "pointers": {
+    "place": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "feeding place 1",
+    "rows": [
+     [
+      "3x5=15",
+      ""
+     ]
+    ]
+   },
+   "cells": [
+    "18",
+    "15",
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "d1*d2",
+     15
+    ],
+    [
+     "place 1",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mul",
+   "line": 4,
+   "note": "3(place 0) x 4(place 2) = 12 -> add to place 2; place 2 now 12.",
+   "pointers": {
+    "place": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "feeding place 2",
+    "rows": [
+     [
+      "3x4=12",
+      ""
+     ]
+    ]
+   },
+   "cells": [
+    "18",
+    "15",
+    "12",
+    "0",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "d1*d2",
+     12
+    ],
+    [
+     "place 2",
+     12
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mul",
+   "line": 4,
+   "note": "2(place 1) x 6(place 0) = 12 -> add to place 1; place 1 now 27.",
+   "pointers": {
+    "place": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "feeding place 1",
+    "rows": [
+     [
+      "3x5=15",
+      ""
+     ],
+     [
+      "2x6=12",
+      ""
+     ]
+    ]
+   },
+   "cells": [
+    "18",
+    "27",
+    "12",
+    "0",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "d1*d2",
+     12
+    ],
+    [
+     "place 1",
+     27
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mul",
+   "line": 4,
+   "note": "2(place 1) x 5(place 1) = 10 -> add to place 2; place 2 now 22.",
+   "pointers": {
+    "place": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "feeding place 2",
+    "rows": [
+     [
+      "3x4=12",
+      ""
+     ],
+     [
+      "2x5=10",
+      ""
+     ]
+    ]
+   },
+   "cells": [
+    "18",
+    "27",
+    "22",
+    "0",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "d1*d2",
+     10
+    ],
+    [
+     "place 2",
+     22
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mul",
+   "line": 4,
+   "note": "2(place 1) x 4(place 2) = 8 -> add to place 3; place 3 now 8.",
+   "pointers": {
+    "place": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "feeding place 3",
+    "rows": [
+     [
+      "2x4=8",
+      ""
+     ]
+    ]
+   },
+   "cells": [
+    "18",
+    "27",
+    "22",
+    "8",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "d1*d2",
+     8
+    ],
+    [
+     "place 3",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mul",
+   "line": 4,
+   "note": "1(place 2) x 6(place 0) = 6 -> add to place 2; place 2 now 28.",
+   "pointers": {
+    "place": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "feeding place 2",
+    "rows": [
+     [
+      "3x4=12",
+      ""
+     ],
+     [
+      "2x5=10",
+      ""
+     ],
+     [
+      "1x6=6",
+      ""
+     ]
+    ]
+   },
+   "cells": [
+    "18",
+    "27",
+    "28",
+    "8",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "d1*d2",
+     6
+    ],
+    [
+     "place 2",
+     28
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mul",
+   "line": 4,
+   "note": "1(place 2) x 5(place 1) = 5 -> add to place 3; place 3 now 13.",
+   "pointers": {
+    "place": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "feeding place 3",
+    "rows": [
+     [
+      "2x4=8",
+      ""
+     ],
+     [
+      "1x5=5",
+      ""
+     ]
+    ]
+   },
+   "cells": [
+    "18",
+    "27",
+    "28",
+    "13",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "d1*d2",
+     5
+    ],
+    [
+     "place 3",
+     13
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mul",
+   "line": 4,
+   "note": "1(place 2) x 4(place 2) = 4 -> add to place 4; place 4 now 4.",
+   "pointers": {
+    "place": 4
+   },
+   "marks": {
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "feeding place 4",
+    "rows": [
+     [
+      "1x4=4",
+      ""
+     ]
+    ]
+   },
+   "cells": [
+    "18",
+    "27",
+    "28",
+    "13",
+    "4",
+    "0"
+   ],
+   "state": [
+    [
+     "d1*d2",
+     4
+    ],
+    [
+     "place 4",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "mul",
+   "line": 4,
+   "note": "All 9 digit-pairs accumulated. Un-normalized places (units first): [18, 27, 28, 13, 4, 0].",
+   "cells": [
+    "18",
+    "27",
+    "28",
+    "13",
+    "4",
+    "0"
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "sidebar": {
+    "title": "partial products",
+    "rows": []
+   },
+   "state": [
+    [
+     "pre-carry",
+     "[18, 27, 28, 13, 4, 0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "18",
+    "27",
+    "28",
+    "13",
+    "4",
+    "0"
+   ],
+   "labels": [
+    "10^0",
+    "10^1",
+    "10^2",
+    "10^3",
+    "10^4",
+    "10^5"
+   ],
+   "code": "mul",
+   "line": 5,
+   "intro": "each place keeps its ones digit; the rest carries into the next place left.",
+   "invariant": "after place k, places 0..k are final single digits.",
+   "note": "Walk the places from units up. Keep total%10 here, carry total//10 to the next.",
+   "pointers": {
+    "place": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "carry",
+    "rows": [
+     [
+      "carry",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "carry",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "mul",
+   "line": 6,
+   "note": "place 0: 18 -> keep 8, carry 1 left.",
+   "pointers": {
+    "place": 0
+   },
+   "marks": {
+    "0": "good",
+    "1": "active"
+   },
+   "cells": [
+    "8",
+    "27",
+    "28",
+    "13",
+    "4",
+    "0"
+   ],
+   "sidebar": {
+    "title": "carry",
+    "rows": [
+     [
+      "into place",
+      1
+     ],
+     [
+      "carry",
+      1
+     ]
+    ]
+   },
+   "state": [
+    [
+     "place",
+     0
+    ],
+    [
+     "kept",
+     8
+    ],
+    [
+     "carry out",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "mul",
+   "line": 6,
+   "note": "place 1: 28 -> keep 8, carry 2 left.",
+   "pointers": {
+    "place": 1
+   },
+   "marks": {
+    "1": "good",
+    "2": "active"
+   },
+   "cells": [
+    "8",
+    "8",
+    "28",
+    "13",
+    "4",
+    "0"
+   ],
+   "sidebar": {
+    "title": "carry",
+    "rows": [
+     [
+      "into place",
+      2
+     ],
+     [
+      "carry",
+      2
+     ]
+    ]
+   },
+   "state": [
+    [
+     "place",
+     1
+    ],
+    [
+     "kept",
+     8
+    ],
+    [
+     "carry out",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "mul",
+   "line": 6,
+   "note": "place 2: 30 -> keep 0, carry 3 left.",
+   "pointers": {
+    "place": 2
+   },
+   "marks": {
+    "2": "good",
+    "3": "active"
+   },
+   "cells": [
+    "8",
+    "8",
+    "0",
+    "13",
+    "4",
+    "0"
+   ],
+   "sidebar": {
+    "title": "carry",
+    "rows": [
+     [
+      "into place",
+      3
+     ],
+     [
+      "carry",
+      3
+     ]
+    ]
+   },
+   "state": [
+    [
+     "place",
+     2
+    ],
+    [
+     "kept",
+     0
+    ],
+    [
+     "carry out",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "mul",
+   "line": 6,
+   "note": "place 3: 16 -> keep 6, carry 1 left.",
+   "pointers": {
+    "place": 3
+   },
+   "marks": {
+    "3": "good",
+    "4": "active"
+   },
+   "cells": [
+    "8",
+    "8",
+    "0",
+    "6",
+    "4",
+    "0"
+   ],
+   "sidebar": {
+    "title": "carry",
+    "rows": [
+     [
+      "into place",
+      4
+     ],
+     [
+      "carry",
+      1
+     ]
+    ]
+   },
+   "state": [
+    [
+     "place",
+     3
+    ],
+    [
+     "kept",
+     6
+    ],
+    [
+     "carry out",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "mul",
+   "line": 6,
+   "note": "place 4: 5 -> keep 5, carry 0 left.",
+   "pointers": {
+    "place": 4
+   },
+   "marks": {
+    "4": "good",
+    "5": "active"
+   },
+   "cells": [
+    "8",
+    "8",
+    "0",
+    "6",
+    "5",
+    "0"
+   ],
+   "sidebar": {
+    "title": "carry",
+    "rows": [
+     [
+      "into place",
+      5
+     ],
+     [
+      "carry",
+      0
+     ]
+    ]
+   },
+   "state": [
+    [
+     "place",
+     4
+    ],
+    [
+     "kept",
+     5
+    ],
+    [
+     "carry out",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "mul",
+   "line": 6,
+   "note": "place 5: 0 -> keep 0, carry 0 left.",
+   "pointers": {
+    "place": 5
+   },
+   "marks": {
+    "5": "good"
+   },
+   "cells": [
+    "8",
+    "8",
+    "0",
+    "6",
+    "5",
+    "0"
+   ],
+   "sidebar": {
+    "title": "carry",
+    "rows": [
+     [
+      "into place",
+      6
+     ],
+     [
+      "carry",
+      0
+     ]
+    ]
+   },
+   "state": [
+    [
+     "place",
+     5
+    ],
+    [
+     "kept",
+     0
+    ],
+    [
+     "carry out",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    "0",
+    "5",
+    "6",
+    "0",
+    "8",
+    "8"
+   ],
+   "labels": [
+    "10^5",
+    "10^4",
+    "10^3",
+    "10^2",
+    "10^1",
+    "10^0"
+   ],
+   "code": "mul",
+   "line": 7,
+   "intro": "reverse to big-endian and drop the leading zero place.",
+   "invariant": "the top place can be 0 when the product is shorter than m+n.",
+   "note": "Reversed to normal order: [0, 5, 6, 0, 8, 8]. The top place is 0, so drop it -> 56088.",
+   "pointers": {},
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "56088"
+    ]
+   ],
+   "banner": "123 x 456 = 56088"
+  },
+  {
+   "act": 3,
+   "cells": [
+    "0"
+   ],
+   "labels": [
+    "10^0"
+   ],
+   "code": "mul",
+   "line": 0,
+   "note": "Edge case: any factor is \"0\" -> the product is \"0\", returned before the loop.",
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "0 x 52",
+     "0"
+    ]
+   ],
+   "banner": "\"0\" x anything -> \"0\""
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/25-math-geometry/0043-multiply-strings/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;43. Multiply Strings — https://leetcode.com/problems/multiply-strings/
 
 Two non-negative integers are given as strings. Return their product as a
 string. No converting to int and multiplying — do the grade-school algorithm

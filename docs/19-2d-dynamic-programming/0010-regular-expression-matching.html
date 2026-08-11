@@ -65,7 +65,899 @@
 <h2>Pitfalls</h2>
 <ul><li>Reading <code>*</code> as &quot;match anything.&quot; It matches zero-or-more of *the one character before it*, not any run of any characters.</li><li>Forgetting the zero-copies branch. <code>x*</code> must be allowed to vanish — <code>dp[i][j+2]</code> — even when <code>x</code> could match, because using it zero times is often the only path.</li><li>Requiring a partial match. The pattern must cover the whole string; that&#x27;s why the base case is &quot;both suffixes empty,&quot; not &quot;<code>s</code> empty.&quot;</li><li>Peeking at <code>p[j+1]</code> without a bounds check before deciding it&#x27;s a <code>*</code>.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable idea is *a two-suffix (or two-prefix) grid where one construct branches into &quot;skip it&quot; OR &quot;consume one and stay.&quot;* The nearest sibling is <a href="https://leetcode.com/problems/wildcard-matching/">Wildcard Matching / 44</a> (<code>*</code> matches any run of *any* characters — a simpler branch). It also shares the two-string grid skeleton with <a href="../0072-edit-distance/">Edit Distance / 72</a> and <a href="../0115-distinct-subsequences/">Distinct Subsequences / 115</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0010-regular-expression-matching/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;10. Regular Expression Matching —
+<p>The reusable idea is *a two-suffix (or two-prefix) grid where one construct branches into &quot;skip it&quot; OR &quot;consume one and stay.&quot;* The nearest sibling is <a href="https://leetcode.com/problems/wildcard-matching/">Wildcard Matching / 44</a> (<code>*</code> matches any run of *any* characters — a simpler branch). It also shares the two-string grid skeleton with <a href="../0072-edit-distance/">Edit Distance / 72</a> and <a href="../0115-distinct-subsequences/">Distinct Subsequences / 115</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Regular Expression Matching - decide each (suffix, suffix) once",
+ "acts": [
+  "Brute: branch every '*'",
+  "Fill the table",
+  "Answer + edge"
+ ],
+ "code": {
+  "tab": [
+   "dp = [[False]*(n+1) for _ in range(m+1)]",
+   "dp[m][n] = True                 # empty matches empty",
+   "for i in range(m, -1, -1):",
+   "    for j in range(n-1, -1, -1):",
+   "        first = i<m and p[j] in (s[i], '.')",
+   "        if p[j+1] == '*':",
+   "            dp[i][j] = dp[i][j+2] or (first and dp[i+1][j])",
+   "        else:",
+   "            dp[i][j] = first and dp[i+1][j+1]",
+   "return dp[0][0]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "cells this one reads"
+  ],
+  [
+   "good",
+   "matches (T)"
+  ],
+  [
+   "bad",
+   "no match (F) / waste"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "a",
+    "a",
+    "b",
+    "\u00b7"
+   ],
+   "colLabels": [
+    "c",
+    "*",
+    "a",
+    "*",
+    "b",
+    "\u00b7"
+   ],
+   "code": null,
+   "intro": "how the same (s-suffix, p-suffix) pair gets re-matched down '*' branches.",
+   "invariant": "dp[i][j] = does s[i:] match p[j:]?",
+   "note": "Brute force: compare the fronts. A plain char must match and both advance; 'x*' branches \u2014 use it zero times (skip the pair) or one more (consume s[i]).",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "match",
+     "\"aab\" vs \"c*a*b\""
+    ],
+    [
+     "'*' branch",
+     "zero / one-more"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "Each '*' can loop, so many branches re-ask the same suffix pair \u2014 e.g. dp[1][2] \"ab vs a*b\" is reached several ways. That repetition is the waste.",
+   "marks": {
+    "1,2": "bad",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "recomputed",
+     "dp(1,2) \u2026"
+    ],
+    [
+     "cost",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "code": "tab",
+   "line": 1,
+   "intro": "filled from empty suffixes back; each cell reads down, down-right, or two-right.",
+   "invariant": "dp[i][j] follows the recurrence exactly, computed once.",
+   "note": "Seed dp[m][n] = T: the empty string matches the empty pattern.",
+   "marks": {
+    "3,5": "good"
+   },
+   "set": {
+    "3,5": "T"
+   },
+   "state": [
+    [
+     "dp[3][5]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain 'b': front match=F (no s left) -> F.",
+   "set": {
+    "3,4": "F"
+   },
+   "marks": {
+    "3,4": "bad"
+   },
+   "state": [
+    [
+     "p[4]",
+     "b"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "F"
+    ],
+    [
+     "dp[3][4]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain '*': front match=F (no s left) -> F.",
+   "set": {
+    "3,3": "F"
+   },
+   "marks": {
+    "3,3": "bad"
+   },
+   "state": [
+    [
+     "p[3]",
+     "*"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "F"
+    ],
+    [
+     "dp[3][3]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'a*': zero-use dp[3][4]=F (front doesn't match, can't consume) -> F.",
+   "set": {
+    "3,2": "F"
+   },
+   "marks": {
+    "3,4": "active",
+    "3,2": "bad"
+   },
+   "state": [
+    [
+     "p[2]",
+     "a*"
+    ],
+    [
+     "zero-use(2 right)",
+     "F"
+    ],
+    [
+     "consume(down)",
+     "F"
+    ],
+    [
+     "dp[3][2]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain '*': front match=F (no s left) -> F.",
+   "set": {
+    "3,1": "F"
+   },
+   "marks": {
+    "3,1": "bad"
+   },
+   "state": [
+    [
+     "p[1]",
+     "*"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "F"
+    ],
+    [
+     "dp[3][1]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'c*': zero-use dp[3][2]=F (front doesn't match, can't consume) -> F.",
+   "set": {
+    "3,0": "F"
+   },
+   "marks": {
+    "3,2": "active",
+    "3,0": "bad"
+   },
+   "state": [
+    [
+     "p[0]",
+     "c*"
+    ],
+    [
+     "zero-use(2 right)",
+     "F"
+    ],
+    [
+     "consume(down)",
+     "F"
+    ],
+    [
+     "dp[3][0]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain 'b': front match=T and dp[3][5]=T -> T.",
+   "set": {
+    "2,4": "T"
+   },
+   "marks": {
+    "2,4": "good",
+    "3,5": "active"
+   },
+   "state": [
+    [
+     "p[4]",
+     "b"
+    ],
+    [
+     "front match",
+     "T"
+    ],
+    [
+     "rest(down-right)",
+     "T"
+    ],
+    [
+     "dp[2][4]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain '*': front match=F and dp[3][4]=F -> F.",
+   "set": {
+    "2,3": "F"
+   },
+   "marks": {
+    "2,3": "bad",
+    "3,4": "active"
+   },
+   "state": [
+    [
+     "p[3]",
+     "*"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "F"
+    ],
+    [
+     "dp[2][3]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'a*': zero-use dp[2][4]=T (front doesn't match, can't consume) -> T.",
+   "set": {
+    "2,2": "T"
+   },
+   "marks": {
+    "2,4": "active",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "p[2]",
+     "a*"
+    ],
+    [
+     "zero-use(2 right)",
+     "T"
+    ],
+    [
+     "consume(down)",
+     "F"
+    ],
+    [
+     "dp[2][2]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain '*': front match=F and dp[3][2]=F -> F.",
+   "set": {
+    "2,1": "F"
+   },
+   "marks": {
+    "2,1": "bad",
+    "3,2": "active"
+   },
+   "state": [
+    [
+     "p[1]",
+     "*"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "F"
+    ],
+    [
+     "dp[2][1]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'c*': zero-use dp[2][2]=T (front doesn't match, can't consume) -> T.",
+   "set": {
+    "2,0": "T"
+   },
+   "marks": {
+    "2,2": "active",
+    "2,0": "good"
+   },
+   "state": [
+    [
+     "p[0]",
+     "c*"
+    ],
+    [
+     "zero-use(2 right)",
+     "T"
+    ],
+    [
+     "consume(down)",
+     "F"
+    ],
+    [
+     "dp[2][0]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain 'b': front match=F and dp[2][5]=F -> F.",
+   "set": {
+    "1,4": "F"
+   },
+   "marks": {
+    "1,4": "bad",
+    "2,5": "active"
+   },
+   "state": [
+    [
+     "p[4]",
+     "b"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "F"
+    ],
+    [
+     "dp[1][4]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain '*': front match=F and dp[2][4]=T -> F.",
+   "set": {
+    "1,3": "F"
+   },
+   "marks": {
+    "1,3": "bad",
+    "2,4": "active"
+   },
+   "state": [
+    [
+     "p[3]",
+     "*"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "T"
+    ],
+    [
+     "dp[1][3]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'a*': zero-use dp[1][4]=F or consume s[1] dp[2][2]=T -> T.",
+   "set": {
+    "1,2": "T"
+   },
+   "marks": {
+    "1,4": "active",
+    "1,2": "good",
+    "2,2": "active"
+   },
+   "state": [
+    [
+     "p[2]",
+     "a*"
+    ],
+    [
+     "zero-use(2 right)",
+     "F"
+    ],
+    [
+     "consume(down)",
+     "T"
+    ],
+    [
+     "dp[1][2]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain '*': front match=F and dp[2][2]=T -> F.",
+   "set": {
+    "1,1": "F"
+   },
+   "marks": {
+    "1,1": "bad",
+    "2,2": "active"
+   },
+   "state": [
+    [
+     "p[1]",
+     "*"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "T"
+    ],
+    [
+     "dp[1][1]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'c*': zero-use dp[1][2]=T (front doesn't match, can't consume) -> T.",
+   "set": {
+    "1,0": "T"
+   },
+   "marks": {
+    "1,2": "active",
+    "1,0": "good"
+   },
+   "state": [
+    [
+     "p[0]",
+     "c*"
+    ],
+    [
+     "zero-use(2 right)",
+     "T"
+    ],
+    [
+     "consume(down)",
+     "F"
+    ],
+    [
+     "dp[1][0]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain 'b': front match=F and dp[1][5]=F -> F.",
+   "set": {
+    "0,4": "F"
+   },
+   "marks": {
+    "0,4": "bad",
+    "1,5": "active"
+   },
+   "state": [
+    [
+     "p[4]",
+     "b"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "F"
+    ],
+    [
+     "dp[0][4]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain '*': front match=F and dp[1][4]=F -> F.",
+   "set": {
+    "0,3": "F"
+   },
+   "marks": {
+    "0,3": "bad",
+    "1,4": "active"
+   },
+   "state": [
+    [
+     "p[3]",
+     "*"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "F"
+    ],
+    [
+     "dp[0][3]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'a*': zero-use dp[0][4]=F or consume s[0] dp[1][2]=T -> T.",
+   "set": {
+    "0,2": "T"
+   },
+   "marks": {
+    "0,4": "active",
+    "0,2": "good",
+    "1,2": "active"
+   },
+   "state": [
+    [
+     "p[2]",
+     "a*"
+    ],
+    [
+     "zero-use(2 right)",
+     "F"
+    ],
+    [
+     "consume(down)",
+     "T"
+    ],
+    [
+     "dp[0][2]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 8,
+   "note": "plain '*': front match=F and dp[1][2]=T -> F.",
+   "set": {
+    "0,1": "F"
+   },
+   "marks": {
+    "0,1": "bad",
+    "1,2": "active"
+   },
+   "state": [
+    [
+     "p[1]",
+     "*"
+    ],
+    [
+     "front match",
+     "F"
+    ],
+    [
+     "rest(down-right)",
+     "T"
+    ],
+    [
+     "dp[0][1]",
+     "F"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 6,
+   "note": "'c*': zero-use dp[0][2]=T (front doesn't match, can't consume) -> T.",
+   "set": {
+    "0,0": "T"
+   },
+   "marks": {
+    "0,2": "active",
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "p[0]",
+     "c*"
+    ],
+    [
+     "zero-use(2 right)",
+     "T"
+    ],
+    [
+     "consume(down)",
+     "F"
+    ],
+    [
+     "dp[0][0]",
+     "T"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "tab",
+   "line": 9,
+   "intro": "the top-left cell answers the whole match.",
+   "invariant": "dp[0][0] combined every '*' choice, each suffix solved once.",
+   "note": "dp[0][0] = T \u2014 \"aab\" matches \"c*a*b\".",
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "T"
+    ]
+   ],
+   "banner": "\"aab\" vs \"c*a*b\" -> T"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     "T",
+     "F",
+     "F"
+    ],
+    [
+     "T",
+     "F",
+     "F"
+    ],
+    [
+     "T",
+     "F",
+     "T"
+    ]
+   ],
+   "rowLabels": [
+    "a",
+    "b",
+    "\u00b7"
+   ],
+   "colLabels": [
+    ".",
+    "*",
+    "\u00b7"
+   ],
+   "code": "tab",
+   "line": 9,
+   "note": "Edge case: pattern \".*\" \u2014 the dot matches any character, the star repeats it any number of times, so it matches every string. The corner is T.",
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "T"
+    ]
+   ],
+   "banner": "\".*\" matches anything \u2192 T"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/19-2d-dynamic-programming/0010-regular-expression-matching/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;10. Regular Expression Matching —
 https://leetcode.com/problems/regular-expression-matching/
 
 Match string `s` against pattern `p`, where `.` matches any single character and

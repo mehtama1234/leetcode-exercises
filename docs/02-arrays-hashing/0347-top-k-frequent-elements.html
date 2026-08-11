@@ -58,7 +58,956 @@
 <h2>Pitfalls</h2>
 <ul><li>Off-by-one on the bucket array: frequencies run <code>1..n</code>, so make it size <code>n+1</code> and leave index <code>0</code> empty.</li><li>Don&#x27;t sort inside the buckets — you&#x27;d add back the cost you just removed.</li><li>The answer order is unspecified; comparing against an expected *set* (as the test does) avoids brittle order assumptions.</li><li>A heap (a structure that keeps the smallest of the top few on top) of size <code>k</code> is the other classic answer, about n log k — better when <code>k</code> is tiny next to <code>n</code>. The bucket method is a straight n here.</li></ul>
 <h2>Transfer</h2>
-<p><strong>Sort key is a small whole number → place items in buckets instead of comparing them</strong> is the reusable idea. It reappears in any &quot;rank by a small integer score&quot; task, like sorting a handful of color values in one pass. The first half — tally with a hash map — is the same move behind <a href="../0242-valid-anagram/">Valid Anagram / 242</a> and <a href="../0049-group-anagrams/">Group Anagrams / 49</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0347-top-k-frequent-elements/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;347. Top K Frequent Elements — https://leetcode.com/problems/top-k-frequent-elements/
+<p><strong>Sort key is a small whole number → place items in buckets instead of comparing them</strong> is the reusable idea. It reappears in any &quot;rank by a small integer score&quot; task, like sorting a handful of color values in one pass. The first half — tally with a hash map — is the same move behind <a href="../0242-valid-anagram/">Valid Anagram / 242</a> and <a href="../0049-group-anagrams/">Group Anagrams / 49</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Top K Frequent \u2014 the frequency is the index, so no sort",
+ "acts": [
+  "Baseline: count + sort",
+  "The insight",
+  "Fast: bucket by frequency",
+  "Edge case: k = distinct count"
+ ],
+ "code": {
+  "sort": [
+   "counts = Counter(nums)",
+   "ordered = sorted(counts, key=counts.get, reverse=True)",
+   "return ordered[:k]"
+  ],
+  "fast": [
+   "counts = Counter(nums)",
+   "buckets = [[] for _ in range(n+1)]",
+   "for value, freq in counts.items():",
+   "    buckets[freq].append(value)",
+   "for freq in range(n, 0, -1):",
+   "    for value in buckets[freq]:",
+   "        result.append(value)",
+   "        if len(result) == k: return result"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "value being counted"
+  ],
+  [
+   "good",
+   "collected into the answer"
+  ],
+  [
+   "dim",
+   "inactive"
+  ]
+ ],
+ "cells": [
+  1,
+  1,
+  1,
+  2,
+  2,
+  3
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    1,
+    1,
+    1,
+    2,
+    2,
+    3
+   ],
+   "code": "sort",
+   "line": 0,
+   "intro": "count everything, then order the distinct values by frequency and take the first k.",
+   "invariant": "counts holds the exact frequency of every value seen so far.",
+   "note": "Baseline: tally counts, then SORT distinct values by frequency descending, take top 2.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts (value -> freq)",
+    "rows": [
+     [
+      "(empty)",
+      ""
+     ]
+    ]
+   },
+   "state": [
+    [
+     "k",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 0,
+   "note": "nums[0] = 1. counts[1] -> 1.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "counts (value -> freq)",
+    "rows": [
+     [
+      "1",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     1
+    ],
+    [
+     "counts[1]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 0,
+   "note": "nums[1] = 1. counts[1] -> 2.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "counts (value -> freq)",
+    "rows": [
+     [
+      "1",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     1
+    ],
+    [
+     "counts[1]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 0,
+   "note": "nums[2] = 1. counts[1] -> 3.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "counts (value -> freq)",
+    "rows": [
+     [
+      "1",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     1
+    ],
+    [
+     "counts[1]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 0,
+   "note": "nums[3] = 2. counts[2] -> 1.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "counts (value -> freq)",
+    "rows": [
+     [
+      "1",
+      "3"
+     ],
+     [
+      "2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "counts[2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 0,
+   "note": "nums[4] = 2. counts[2] -> 2.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "counts (value -> freq)",
+    "rows": [
+     [
+      "1",
+      "3"
+     ],
+     [
+      "2",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "counts[2]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 0,
+   "note": "nums[5] = 3. counts[3] -> 1.",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "counts (value -> freq)",
+    "rows": [
+     [
+      "1",
+      "3"
+     ],
+     [
+      "2",
+      "2"
+     ],
+     [
+      "3",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     3
+    ],
+    [
+     "counts[3]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 1,
+   "note": "Distinct values by frequency: [(1, 3), (2, 2), (3, 1)]. Sorting all distinct values costs n log n.",
+   "sidebar": {
+    "title": "counts (value -> freq)",
+    "rows": [
+     [
+      "1",
+      "3"
+     ],
+     [
+      "2",
+      "2"
+     ],
+     [
+      "3",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "sorted",
+     "[1, 2, 3]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "sort",
+   "line": 2,
+   "note": "Take the first 2: [1, 2]. Correct \u2014 but we sorted everything just to read off the top few.",
+   "sidebar": {
+    "title": "counts (value -> freq)",
+    "rows": [
+     [
+      "1",
+      "3"
+     ],
+     [
+      "2",
+      "2"
+     ],
+     [
+      "3",
+      "1"
+     ]
+    ]
+   },
+   "banner": "top 2 = [1, 2] \u2014 but we paid a full sort",
+   "state": [
+    [
+     "answer",
+     "[1, 2]"
+    ],
+    [
+     "cost",
+     "O(n log n)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "a frequency is an integer in 1..n, so it can be an ARRAY INDEX \u2014 no comparisons needed.",
+   "note": "A value's frequency is between 1 and n. Make buckets[f] = values seen exactly f times. Then read buckets from the top frequency down. The frequency IS the sort key, and it lives in a bounded range.",
+   "state": [
+    [
+     "idea",
+     "bucket by frequency"
+    ],
+    [
+     "target",
+     "O(n)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    1,
+    1,
+    2,
+    2,
+    3
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "each distinct value drops into the slot for its own frequency.",
+   "invariant": "buckets[f] lists exactly the values whose count equals f.",
+   "note": "Counts are done: {1: 3, 2: 2, 3: 1}. Now place each value into buckets[its frequency].",
+   "sidebar": {
+    "title": "counts (value -> freq)",
+    "rows": [
+     [
+      "1",
+      "3"
+     ],
+     [
+      "2",
+      "2"
+     ],
+     [
+      "3",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "counts",
+     "{1: 3, 2: 2, 3: 1}"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Value 1 has frequency 3 -> drop it into buckets[3].",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 6",
+      "-"
+     ],
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "1  <-"
+     ],
+     [
+      "freq 2",
+      "-"
+     ],
+     [
+      "freq 1",
+      "-"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "value",
+     1
+    ],
+    [
+     "freq",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Value 2 has frequency 2 -> drop it into buckets[2].",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 6",
+      "-"
+     ],
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "1"
+     ],
+     [
+      "freq 2",
+      "2  <-"
+     ],
+     [
+      "freq 1",
+      "-"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "value",
+     2
+    ],
+    [
+     "freq",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Value 3 has frequency 1 -> drop it into buckets[1].",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 6",
+      "-"
+     ],
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "1"
+     ],
+     [
+      "freq 2",
+      "2"
+     ],
+     [
+      "freq 1",
+      "3  <-"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "value",
+     3
+    ],
+    [
+     "freq",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Now walk buckets from the highest frequency down, collecting values.",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 6",
+      "-"
+     ],
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "1"
+     ],
+     [
+      "freq 2",
+      "2"
+     ],
+     [
+      "freq 1",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "result",
+     "[]"
+    ],
+    [
+     "need",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "buckets[3] has 1 -> take it. result = [1].",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 6",
+      "-"
+     ],
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "1  <-"
+     ],
+     [
+      "freq 2",
+      "2"
+     ],
+     [
+      "freq 1",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "took",
+     1
+    ],
+    [
+     "at freq",
+     3
+    ],
+    [
+     "result",
+     "[1]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "buckets[2] has 2 -> take it. result = [1, 2].",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 6",
+      "-"
+     ],
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "1"
+     ],
+     [
+      "freq 2",
+      "2  <-"
+     ],
+     [
+      "freq 1",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "took",
+     2
+    ],
+    [
+     "at freq",
+     2
+    ],
+    [
+     "result",
+     "[1, 2]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "result has 2 values \u2014 stop. No comparison sort was ever run.",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 6",
+      "-"
+     ],
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "1"
+     ],
+     [
+      "freq 2",
+      "2  <-"
+     ],
+     [
+      "freq 1",
+      "3"
+     ]
+    ]
+   },
+   "banner": "top 2 = [1, 2] \u2014 one linear bucket pass, no sort",
+   "state": [
+    [
+     "answer",
+     "[1, 2]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    7,
+    7,
+    8,
+    8,
+    9
+   ],
+   "code": "fast",
+   "line": 4,
+   "intro": "when k equals the distinct count, we simply drain every bucket \u2014 the walk just returns them all.",
+   "invariant": "collecting from high frequency down never returns a value out of order.",
+   "note": "Edge case: k = 3 equals the 3 distinct values (7, 8, 9). counts = {7: 2, 8: 2, 9: 1}. We collect all of them.",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "-"
+     ],
+     [
+      "freq 2",
+      "7, 8"
+     ],
+     [
+      "freq 1",
+      "9"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "k",
+     3
+    ],
+    [
+     "distinct",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "buckets[2] -> take 7. result = [7].",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "-"
+     ],
+     [
+      "freq 2",
+      "7, 8  <-"
+     ],
+     [
+      "freq 1",
+      "9"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "took",
+     7
+    ],
+    [
+     "at freq",
+     2
+    ],
+    [
+     "result",
+     "[7]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "buckets[2] -> take 8. result = [7, 8].",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "-"
+     ],
+     [
+      "freq 2",
+      "7, 8  <-"
+     ],
+     [
+      "freq 1",
+      "9"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "took",
+     8
+    ],
+    [
+     "at freq",
+     2
+    ],
+    [
+     "result",
+     "[7, 8]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "buckets[1] -> take 9. result = [7, 8, 9].",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "-"
+     ],
+     [
+      "freq 2",
+      "7, 8"
+     ],
+     [
+      "freq 1",
+      "9  <-"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "took",
+     9
+    ],
+    [
+     "at freq",
+     1
+    ],
+    [
+     "result",
+     "[7, 8, 9]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "note": "Collected all 3. result = [7, 8, 9].",
+   "sidebar": {
+    "title": "buckets (freq -> values)",
+    "rows": [
+     [
+      "freq 5",
+      "-"
+     ],
+     [
+      "freq 4",
+      "-"
+     ],
+     [
+      "freq 3",
+      "-"
+     ],
+     [
+      "freq 2",
+      "7, 8"
+     ],
+     [
+      "freq 1",
+      "9  <-"
+     ]
+    ]
+   },
+   "banner": "top 3 = [7, 8, 9] \u2014 every distinct value returned",
+   "state": [
+    [
+     "answer",
+     "[7, 8, 9]"
+    ]
+   ]
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/02-arrays-hashing/0347-top-k-frequent-elements/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;347. Top K Frequent Elements — https://leetcode.com/problems/top-k-frequent-elements/
 
 Given an array `nums` and an integer `k`, return the `k` values that appear most
 often. The answer is guaranteed unique; return them in any order.

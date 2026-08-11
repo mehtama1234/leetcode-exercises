@@ -1,0 +1,737 @@
+{
+ "player": "tree",
+ "title": "Connect All Points - brute pair-scan, the waste, Prim grows the MST, then two points",
+ "acts": [
+  "Brute: rescan all pairs",
+  "The waste",
+  "Prim grows the tree",
+  "Edge case: two points"
+ ],
+ "code": {
+  "dfs": [
+   "in_tree = [False]*n; total = 0",
+   "heap = [(0, 0)]              # seed point 0 free",
+   "while heap and edges < n:",
+   "    cost, i = heappop(heap)",
+   "    if in_tree[i]: continue",
+   "    in_tree[i] = True; total += cost",
+   "    for j in range(n):",
+   "        if not in_tree[j]:",
+   "            heappush(heap, (dist(i, j), j))"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "point joining now"
+  ],
+  [
+   "good",
+   "in tree, attach cost"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 0,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 1,
+   "x": 85,
+   "y": 36
+  },
+  {
+   "id": 2,
+   "val": 2,
+   "x": 128,
+   "y": 180
+  },
+  {
+   "id": 3,
+   "val": 3,
+   "x": 214,
+   "y": 36
+  },
+  {
+   "id": 4,
+   "val": 4,
+   "x": 300,
+   "y": 0
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   2,
+   4
+  ],
+  [
+   3,
+   4
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 85,
+     "y": 36
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 128,
+     "y": 180
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 214,
+     "y": 36
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 300,
+     "y": 0
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "the naive tree-grower re-scans every point pair on each add.",
+   "invariant": "the tree only grows; a joined point never leaves.",
+   "note": "We must wire all 5 points for the least total Manhattan cost \u2014 a Minimum Spanning Tree. Naive Prim: at each of n steps, scan all pairs for the cheapest edge crossing out of the tree.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "points",
+     5
+    ],
+    [
+     "pair scans",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "dfs",
+   "line": 0,
+   "note": "To grow a 5-point tree the naive scan touched 20 ordered pairs, re-examining points already settled every single step.",
+   "active": [],
+   "done": {
+    "0": null,
+    "1": null,
+    "2": null,
+    "3": null,
+    "4": null
+   },
+   "state": [
+    [
+     "pair scans",
+     20
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 85,
+     "y": 36
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 128,
+     "y": 180
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 214,
+     "y": 36
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 300,
+     "y": 0
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "the same finalized points get re-scanned again and again.",
+   "invariant": "a point's cheapest attaching edge is fixed once it joins.",
+   "note": "The waste: 20 pair scans for 5 points. A min-heap of candidate edges out of the tree gives the cheapest crossing in one pop instead.",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "pair scans",
+     20
+    ],
+    [
+     "points",
+     5
+    ]
+   ],
+   "banner": "Rescanning all pairs is wasteful. A heap yields the cheapest crossing edge directly."
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 85,
+     "y": 36
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 128,
+     "y": 180
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 214,
+     "y": 36
+    },
+    {
+     "id": 4,
+     "val": 4,
+     "x": 300,
+     "y": 0
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "code": "dfs",
+   "line": 1,
+   "intro": "the heap hands back the cheapest edge leaving the tree next.",
+   "invariant": "each pop that survives adds exactly one point to the tree.",
+   "note": "Prim: seed point 0 at cost 0, offer edges to all others, then repeatedly pull the cheapest edge that reaches a point not yet in the tree.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "heap",
+     "[(0,0)]"
+    ],
+    [
+     "total",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "note": "Seed point 0 joins free (cost 0).",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "join",
+     "point 0 +0"
+    ],
+    [
+     "total",
+     0
+    ],
+    [
+     "in tree",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "Offer edges from point 0 to the remaining points: push (4,1), (13,2), (7,3), (7,4).",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "total",
+     0
+    ],
+    [
+     "candidates",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "note": "Cheapest crossing edge costs 4: point 1 joins the tree. Total now 4.",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": 0,
+    "1": 4
+   },
+   "state": [
+    [
+     "join",
+     "point 1 +4"
+    ],
+    [
+     "total",
+     4
+    ],
+    [
+     "in tree",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "Offer edges from point 1 to the remaining points: push (9,2), (3,3), (7,4).",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": 0,
+    "1": 4
+   },
+   "state": [
+    [
+     "total",
+     4
+    ],
+    [
+     "candidates",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "note": "Cheapest crossing edge costs 3: point 3 joins the tree. Total now 7.",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": 0,
+    "1": 4,
+    "3": 3
+   },
+   "state": [
+    [
+     "join",
+     "point 3 +3"
+    ],
+    [
+     "total",
+     7
+    ],
+    [
+     "in tree",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "Offer edges from point 3 to the remaining points: push (10,2), (4,4).",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": 0,
+    "1": 4,
+    "3": 3
+   },
+   "state": [
+    [
+     "total",
+     7
+    ],
+    [
+     "candidates",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "note": "Cheapest crossing edge costs 4: point 4 joins the tree. Total now 11.",
+   "active": [
+    4
+   ],
+   "done": {
+    "0": 0,
+    "1": 4,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "join",
+     "point 4 +4"
+    ],
+    [
+     "total",
+     11
+    ],
+    [
+     "in tree",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 8,
+   "note": "Offer edges from point 4 to the remaining points: push (14,2).",
+   "active": [
+    4
+   ],
+   "done": {
+    "0": 0,
+    "1": 4,
+    "3": 3,
+    "4": 4
+   },
+   "state": [
+    [
+     "total",
+     11
+    ],
+    [
+     "candidates",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 5,
+   "note": "Cheapest crossing edge costs 9: point 2 joins the tree. Total now 20.",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": 0,
+    "1": 4,
+    "3": 3,
+    "4": 4,
+    "2": 9
+   },
+   "state": [
+    [
+     "join",
+     "point 2 +9"
+    ],
+    [
+     "total",
+     20
+    ],
+    [
+     "in tree",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 2,
+   "note": "All 5 points connected with no cycles. Sum of the attaching edges = 20.",
+   "active": [],
+   "done": {
+    "0": 0,
+    "1": 4,
+    "3": 3,
+    "4": 4,
+    "2": 9
+   },
+   "state": [
+    [
+     "MST cost",
+     20
+    ]
+   ],
+   "banner": "Min cost to connect all points = 20"
+  },
+  {
+   "act": 3,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 300,
+     "y": 180
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "dfs",
+   "line": 1,
+   "intro": "two points have exactly one possible connection.",
+   "invariant": "a spanning tree on n points has n-1 edges.",
+   "note": "Edge case: two points at (0,0) and (1,1). Only one edge to add, cost |0-1|+|0-1| = 2.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 0
+   },
+   "state": [
+    [
+     "heap",
+     "[(0,0)]"
+    ],
+    [
+     "total",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "dfs",
+   "line": 5,
+   "note": "Point 1 joins at cost 2. Tree complete with one edge.",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": 0,
+    "1": 2
+   },
+   "state": [
+    [
+     "MST cost",
+     2
+    ]
+   ],
+   "banner": "Two points -> cost 2. (One point -> 0.)"
+  }
+ ]
+}

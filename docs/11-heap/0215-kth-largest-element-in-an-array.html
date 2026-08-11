@@ -71,7 +71,882 @@ return the element at index k-1</code></pre>
 <h2>Pitfalls</h2>
 <ul><li><strong>Kth largest, not kth distinct.</strong> Don&#x27;t dedupe; duplicates each hold a rank.</li><li><strong>Wrong heap direction.</strong> For the k *largest* you want a <strong>min</strong>-heap of size k (evict the smallest). A max-heap of size k would keep the smallest numbers.</li><li><strong>Index conversion for Quickselect.</strong> kth largest = index <code>n-k</code> ascending (or <code>k-1</code> descending). Mixing the two conventions is the classic bug.</li><li><strong>Quickselect&#x27;s worst case.</strong> A fixed pivot (e.g. always the first element) is <code>n·n</code> on sorted or adversarial input; <strong>randomize the pivot</strong> to keep it linear in practice.</li><li><strong>Recursion bookkeeping.</strong> When recursing into <code>greater</code>, subtract <code>len(less) + len(equal)</code> from the target index, or you&#x27;ll select the wrong slot.</li></ul>
 <h2>Transfer</h2>
-<p>The move is: <strong>to find one value at a known rank, don&#x27;t sort — either keep a size-k heap of the contenders, or partition toward the rank and discard the rest unsorted.</strong> The heap side is the same structure as <a href="../0703-kth-largest-element-in-a-stream/">Kth Largest Element in a Stream / 703</a> and <a href="../0973-k-closest-points-to-origin/">K Closest Points to Origin / 973</a>; the partition side is Quickselect, cousin to Quicksort. Whenever a brute force sorts everything to read one rank or a small slice, reach for a heap or Quickselect.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0215-kth-largest-element-in-an-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;215. Kth Largest Element in an Array — https://leetcode.com/problems/kth-largest-element-in-an-array/
+<p>The move is: <strong>to find one value at a known rank, don&#x27;t sort — either keep a size-k heap of the contenders, or partition toward the rank and discard the rest unsorted.</strong> The heap side is the same structure as <a href="../0703-kth-largest-element-in-a-stream/">Kth Largest Element in a Stream / 703</a> and <a href="../0973-k-closest-points-to-origin/">K Closest Points to Origin / 973</a>; the partition side is Quickselect, cousin to Quicksort. Whenever a brute force sorts everything to read one rank or a small slice, reach for a heap or Quickselect.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Kth Largest in an Array \u2014 keep only the k biggest",
+ "acts": [
+  "Naive: full sort",
+  "The waste",
+  "Fast: size-k min-heap",
+  "Edge: all duplicates"
+ ],
+ "code": {
+  "naive": [
+   "return sorted(nums, reverse=True)[k-1]"
+  ],
+  "fast": [
+   "for x in nums:",
+   "    heapq.heappush(heap, x)",
+   "    if len(heap) > k:",
+   "        heapq.heappop(heap)   # evict smallest",
+   "return heap[0]                # kth largest"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "number being pushed"
+  ],
+  [
+   "good",
+   "the kth-largest answer"
+  ],
+  [
+   "dim",
+   "ordered-then-discarded / seeded"
+  ]
+ ],
+ "cells": [
+  3,
+  2,
+  1,
+  5,
+  6,
+  4
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    3,
+    2,
+    1,
+    5,
+    6,
+    4
+   ],
+   "code": "naive",
+   "line": 0,
+   "intro": "the full sort orders ALL six numbers to read just one.",
+   "invariant": "after sorting, index k-1 is the kth largest by definition.",
+   "note": "Naive k=2: sort [3, 2, 1, 5, 6, 4] descending, then read index k-1.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "k",
+     2
+    ],
+    [
+     "n",
+     6
+    ],
+    [
+     "compares",
+     "~n log n"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    6,
+    5,
+    4,
+    3,
+    2,
+    1
+   ],
+   "code": "naive",
+   "line": 0,
+   "note": "Sorted desc \u2192 [6, 5, 4, 3, 2, 1]. Index 1 = 5. Correct, but every other number was ordered too \u2014 work the answer never reads.",
+   "marks": {
+    "0": "dim",
+    "1": "good",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "sorted",
+     "[6, 5, 4, 3, 2, 1]"
+    ],
+    [
+     "index k-1",
+     1
+    ],
+    [
+     "answer",
+     5
+    ]
+   ],
+   "banner": "kth largest = 5"
+  },
+  {
+   "act": 1,
+   "intro": "only the top k matter; the ordering of the rest is thrown away.",
+   "note": "Sorting is O(n log n) and fully orders n numbers. We read one. The rank of the bottom n-k numbers among themselves is pure waste.",
+   "state": [
+    [
+     "cost",
+     "O(n log n)"
+    ],
+    [
+     "needed",
+     "top 2"
+    ],
+    [
+     "kth is",
+     "smallest of top k"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Key idea: the kth largest is the SMALLEST of the top k. Keep only k numbers in a min-heap \u2014 its top is the answer. One pass, O(n log k).",
+   "state": [
+    [
+     "keep",
+     "top 2"
+    ],
+    [
+     "per push",
+     "O(log k)"
+    ],
+    [
+     "total",
+     "O(n log k)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    3,
+    2,
+    1,
+    5,
+    6,
+    4
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the heap FILLS to k, then each new number either joins or is rejected.",
+   "invariant": "the heap holds the 2 largest numbers seen so far; heap[0] is their smallest.",
+   "note": "Sweep [3, 2, 1, 5, 6, 4] once. Push each; whenever the heap exceeds 2, evict its smallest.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "k",
+     2
+    ],
+    [
+     "heap size",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "note": "x = 3 (index 0): push it. Heap size 1.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     3
+    ],
+    [
+     "heap size",
+     1
+    ],
+    [
+     "over k?",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "pointers": {
+    "x": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "note": "x = 2 (index 1): push it. Heap size 2.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "2"
+     ],
+     [
+      "1",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "heap size",
+     2
+    ],
+    [
+     "over k?",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "pointers": {
+    "x": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "note": "x = 1 (index 2): push it. Heap size 3 \u2014 over k, trim next.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "1"
+     ],
+     [
+      "1",
+      "2"
+     ],
+     [
+      "2",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     1
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "over k?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "pointers": {
+    "x": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "note": "Evict the smallest keeper (1) \u2014 it's outside the top 2. Heap top now 2.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "2"
+     ],
+     [
+      "1",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     1
+    ],
+    [
+     "heap size",
+     2
+    ],
+    [
+     "heap top",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "pointers": {
+    "x": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "note": "x = 5 (index 3): push it. Heap size 3 \u2014 over k, trim next.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "2"
+     ],
+     [
+      "1",
+      "3"
+     ],
+     [
+      "2",
+      "5"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     5
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "over k?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "pointers": {
+    "x": 3
+   },
+   "marks": {
+    "3": "dim"
+   },
+   "note": "Evict the smallest keeper (2) \u2014 it's outside the top 2. Heap top now 3.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "3"
+     ],
+     [
+      "1",
+      "5"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     2
+    ],
+    [
+     "heap size",
+     2
+    ],
+    [
+     "heap top",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "pointers": {
+    "x": 4
+   },
+   "marks": {
+    "4": "active"
+   },
+   "note": "x = 6 (index 4): push it. Heap size 3 \u2014 over k, trim next.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "3"
+     ],
+     [
+      "1",
+      "5"
+     ],
+     [
+      "2",
+      "6"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     6
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "over k?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "pointers": {
+    "x": 4
+   },
+   "marks": {
+    "4": "dim"
+   },
+   "note": "Evict the smallest keeper (3) \u2014 it's outside the top 2. Heap top now 5.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "5"
+     ],
+     [
+      "1",
+      "6"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     3
+    ],
+    [
+     "heap size",
+     2
+    ],
+    [
+     "heap top",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "pointers": {
+    "x": 5
+   },
+   "marks": {
+    "5": "active"
+   },
+   "note": "x = 4 (index 5): push it. Heap size 3 \u2014 over k, trim next.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "4"
+     ],
+     [
+      "1",
+      "5"
+     ],
+     [
+      "2",
+      "6"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     4
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "over k?",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "pointers": {
+    "x": 5
+   },
+   "marks": {
+    "5": "dim"
+   },
+   "note": "Evict the smallest keeper (4) \u2014 it's outside the top 2. Heap top now 5.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "5"
+     ],
+     [
+      "1",
+      "6"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     4
+    ],
+    [
+     "heap size",
+     2
+    ],
+    [
+     "heap top",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Pass done. heap holds the top 2 = [6, 5]. heap[0] = 5 is the kth largest.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "5"
+     ],
+     [
+      "1",
+      "6"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "heap top",
+     5
+    ],
+    [
+     "answer",
+     5
+    ]
+   ],
+   "banner": "kth largest = 5   (never fully sorted)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    2,
+    2,
+    2,
+    2
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "duplicates count as distinct positions \u2014 the kth largest can equal the max.",
+   "invariant": "equal values still fill k slots; heap[0] stays the smallest kept.",
+   "note": "Edge: [2, 2, 2, 2], k=3. All equal, so the 3rd largest is still 2.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "k",
+     3
+    ],
+    [
+     "heap size",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 1,
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "note": "x = 2: push. Heap top = 2.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "heap size",
+     1
+    ],
+    [
+     "heap top",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 1,
+   "pointers": {
+    "x": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "note": "x = 2: push. Heap top = 2.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "2"
+     ],
+     [
+      "1",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "heap size",
+     2
+    ],
+    [
+     "heap top",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 1,
+   "pointers": {
+    "x": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "note": "x = 2: push. Heap top = 2.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "2"
+     ],
+     [
+      "1",
+      "2"
+     ],
+     [
+      "2",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "heap top",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 1,
+   "pointers": {
+    "x": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "note": "x = 2: push. Over k, evict 2. Heap top = 2.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "2"
+     ],
+     [
+      "1",
+      "2"
+     ],
+     [
+      "2",
+      "2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "x",
+     2
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "heap top",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "All four 2s tried; three fill the heap. 3rd largest = 2.",
+   "sidebar": {
+    "title": "min-heap (size \u2264 k)",
+    "rows": [
+     [
+      "top",
+      "2"
+     ],
+     [
+      "1",
+      "2"
+     ],
+     [
+      "2",
+      "2"
+     ]
+    ]
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     2
+    ]
+   ],
+   "banner": "kth largest = 2"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/11-heap/0215-kth-largest-element-in-an-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;215. Kth Largest Element in an Array — https://leetcode.com/problems/kth-largest-element-in-an-array/
 
 Given an array and a number k, return the kth largest value in sorted order (the
 kth largest, counting duplicates — not the kth distinct value).

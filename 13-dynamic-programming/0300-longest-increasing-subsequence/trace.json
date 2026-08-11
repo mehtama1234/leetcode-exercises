@@ -1,0 +1,466 @@
+{
+ "player": "grid",
+ "title": "Longest Increasing Subsequence - dp[i] = best run ending at i",
+ "acts": [
+  "The 'ends at i' rule",
+  "Fill dp[i]",
+  "Answer + edge"
+ ],
+ "code": {
+  "dp": [
+   "dp = [1] * n",
+   "for i in range(n):",
+   "    for j in range(i):",
+   "        if nums[j] < nums[i]:",
+   "            dp[i] = max(dp[i], dp[j] + 1)",
+   "return max(dp)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "predecessor / members"
+  ],
+  [
+   "good",
+   "just-set dp[i]"
+  ],
+  [
+   "dim",
+   "inactive"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "dp"
+   ],
+   "colLabels": [
+    "10",
+    "9",
+    "2",
+    "5",
+    "3",
+    "7",
+    "101",
+    "18"
+   ],
+   "code": null,
+   "intro": "dp[i] = longest increasing run that ENDS exactly at value nums[i].",
+   "invariant": "pinning the last element lets any smaller earlier value be its predecessor.",
+   "note": "Values [10, 9, 2, 5, 3, 7, 101, 18]. dp[i] anchors the run's end at index i, so any earlier j with nums[j] < nums[i] can sit right before it.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "n",
+     8
+    ],
+    [
+     "want",
+     "longest increasing"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "dp[i] = 1 + max(dp[j] for j < i with nums[j] < nums[i]), or 1 if none. Computed left to right so every dp[j] we read is already final.",
+   "marks": {
+    "0,3": "active",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "rule",
+     "1 + best smaller predecessor"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "dp"
+   ],
+   "colLabels": [
+    "10",
+    "9",
+    "2",
+    "5",
+    "3",
+    "7",
+    "101",
+    "18"
+   ],
+   "code": "dp",
+   "line": 0,
+   "intro": "each dp[i] scans the values to its left for a smaller predecessor.",
+   "invariant": "dp[i] final before we move to i+1.",
+   "note": "Every element alone is a length-1 run, so dp starts at 1 everywhere.",
+   "marks": {},
+   "state": [
+    [
+     "start",
+     "dp[i] = 1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "nums[0] = 10: no smaller value to its left, so dp[0] = 1.",
+   "set": {
+    "0,0": 1
+   },
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "nums[0]",
+     10
+    ],
+    [
+     "dp[0]",
+     1
+    ],
+    [
+     "best so far",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "nums[1] = 9: no smaller value to its left, so dp[1] = 1.",
+   "set": {
+    "0,0": 1,
+    "0,1": 1
+   },
+   "marks": {
+    "0,1": "good"
+   },
+   "state": [
+    [
+     "nums[1]",
+     9
+    ],
+    [
+     "dp[1]",
+     1
+    ],
+    [
+     "best so far",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "nums[2] = 2: no smaller value to its left, so dp[2] = 1.",
+   "set": {
+    "0,0": 1,
+    "0,1": 1,
+    "0,2": 1
+   },
+   "marks": {
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "nums[2]",
+     2
+    ],
+    [
+     "dp[2]",
+     1
+    ],
+    [
+     "best so far",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "nums[3] = 5: extends the run ending at 2 (dp 1), so dp[3] = 2.",
+   "set": {
+    "0,0": 1,
+    "0,1": 1,
+    "0,2": 1,
+    "0,3": 2
+   },
+   "marks": {
+    "0,3": "good",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "nums[3]",
+     5
+    ],
+    [
+     "dp[3]",
+     2
+    ],
+    [
+     "best so far",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "nums[4] = 3: extends the run ending at 2 (dp 1), so dp[4] = 2.",
+   "set": {
+    "0,0": 1,
+    "0,1": 1,
+    "0,2": 1,
+    "0,3": 2,
+    "0,4": 2
+   },
+   "marks": {
+    "0,4": "good",
+    "0,2": "active"
+   },
+   "state": [
+    [
+     "nums[4]",
+     3
+    ],
+    [
+     "dp[4]",
+     2
+    ],
+    [
+     "best so far",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "nums[5] = 7: extends the run ending at 5 (dp 2), so dp[5] = 3.",
+   "set": {
+    "0,0": 1,
+    "0,1": 1,
+    "0,2": 1,
+    "0,3": 2,
+    "0,4": 2,
+    "0,5": 3
+   },
+   "marks": {
+    "0,5": "good",
+    "0,3": "active"
+   },
+   "state": [
+    [
+     "nums[5]",
+     7
+    ],
+    [
+     "dp[5]",
+     3
+    ],
+    [
+     "best so far",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "nums[6] = 101: extends the run ending at 7 (dp 3), so dp[6] = 4.",
+   "set": {
+    "0,0": 1,
+    "0,1": 1,
+    "0,2": 1,
+    "0,3": 2,
+    "0,4": 2,
+    "0,5": 3,
+    "0,6": 4
+   },
+   "marks": {
+    "0,6": "good",
+    "0,5": "active"
+   },
+   "state": [
+    [
+     "nums[6]",
+     101
+    ],
+    [
+     "dp[6]",
+     4
+    ],
+    [
+     "best so far",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dp",
+   "line": 4,
+   "note": "nums[7] = 18: extends the run ending at 7 (dp 3), so dp[7] = 4.",
+   "set": {
+    "0,0": 1,
+    "0,1": 1,
+    "0,2": 1,
+    "0,3": 2,
+    "0,4": 2,
+    "0,5": 3,
+    "0,6": 4,
+    "0,7": 4
+   },
+   "marks": {
+    "0,7": "good",
+    "0,5": "active"
+   },
+   "state": [
+    [
+     "nums[7]",
+     18
+    ],
+    [
+     "dp[7]",
+     4
+    ],
+    [
+     "best so far",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     1,
+     1,
+     1,
+     2,
+     2,
+     3,
+     4,
+     4
+    ]
+   ],
+   "rowLabels": [
+    "dp"
+   ],
+   "colLabels": [
+    "10",
+    "9",
+    "2",
+    "5",
+    "3",
+    "7",
+    "101",
+    "18"
+   ],
+   "code": "dp",
+   "line": 5,
+   "intro": "the longest run can end anywhere, so the answer is the largest dp value.",
+   "invariant": "max(dp) is the LIS length.",
+   "note": "The largest dp is 4 at value 101 \u2014 the run [2, 3, 7, 101]. The answer is a length, not a fixed cell.",
+   "marks": {
+    "0,6": "good",
+    "0,2": "active",
+    "0,4": "active",
+    "0,5": "active"
+   },
+   "state": [
+    [
+     "answer",
+     4
+    ]
+   ],
+   "banner": "LIS length = 4  ([2, 3, 7, 101])"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     1,
+     1,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "dp"
+   ],
+   "colLabels": [
+    "7",
+    "7",
+    "7"
+   ],
+   "code": "dp",
+   "line": 5,
+   "note": "Edge case: all equal. nums[j] < nums[i] is never true (strictly increasing), so every dp stays 1 and the answer is 1.",
+   "marks": {
+    "0,0": "good",
+    "0,1": "good",
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "answer",
+     1
+    ]
+   ],
+   "banner": "All equal -> 1"
+  }
+ ]
+}

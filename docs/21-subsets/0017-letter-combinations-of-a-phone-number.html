@@ -52,7 +52,930 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Empty input.</strong> LeetCode wants <code>[]</code>, *not* <code>[&quot;&quot;]</code>. Guard it — the recursion would otherwise emit one empty string.</li><li><strong>Reusing a mutable <code>path</code> without joining/copying</strong> at the leaf — append <code>&quot;&quot;.join(path)</code>, a fresh string, so later mutations don&#x27;t corrupt stored words.</li><li>Assuming exactly 3 letters per key — <code>7</code> (<code>pqrs</code>) and <code>9</code> (<code>wxyz</code>) have 4, which is why the bound is <code>4^n</code>, not <code>3^n</code>.</li></ul>
 <h2>Transfer</h2>
-<p>The &quot;one independent choice per position, take the product&quot; shape recurs whenever slots are filled independently: generating all IP-address splits, expanding brace patterns, and any config/template matrix. When each position&#x27;s choices don&#x27;t depend on earlier picks, it&#x27;s a Cartesian product — reach for this level-per-position recursion (or nested loops if the depth is fixed and small).</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0017-letter-combinations-of-a-phone-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;17. Letter Combinations of a Phone Number —
+<p>The &quot;one independent choice per position, take the product&quot; shape recurs whenever slots are filled independently: generating all IP-address splits, expanding brace patterns, and any config/template matrix. When each position&#x27;s choices don&#x27;t depend on earlier picks, it&#x27;s a Cartesian product — reach for this level-per-position recursion (or nested loops if the depth is fixed and small).</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Letter Combinations \u2014 one digit per level, branch over keypad letters",
+ "acts": [
+  "The rule",
+  "Walk the decision tree",
+  "Edge case: empty input"
+ ],
+ "code": {
+  "backtrack": [
+   "def backtrack(i):",
+   "    if i == len(digits):",
+   "        result.append(''.join(path))",
+   "        return",
+   "    for letter in KEYPAD[digits[i]]:",
+   "        path.append(letter)  # choose",
+   "        backtrack(i + 1)     # explore",
+   "        path.pop()           # un-choose"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current path"
+  ],
+  [
+   "good",
+   "finished word (leaf)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "start",
+   "x": 224,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": "a",
+   "x": 56,
+   "y": 84
+  },
+  {
+   "id": 2,
+   "val": "ad",
+   "x": 0,
+   "y": 168
+  },
+  {
+   "id": 3,
+   "val": "ae",
+   "x": 56,
+   "y": 168
+  },
+  {
+   "id": 4,
+   "val": "af",
+   "x": 112,
+   "y": 168
+  },
+  {
+   "id": 5,
+   "val": "b",
+   "x": 224,
+   "y": 84
+  },
+  {
+   "id": 6,
+   "val": "bd",
+   "x": 168,
+   "y": 168
+  },
+  {
+   "id": 7,
+   "val": "be",
+   "x": 224,
+   "y": 168
+  },
+  {
+   "id": 8,
+   "val": "bf",
+   "x": 280,
+   "y": 168
+  },
+  {
+   "id": 9,
+   "val": "c",
+   "x": 392,
+   "y": 84
+  },
+  {
+   "id": 10,
+   "val": "cd",
+   "x": 336,
+   "y": 168
+  },
+  {
+   "id": 11,
+   "val": "ce",
+   "x": 392,
+   "y": 168
+  },
+  {
+   "id": 12,
+   "val": "cf",
+   "x": 448,
+   "y": 168
+  }
+ ],
+ "edges": [
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   5,
+   6
+  ],
+  [
+   5,
+   7
+  ],
+  [
+   5,
+   8
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   9,
+   10
+  ],
+  [
+   9,
+   11
+  ],
+  [
+   9,
+   12
+  ],
+  [
+   0,
+   9
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 224,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 56,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "ad",
+     "x": 0,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "ae",
+     "x": 56,
+     "y": 168
+    },
+    {
+     "id": 4,
+     "val": "af",
+     "x": 112,
+     "y": 168
+    },
+    {
+     "id": 5,
+     "val": "b",
+     "x": 224,
+     "y": 84
+    },
+    {
+     "id": 6,
+     "val": "bd",
+     "x": 168,
+     "y": 168
+    },
+    {
+     "id": 7,
+     "val": "be",
+     "x": 224,
+     "y": 168
+    },
+    {
+     "id": 8,
+     "val": "bf",
+     "x": 280,
+     "y": 168
+    },
+    {
+     "id": 9,
+     "val": "c",
+     "x": 392,
+     "y": 84
+    },
+    {
+     "id": 10,
+     "val": "cd",
+     "x": 336,
+     "y": 168
+    },
+    {
+     "id": 11,
+     "val": "ce",
+     "x": 392,
+     "y": 168
+    },
+    {
+     "id": 12,
+     "val": "cf",
+     "x": 448,
+     "y": 168
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     9,
+     12
+    ],
+    [
+     0,
+     9
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "each level is one digit; the branches are that digit's keypad letters.",
+   "invariant": "depth = digit index; a leaf at the bottom row is one finished word.",
+   "note": "The rule: at digit i, branch over its keypad letters \u2014 2 gives a, b, c; 3 gives d, e, f \u2014 then move to the next digit. Every root-to-leaf path spells one word.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "digits",
+     "23"
+    ],
+    [
+     "2 -> ",
+     "abc"
+    ],
+    [
+     "3 -> ",
+     "def"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "backtrack",
+   "line": 1,
+   "note": "The bottom row (i == 2, past the last digit) is where a path becomes a complete word \u2014 we join the letters and record it.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "words",
+     "3 x 3 = 9"
+    ],
+    [
+     "= leaves",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 224,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 56,
+     "y": 84
+    },
+    {
+     "id": 2,
+     "val": "ad",
+     "x": 0,
+     "y": 168
+    },
+    {
+     "id": 3,
+     "val": "ae",
+     "x": 56,
+     "y": 168
+    },
+    {
+     "id": 4,
+     "val": "af",
+     "x": 112,
+     "y": 168
+    },
+    {
+     "id": 5,
+     "val": "b",
+     "x": 224,
+     "y": 84
+    },
+    {
+     "id": 6,
+     "val": "bd",
+     "x": 168,
+     "y": 168
+    },
+    {
+     "id": 7,
+     "val": "be",
+     "x": 224,
+     "y": 168
+    },
+    {
+     "id": 8,
+     "val": "bf",
+     "x": 280,
+     "y": 168
+    },
+    {
+     "id": 9,
+     "val": "c",
+     "x": 392,
+     "y": 84
+    },
+    {
+     "id": 10,
+     "val": "cd",
+     "x": 336,
+     "y": 168
+    },
+    {
+     "id": 11,
+     "val": "ce",
+     "x": 392,
+     "y": 168
+    },
+    {
+     "id": 12,
+     "val": "cf",
+     "x": 448,
+     "y": 168
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     9,
+     12
+    ],
+    [
+     0,
+     9
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "the active path is the letters chosen so far; leaves light green.",
+   "invariant": "a green leaf spells exactly the letters picked on the way down.",
+   "note": "Run it. The highlighted path is the letters chosen so far; each time we reach the bottom we record that word.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 0,
+   "note": "Start at the root with an empty path. Digit 2 first: try a, b, c.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "at digit",
+     "2"
+    ],
+    [
+     "letters",
+     "abc"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Chose 'a' for digit 2: path is now \"a\". Next digit 3: try def.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "at digit",
+     "3"
+    ],
+    [
+     "path",
+     "a"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the word \"ad\". (1 of 9 so far.)",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {
+    "2": "ad"
+   },
+   "state": [
+    [
+     "word",
+     "ad"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the word \"ae\". (2 of 9 so far.)",
+   "active": [
+    0,
+    1,
+    3
+   ],
+   "done": {
+    "2": "ad",
+    "3": "ae"
+   },
+   "state": [
+    [
+     "word",
+     "ae"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the word \"af\". (3 of 9 so far.)",
+   "active": [
+    0,
+    1,
+    4
+   ],
+   "done": {
+    "2": "ad",
+    "3": "ae",
+    "4": "af"
+   },
+   "state": [
+    [
+     "word",
+     "af"
+    ],
+    [
+     "found",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Chose 'b' for digit 2: path is now \"b\". Next digit 3: try def.",
+   "active": [
+    0,
+    5
+   ],
+   "done": {
+    "2": "ad",
+    "3": "ae",
+    "4": "af"
+   },
+   "state": [
+    [
+     "at digit",
+     "3"
+    ],
+    [
+     "path",
+     "b"
+    ],
+    [
+     "found",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the word \"bd\". (4 of 9 so far.)",
+   "active": [
+    0,
+    5,
+    6
+   ],
+   "done": {
+    "2": "ad",
+    "3": "ae",
+    "4": "af",
+    "6": "bd"
+   },
+   "state": [
+    [
+     "word",
+     "bd"
+    ],
+    [
+     "found",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the word \"be\". (5 of 9 so far.)",
+   "active": [
+    0,
+    5,
+    7
+   ],
+   "done": {
+    "2": "ad",
+    "3": "ae",
+    "4": "af",
+    "6": "bd",
+    "7": "be"
+   },
+   "state": [
+    [
+     "word",
+     "be"
+    ],
+    [
+     "found",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the word \"bf\". (6 of 9 so far.)",
+   "active": [
+    0,
+    5,
+    8
+   ],
+   "done": {
+    "2": "ad",
+    "3": "ae",
+    "4": "af",
+    "6": "bd",
+    "7": "be",
+    "8": "bf"
+   },
+   "state": [
+    [
+     "word",
+     "bf"
+    ],
+    [
+     "found",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Chose 'c' for digit 2: path is now \"c\". Next digit 3: try def.",
+   "active": [
+    0,
+    9
+   ],
+   "done": {
+    "2": "ad",
+    "3": "ae",
+    "4": "af",
+    "6": "bd",
+    "7": "be",
+    "8": "bf"
+   },
+   "state": [
+    [
+     "at digit",
+     "3"
+    ],
+    [
+     "path",
+     "c"
+    ],
+    [
+     "found",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the word \"cd\". (7 of 9 so far.)",
+   "active": [
+    0,
+    9,
+    10
+   ],
+   "done": {
+    "2": "ad",
+    "3": "ae",
+    "4": "af",
+    "6": "bd",
+    "7": "be",
+    "8": "bf",
+    "10": "cd"
+   },
+   "state": [
+    [
+     "word",
+     "cd"
+    ],
+    [
+     "found",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the word \"ce\". (8 of 9 so far.)",
+   "active": [
+    0,
+    9,
+    11
+   ],
+   "done": {
+    "2": "ad",
+    "3": "ae",
+    "4": "af",
+    "6": "bd",
+    "7": "be",
+    "8": "bf",
+    "10": "cd",
+    "11": "ce"
+   },
+   "state": [
+    [
+     "word",
+     "ce"
+    ],
+    [
+     "found",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Bottom of a path -> record the word \"cf\". (9 of 9 so far.)",
+   "active": [
+    0,
+    9,
+    12
+   ],
+   "done": {
+    "2": "ad",
+    "3": "ae",
+    "4": "af",
+    "6": "bd",
+    "7": "be",
+    "8": "bf",
+    "10": "cd",
+    "11": "ce",
+    "12": "cf"
+   },
+   "state": [
+    [
+     "word",
+     "cf"
+    ],
+    [
+     "found",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Every leaf visited -> all 9 words collected: the full product of the two digits' letters.",
+   "active": [],
+   "done": {
+    "2": "ad",
+    "3": "ae",
+    "4": "af",
+    "6": "bd",
+    "7": "be",
+    "8": "bf",
+    "10": "cd",
+    "11": "ce",
+    "12": "cf"
+   },
+   "state": [
+    [
+     "words",
+     9
+    ]
+   ],
+   "banner": "9 words = 3 x 3, one per leaf"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 0,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "with no digits there is nothing to spell \u2014 the answer is empty.",
+   "invariant": "empty input returns [], not one empty word.",
+   "note": "Edge case: digits = \"\". The function returns early with an empty list \u2014 there are no digits, so there is no word to build.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "digits",
+     "\"\""
+    ],
+    [
+     "result",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "So \"\" gives [] (not [\"\"]). A single digit like \"2\" would instead give three one-letter words: a, b, c.",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "words",
+     0
+    ],
+    [
+     "\"2\" ->",
+     "a, b, c"
+    ]
+   ],
+   "banner": "Empty input -> [] (no words)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/21-subsets/0017-letter-combinations-of-a-phone-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;17. Letter Combinations of a Phone Number —
 https://leetcode.com/problems/letter-combinations-of-a-phone-number/
 
 Given digits 2-9, return every string you can spell by choosing one letter per

@@ -62,7 +62,681 @@ while lo &lt;= hi:
 <h2>Pitfalls</h2>
 <ul><li><strong>The loop condition.</strong> With a *closed* window <code>[lo, hi]</code> (both ends included), use <code>while lo &lt;= hi</code>. The window <code>[lo, lo]</code> (one element) is still a real candidate you must check; <code>lo &lt; hi</code> would skip it.</li><li><strong>Moving past mid.</strong> Set <code>lo = mid + 1</code> / <code>hi = mid - 1</code>, not <code>lo = mid</code> / <code>hi = mid</code>. You already compared <code>mid</code> and it wasn&#x27;t the target, so leaving it in the window can loop forever when <code>lo</code>, <code>hi</code>, and <code>mid</code> collapse together.</li><li><strong>Overflow.</strong> Use <code>mid = lo + (hi - lo) // 2</code> instead of <code>(lo + hi) // 2</code>. Python ints never overflow, but this is the safe form the pattern is known for.</li><li><strong>Empty array.</strong> <code>hi = -1</code> makes <code>lo &lt;= hi</code> false immediately, so you correctly return <code>-1</code> without touching <code>nums</code>.</li></ul>
 <h2>Transfer</h2>
-<p>The core move — *one comparison against the middle discards half the space* — powers every binary-search variant: <a href="../0153-find-minimum-in-rotated-sorted-array/">Find Minimum in Rotated Sorted Array / 153</a>, <a href="../0033-search-in-rotated-sorted-array/">Search in Rotated Sorted Array / 33</a>. More broadly, whenever you can ask a yes/no question whose answer rules out half the remaining possibilities — plain searching, or &quot;binary search on the answer&quot; for optimization — reach for this template.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/07-binary-search/0704-binary-search/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;704. Binary Search — https://leetcode.com/problems/binary-search/
+<p>The core move — *one comparison against the middle discards half the space* — powers every binary-search variant: <a href="../0153-find-minimum-in-rotated-sorted-array/">Find Minimum in Rotated Sorted Array / 153</a>, <a href="../0033-search-in-rotated-sorted-array/">Search in Rotated Sorted Array / 33</a>. More broadly, whenever you can ask a yes/no question whose answer rules out half the remaining possibilities — plain searching, or &quot;binary search on the answer&quot; for optimization — reach for this template.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Binary Search \u2014 from a full scan to a window halving each step",
+ "acts": [
+  "Linear scan",
+  "The waste",
+  "Binary search",
+  "Edge case: target absent"
+ ],
+ "code": {
+  "linear": [
+   "for i, x in enumerate(nums):",
+   "    if x == target:",
+   "        return i",
+   "return -1"
+  ],
+  "fast": [
+   "lo, hi = 0, len(nums) - 1",
+   "while lo <= hi:",
+   "    mid = lo + (hi - lo) // 2",
+   "    if nums[mid] == target:",
+   "        return mid",
+   "    if nums[mid] < target:",
+   "        lo = mid + 1",
+   "    else:",
+   "        hi = mid - 1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current mid"
+  ],
+  [
+   "good",
+   "the answer"
+  ],
+  [
+   "bad",
+   "discarded half"
+  ],
+  [
+   "dim",
+   "still in the window"
+  ]
+ ],
+ "cells": [
+  -1,
+  0,
+  3,
+  5,
+  9,
+  12
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    -1,
+    0,
+    3,
+    5,
+    9,
+    12
+   ],
+   "code": "linear",
+   "line": 0,
+   "intro": "the scan walks past sorted values it could have skipped whole halves of.",
+   "invariant": "every index left of i has been checked and ruled out.",
+   "note": "Linear scan: check each value against target 9, left to right. It never uses that the array is sorted.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "target",
+     9
+    ],
+    [
+     "comparisons",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 1,
+   "note": "nums[0] = -1. Not 9, step right.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "nums[i]",
+     -1
+    ],
+    [
+     "comparisons",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 1,
+   "note": "nums[1] = 0. Not 9, step right.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "active",
+    "0": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "nums[i]",
+     0
+    ],
+    [
+     "comparisons",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 1,
+   "note": "nums[2] = 3. Not 9, step right.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active",
+    "0": "dim",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "nums[i]",
+     3
+    ],
+    [
+     "comparisons",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 1,
+   "note": "nums[3] = 5. Not 9, step right.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "active",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "nums[i]",
+     5
+    ],
+    [
+     "comparisons",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 2,
+   "note": "nums[4] = 9. Match.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "nums[i]",
+     9
+    ],
+    [
+     "comparisons",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 2,
+   "note": "Found at index 4 \u2014 but it took 5 comparisons, and it would take 6 on a miss. Sorted or shuffled, this scan can't tell.",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     4
+    ],
+    [
+     "comparisons",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "one look at the middle rules out half the array \u2014 the scan threw that away.",
+   "note": "The scan checked 5 cells one by one. But the array is SORTED: if the middle is too small, everything left of it is too small too.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "comparisons (scan)",
+     5
+    ],
+    [
+     "ignored",
+     "the array is sorted"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Each comparison against the middle can delete HALF of what's left. n=1000 \u2192 ~10 steps instead of 1000. That halving is the whole idea.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "scan at n=1000",
+     "~1000"
+    ],
+    [
+     "binary at n=1000",
+     "~10"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    -1,
+    0,
+    3,
+    5,
+    9,
+    12
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "lo and hi are the fence; mid is the probe. Discarded cells go dark.",
+   "invariant": "if target is in the array, it is inside [lo, hi].",
+   "note": "Binary search for 9. Keep a window [lo, hi] that could still hold it; look only at the middle.",
+   "pointers": {
+    "lo": 0,
+    "hi": 5
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "hi",
+     5
+    ],
+    [
+     "target",
+     9
+    ],
+    [
+     "steps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [0, 5]. mid = 2, nums[mid] = 3.",
+   "pointers": {
+    "lo": 0,
+    "mid": 2,
+    "hi": 5
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "mid",
+     2
+    ],
+    [
+     "hi",
+     5
+    ],
+    [
+     "nums[mid]",
+     3
+    ],
+    [
+     "steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "3 < 9: the target is right of mid. Drop [0, 2] \u2014 half the window gone.",
+   "pointers": {
+    "lo": 0,
+    "mid": 2,
+    "hi": 5
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "rule",
+     "nums[mid] < target"
+    ],
+    [
+     "lo \u2192",
+     3
+    ],
+    [
+     "steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [3, 5]. mid = 4, nums[mid] = 9.",
+   "pointers": {
+    "lo": 3,
+    "mid": 4,
+    "hi": 5
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "dim",
+    "4": "active",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     3
+    ],
+    [
+     "mid",
+     4
+    ],
+    [
+     "hi",
+     5
+    ],
+    [
+     "nums[mid]",
+     9
+    ],
+    [
+     "steps",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "nums[4] = 9 = target. Done in 2 steps, not 5.",
+   "pointers": {
+    "lo": 3,
+    "mid": 4,
+    "hi": 5
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "dim",
+    "4": "good",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     4
+    ],
+    [
+     "steps",
+     2
+    ],
+    [
+     "vs scan",
+     5
+    ]
+   ],
+   "banner": "Found 9 at index 4   \u2014 2 steps vs 5 scanned"
+  },
+  {
+   "act": 3,
+   "cells": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "when the answer is missing, lo passes hi and the window closes empty.",
+   "invariant": "lo > hi means no index is left that could hold the target.",
+   "note": "Edge case: search for 6, which isn't present. Watch the window shrink to nothing.",
+   "pointers": {
+    "lo": 0,
+    "hi": 4
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "target",
+     6
+    ],
+    [
+     "lo",
+     0
+    ],
+    [
+     "hi",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [0, 4]. mid=2, nums[mid]=3 < 6, go right.",
+   "pointers": {
+    "lo": 0,
+    "mid": 2,
+    "hi": 4
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active",
+    "3": "dim",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "mid",
+     2
+    ],
+    [
+     "hi",
+     4
+    ],
+    [
+     "nums[mid]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [3, 4]. mid=3, nums[mid]=4 < 6, go right.",
+   "pointers": {
+    "lo": 3,
+    "mid": 3,
+    "hi": 4
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "active",
+    "4": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     3
+    ],
+    [
+     "mid",
+     3
+    ],
+    [
+     "hi",
+     4
+    ],
+    [
+     "nums[mid]",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [4, 4]. mid=4, nums[mid]=5 < 6, go right.",
+   "pointers": {
+    "lo": 4,
+    "mid": 4,
+    "hi": 4
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "active"
+   },
+   "state": [
+    [
+     "lo",
+     4
+    ],
+    [
+     "mid",
+     4
+    ],
+    [
+     "hi",
+     4
+    ],
+    [
+     "nums[mid]",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 1,
+   "note": "lo=5 > hi=4: the window is empty, so 6 is not here. Return -1.",
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "bad"
+   },
+   "state": [
+    [
+     "lo",
+     5
+    ],
+    [
+     "hi",
+     4
+    ],
+    [
+     "answer",
+     -1
+    ]
+   ],
+   "banner": "6 absent \u2014 window emptied, return -1"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/07-binary-search/0704-binary-search/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;704. Binary Search — https://leetcode.com/problems/binary-search/
 
 Given a sorted array `nums` (ascending, all distinct) and a `target`, return the
 index of `target` if it is present, otherwise -1.

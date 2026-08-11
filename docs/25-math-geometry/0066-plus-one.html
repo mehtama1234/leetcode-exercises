@@ -50,7 +50,437 @@
 <h2>Pitfalls</h2>
 <ul><li>The all-nines grow case (<code>[9,9,9] -&gt; [1,0,0,0]</code>) — forgetting the length can increase is the classic bug.</li><li>Adding the carry to the *front* of the array instead of the back — the least-significant digit is at the end.</li><li>Building a full carry variable when you don&#x27;t need one: since you only ever add one, &quot;digit &lt; 9&quot; already tells you whether the carry continues.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is <strong>walk a digit array from the least-significant end, propagating a carry until it dies.</strong> It generalizes to <a href="https://leetcode.com/problems/add-binary/">Add Binary / 67</a> (base 2 instead of 10), <a href="https://leetcode.com/problems/add-two-numbers/">Add Two Numbers / 2</a> (digits in a linked list), and <a href="../0043-multiply-strings/">Multiply Strings / 43</a> (many carries at once). Whenever a number is too big for a native type, you fall back to per-digit arithmetic with carries.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/25-math-geometry/0066-plus-one/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;66. Plus One — https://leetcode.com/problems/plus-one/
+<p>The reusable move is <strong>walk a digit array from the least-significant end, propagating a carry until it dies.</strong> It generalizes to <a href="https://leetcode.com/problems/add-binary/">Add Binary / 67</a> (base 2 instead of 10), <a href="https://leetcode.com/problems/add-two-numbers/">Add Two Numbers / 2</a> (digits in a linked list), and <a href="../0043-multiply-strings/">Multiply Strings / 43</a> (many carries at once). Whenever a number is too big for a native type, you fall back to per-digit arithmetic with carries.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Plus One - carry a +1 through the digits, by hand",
+ "acts": [
+  "The rule",
+  "Run: carry stops partway",
+  "Edge: all nines"
+ ],
+ "code": {
+  "add": [
+   "for i in reversed(range(len(digits))):",
+   "    if digits[i] < 9:",
+   "        digits[i] += 1",
+   "        return digits          # no carry escapes",
+   "    digits[i] = 0               # 9 -> 0, carry left",
+   "return [1] + digits            # all nines"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "digit we're adding to"
+  ],
+  [
+   "bad",
+   "9 -> 0, carry left"
+  ],
+  [
+   "good",
+   "final digit / answer"
+  ],
+  [
+   "dim",
+   "unchanged / new zeros"
+  ]
+ ],
+ "cells": [
+  "1",
+  "9",
+  "9"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "1",
+    "9",
+    "9"
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "add",
+   "line": 0,
+   "intro": "a +1 only ripples through a run of trailing 9s, then stops.",
+   "invariant": "once a digit < 9 is bumped, no carry can escape further left.",
+   "note": "Add one to a number stored as digits (most-significant left). Start at the rightmost digit and carry left, exactly like adding on paper.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "number",
+     "199"
+    ],
+    [
+     "add",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "1",
+    "9",
+    "9"
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "add",
+   "line": 0,
+   "intro": "the two trailing 9s roll to 0, then the 1 catches the +1 and stops.",
+   "invariant": "the carry dies at the first non-9 digit.",
+   "note": "Run 199 + 1: rightmost 9 -> 0 (carry), next 9 -> 0 (carry), the 1 becomes 2 and the carry stops -> 200.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "number",
+     "199"
+    ],
+    [
+     "carry",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "add",
+   "line": 4,
+   "note": "digit 2 is 9: 9+1 = 10 -> write 0, carry the 1 left.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "cells": [
+    "1",
+    "9",
+    "0"
+   ],
+   "state": [
+    [
+     "digit 2",
+     0
+    ],
+    [
+     "carry",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "add",
+   "line": 4,
+   "note": "digit 1 is 9: 9+1 = 10 -> write 0, carry the 1 left.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "bad"
+   },
+   "cells": [
+    "1",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "digit 1",
+     0
+    ],
+    [
+     "carry",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "add",
+   "line": 2,
+   "note": "digit 0 is 1 < 9: bump to 2. No carry escapes, done.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "cells": [
+    "2",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "result",
+     "200"
+    ],
+    [
+     "carry",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "199 + 1 = 200. The carry only had to walk the two trailing nines.",
+   "cells": [
+    "2",
+    "0",
+    "0"
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "add",
+   "line": 3,
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "state": [
+    [
+     "answer",
+     "200"
+    ]
+   ],
+   "banner": "199 + 1 = 200"
+  },
+  {
+   "act": 2,
+   "cells": [
+    "9",
+    "9",
+    "9"
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "add",
+   "line": 0,
+   "intro": "every digit is 9, so the carry never dies \u2014 it falls off the left.",
+   "invariant": "all nines is the only case where the number grows a digit.",
+   "note": "Edge case: 999 + 1. Each 9 becomes 0 and passes the carry on; the carry escapes the left end.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "number",
+     "999"
+    ],
+    [
+     "carry",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "9",
+    "9",
+    "9"
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "add",
+   "line": 0,
+   "intro": null,
+   "invariant": null,
+   "note": null,
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "number",
+     "999"
+    ],
+    [
+     "carry",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "add",
+   "line": 4,
+   "note": "digit 2 is 9: 9+1 = 10 -> write 0, carry the 1 left.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "cells": [
+    "9",
+    "9",
+    "0"
+   ],
+   "state": [
+    [
+     "digit 2",
+     0
+    ],
+    [
+     "carry",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "add",
+   "line": 4,
+   "note": "digit 1 is 9: 9+1 = 10 -> write 0, carry the 1 left.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "bad"
+   },
+   "cells": [
+    "9",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "digit 1",
+     0
+    ],
+    [
+     "carry",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "add",
+   "line": 4,
+   "note": "digit 0 is 9: 9+1 = 10 -> write 0, carry the 1 left.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "bad"
+   },
+   "cells": [
+    "0",
+    "0",
+    "0"
+   ],
+   "state": [
+    [
+     "digit 0",
+     0
+    ],
+    [
+     "carry",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "add",
+   "line": 5,
+   "note": "Fell off the left end still carrying: prepend a 1. The number grew a digit.",
+   "cells": [
+    "1",
+    "0",
+    "0",
+    "0"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "marks": {
+    "0": "good",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "result",
+     "1000"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "note": "999 + 1 = 1000 \u2014 a fresh leading 1 and all zeros. One digit longer.",
+   "cells": [
+    "1",
+    "0",
+    "0",
+    "0"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "code": "add",
+   "line": 5,
+   "marks": {
+    "0": "good",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     "1000"
+    ]
+   ],
+   "banner": "999 + 1 = 1000 (grows a digit)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/25-math-geometry/0066-plus-one/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;66. Plus One — https://leetcode.com/problems/plus-one/
 
 A non-negative integer is given as an array of its digits, most-significant
 first. Add one to it and return the resulting array of digits.

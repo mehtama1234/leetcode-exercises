@@ -1,0 +1,1567 @@
+{
+ "player": "grid",
+ "title": "Distinct Subsequences - count each (suffix, suffix) alignment once",
+ "acts": [
+  "Brute: use / skip",
+  "Fill the table",
+  "Answer + edge"
+ ],
+ "code": {
+  "tab": [
+   "dp = [[0]*(n+1) for _ in range(m+1)]",
+   "for i in range(m+1): dp[i][n] = 1   # empty t: one way",
+   "for i in range(m-1, -1, -1):",
+   "    for j in range(n-1, -1, -1):",
+   "        dp[i][j] = dp[i+1][j]              # skip s[i]",
+   "        if s[i] == t[j]: dp[i][j] += dp[i+1][j+1]  # use s[i]",
+   "return dp[0][0]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "cells this one adds"
+  ],
+  [
+   "good",
+   "filled / answer"
+  ],
+  [
+   "bad",
+   "recomputed (waste)"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "r",
+    "a",
+    "b",
+    "b",
+    "b",
+    "i",
+    "t",
+    "\u00b7"
+   ],
+   "colLabels": [
+    "r",
+    "a",
+    "b",
+    "b",
+    "i",
+    "t",
+    "\u00b7"
+   ],
+   "code": null,
+   "intro": "how the same (s-suffix, t-suffix) pair gets counted again and again.",
+   "invariant": "count(i,j) = ways t[j:] appears as a subsequence of s[i:].",
+   "note": "Brute force: at each s-character, either skip it, or (if it matches the current t-character) use it. Every distinct alignment is a leaf of that tree.",
+   "marks": {
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "find",
+     "\"rabbit\" in \"rabbbit\""
+    ],
+    [
+     "choice",
+     "skip / use"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "note": "The three b's mean many branches reach the same subproblem count(4,3) \"bbit vs bit\" \u2014 re-solved on every route. That repeat is the waste.",
+   "marks": {
+    "4,3": "bad",
+    "0,0": "active"
+   },
+   "state": [
+    [
+     "recomputed",
+     "count(4,3) \u2026"
+    ],
+    [
+     "cost",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "code": "tab",
+   "line": 0,
+   "intro": "filled from the empty suffixes back to (0,0); each cell reads down + down-right.",
+   "invariant": "dp[i][j] = dp[i+1][j] (+ dp[i+1][j+1] when s[i]==t[j]).",
+   "note": "Seed the last column: matching the EMPTY target t[n:] inside any s-suffix is one way \u2014 delete everything.",
+   "marks": {},
+   "state": [
+    [
+     "seed",
+     "empty t = 1 way"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[0][6] = 1 (empty target matches one way).",
+   "set": {
+    "0,6": 1
+   },
+   "marks": {
+    "0,6": "good"
+   },
+   "state": [
+    [
+     "dp[0][6]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[1][6] = 1 (empty target matches one way).",
+   "set": {
+    "1,6": 1
+   },
+   "marks": {
+    "1,6": "good"
+   },
+   "state": [
+    [
+     "dp[1][6]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[2][6] = 1 (empty target matches one way).",
+   "set": {
+    "2,6": 1
+   },
+   "marks": {
+    "2,6": "good"
+   },
+   "state": [
+    [
+     "dp[2][6]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[3][6] = 1 (empty target matches one way).",
+   "set": {
+    "3,6": 1
+   },
+   "marks": {
+    "3,6": "good"
+   },
+   "state": [
+    [
+     "dp[3][6]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[4][6] = 1 (empty target matches one way).",
+   "set": {
+    "4,6": 1
+   },
+   "marks": {
+    "4,6": "good"
+   },
+   "state": [
+    [
+     "dp[4][6]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[5][6] = 1 (empty target matches one way).",
+   "set": {
+    "5,6": 1
+   },
+   "marks": {
+    "5,6": "good"
+   },
+   "state": [
+    [
+     "dp[5][6]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[6][6] = 1 (empty target matches one way).",
+   "set": {
+    "6,6": 1
+   },
+   "marks": {
+    "6,6": "good"
+   },
+   "state": [
+    [
+     "dp[6][6]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 1,
+   "note": "dp[7][6] = 1 (empty target matches one way).",
+   "set": {
+    "7,6": 1
+   },
+   "marks": {
+    "7,6": "good"
+   },
+   "state": [
+    [
+     "dp[7][6]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "s[6]='t' == t[5]='t': dp[6][5] = skip 0 + use 1 = 1.",
+   "set": {
+    "6,5": 1
+   },
+   "marks": {
+    "7,5": "active",
+    "7,6": "active",
+    "6,5": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "use(down-right)",
+     1
+    ],
+    [
+     "dp[6][5]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[6]='t' != t[4]='i': can't use it, dp[6][4] = skip 0 = 0.",
+   "set": {
+    "6,4": 0
+   },
+   "marks": {
+    "7,4": "active",
+    "6,4": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[6][4]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[6]='t' != t[3]='b': can't use it, dp[6][3] = skip 0 = 0.",
+   "set": {
+    "6,3": 0
+   },
+   "marks": {
+    "7,3": "active",
+    "6,3": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[6][3]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[6]='t' != t[2]='b': can't use it, dp[6][2] = skip 0 = 0.",
+   "set": {
+    "6,2": 0
+   },
+   "marks": {
+    "7,2": "active",
+    "6,2": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[6][2]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[6]='t' != t[1]='a': can't use it, dp[6][1] = skip 0 = 0.",
+   "set": {
+    "6,1": 0
+   },
+   "marks": {
+    "7,1": "active",
+    "6,1": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[6][1]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[6]='t' != t[0]='r': can't use it, dp[6][0] = skip 0 = 0.",
+   "set": {
+    "6,0": 0
+   },
+   "marks": {
+    "7,0": "active",
+    "6,0": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[6][0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[5]='i' != t[5]='t': can't use it, dp[5][5] = skip 1 = 1.",
+   "set": {
+    "5,5": 1
+   },
+   "marks": {
+    "6,5": "active",
+    "5,5": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[5][5]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "s[5]='i' == t[4]='i': dp[5][4] = skip 0 + use 1 = 1.",
+   "set": {
+    "5,4": 1
+   },
+   "marks": {
+    "6,4": "active",
+    "6,5": "active",
+    "5,4": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "use(down-right)",
+     1
+    ],
+    [
+     "dp[5][4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[5]='i' != t[3]='b': can't use it, dp[5][3] = skip 0 = 0.",
+   "set": {
+    "5,3": 0
+   },
+   "marks": {
+    "6,3": "active",
+    "5,3": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[5][3]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[5]='i' != t[2]='b': can't use it, dp[5][2] = skip 0 = 0.",
+   "set": {
+    "5,2": 0
+   },
+   "marks": {
+    "6,2": "active",
+    "5,2": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[5][2]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[5]='i' != t[1]='a': can't use it, dp[5][1] = skip 0 = 0.",
+   "set": {
+    "5,1": 0
+   },
+   "marks": {
+    "6,1": "active",
+    "5,1": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[5][1]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[5]='i' != t[0]='r': can't use it, dp[5][0] = skip 0 = 0.",
+   "set": {
+    "5,0": 0
+   },
+   "marks": {
+    "6,0": "active",
+    "5,0": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[5][0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[4]='b' != t[5]='t': can't use it, dp[4][5] = skip 1 = 1.",
+   "set": {
+    "4,5": 1
+   },
+   "marks": {
+    "5,5": "active",
+    "4,5": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[4][5]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[4]='b' != t[4]='i': can't use it, dp[4][4] = skip 1 = 1.",
+   "set": {
+    "4,4": 1
+   },
+   "marks": {
+    "5,4": "active",
+    "4,4": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[4][4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "s[4]='b' == t[3]='b': dp[4][3] = skip 0 + use 1 = 1.",
+   "set": {
+    "4,3": 1
+   },
+   "marks": {
+    "5,3": "active",
+    "5,4": "active",
+    "4,3": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "use(down-right)",
+     1
+    ],
+    [
+     "dp[4][3]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "s[4]='b' == t[2]='b': dp[4][2] = skip 0 + use 0 = 0.",
+   "set": {
+    "4,2": 0
+   },
+   "marks": {
+    "5,2": "active",
+    "5,3": "active",
+    "4,2": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "use(down-right)",
+     0
+    ],
+    [
+     "dp[4][2]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[4]='b' != t[1]='a': can't use it, dp[4][1] = skip 0 = 0.",
+   "set": {
+    "4,1": 0
+   },
+   "marks": {
+    "5,1": "active",
+    "4,1": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[4][1]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[4]='b' != t[0]='r': can't use it, dp[4][0] = skip 0 = 0.",
+   "set": {
+    "4,0": 0
+   },
+   "marks": {
+    "5,0": "active",
+    "4,0": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[4][0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[3]='b' != t[5]='t': can't use it, dp[3][5] = skip 1 = 1.",
+   "set": {
+    "3,5": 1
+   },
+   "marks": {
+    "4,5": "active",
+    "3,5": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[3][5]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[3]='b' != t[4]='i': can't use it, dp[3][4] = skip 1 = 1.",
+   "set": {
+    "3,4": 1
+   },
+   "marks": {
+    "4,4": "active",
+    "3,4": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[3][4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "s[3]='b' == t[3]='b': dp[3][3] = skip 1 + use 1 = 2.",
+   "set": {
+    "3,3": 2
+   },
+   "marks": {
+    "4,3": "active",
+    "4,4": "active",
+    "3,3": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "use(down-right)",
+     1
+    ],
+    [
+     "dp[3][3]",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "s[3]='b' == t[2]='b': dp[3][2] = skip 0 + use 1 = 1.",
+   "set": {
+    "3,2": 1
+   },
+   "marks": {
+    "4,2": "active",
+    "4,3": "active",
+    "3,2": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "use(down-right)",
+     1
+    ],
+    [
+     "dp[3][2]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[3]='b' != t[1]='a': can't use it, dp[3][1] = skip 0 = 0.",
+   "set": {
+    "3,1": 0
+   },
+   "marks": {
+    "4,1": "active",
+    "3,1": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[3][1]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[3]='b' != t[0]='r': can't use it, dp[3][0] = skip 0 = 0.",
+   "set": {
+    "3,0": 0
+   },
+   "marks": {
+    "4,0": "active",
+    "3,0": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[3][0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[2]='b' != t[5]='t': can't use it, dp[2][5] = skip 1 = 1.",
+   "set": {
+    "2,5": 1
+   },
+   "marks": {
+    "3,5": "active",
+    "2,5": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[2][5]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[2]='b' != t[4]='i': can't use it, dp[2][4] = skip 1 = 1.",
+   "set": {
+    "2,4": 1
+   },
+   "marks": {
+    "3,4": "active",
+    "2,4": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[2][4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "s[2]='b' == t[3]='b': dp[2][3] = skip 2 + use 1 = 3.",
+   "set": {
+    "2,3": 3
+   },
+   "marks": {
+    "3,3": "active",
+    "3,4": "active",
+    "2,3": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     2
+    ],
+    [
+     "use(down-right)",
+     1
+    ],
+    [
+     "dp[2][3]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "s[2]='b' == t[2]='b': dp[2][2] = skip 1 + use 2 = 3.",
+   "set": {
+    "2,2": 3
+   },
+   "marks": {
+    "3,2": "active",
+    "3,3": "active",
+    "2,2": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "use(down-right)",
+     2
+    ],
+    [
+     "dp[2][2]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[2]='b' != t[1]='a': can't use it, dp[2][1] = skip 0 = 0.",
+   "set": {
+    "2,1": 0
+   },
+   "marks": {
+    "3,1": "active",
+    "2,1": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[2][1]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[2]='b' != t[0]='r': can't use it, dp[2][0] = skip 0 = 0.",
+   "set": {
+    "2,0": 0
+   },
+   "marks": {
+    "3,0": "active",
+    "2,0": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[2][0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[1]='a' != t[5]='t': can't use it, dp[1][5] = skip 1 = 1.",
+   "set": {
+    "1,5": 1
+   },
+   "marks": {
+    "2,5": "active",
+    "1,5": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[1][5]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[1]='a' != t[4]='i': can't use it, dp[1][4] = skip 1 = 1.",
+   "set": {
+    "1,4": 1
+   },
+   "marks": {
+    "2,4": "active",
+    "1,4": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[1][4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[1]='a' != t[3]='b': can't use it, dp[1][3] = skip 3 = 3.",
+   "set": {
+    "1,3": 3
+   },
+   "marks": {
+    "2,3": "active",
+    "1,3": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     3
+    ],
+    [
+     "dp[1][3]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[1]='a' != t[2]='b': can't use it, dp[1][2] = skip 3 = 3.",
+   "set": {
+    "1,2": 3
+   },
+   "marks": {
+    "2,2": "active",
+    "1,2": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     3
+    ],
+    [
+     "dp[1][2]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "s[1]='a' == t[1]='a': dp[1][1] = skip 0 + use 3 = 3.",
+   "set": {
+    "1,1": 3
+   },
+   "marks": {
+    "2,1": "active",
+    "2,2": "active",
+    "1,1": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "use(down-right)",
+     3
+    ],
+    [
+     "dp[1][1]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[1]='a' != t[0]='r': can't use it, dp[1][0] = skip 0 = 0.",
+   "set": {
+    "1,0": 0
+   },
+   "marks": {
+    "2,0": "active",
+    "1,0": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "dp[1][0]",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[0]='r' != t[5]='t': can't use it, dp[0][5] = skip 1 = 1.",
+   "set": {
+    "0,5": 1
+   },
+   "marks": {
+    "1,5": "active",
+    "0,5": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[0][5]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[0]='r' != t[4]='i': can't use it, dp[0][4] = skip 1 = 1.",
+   "set": {
+    "0,4": 1
+   },
+   "marks": {
+    "1,4": "active",
+    "0,4": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     1
+    ],
+    [
+     "dp[0][4]",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[0]='r' != t[3]='b': can't use it, dp[0][3] = skip 3 = 3.",
+   "set": {
+    "0,3": 3
+   },
+   "marks": {
+    "1,3": "active",
+    "0,3": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     3
+    ],
+    [
+     "dp[0][3]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[0]='r' != t[2]='b': can't use it, dp[0][2] = skip 3 = 3.",
+   "set": {
+    "0,2": 3
+   },
+   "marks": {
+    "1,2": "active",
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     3
+    ],
+    [
+     "dp[0][2]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 4,
+   "note": "s[0]='r' != t[1]='a': can't use it, dp[0][1] = skip 3 = 3.",
+   "set": {
+    "0,1": 3
+   },
+   "marks": {
+    "1,1": "active",
+    "0,1": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     3
+    ],
+    [
+     "dp[0][1]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "tab",
+   "line": 5,
+   "note": "s[0]='r' == t[0]='r': dp[0][0] = skip 0 + use 3 = 3.",
+   "set": {
+    "0,0": 3
+   },
+   "marks": {
+    "1,0": "active",
+    "1,1": "active",
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "skip(down)",
+     0
+    ],
+    [
+     "use(down-right)",
+     3
+    ],
+    [
+     "dp[0][0]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "tab",
+   "line": 6,
+   "intro": "the top-left cell counts every full alignment.",
+   "invariant": "dp[0][0] summed all use/skip paths without recounting a subproblem.",
+   "note": "dp[0][0] = 3 \u2014 the number of distinct ways \"rabbit\" appears in \"rabbbit\".",
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "answer",
+     3
+    ]
+   ],
+   "banner": "\"rabbit\" appears in \"rabbbit\" 3 distinct way(s)"
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     0,
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     1
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     1
+    ]
+   ],
+   "rowLabels": [
+    "a",
+    "b",
+    "c",
+    "\u00b7"
+   ],
+   "colLabels": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "\u00b7"
+   ],
+   "code": "tab",
+   "line": 6,
+   "note": "Edge case: the target is longer than the source. There is no way to fit \"abcd\" inside \"abc\", so dp[0][0] = 0.",
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "answer",
+     0
+    ]
+   ],
+   "banner": "Target longer than source \u2192 0"
+  }
+ ]
+}

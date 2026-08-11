@@ -1,0 +1,560 @@
+{
+ "player": "linear",
+ "title": "Boats to Save People \u2014 pair the heaviest with the lightest",
+ "acts": [
+  "Wrong greedy: heaviest + heaviest",
+  "The waste",
+  "Fast: heaviest + lightest",
+  "Edge case: everyone solo"
+ ],
+ "code": {
+  "wrong": [
+   "people.sort(reverse=True)",
+   "i, boats = 0, 0",
+   "while i < n:",
+   "    # pair two heaviest if they fit",
+   "    if i+1 < n and people[i]+people[i+1] <= limit:",
+   "        i += 2",
+   "    else:",
+   "        i += 1",
+   "    boats += 1"
+  ],
+  "fast": [
+   "people.sort()",
+   "left, right = 0, n - 1",
+   "boats = 0",
+   "while left <= right:",
+   "    if people[left] + people[right] <= limit:",
+   "        left += 1",
+   "    right -= 1",
+   "    boats += 1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "pointer heads"
+  ],
+  [
+   "good",
+   "seated this boat"
+  ],
+  [
+   "bad",
+   "sails alone"
+  ],
+  [
+   "dim",
+   "already ashore"
+  ]
+ ],
+ "cells": [
+  3,
+  5,
+  3,
+  4
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    5,
+    4,
+    3,
+    3
+   ],
+   "code": "wrong",
+   "line": 0,
+   "intro": "pairing heavy-with-heavy: two big people almost never fit, so second seats sit empty.",
+   "invariant": "boats counts committed boats; i marks the heaviest person not yet seated.",
+   "note": "Tempting greedy: sort DESCENDING [5, 4, 3, 3], limit 5. Try to pair the two heaviest each boat.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "limit",
+     5
+    ],
+    [
+     "boats",
+     0
+    ],
+    [
+     "wasted seats",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "wrong",
+   "line": 7,
+   "note": "5 + 4 = 9 > 5: 5 sails ALONE. Second seat wasted.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "bad"
+   },
+   "state": [
+    [
+     "alone",
+     5
+    ],
+    [
+     "boats",
+     1
+    ],
+    [
+     "wasted seats",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "wrong",
+   "line": 7,
+   "note": "4 + 3 = 7 > 5: 4 sails ALONE. Second seat wasted.",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "bad"
+   },
+   "state": [
+    [
+     "alone",
+     4
+    ],
+    [
+     "boats",
+     2
+    ],
+    [
+     "wasted seats",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "wrong",
+   "line": 7,
+   "note": "3 + 3 = 6 > 5: 3 sails ALONE. Second seat wasted.",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "state": [
+    [
+     "alone",
+     3
+    ],
+    [
+     "boats",
+     3
+    ],
+    [
+     "wasted seats",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "wrong",
+   "line": 7,
+   "note": "3 is the last person: 3 sails ALONE. Second seat wasted.",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "bad"
+   },
+   "state": [
+    [
+     "alone",
+     3
+    ],
+    [
+     "boats",
+     4
+    ],
+    [
+     "wasted seats",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "wrong",
+   "line": 8,
+   "note": "This greedy uses 4 boats and wasted 4 second seats. The light people never got matched up.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "boats (wrong)",
+     4
+    ],
+    [
+     "wasted seats",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the second seat is the whole resource \u2014 heavy-with-heavy throws it away.",
+   "note": "Pairing heavy-with-heavy left 4 empty seats. Every empty seat is a light person who now needs their own boat.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "wasted seats",
+     4
+    ],
+    [
+     "fix",
+     "fill each 2nd seat"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "The heaviest person must sail regardless. So ask the cheapest question: does the LIGHTEST person fit beside them? If they don't, nobody lighter helps either.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "pair",
+     "heaviest + lightest"
+    ],
+    [
+     "cost",
+     "one sorted sweep"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    3,
+    3,
+    4,
+    5
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "left = lightest, right = heaviest. The heaviest always boards; the lightest rides along if they fit.",
+   "invariant": "everyone outside [left, right] is already on a boat; boats = boats committed.",
+   "note": "Correct greedy: sort ASCENDING [3, 3, 4, 5]. left at the lightest, right at the heaviest.",
+   "pointers": {
+    "left": 0,
+    "right": 3
+   },
+   "marks": {
+    "0": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "limit",
+     5
+    ],
+    [
+     "left",
+     3
+    ],
+    [
+     "right",
+     5
+    ],
+    [
+     "boats",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "heaviest 5 + lightest 3 = 8 > 5: even the lightest won't fit, so heaviest sails alone.",
+   "pointers": {
+    "left": 0,
+    "right": 3
+   },
+   "marks": {
+    "3": "bad"
+   },
+   "state": [
+    [
+     "alone",
+     5
+    ],
+    [
+     "boats",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "heaviest 4 + lightest 3 = 7 > 5: even the lightest won't fit, so heaviest sails alone.",
+   "pointers": {
+    "left": 0,
+    "right": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "state": [
+    [
+     "alone",
+     4
+    ],
+    [
+     "boats",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "heaviest 3 + lightest 3 = 6 > 5: even the lightest won't fit, so heaviest sails alone.",
+   "pointers": {
+    "left": 0,
+    "right": 1
+   },
+   "marks": {
+    "1": "bad"
+   },
+   "state": [
+    [
+     "alone",
+     3
+    ],
+    [
+     "boats",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "one person left (3): they take the final boat.",
+   "pointers": {
+    "left": 0,
+    "right": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "alone",
+     3
+    ],
+    [
+     "boats",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "4 boats \u2014 the true minimum. Pairing heaviest-with-lightest never wastes a seat that could have been filled.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     4
+    ],
+    [
+     "vs wrong greedy",
+     4
+    ]
+   ],
+   "banner": "Minimum boats = 4   (sort + pair heaviest with lightest)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    5,
+    5,
+    5,
+    5
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "code": "fast",
+   "line": 3,
+   "intro": "when no two people fit, every step retires only the right pointer \u2014 one boat each.",
+   "invariant": "the heaviest still boards each boat; left never advances if no pair fits.",
+   "note": "Edge case: [5, 5, 5, 5], limit 6. 5 + 5 = 10 > 6, so no two ever fit.",
+   "pointers": {
+    "left": 0,
+    "right": 3
+   },
+   "marks": {
+    "0": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "limit",
+     6
+    ],
+    [
+     "boats",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "5 + 5 = 10 > 6: 5 sails alone.",
+   "pointers": {
+    "left": 0,
+    "right": 3
+   },
+   "marks": {
+    "3": "bad"
+   },
+   "state": [
+    [
+     "alone",
+     5
+    ],
+    [
+     "boats",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "5 + 5 = 10 > 6: 5 sails alone.",
+   "pointers": {
+    "left": 0,
+    "right": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "state": [
+    [
+     "alone",
+     5
+    ],
+    [
+     "boats",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "5 + 5 = 10 > 6: 5 sails alone.",
+   "pointers": {
+    "left": 0,
+    "right": 1
+   },
+   "marks": {
+    "1": "bad"
+   },
+   "state": [
+    [
+     "alone",
+     5
+    ],
+    [
+     "boats",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "last person 5 takes the final boat.",
+   "pointers": {
+    "left": 0,
+    "right": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "boats",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "note": "4 boats \u2014 everyone solo. left never moved because no pair ever fit.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     4
+    ]
+   ],
+   "banner": "No two fit -> 4 boats (one per person)"
+  }
+ ]
+}

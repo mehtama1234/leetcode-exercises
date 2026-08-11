@@ -65,7 +65,1238 @@
 <h2>Pitfalls</h2>
 <ul><li>Assuming an unhappy number runs off to infinity. It can&#x27;t — the values stay bounded, so a repeat is guaranteed, which is what makes cycle detection valid.</li><li>With two pointers, advancing them by the wrong amounts. Slow moves one hop, fast moves two hops per iteration.</li><li>Forgetting that <code>1</code> maps to <code>1</code> (a fixed point) — reaching it is the happy exit, not a loop to reject.</li></ul>
 <h2>Transfer</h2>
-<p>The reusable move is <strong>model a repeating process as a walk, then detect a cycle — either by remembering states in a set or by racing two pointers.</strong> The two-pointer version is Floyd&#x27;s cycle detection, the exact trick used in <a href="https://leetcode.com/problems/linked-list-cycle/">Linked List Cycle / 141</a> and <a href="https://leetcode.com/problems/find-the-duplicate-number/">Find the Duplicate Number / 287</a>, where the &quot;next step&quot; is a pointer instead of the digit-square-sum here.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/25-math-geometry/0202-happy-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;202. Happy Number — https://leetcode.com/problems/happy-number/
+<p>The reusable move is <strong>model a repeating process as a walk, then detect a cycle — either by remembering states in a set or by racing two pointers.</strong> The two-pointer version is Floyd&#x27;s cycle detection, the exact trick used in <a href="https://leetcode.com/problems/linked-list-cycle/">Linked List Cycle / 141</a> and <a href="https://leetcode.com/problems/find-the-duplicate-number/">Find the Duplicate Number / 287</a>, where the &quot;next step&quot; is a pointer instead of the digit-square-sum here.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Happy Number - iterate digit-square-sums; detect the loop",
+ "acts": [
+  "The rule",
+  "Seen-set: 19 is happy",
+  "Seen-set: 2 loops",
+  "Floyd's two pointers"
+ ],
+ "code": {
+  "hap": [
+   "def f(n):                      # sum of squared digits",
+   "    return sum(d*d for d in digits(n))",
+   "seen = set()",
+   "while n != 1 and n not in seen:",
+   "    seen.add(n); n = f(n)",
+   "return n == 1"
+  ],
+  "floyd": [
+   "slow = n",
+   "fast = f(n)",
+   "while fast != 1 and slow != fast:",
+   "    slow = f(slow)             # one step",
+   "    fast = f(f(fast))          # two steps",
+   "return fast == 1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current number"
+  ],
+  [
+   "good",
+   "reached 1"
+  ],
+  [
+   "bad",
+   "repeat -> cycle"
+  ],
+  [
+   "dim",
+   "already seen"
+  ]
+ ],
+ "cells": [
+  "19"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "19"
+   ],
+   "labels": [
+    "n"
+   ],
+   "code": "hap",
+   "line": 0,
+   "intro": "the step replaces n by the sum of the squares of its digits.",
+   "invariant": "the sequence either hits 1 or repeats a value \u2014 it can't run forever new.",
+   "note": "Happy test: replace n by the sum of its digits squared, repeat. Reach 1 = happy; loop without 1 = not.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "step",
+    "rows": [
+     [
+      "1^2 + 9^2",
+      "1 + 81 = 82"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     19
+    ],
+    [
+     "f(19)",
+     82
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "19",
+    "82",
+    "68",
+    "100",
+    "1"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "code": "hap",
+   "line": 3,
+   "intro": "each new number is remembered; we stop the moment we see 1 or a repeat.",
+   "invariant": "seen holds every earlier number in the chain.",
+   "note": "Run 19 with a seen-set. The chain: 19 -> 82 -> 68 -> 100 -> 1.",
+   "pointers": {
+    "n": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": []
+   },
+   "state": [
+    [
+     "n",
+     19
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "hap",
+   "line": 4,
+   "note": "f(19) = 1^2+9^2 = 82 -> 82.",
+   "pointers": {
+    "n": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "19",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     19
+    ],
+    [
+     "f(n)",
+     82
+    ],
+    [
+     "seen size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "hap",
+   "line": 4,
+   "note": "f(82) = 8^2+2^2 = 68 -> 68.",
+   "pointers": {
+    "n": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "19",
+      "seen"
+     ],
+     [
+      "82",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     82
+    ],
+    [
+     "f(n)",
+     68
+    ],
+    [
+     "seen size",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "hap",
+   "line": 4,
+   "note": "f(68) = 6^2+8^2 = 100 -> 100.",
+   "pointers": {
+    "n": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "19",
+      "seen"
+     ],
+     [
+      "82",
+      "seen"
+     ],
+     [
+      "68",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     68
+    ],
+    [
+     "f(n)",
+     100
+    ],
+    [
+     "seen size",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "hap",
+   "line": 4,
+   "note": "f(100) = 1^2+0^2+0^2 = 1 -> 1.  Reached 1!",
+   "pointers": {
+    "n": 4
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "good"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "19",
+      "seen"
+     ],
+     [
+      "82",
+      "seen"
+     ],
+     [
+      "68",
+      "seen"
+     ],
+     [
+      "100",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     100
+    ],
+    [
+     "f(n)",
+     1
+    ],
+    [
+     "seen size",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "hap",
+   "line": 5,
+   "note": "Reached 1 -> 19 is happy.",
+   "marks": {
+    "4": "good"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "19",
+      "seen"
+     ],
+     [
+      "82",
+      "seen"
+     ],
+     [
+      "68",
+      "seen"
+     ],
+     [
+      "100",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "happy",
+     true
+    ]
+   ],
+   "banner": "19 is happy (19 -> 82 -> 68 -> 100 -> 1)"
+  },
+  {
+   "act": 2,
+   "cells": [
+    "2",
+    "4",
+    "16",
+    "37",
+    "58",
+    "89",
+    "145",
+    "42",
+    "20",
+    "4"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "code": "hap",
+   "line": 3,
+   "intro": "an unhappy number falls into a fixed loop; the set spots the first repeat.",
+   "invariant": "if a value reappears, we are cycling and will never reach 1.",
+   "note": "Run 2. Chain: 2 -> 4 -> 16 -> 37 -> 58 -> 89 -> 145 -> 42 -> 20 -> 4 \u2014 the last value repeats an earlier one, so it loops.",
+   "pointers": {
+    "n": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": []
+   },
+   "state": [
+    [
+     "n",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "hap",
+   "line": 4,
+   "note": "f(2) = 2^2 = 4 -> 4.",
+   "pointers": {
+    "n": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "2",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     2
+    ],
+    [
+     "f(n)",
+     4
+    ],
+    [
+     "repeat?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "hap",
+   "line": 4,
+   "note": "f(4) = 4^2 = 16 -> 16.",
+   "pointers": {
+    "n": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "2",
+      "seen"
+     ],
+     [
+      "4",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     4
+    ],
+    [
+     "f(n)",
+     16
+    ],
+    [
+     "repeat?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "hap",
+   "line": 4,
+   "note": "f(16) = 1^2+6^2 = 37 -> 37.",
+   "pointers": {
+    "n": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "2",
+      "seen"
+     ],
+     [
+      "4",
+      "seen"
+     ],
+     [
+      "16",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     16
+    ],
+    [
+     "f(n)",
+     37
+    ],
+    [
+     "repeat?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "hap",
+   "line": 4,
+   "note": "f(37) = 3^2+7^2 = 58 -> 58.",
+   "pointers": {
+    "n": 4
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "2",
+      "seen"
+     ],
+     [
+      "4",
+      "seen"
+     ],
+     [
+      "16",
+      "seen"
+     ],
+     [
+      "37",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     37
+    ],
+    [
+     "f(n)",
+     58
+    ],
+    [
+     "repeat?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "hap",
+   "line": 4,
+   "note": "f(58) = 5^2+8^2 = 89 -> 89.",
+   "pointers": {
+    "n": 5
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "2",
+      "seen"
+     ],
+     [
+      "4",
+      "seen"
+     ],
+     [
+      "16",
+      "seen"
+     ],
+     [
+      "37",
+      "seen"
+     ],
+     [
+      "58",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     58
+    ],
+    [
+     "f(n)",
+     89
+    ],
+    [
+     "repeat?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "hap",
+   "line": 4,
+   "note": "f(89) = 8^2+9^2 = 145 -> 145.",
+   "pointers": {
+    "n": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "2",
+      "seen"
+     ],
+     [
+      "4",
+      "seen"
+     ],
+     [
+      "16",
+      "seen"
+     ],
+     [
+      "37",
+      "seen"
+     ],
+     [
+      "58",
+      "seen"
+     ],
+     [
+      "89",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     89
+    ],
+    [
+     "f(n)",
+     145
+    ],
+    [
+     "repeat?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "hap",
+   "line": 4,
+   "note": "f(145) = 1^2+4^2+5^2 = 42 -> 42.",
+   "pointers": {
+    "n": 7
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "2",
+      "seen"
+     ],
+     [
+      "4",
+      "seen"
+     ],
+     [
+      "16",
+      "seen"
+     ],
+     [
+      "37",
+      "seen"
+     ],
+     [
+      "58",
+      "seen"
+     ],
+     [
+      "89",
+      "seen"
+     ],
+     [
+      "145",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     145
+    ],
+    [
+     "f(n)",
+     42
+    ],
+    [
+     "repeat?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "hap",
+   "line": 4,
+   "note": "f(42) = 4^2+2^2 = 20 -> 20.",
+   "pointers": {
+    "n": 8
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "active"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "2",
+      "seen"
+     ],
+     [
+      "4",
+      "seen"
+     ],
+     [
+      "16",
+      "seen"
+     ],
+     [
+      "37",
+      "seen"
+     ],
+     [
+      "58",
+      "seen"
+     ],
+     [
+      "89",
+      "seen"
+     ],
+     [
+      "145",
+      "seen"
+     ],
+     [
+      "42",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     42
+    ],
+    [
+     "f(n)",
+     20
+    ],
+    [
+     "repeat?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "hap",
+   "line": 4,
+   "note": "f(20) = 2^2+0^2 = 4 -> 4.  4 was already seen -> cycle!",
+   "pointers": {
+    "n": 9
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "dim",
+    "9": "bad"
+   },
+   "sidebar": {
+    "title": "seen",
+    "rows": [
+     [
+      "2",
+      "seen"
+     ],
+     [
+      "4",
+      "seen"
+     ],
+     [
+      "16",
+      "seen"
+     ],
+     [
+      "37",
+      "seen"
+     ],
+     [
+      "58",
+      "seen"
+     ],
+     [
+      "89",
+      "seen"
+     ],
+     [
+      "145",
+      "seen"
+     ],
+     [
+      "42",
+      "seen"
+     ],
+     [
+      "20",
+      "seen"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "n",
+     20
+    ],
+    [
+     "f(n)",
+     4
+    ],
+    [
+     "repeat?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "hap",
+   "line": 5,
+   "note": "4 repeated -> 2 is NOT happy.",
+   "marks": {
+    "9": "bad"
+   },
+   "state": [
+    [
+     "happy",
+     false
+    ]
+   ],
+   "banner": "2 is not happy (falls into a loop)"
+  },
+  {
+   "act": 3,
+   "cells": [
+    "2",
+    "4",
+    "16",
+    "37",
+    "58",
+    "89",
+    "145",
+    "42",
+    "20",
+    "4"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "code": "floyd",
+   "line": 0,
+   "intro": "drop the set: run a slow (1 step) and fast (2 steps) pointer; a cycle makes them meet.",
+   "invariant": "in a cycle the fast pointer laps the slow one; on a happy chain fast reaches 1 first.",
+   "note": "Floyd on 2: slow takes one step, fast takes two. If they meet, it's a loop; if fast hits 1, it's happy. No memory needed.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "pointers",
+    "rows": [
+     [
+      "slow",
+      "2"
+     ],
+     [
+      "fast",
+      "4"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "slow",
+     2
+    ],
+    [
+     "fast",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "floyd",
+   "line": 4,
+   "note": "step 1: slow -> 4, fast -> 37.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "pointers",
+    "rows": [
+     [
+      "slow",
+      "4"
+     ],
+     [
+      "fast",
+      "37"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "slow",
+     4
+    ],
+    [
+     "fast",
+     37
+    ],
+    [
+     "meet?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "floyd",
+   "line": 4,
+   "note": "step 2: slow -> 16, fast -> 89.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "pointers",
+    "rows": [
+     [
+      "slow",
+      "16"
+     ],
+     [
+      "fast",
+      "89"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "slow",
+     16
+    ],
+    [
+     "fast",
+     89
+    ],
+    [
+     "meet?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "floyd",
+   "line": 4,
+   "note": "step 3: slow -> 37, fast -> 42.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "pointers",
+    "rows": [
+     [
+      "slow",
+      "37"
+     ],
+     [
+      "fast",
+      "42"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "slow",
+     37
+    ],
+    [
+     "fast",
+     42
+    ],
+    [
+     "meet?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "floyd",
+   "line": 4,
+   "note": "step 4: slow -> 58, fast -> 4.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "pointers",
+    "rows": [
+     [
+      "slow",
+      "58"
+     ],
+     [
+      "fast",
+      "4"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "slow",
+     58
+    ],
+    [
+     "fast",
+     4
+    ],
+    [
+     "meet?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "floyd",
+   "line": 4,
+   "note": "step 5: slow -> 89, fast -> 37.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "pointers",
+    "rows": [
+     [
+      "slow",
+      "89"
+     ],
+     [
+      "fast",
+      "37"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "slow",
+     89
+    ],
+    [
+     "fast",
+     37
+    ],
+    [
+     "meet?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "floyd",
+   "line": 4,
+   "note": "step 6: slow -> 145, fast -> 89.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "pointers",
+    "rows": [
+     [
+      "slow",
+      "145"
+     ],
+     [
+      "fast",
+      "89"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "slow",
+     145
+    ],
+    [
+     "fast",
+     89
+    ],
+    [
+     "meet?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "floyd",
+   "line": 4,
+   "note": "step 7: slow -> 42, fast -> 42.  slow == fast: cycle found.",
+   "pointers": {},
+   "marks": {},
+   "sidebar": {
+    "title": "pointers",
+    "rows": [
+     [
+      "slow",
+      "42"
+     ],
+     [
+      "fast",
+      "42"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "slow",
+     42
+    ],
+    [
+     "fast",
+     42
+    ],
+    [
+     "meet?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "floyd",
+   "line": 5,
+   "note": "slow and fast met at 42 without reaching 1 -> not happy. Same answer as the set, but O(1) memory.",
+   "marks": {},
+   "sidebar": {
+    "title": "pointers",
+    "rows": [
+     [
+      "slow",
+      "42"
+     ],
+     [
+      "fast",
+      "42"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "happy",
+     false
+    ]
+   ],
+   "banner": "Floyd: they meet -> 2 is not happy (no set needed)"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/25-math-geometry/0202-happy-number/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;202. Happy Number — https://leetcode.com/problems/happy-number/
 
 Replace a number by the sum of the squares of its digits, repeat. If you reach
 1 the number is &quot;happy&quot;; if you loop forever without reaching 1 it is not.

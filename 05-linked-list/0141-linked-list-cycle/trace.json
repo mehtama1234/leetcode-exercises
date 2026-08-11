@@ -1,0 +1,705 @@
+{
+ "player": "linkedlist",
+ "title": "Linked List Cycle - Floyd's fast/slow needs no memory",
+ "acts": [
+  "Brute: remember every node",
+  "The waste",
+  "Floyd's fast/slow",
+  "Edge: no cycle"
+ ],
+ "code": {
+  "seen": [
+   "seen = set()",
+   "node = head",
+   "while node:",
+   "    if id(node) in seen:",
+   "        return True",
+   "    seen.add(id(node))",
+   "    node = node.next",
+   "return False"
+  ],
+  "fast": [
+   "slow = head",
+   "fast = head",
+   "while fast and fast.next:",
+   "    slow = slow.next",
+   "    fast = fast.next.next",
+   "    if slow is fast:",
+   "        return True",
+   "return False"
+  ]
+ },
+ "legend": [
+  [
+   "good",
+   "collision / repeat"
+  ],
+  [
+   "active",
+   "current node"
+  ],
+  [
+   "dim",
+   "already stored / passed"
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "vals": [
+    3,
+    2,
+    0,
+    -4
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "code": "seen",
+   "line": 0,
+   "intro": "every node we stand on gets stored \u2014 memory grows with the list.",
+   "invariant": "a cycle means we return to a node already in the set.",
+   "note": "The honest idea: a cycle is just 'we came back somewhere we have been'. So remember each node we visit and check for a repeat. The curved arrow below is the cycle: -4 points back to 2.",
+   "pointers": {
+    "node": 0
+   },
+   "state": [
+    [
+     "seen",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "seen",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "First time on 3. Store it (memory now holds 1 nodes) and move on.",
+   "pointers": {
+    "node": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "seen",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "seen",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "First time on 2. Store it (memory now holds 2 nodes) and move on.",
+   "pointers": {
+    "node": 1
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active"
+   },
+   "state": [
+    [
+     "seen",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "seen",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "First time on 0. Store it (memory now holds 3 nodes) and move on.",
+   "pointers": {
+    "node": 2
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active"
+   },
+   "state": [
+    [
+     "seen",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "seen",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "First time on -4. Store it (memory now holds 4 nodes) and move on.",
+   "pointers": {
+    "node": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "state": [
+    [
+     "seen",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "seen",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "Node 2 is already in the set \u2014 we have looped back. Cycle found.",
+   "pointers": {
+    "node": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "state": [
+    [
+     "seen",
+     4
+    ],
+    [
+     "repeat",
+     2
+    ]
+   ],
+   "banner": "Set method: cycle detected (used O(n) memory)"
+  },
+  {
+   "act": 1,
+   "vals": [
+    3,
+    2,
+    0,
+    -4
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "code": "seen",
+   "line": 0,
+   "intro": "Floyd's trick decides the same yes/no with zero extra memory.",
+   "invariant": "two runners on a loop must eventually collide.",
+   "note": "The waste is the set itself \u2014 O(n) memory just to answer yes or no. Two pointers at different speeds settle it for free: on a circular track a faster runner always laps a slower one.",
+   "pointers": {
+    "node": 0
+   },
+   "state": [
+    [
+     "extra memory",
+     "O(n) -> O(1)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "vals": [
+    3,
+    2,
+    0,
+    -4
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "code": "fast",
+   "line": 1,
+   "intro": "slow moves 1, fast moves 2; if they ever meet, there is a cycle.",
+   "invariant": "with a cycle the gap between them shrinks by one each turn.",
+   "note": "Both start at the head. Each turn slow steps once, fast steps twice.",
+   "pointers": {
+    "slow": 0,
+    "fast": 0
+   },
+   "state": [
+    [
+     "slow",
+     3
+    ],
+    [
+     "fast",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "slow -> 2, fast -> 0. No collision yet.",
+   "pointers": {
+    "slow": 1,
+    "fast": 2
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "slow",
+     2
+    ],
+    [
+     "fast",
+     0
+    ],
+    [
+     "met",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "slow -> 0, fast -> 2. No collision yet.",
+   "pointers": {
+    "slow": 2,
+    "fast": 1
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "slow",
+     0
+    ],
+    [
+     "fast",
+     2
+    ],
+    [
+     "met",
+     "no"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "slow -> -4, fast -> -4. They collided \u2014 a cycle exists.",
+   "pointers": {
+    "slow": 3,
+    "fast": 3
+   },
+   "marks": {
+    "3": "good"
+   },
+   "state": [
+    [
+     "slow",
+     -4
+    ],
+    [
+     "fast",
+     -4
+    ],
+    [
+     "met",
+     "yes"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "note": "slow is fast \u2014 both on -4. Return True. No extra memory used.",
+   "pointers": {
+    "slow": 3,
+    "fast": 3
+   },
+   "marks": {
+    "3": "good"
+   },
+   "state": [
+    [
+     "result",
+     "cycle"
+    ]
+   ],
+   "banner": "Floyd: cycle detected with O(1) memory"
+  },
+  {
+   "act": 3,
+   "vals": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "code": "fast",
+   "line": 2,
+   "intro": "with no loop, fast simply runs off the end.",
+   "invariant": "fast reaches null before it can ever meet slow.",
+   "note": "Edge case: a straight list, no back-arrow. Fast races ahead and falls off the end (its next is null), so the loop stops and we return False.",
+   "pointers": {
+    "slow": 0,
+    "fast": 0
+   },
+   "state": [
+    [
+     "slow",
+     1
+    ],
+    [
+     "fast",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "note": "slow -> 2, fast -> 3.",
+   "pointers": {
+    "slow": 1,
+    "fast": 2
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "slow",
+     2
+    ],
+    [
+     "fast",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "note": "slow -> 3, fast -> null.",
+   "pointers": {
+    "slow": 2,
+    "fast": null
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "slow",
+     3
+    ],
+    [
+     "fast",
+     "null"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     null
+    ]
+   ],
+   "note": "fast fell off the end without ever meeting slow. No cycle \u2014 return False.",
+   "pointers": {
+    "slow": 2
+   },
+   "marks": {
+    "2": "dim"
+   },
+   "state": [
+    [
+     "result",
+     "no cycle"
+    ]
+   ],
+   "banner": "No back-arrow: return False"
+  }
+ ]
+}

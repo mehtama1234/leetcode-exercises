@@ -1,0 +1,1902 @@
+{
+ "player": "linear",
+ "title": "Minimum Window Substring \u2014 from checking every substring to one window",
+ "acts": [
+  "Brute force: check every substring",
+  "The waste",
+  "Fast: grow to cover, shrink while covered",
+  "Edge case: impossible"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "    for j in range(i+1, n+1):",
+   "        if covers(s[i:j], need):",
+   "            best = shortest so far",
+   "            break"
+  ],
+  "fast": [
+   "for right, ch in enumerate(s):",
+   "    window[ch] += 1",
+   "    if window[ch] == need[ch]: formed += 1",
+   "    while formed == required:",
+   "        record if shorter",
+   "        drop s[left]; left += 1",
+   "        if a need broke: formed -= 1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "char just pulled in"
+  ],
+  [
+   "good",
+   "covering window"
+  ],
+  [
+   "bad",
+   "char leaving / short"
+  ],
+  [
+   "dim",
+   "inactive"
+  ]
+ ],
+ "cells": [
+  "A",
+  "D",
+  "O",
+  "B",
+  "E",
+  "C",
+  "O",
+  "D",
+  "E",
+  "B",
+  "A",
+  "N",
+  "C"
+ ],
+ "labels": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "A",
+    "D",
+    "O",
+    "B",
+    "E",
+    "C",
+    "O",
+    "D",
+    "E",
+    "B",
+    "A",
+    "N",
+    "C"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "every start grows a substring and re-counts its letters from scratch.",
+   "invariant": "best is the shortest covering substring starting before i.",
+   "note": "Brute force: for each start, extend until it covers A, B and C. Re-count each time.",
+   "pointers": {
+    "i": 0,
+    "j": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "best",
+     "\"\""
+    ],
+    [
+     "checks",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "start 0: \"ADOBEC\" first covers A,B,C at length 6. Best so far \"ADOBEC\".",
+   "pointers": {
+    "i": 0,
+    "j": 5
+   },
+   "window": [
+    0,
+    5
+   ],
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "window",
+     "\"ADOBEC\""
+    ],
+    [
+     "best",
+     "\"ADOBEC\""
+    ],
+    [
+     "checks",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "start 8: \"EBANC\" first covers A,B,C at length 5. Best so far \"EBANC\".",
+   "pointers": {
+    "i": 8,
+    "j": 12
+   },
+   "window": [
+    8,
+    12
+   ],
+   "marks": {
+    "8": "good",
+    "9": "good",
+    "10": "good",
+    "11": "good",
+    "12": "good"
+   },
+   "state": [
+    [
+     "i",
+     8
+    ],
+    [
+     "window",
+     "\"EBANC\""
+    ],
+    [
+     "best",
+     "\"EBANC\""
+    ],
+    [
+     "checks",
+     64
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 3,
+   "note": "start 9: \"BANC\" first covers A,B,C at length 4. Best so far \"BANC\".",
+   "pointers": {
+    "i": 9,
+    "j": 12
+   },
+   "window": [
+    9,
+    12
+   ],
+   "marks": {
+    "9": "good",
+    "10": "good",
+    "11": "good",
+    "12": "good"
+   },
+   "state": [
+    [
+     "i",
+     9
+    ],
+    [
+     "window",
+     "\"BANC\""
+    ],
+    [
+     "best",
+     "\"BANC\""
+    ],
+    [
+     "checks",
+     68
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 4,
+   "note": "Shortest covering window \"BANC\" (s[9:13]) \u2014 but it counted 74 substrings, re-tallying overlaps.",
+   "pointers": {
+    "i": 9,
+    "j": 12
+   },
+   "window": [
+    9,
+    12
+   ],
+   "marks": {
+    "9": "good",
+    "10": "good",
+    "11": "good",
+    "12": "good"
+   },
+   "state": [
+    [
+     "best",
+     "\"BANC\""
+    ],
+    [
+     "checks",
+     74
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the check counter \u2014 each start re-counts letters overlapping windows already saw.",
+   "note": "74 substring checks, each re-counting letters. Neighbouring substrings share almost all their text \u2014 that re-tallying is the waste.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "dim",
+    "9": "dim",
+    "10": "dim",
+    "11": "dim",
+    "12": "dim"
+   },
+   "state": [
+    [
+     "checks (brute)",
+     74
+    ],
+    [
+     "pattern",
+     "~ n*n"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Keep one window and a single counter `formed` = how many of A,B,C are satisfied. Grow right to reach coverage, then shrink left while still covered. Both move forward only.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "dim",
+    "9": "dim",
+    "10": "dim",
+    "11": "dim",
+    "12": "dim"
+   },
+   "state": [
+    [
+     "pattern",
+     "~ n"
+    ],
+    [
+     "coverage test",
+     "O(1) via formed"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "A",
+    "D",
+    "O",
+    "B",
+    "E",
+    "C",
+    "O",
+    "D",
+    "E",
+    "B",
+    "A",
+    "N",
+    "C"
+   ],
+   "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "`formed` counts satisfied letters, so 'fully covered?' is one comparison.",
+   "invariant": "formed = how many of A,B,C currently meet their required count.",
+   "note": "One window. Grow right, tracking formed. When formed == 3, shrink left as far as valid.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "0"
+     ],
+     [
+      "B",
+      "0"
+     ],
+     [
+      "C",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "formed",
+     0
+    ],
+    [
+     "required",
+     3
+    ],
+    [
+     "best",
+     "inf"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 0: pull in 'A'. formed 1/3. Not covered yet \u2014 keep growing.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "0"
+     ],
+     [
+      "C",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     0
+    ],
+    [
+     "char",
+     "A"
+    ],
+    [
+     "formed",
+     1
+    ],
+    [
+     "window len",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 1: pull in 'D'. formed 1/3. Not covered yet \u2014 keep growing.",
+   "pointers": {
+    "L": 0,
+    "R": 1
+   },
+   "window": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "0"
+     ],
+     [
+      "C",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     1
+    ],
+    [
+     "char",
+     "D"
+    ],
+    [
+     "formed",
+     1
+    ],
+    [
+     "window len",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 2: pull in 'O'. formed 1/3. Not covered yet \u2014 keep growing.",
+   "pointers": {
+    "L": 0,
+    "R": 2
+   },
+   "window": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "0"
+     ],
+     [
+      "C",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     2
+    ],
+    [
+     "char",
+     "O"
+    ],
+    [
+     "formed",
+     1
+    ],
+    [
+     "window len",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 3: pull in 'B'. formed 2/3. Not covered yet \u2014 keep growing.",
+   "pointers": {
+    "L": 0,
+    "R": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     3
+    ],
+    [
+     "char",
+     "B"
+    ],
+    [
+     "formed",
+     2
+    ],
+    [
+     "window len",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 4: pull in 'E'. formed 2/3. Not covered yet \u2014 keep growing.",
+   "pointers": {
+    "L": 0,
+    "R": 4
+   },
+   "window": [
+    0,
+    4
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     4
+    ],
+    [
+     "char",
+     "E"
+    ],
+    [
+     "formed",
+     2
+    ],
+    [
+     "window len",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 5: pull in 'C'. formed 3/3. Covered \u2014 now shrink.",
+   "pointers": {
+    "L": 0,
+    "R": 5
+   },
+   "window": [
+    0,
+    5
+   ],
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     5
+    ],
+    [
+     "char",
+     "C"
+    ],
+    [
+     "formed",
+     3
+    ],
+    [
+     "window len",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "covered \"ADOBEC\" (len 6). Best 6. Drop 'A' on the left \u2014 breaks coverage, stop.",
+   "pointers": {
+    "L": 0,
+    "R": 5
+   },
+   "window": [
+    0,
+    5
+   ],
+   "marks": {
+    "0": "bad",
+    "1": "good",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "0"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     0
+    ],
+    [
+     "window len",
+     6
+    ],
+    [
+     "best len",
+     6
+    ],
+    [
+     "formed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 6: pull in 'O'. formed 2/3. Not covered yet \u2014 keep growing.",
+   "pointers": {
+    "L": 1,
+    "R": 6
+   },
+   "window": [
+    1,
+    6
+   ],
+   "marks": {
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "0"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     6
+    ],
+    [
+     "char",
+     "O"
+    ],
+    [
+     "formed",
+     2
+    ],
+    [
+     "window len",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 7: pull in 'D'. formed 2/3. Not covered yet \u2014 keep growing.",
+   "pointers": {
+    "L": 1,
+    "R": 7
+   },
+   "window": [
+    1,
+    7
+   ],
+   "marks": {
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "0"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     7
+    ],
+    [
+     "char",
+     "D"
+    ],
+    [
+     "formed",
+     2
+    ],
+    [
+     "window len",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 8: pull in 'E'. formed 2/3. Not covered yet \u2014 keep growing.",
+   "pointers": {
+    "L": 1,
+    "R": 8
+   },
+   "window": [
+    1,
+    8
+   ],
+   "marks": {
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "0"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     8
+    ],
+    [
+     "char",
+     "E"
+    ],
+    [
+     "formed",
+     2
+    ],
+    [
+     "window len",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 9: pull in 'B'. formed 2/3. Not covered yet \u2014 keep growing.",
+   "pointers": {
+    "L": 1,
+    "R": 9
+   },
+   "window": [
+    1,
+    9
+   ],
+   "marks": {
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "dim",
+    "9": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "0"
+     ],
+     [
+      "B",
+      "2"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     9
+    ],
+    [
+     "char",
+     "B"
+    ],
+    [
+     "formed",
+     2
+    ],
+    [
+     "window len",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 10: pull in 'A'. formed 3/3. Covered \u2014 now shrink.",
+   "pointers": {
+    "L": 1,
+    "R": 10
+   },
+   "window": [
+    1,
+    10
+   ],
+   "marks": {
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim",
+    "7": "dim",
+    "8": "dim",
+    "9": "dim",
+    "10": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "2"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     10
+    ],
+    [
+     "char",
+     "A"
+    ],
+    [
+     "formed",
+     3
+    ],
+    [
+     "window len",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "covered \"DOBECODEBA\" (len 10). Best 6. Drop 'D' on the left, still covered.",
+   "pointers": {
+    "L": 1,
+    "R": 10
+   },
+   "window": [
+    1,
+    10
+   ],
+   "marks": {
+    "1": "bad",
+    "2": "good",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good",
+    "7": "good",
+    "8": "good",
+    "9": "good",
+    "10": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "2"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     1
+    ],
+    [
+     "window len",
+     10
+    ],
+    [
+     "best len",
+     6
+    ],
+    [
+     "formed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "covered \"OBECODEBA\" (len 9). Best 6. Drop 'O' on the left, still covered.",
+   "pointers": {
+    "L": 2,
+    "R": 10
+   },
+   "window": [
+    2,
+    10
+   ],
+   "marks": {
+    "2": "bad",
+    "3": "good",
+    "4": "good",
+    "5": "good",
+    "6": "good",
+    "7": "good",
+    "8": "good",
+    "9": "good",
+    "10": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "2"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     2
+    ],
+    [
+     "window len",
+     9
+    ],
+    [
+     "best len",
+     6
+    ],
+    [
+     "formed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "covered \"BECODEBA\" (len 8). Best 6. Drop 'B' on the left, still covered.",
+   "pointers": {
+    "L": 3,
+    "R": 10
+   },
+   "window": [
+    3,
+    10
+   ],
+   "marks": {
+    "3": "bad",
+    "4": "good",
+    "5": "good",
+    "6": "good",
+    "7": "good",
+    "8": "good",
+    "9": "good",
+    "10": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     3
+    ],
+    [
+     "window len",
+     8
+    ],
+    [
+     "best len",
+     6
+    ],
+    [
+     "formed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "covered \"ECODEBA\" (len 7). Best 6. Drop 'E' on the left, still covered.",
+   "pointers": {
+    "L": 4,
+    "R": 10
+   },
+   "window": [
+    4,
+    10
+   ],
+   "marks": {
+    "4": "bad",
+    "5": "good",
+    "6": "good",
+    "7": "good",
+    "8": "good",
+    "9": "good",
+    "10": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     4
+    ],
+    [
+     "window len",
+     7
+    ],
+    [
+     "best len",
+     6
+    ],
+    [
+     "formed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "covered \"CODEBA\" (len 6). Best 6. Drop 'C' on the left \u2014 breaks coverage, stop.",
+   "pointers": {
+    "L": 5,
+    "R": 10
+   },
+   "window": [
+    5,
+    10
+   ],
+   "marks": {
+    "5": "bad",
+    "6": "good",
+    "7": "good",
+    "8": "good",
+    "9": "good",
+    "10": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     5
+    ],
+    [
+     "window len",
+     6
+    ],
+    [
+     "best len",
+     6
+    ],
+    [
+     "formed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 11: pull in 'N'. formed 2/3. Not covered yet \u2014 keep growing.",
+   "pointers": {
+    "L": 6,
+    "R": 11
+   },
+   "window": [
+    6,
+    11
+   ],
+   "marks": {
+    "6": "dim",
+    "7": "dim",
+    "8": "dim",
+    "9": "dim",
+    "10": "dim",
+    "11": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     11
+    ],
+    [
+     "char",
+     "N"
+    ],
+    [
+     "formed",
+     2
+    ],
+    [
+     "window len",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 1,
+   "note": "right 12: pull in 'C'. formed 3/3. Covered \u2014 now shrink.",
+   "pointers": {
+    "L": 6,
+    "R": 12
+   },
+   "window": [
+    6,
+    12
+   ],
+   "marks": {
+    "6": "dim",
+    "7": "dim",
+    "8": "dim",
+    "9": "dim",
+    "10": "dim",
+    "11": "dim",
+    "12": "active"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "right",
+     12
+    ],
+    [
+     "char",
+     "C"
+    ],
+    [
+     "formed",
+     3
+    ],
+    [
+     "window len",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "covered \"ODEBANC\" (len 7). Best 6. Drop 'O' on the left, still covered.",
+   "pointers": {
+    "L": 6,
+    "R": 12
+   },
+   "window": [
+    6,
+    12
+   ],
+   "marks": {
+    "6": "bad",
+    "7": "good",
+    "8": "good",
+    "9": "good",
+    "10": "good",
+    "11": "good",
+    "12": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     6
+    ],
+    [
+     "window len",
+     7
+    ],
+    [
+     "best len",
+     6
+    ],
+    [
+     "formed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "covered \"DEBANC\" (len 6). Best 6. Drop 'D' on the left, still covered.",
+   "pointers": {
+    "L": 7,
+    "R": 12
+   },
+   "window": [
+    7,
+    12
+   ],
+   "marks": {
+    "7": "bad",
+    "8": "good",
+    "9": "good",
+    "10": "good",
+    "11": "good",
+    "12": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     7
+    ],
+    [
+     "window len",
+     6
+    ],
+    [
+     "best len",
+     6
+    ],
+    [
+     "formed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "covered \"EBANC\" (len 5). Best 5. Drop 'E' on the left, still covered.",
+   "pointers": {
+    "L": 8,
+    "R": 12
+   },
+   "window": [
+    8,
+    12
+   ],
+   "marks": {
+    "8": "bad",
+    "9": "good",
+    "10": "good",
+    "11": "good",
+    "12": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     8
+    ],
+    [
+     "window len",
+     5
+    ],
+    [
+     "best len",
+     5
+    ],
+    [
+     "formed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "covered \"BANC\" (len 4). Best 4. Drop 'B' on the left \u2014 breaks coverage, stop.",
+   "pointers": {
+    "L": 9,
+    "R": 12
+   },
+   "window": [
+    9,
+    12
+   ],
+   "marks": {
+    "9": "bad",
+    "10": "good",
+    "11": "good",
+    "12": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "0"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     9
+    ],
+    [
+     "window len",
+     4
+    ],
+    [
+     "best len",
+     4
+    ],
+    [
+     "formed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "Shortest covering window \"BANC\" (s[9:13]), length 4. One pass.",
+   "pointers": {
+    "L": 9,
+    "R": 12
+   },
+   "window": [
+    9,
+    12
+   ],
+   "marks": {
+    "9": "good",
+    "10": "good",
+    "11": "good",
+    "12": "good"
+   },
+   "sidebar": {
+    "title": "window has (need 1 each)",
+    "rows": [
+     [
+      "A",
+      "1"
+     ],
+     [
+      "B",
+      "1"
+     ],
+     [
+      "C",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "answer",
+     "\"BANC\""
+    ],
+    [
+     "best len",
+     4
+    ],
+    [
+     "vs brute checks",
+     74
+    ]
+   ],
+   "banner": "Min window = \"BANC\"   (len 4) \u2014 one pass vs 74 brute checks"
+  },
+  {
+   "act": 3,
+   "cells": [
+    "a"
+   ],
+   "labels": [
+    0
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "formed can never reach required, so no window is ever recorded.",
+   "invariant": "formed = satisfied letters; it caps below required when t can't be covered.",
+   "note": "Edge case: s=\"a\", t=\"aa\". We need two a's but only one exists \u2014 impossible.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "window has (need a:2)",
+    "rows": [
+     [
+      "a",
+      "0"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "required",
+     1
+    ],
+    [
+     "formed",
+     0
+    ],
+    [
+     "best",
+     "inf"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 1,
+   "note": "pull in 'a'. Have 1 'a', need 2 \u2014 requirement not met, formed stays 0.",
+   "pointers": {
+    "L": 0,
+    "R": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "bad"
+   },
+   "sidebar": {
+    "title": "window has (need a:2)",
+    "rows": [
+     [
+      "a",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "have a",
+     1
+    ],
+    [
+     "need a",
+     2
+    ],
+    [
+     "formed",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 4,
+   "note": "formed never reached required, so nothing was recorded. Answer is the empty string.",
+   "marks": {
+    "0": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     "\"\""
+    ]
+   ],
+   "banner": "Min window = \"\"   (t can't be covered)"
+  }
+ ]
+}

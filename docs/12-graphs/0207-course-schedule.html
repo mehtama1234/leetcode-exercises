@@ -66,7 +66,571 @@
 <h2>Pitfalls</h2>
 <ul><li><strong>Edge direction.</strong> Store <code>prereq -&gt; course</code>. Flip it and the whole dependency logic inverts.</li><li><strong>Courses with no prerequisites.</strong> They start at in-degree 0 and must seed the queue, or nothing ever begins.</li><li><strong>The self-loop <code>[a, a]</code>.</strong> A course that requires itself never reaches in-degree 0 — an instant loop. The counting handles it on its own.</li><li><strong>Reading the result wrong.</strong> The answer is &quot;did we finish *all* of them?&quot;, i.e. <code>finished == numCourses</code>, not &quot;did the queue empty.&quot;</li></ul>
 <h2>Transfer</h2>
-<p>This peel-off machine gives both a yes/no loop test and the actual order. <a href="https://leetcode.com/problems/course-schedule-ii/">Course Schedule II / 210</a> asks for the order (just record the take-off sequence), <a href="../0269-alien-dictionary/">Alien Dictionary / 269</a> sorts letters this way, and <a href="https://leetcode.com/problems/minimum-height-trees/">Minimum Height Trees / 310</a> peels leaves layer by layer the same way.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/12-graphs/0207-course-schedule/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;207. Course Schedule — https://leetcode.com/problems/course-schedule/
+<p>This peel-off machine gives both a yes/no loop test and the actual order. <a href="https://leetcode.com/problems/course-schedule-ii/">Course Schedule II / 210</a> asks for the order (just record the take-off sequence), <a href="../0269-alien-dictionary/">Alien Dictionary / 269</a> sorts letters this way, and <a href="https://leetcode.com/problems/minimum-height-trees/">Minimum Height Trees / 310</a> peels leaves layer by layer the same way.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Course Schedule - peel off zero-prereq courses; a leftover cycle blocks",
+ "acts": [
+  "The rule: in-degree 0",
+  "Run Kahn's (diamond)",
+  "Edge: a 3-cycle stalls"
+ ],
+ "code": {
+  "dfs": [
+   "indegree[c] = # prereqs c still waits on",
+   "ready = [c for c in courses if indegree[c] == 0]",
+   "while ready:",
+   "    course = ready.popleft()",
+   "    finished += 1",
+   "    for nxt in adj[course]:      # course unlocks nxt",
+   "        indegree[nxt] -= 1",
+   "        if indegree[nxt] == 0:",
+   "            ready.append(nxt)",
+   "return finished == num_courses   # else a cycle blocked us"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current course / unlocked"
+  ],
+  [
+   "good",
+   "finished (badge = in-degree)"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 0,
+   "x": 110,
+   "y": 230
+  },
+  {
+   "id": 1,
+   "val": 1,
+   "x": 0,
+   "y": 120
+  },
+  {
+   "id": 2,
+   "val": 2,
+   "x": 220,
+   "y": 120
+  },
+  {
+   "id": 3,
+   "val": 3,
+   "x": 110,
+   "y": 0
+  }
+ ],
+ "edges": [
+  [
+   1,
+   0
+  ],
+  [
+   2,
+   0
+  ],
+  [
+   3,
+   1
+  ],
+  [
+   3,
+   2
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 110,
+     "y": 230
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 120
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 220,
+     "y": 120
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 110,
+     "y": 0
+    }
+   ],
+   "edges": [
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     3,
+     2
+    ]
+   ],
+   "code": "dfs",
+   "line": 0,
+   "intro": "a course is ready the moment its in-degree (unmet prereqs) hits 0.",
+   "invariant": "finishing a course lowers its dependents' in-degree by one.",
+   "note": "Prereqs form a directed graph; edges point prereq -> the course it unlocks. You can finish everything iff there's no cycle. The badge shows how many prereqs each course still waits on (its in-degree).",
+   "active": [],
+   "done": {
+    "0": 2,
+    "1": 1,
+    "2": 1,
+    "3": 0
+   },
+   "state": [
+    [
+     "rule",
+     "peel off in-degree 0"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "dfs",
+   "line": 1,
+   "note": "Courses with in-degree 0 need no prereqs, so they're ready right now: [3]. Here only course 3.",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": 2,
+    "1": 1,
+    "2": 1,
+    "3": 0
+   },
+   "state": [
+    [
+     "ready",
+     "[3]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 110,
+     "y": 230
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 120
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 220,
+     "y": 120
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 110,
+     "y": 0
+    }
+   ],
+   "edges": [
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     3,
+     2
+    ]
+   ],
+   "code": "dfs",
+   "line": 2,
+   "intro": "each course finishes once; its badge drops to a check when it's done.",
+   "invariant": "finished courses only ever came from in-degree 0.",
+   "note": "Run Kahn's. Take a ready course, finish it, and drop the in-degree of everything it unlocks; anything that reaches 0 joins the ready queue.",
+   "active": [],
+   "done": {
+    "0": 2,
+    "1": 1,
+    "2": 1,
+    "3": 0
+   },
+   "state": [
+    [
+     "finished",
+     0
+    ],
+    [
+     "of",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "Course 3 has no unmet prereqs \u2014 finish it. (1/4)",
+   "active": [
+    3
+   ],
+   "done": {
+    "0": 2,
+    "1": 1,
+    "2": 1,
+    "3": "done"
+   },
+   "state": [
+    [
+     "finished",
+     1
+    ],
+    [
+     "taking",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 6,
+   "note": "Course 3 unlocked 1: its in-degree drops to 0.  Now ready.",
+   "active": [
+    3,
+    1
+   ],
+   "done": {
+    "0": 2,
+    "1": 0,
+    "2": 1,
+    "3": "done"
+   },
+   "state": [
+    [
+     "unlocked",
+     1
+    ],
+    [
+     "its in-degree",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 6,
+   "note": "Course 3 unlocked 2: its in-degree drops to 0.  Now ready.",
+   "active": [
+    3,
+    2
+   ],
+   "done": {
+    "0": 2,
+    "1": 0,
+    "2": 0,
+    "3": "done"
+   },
+   "state": [
+    [
+     "unlocked",
+     2
+    ],
+    [
+     "its in-degree",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "Course 1 has no unmet prereqs \u2014 finish it. (2/4)",
+   "active": [
+    1
+   ],
+   "done": {
+    "0": 2,
+    "1": "done",
+    "2": 0,
+    "3": "done"
+   },
+   "state": [
+    [
+     "finished",
+     2
+    ],
+    [
+     "taking",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 6,
+   "note": "Course 1 unlocked 0: its in-degree drops to 1.",
+   "active": [
+    1,
+    0
+   ],
+   "done": {
+    "0": 1,
+    "1": "done",
+    "2": 0,
+    "3": "done"
+   },
+   "state": [
+    [
+     "unlocked",
+     0
+    ],
+    [
+     "its in-degree",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "Course 2 has no unmet prereqs \u2014 finish it. (3/4)",
+   "active": [
+    2
+   ],
+   "done": {
+    "0": 1,
+    "1": "done",
+    "2": "done",
+    "3": "done"
+   },
+   "state": [
+    [
+     "finished",
+     3
+    ],
+    [
+     "taking",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 6,
+   "note": "Course 2 unlocked 0: its in-degree drops to 0.  Now ready.",
+   "active": [
+    2,
+    0
+   ],
+   "done": {
+    "0": 0,
+    "1": "done",
+    "2": "done",
+    "3": "done"
+   },
+   "state": [
+    [
+     "unlocked",
+     0
+    ],
+    [
+     "its in-degree",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 4,
+   "note": "Course 0 has no unmet prereqs \u2014 finish it. (4/4)",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": "done",
+    "1": "done",
+    "2": "done",
+    "3": "done"
+   },
+   "state": [
+    [
+     "finished",
+     4
+    ],
+    [
+     "taking",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "dfs",
+   "line": 9,
+   "note": "Finished all 4 of 4 courses \u2014 every one reached in-degree 0 in turn. No cycle, so the schedule is possible.",
+   "active": [],
+   "done": {
+    "0": "done",
+    "1": "done",
+    "2": "done",
+    "3": "done"
+   },
+   "state": [
+    [
+     "finished",
+     4
+    ],
+    [
+     "of",
+     4
+    ]
+   ],
+   "banner": "Finishable: all 4 courses ordered, no cycle"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 0,
+     "x": 110,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 1,
+     "x": 0,
+     "y": 150
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 220,
+     "y": 150
+    }
+   ],
+   "edges": [
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "code": "dfs",
+   "line": 1,
+   "intro": "no course ever reaches in-degree 0 \u2014 the queue starts empty.",
+   "invariant": "a cycle means every course waits on another that never finishes.",
+   "note": "Edge case: 0 -> 1 -> 2 -> 0, a cycle. Every course has an unmet prereq, so nothing is ready to start.",
+   "active": [],
+   "done": {
+    "0": 1,
+    "1": 1,
+    "2": 1
+   },
+   "state": [
+    [
+     "all in-degrees",
+     "1"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 2,
+   "note": "The ready queue is empty from the start, so the loop never runs. 0 of 3 courses finish \u2014 the cycle blocks them all.",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {
+    "0": 1,
+    "1": 1,
+    "2": 1
+   },
+   "state": [
+    [
+     "finished",
+     0
+    ],
+    [
+     "of",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "dfs",
+   "line": 9,
+   "note": "finished (0) != num_courses (3): leftover courses form a cycle, each waiting on the next. Impossible to finish.",
+   "active": [],
+   "done": {
+    "0": 1,
+    "1": 1,
+    "2": 1
+   },
+   "state": [
+    [
+     "finished",
+     0
+    ],
+    [
+     "of",
+     3
+    ]
+   ],
+   "banner": "Not finishable: a cycle stalls all 3 courses"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/12-graphs/0207-course-schedule/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;207. Course Schedule — https://leetcode.com/problems/course-schedule/
 
 There are numCourses courses (0..numCourses-1) and prerequisite pairs [a, b]
 meaning &quot;to take a you must first take b&quot;. Decide whether you can finish all

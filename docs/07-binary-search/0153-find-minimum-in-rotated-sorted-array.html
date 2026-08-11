@@ -66,7 +66,861 @@ return nums[lo]</code></pre>
 <h2>Pitfalls</h2>
 <ul><li><strong><code>hi = mid</code>, not <code>hi = mid - 1</code>.</strong> In the sorted-right case, <code>mid</code> is a live candidate for the minimum, so you can&#x27;t throw it away. This is why the loop uses <code>while lo &lt; hi</code> (converge to one element) rather than <code>lo &lt;= hi</code> — with <code>hi = mid</code> and <code>lo &lt;= hi</code>, the window can stop shrinking and loop forever.</li><li><strong>Comparing to the wrong edge.</strong> Comparing <code>nums[mid]</code> to <code>nums[lo]</code> breaks on the already-sorted case. Anchor on <code>hi</code>.</li><li><strong>Not-rotated input.</strong> <code>[11, 13, 15, 17]</code> is handled naturally: <code>nums[mid]</code> is always <code>&lt;= nums[hi]</code>, so <code>hi</code> keeps walking left until <code>lo == hi == 0</code>.</li><li>This version assumes <strong>distinct</strong> values. With duplicates (LeetCode 154), <code>nums[mid] == nums[hi]</code> is ambiguous and you fall back to <code>hi -= 1</code>, losing the <code>log n</code> guarantee in the worst case.</li></ul>
 <h2>Transfer</h2>
-<p>The move — *use one comparison to decide which piecewise-sorted half holds the break* — is the foundation of <a href="../0033-search-in-rotated-sorted-array/">Search in Rotated Sorted Array / 33</a>, which first finds structure like this and then searches within it. It builds directly on plain <a href="../0704-binary-search/">Binary Search / 704</a>. Whenever an array is &quot;sorted except for one rotation,&quot; ask: which half is clean, and which half hides the break?</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/07-binary-search/0153-find-minimum-in-rotated-sorted-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;153. Find Minimum in Rotated Sorted Array — https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
+<p>The move — *use one comparison to decide which piecewise-sorted half holds the break* — is the foundation of <a href="../0033-search-in-rotated-sorted-array/">Search in Rotated Sorted Array / 33</a>, which first finds structure like this and then searches within it. It builds directly on plain <a href="../0704-binary-search/">Binary Search / 704</a>. Whenever an array is &quot;sorted except for one rotation,&quot; ask: which half is clean, and which half hides the break?</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Find Minimum in Rotated Array \u2014 bisecting toward the cliff",
+ "acts": [
+  "Scan for the min",
+  "The waste",
+  "Binary search to the cliff",
+  "Edge case: not rotated"
+ ],
+ "code": {
+  "linear": [
+   "return min(nums)"
+  ],
+  "fast": [
+   "lo, hi = 0, len(nums) - 1",
+   "while lo < hi:",
+   "    mid = lo + (hi - lo) // 2",
+   "    if nums[mid] > nums[hi]:",
+   "        lo = mid + 1",
+   "    else:",
+   "        hi = mid",
+   "return nums[lo]"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current mid"
+  ],
+  [
+   "good",
+   "the minimum"
+  ],
+  [
+   "bad",
+   "discarded half"
+  ],
+  [
+   "dim",
+   "still in the window"
+  ]
+ ],
+ "cells": [
+  4,
+  5,
+  6,
+  7,
+  0,
+  1,
+  2
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    4,
+    5,
+    6,
+    7,
+    0,
+    1,
+    2
+   ],
+   "code": "linear",
+   "line": 0,
+   "intro": "the scan reads all n values even though only one 'cliff' matters.",
+   "invariant": "best holds the smallest value seen in nums[0..i].",
+   "note": "Linear: read every element, keep the smallest. Correct, but O(n) and it ignores that the array is almost sorted.",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "min so far",
+     "\u2014"
+    ],
+    [
+     "reads",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 0,
+   "note": "nums[0] = 4. Smallest so far is 4 (index 0).",
+   "pointers": {
+    "i": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "nums[i]",
+     4
+    ],
+    [
+     "min so far",
+     4
+    ],
+    [
+     "reads",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 0,
+   "note": "nums[1] = 5. Smallest so far is 4 (index 0).",
+   "pointers": {
+    "i": 1
+   },
+   "marks": {
+    "1": "active",
+    "0": "good"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "nums[i]",
+     5
+    ],
+    [
+     "min so far",
+     4
+    ],
+    [
+     "reads",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 0,
+   "note": "nums[2] = 6. Smallest so far is 4 (index 0).",
+   "pointers": {
+    "i": 2
+   },
+   "marks": {
+    "2": "active",
+    "0": "good",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "nums[i]",
+     6
+    ],
+    [
+     "min so far",
+     4
+    ],
+    [
+     "reads",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 0,
+   "note": "nums[3] = 7. Smallest so far is 4 (index 0).",
+   "pointers": {
+    "i": 3
+   },
+   "marks": {
+    "3": "active",
+    "0": "good",
+    "1": "dim",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "nums[i]",
+     7
+    ],
+    [
+     "min so far",
+     4
+    ],
+    [
+     "reads",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 0,
+   "note": "nums[4] = 0. Smallest so far is 0 (index 4).",
+   "pointers": {
+    "i": 4
+   },
+   "marks": {
+    "4": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     4
+    ],
+    [
+     "nums[i]",
+     0
+    ],
+    [
+     "min so far",
+     0
+    ],
+    [
+     "reads",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 0,
+   "note": "nums[5] = 1. Smallest so far is 0 (index 4).",
+   "pointers": {
+    "i": 5
+   },
+   "marks": {
+    "5": "active",
+    "4": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     5
+    ],
+    [
+     "nums[i]",
+     1
+    ],
+    [
+     "min so far",
+     0
+    ],
+    [
+     "reads",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 0,
+   "note": "nums[6] = 2. Smallest so far is 0 (index 4).",
+   "pointers": {
+    "i": 6
+   },
+   "marks": {
+    "6": "active",
+    "4": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "5": "dim"
+   },
+   "state": [
+    [
+     "i",
+     6
+    ],
+    [
+     "nums[i]",
+     2
+    ],
+    [
+     "min so far",
+     0
+    ],
+    [
+     "reads",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "linear",
+   "line": 0,
+   "note": "Minimum is 0 at index 4 \u2014 after reading all 7 elements.",
+   "marks": {
+    "4": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "answer",
+     0
+    ],
+    [
+     "reads",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the array is two rising runs; the minimum sits right after the drop.",
+   "note": "The scan touched all 7 cells. But rotating a sorted array leaves exactly ONE cliff: a big value followed by a small one. The min is that small one.",
+   "marks": {
+    "3": "active",
+    "4": "good",
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "reads (scan)",
+     7
+    ],
+    [
+     "cliff",
+     "7 \u2192 0"
+    ],
+    [
+     "min",
+     "just after the cliff"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "Comparing the middle to the RIGHT end says which side the cliff is on. So we can bisect to it in ~log n steps and skip most of the array.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "scan at n=1000",
+     "~1000"
+    ],
+    [
+     "binary at n=1000",
+     "~10"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    4,
+    5,
+    6,
+    7,
+    0,
+    1,
+    2
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "hi is the anchor: mid > nums[hi] means the min is right of mid.",
+   "invariant": "the minimum is always inside [lo, hi].",
+   "note": "Binary search. Compare nums[mid] to nums[hi] to decide which half keeps the cliff, and shrink toward it.",
+   "pointers": {
+    "lo": 0,
+    "hi": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "hi",
+     6
+    ],
+    [
+     "nums[hi]",
+     2
+    ],
+    [
+     "steps",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [0, 6]. mid=3, nums[mid]=7, nums[hi]=2.",
+   "pointers": {
+    "lo": 0,
+    "mid": 3,
+    "hi": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "mid",
+     3
+    ],
+    [
+     "hi",
+     6
+    ],
+    [
+     "nums[mid]",
+     7
+    ],
+    [
+     "nums[hi]",
+     2
+    ],
+    [
+     "steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "7 > 2: [mid, hi] wraps, so the cliff is right of mid. Drop [0, 3]. lo \u2192 4.",
+   "pointers": {
+    "lo": 0,
+    "mid": 3,
+    "hi": 6
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "active",
+    "4": "dim",
+    "5": "dim",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "rule",
+     "nums[mid] > nums[hi]"
+    ],
+    [
+     "lo \u2192",
+     4
+    ],
+    [
+     "steps",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [4, 6]. mid=5, nums[mid]=1, nums[hi]=2.",
+   "pointers": {
+    "lo": 4,
+    "mid": 5,
+    "hi": 6
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "dim",
+    "5": "active",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     4
+    ],
+    [
+     "mid",
+     5
+    ],
+    [
+     "hi",
+     6
+    ],
+    [
+     "nums[mid]",
+     1
+    ],
+    [
+     "nums[hi]",
+     2
+    ],
+    [
+     "steps",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "1 <= 2: [mid, hi] is sorted, so the min is mid or left of it. Keep mid: hi \u2192 5.",
+   "pointers": {
+    "lo": 4,
+    "mid": 5,
+    "hi": 6
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "dim",
+    "5": "active",
+    "6": "dim"
+   },
+   "state": [
+    [
+     "rule",
+     "nums[mid] <= nums[hi]"
+    ],
+    [
+     "hi \u2192",
+     5
+    ],
+    [
+     "steps",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "Window [4, 5]. mid=4, nums[mid]=0, nums[hi]=1.",
+   "pointers": {
+    "lo": 4,
+    "mid": 4,
+    "hi": 5
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "active",
+    "5": "dim",
+    "6": "bad"
+   },
+   "state": [
+    [
+     "lo",
+     4
+    ],
+    [
+     "mid",
+     4
+    ],
+    [
+     "hi",
+     5
+    ],
+    [
+     "nums[mid]",
+     0
+    ],
+    [
+     "nums[hi]",
+     1
+    ],
+    [
+     "steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "0 <= 1: [mid, hi] is sorted, so the min is mid or left of it. Keep mid: hi \u2192 4.",
+   "pointers": {
+    "lo": 4,
+    "mid": 4,
+    "hi": 5
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "active",
+    "5": "dim",
+    "6": "bad"
+   },
+   "state": [
+    [
+     "rule",
+     "nums[mid] <= nums[hi]"
+    ],
+    [
+     "hi \u2192",
+     4
+    ],
+    [
+     "steps",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 7,
+   "note": "lo == hi == 4: the window is one cell. nums[4] = 0 is the minimum, found in 3 steps.",
+   "pointers": {
+    "lo": 4,
+    "hi": 4
+   },
+   "marks": {
+    "0": "bad",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad",
+    "4": "good",
+    "5": "bad",
+    "6": "bad"
+   },
+   "state": [
+    [
+     "answer",
+     0
+    ],
+    [
+     "steps",
+     3
+    ],
+    [
+     "vs scan",
+     7
+    ]
+   ],
+   "banner": "Minimum 0 at index 4   \u2014 3 steps vs 7 scanned"
+  },
+  {
+   "act": 3,
+   "cells": [
+    11,
+    13,
+    15,
+    17
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "with no cliff, every step says 'go left' and hi slides to index 0.",
+   "invariant": "nums[mid] <= nums[hi] holds the whole way, so hi keeps shrinking.",
+   "note": "Edge case: the array was never rotated. There is no cliff, so the minimum is simply the first element.",
+   "pointers": {
+    "lo": 0,
+    "hi": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "hi",
+     3
+    ],
+    [
+     "nums[hi]",
+     17
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "mid=1, nums[mid]=13 <= nums[hi]=17: sorted, hi \u2192 1.",
+   "pointers": {
+    "lo": 0,
+    "mid": 1,
+    "hi": 3
+   },
+   "marks": {
+    "0": "dim",
+    "1": "active",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "mid",
+     1
+    ],
+    [
+     "hi",
+     3
+    ],
+    [
+     "hi \u2192",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "mid=0, nums[mid]=11 <= nums[hi]=13: sorted, hi \u2192 0.",
+   "pointers": {
+    "lo": 0,
+    "mid": 0,
+    "hi": 1
+   },
+   "marks": {
+    "0": "active",
+    "1": "dim",
+    "2": "bad",
+    "3": "bad"
+   },
+   "state": [
+    [
+     "lo",
+     0
+    ],
+    [
+     "mid",
+     0
+    ],
+    [
+     "hi",
+     1
+    ],
+    [
+     "hi \u2192",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "note": "lo == hi == 0. nums[0] = 11 \u2014 the front element, exactly as expected for an unrotated array.",
+   "pointers": {
+    "lo": 0,
+    "hi": 0
+   },
+   "marks": {
+    "0": "good",
+    "1": "bad",
+    "2": "bad",
+    "3": "bad"
+   },
+   "state": [
+    [
+     "answer",
+     11
+    ],
+    [
+     "steps",
+     2
+    ]
+   ],
+   "banner": "Not rotated \u2192 minimum 11 at index 0"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/07-binary-search/0153-find-minimum-in-rotated-sorted-array/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;153. Find Minimum in Rotated Sorted Array — https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
 
 A sorted array of distinct numbers has been rotated some unknown number of times
 (the front chunk moved to the back). Return the smallest element. Do it in

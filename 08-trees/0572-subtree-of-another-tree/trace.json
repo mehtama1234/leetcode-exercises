@@ -1,0 +1,514 @@
+{
+ "player": "tree",
+ "title": "Subtree of Another Tree - try same-tree at every node, run it, then a lone leaf",
+ "acts": [
+  "The rule",
+  "Run: find the match",
+  "Edge: a lone leaf"
+ ],
+ "code": {
+  "subtree": [
+   "def is_subtree(root, sub):",
+   "    if sub is None:  return True",
+   "    if root is None: return False",
+   "    if same(root, sub): return True   # match whole tree here",
+   "    return (is_subtree(root.left, sub)",
+   "            or is_subtree(root.right, sub))"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "trying here / sub"
+  ],
+  [
+   "good",
+   "match / decided"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": 3,
+   "x": 198,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": 4,
+   "x": 66,
+   "y": 82
+  },
+  {
+   "id": 2,
+   "val": 5,
+   "x": 264,
+   "y": 82
+  },
+  {
+   "id": 3,
+   "val": 1,
+   "x": 0,
+   "y": 164
+  },
+  {
+   "id": 4,
+   "val": 2,
+   "x": 132,
+   "y": 164
+  },
+  {
+   "id": "s0",
+   "val": 4,
+   "x": 462,
+   "y": 0
+  },
+  {
+   "id": "s1",
+   "val": 1,
+   "x": 396,
+   "y": 82
+  },
+  {
+   "id": "s2",
+   "val": 2,
+   "x": 528,
+   "y": 82
+  }
+ ],
+ "edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   "s0",
+   "s1"
+  ],
+  [
+   "s0",
+   "s2"
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 3,
+     "x": 198,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 4,
+     "x": 66,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 5,
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 1,
+     "x": 0,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 132,
+     "y": 164
+    },
+    {
+     "id": "s0",
+     "val": 4,
+     "x": 462,
+     "y": 0
+    },
+    {
+     "id": "s1",
+     "val": 1,
+     "x": 396,
+     "y": 82
+    },
+    {
+     "id": "s2",
+     "val": 2,
+     "x": 528,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     "s0",
+     "s1"
+    ],
+    [
+     "s0",
+     "s2"
+    ]
+   ],
+   "code": "subtree",
+   "line": 3,
+   "intro": "at every node of root we ask: is the WHOLE tree here equal to sub?",
+   "invariant": "a subtree must match sub all the way down, not just one value.",
+   "note": "The rule: walk every node of root. At each, run the same-tree check against sub. A subtree means an entire tree below some node equals sub.",
+   "active": [
+    0,
+    "s0",
+    "s1",
+    "s2"
+   ],
+   "done": {},
+   "state": [
+    [
+     "outer",
+     "every root node"
+    ],
+    [
+     "inner",
+     "same as sub?"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "subtree",
+   "line": 3,
+   "note": "'The value 4 appears somewhere' is not enough \u2014 the shape and every value below must match sub exactly.",
+   "active": [
+    "s0",
+    "s1",
+    "s2"
+   ],
+   "done": {},
+   "state": [
+    [
+     "sub",
+     "[4,1,2]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 3,
+     "x": 198,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 4,
+     "x": 66,
+     "y": 82
+    },
+    {
+     "id": 2,
+     "val": 5,
+     "x": 264,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 1,
+     "x": 0,
+     "y": 164
+    },
+    {
+     "id": 4,
+     "val": 2,
+     "x": 132,
+     "y": 164
+    },
+    {
+     "id": "s0",
+     "val": 4,
+     "x": 462,
+     "y": 0
+    },
+    {
+     "id": "s1",
+     "val": 1,
+     "x": 396,
+     "y": 82
+    },
+    {
+     "id": "s2",
+     "val": 2,
+     "x": 528,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     "s0",
+     "s1"
+    ],
+    [
+     "s0",
+     "s2"
+    ]
+   ],
+   "code": "subtree",
+   "line": 0,
+   "intro": "each root node is tried in turn; the first exact match wins.",
+   "invariant": "'no' badges mark nodes that failed the same-tree check.",
+   "note": "Run it. Root 3 fails, then node 4's whole subtree equals [4,1,2].",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "start",
+     "root 3"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "subtree",
+   "line": 3,
+   "note": "Try node 3 of root: does its whole tree equal sub? No \u2014 keep searching.",
+   "active": [
+    0,
+    "s0",
+    "s1",
+    "s2"
+   ],
+   "done": {},
+   "state": [
+    [
+     "trying at",
+     3
+    ],
+    [
+     "same as sub?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "subtree",
+   "line": 3,
+   "note": "Try node 4 of root: does its whole tree equal sub? Yes!",
+   "active": [
+    1,
+    "s0",
+    "s1",
+    "s2"
+   ],
+   "done": {
+    "0": "no"
+   },
+   "state": [
+    [
+     "trying at",
+     4
+    ],
+    [
+     "same as sub?",
+     true
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "subtree",
+   "line": 3,
+   "note": "The tree rooted at 4 matches sub exactly -> found it.",
+   "active": [
+    1,
+    "s0",
+    "s1",
+    "s2"
+   ],
+   "done": {
+    "0": "no",
+    "1": "match"
+   },
+   "state": [
+    [
+     "result",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "subtree",
+   "line": 3,
+   "note": "Found sub hanging off node 4 -> True.",
+   "active": [],
+   "done": {
+    "0": "no",
+    "1": "match"
+   },
+   "state": [
+    [
+     "is subtree?",
+     true
+    ]
+   ],
+   "banner": "Is subtree = True"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": 1,
+     "x": 66,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": 2,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": "s0",
+     "val": 1,
+     "x": 198,
+     "y": 0
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "subtree",
+   "line": 3,
+   "intro": "node 1 in root has a child, so it can't equal the lone leaf sub.",
+   "invariant": "same-tree fails when one side has a child and the other doesn't.",
+   "note": "Edge: root [1,2], sub [1]. Root's node 1 still has a left child, so its whole tree is not just a leaf -> no match there.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "sub",
+     "[1] a lone leaf"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "subtree",
+   "line": 3,
+   "note": "Try node 1 of root: does its whole tree equal sub? No \u2014 keep searching.",
+   "active": [
+    0,
+    "s0"
+   ],
+   "done": {},
+   "state": [
+    [
+     "trying at",
+     1
+    ],
+    [
+     "same as sub?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "subtree",
+   "line": 3,
+   "note": "Try node 2 of root: does its whole tree equal sub? No \u2014 keep searching.",
+   "active": [
+    1,
+    "s0"
+   ],
+   "done": {
+    "0": "no"
+   },
+   "state": [
+    [
+     "trying at",
+     2
+    ],
+    [
+     "same as sub?",
+     false
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "subtree",
+   "line": 5,
+   "note": "Node 1 has a child (shape differs) and node 2's value is 2 not 1 -> no node matches -> False.",
+   "active": [],
+   "done": {
+    "0": "no",
+    "1": "no"
+   },
+   "state": [
+    [
+     "is subtree?",
+     false
+    ]
+   ],
+   "banner": "Is subtree = False"
+  }
+ ]
+}

@@ -1,0 +1,609 @@
+{
+ "player": "linear",
+ "title": "Merge Intervals \u2014 sort by start, then one honest sweep",
+ "acts": [
+  "Naive: every pair",
+  "The fix: sort by start",
+  "Fast: one sweep",
+  "Edge case: swallowed insiders"
+ ],
+ "code": {
+  "brute": [
+   "for i in range(n):",
+   "    for j in range(n):",
+   "        if i != j and overlap(iv[i], iv[j]):",
+   "            ...   # merge and rescan from scratch"
+  ],
+  "sort": [
+   "ordered = sorted(intervals, key=lambda iv: iv[0])",
+   "merged = [ordered[0][:]]",
+   "for start, end in ordered[1:]:",
+   "    last = merged[-1]",
+   "    if start <= last[1]:      # overlap or touch",
+   "        last[1] = max(last[1], end)",
+   "    else:                     # gap \u2014 previous run done",
+   "        merged.append([start, end])"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "interval being read"
+  ],
+  [
+   "good",
+   "part of a kept/merged run"
+  ],
+  [
+   "dim",
+   "not yet ordered / far apart"
+  ]
+ ],
+ "cells": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "labels": [
+  "1-3",
+  "2-6",
+  "8-10",
+  "15-18"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    "1-3",
+    "2-6",
+    "8-10",
+    "15-18"
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "every interval compared against every other, then rescan when two merge.",
+   "invariant": "nothing is sorted yet, so an overlap could sit anywhere.",
+   "note": "Naive: for each interval, scan all the others looking for an overlap. Then merge and start the whole scan over. O(n^2) and messy.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "marks": {
+    "0": "active",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "comparisons",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "cells": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    "1-3",
+    "2-6",
+    "8-10",
+    "15-18"
+   ],
+   "code": "brute",
+   "line": 2,
+   "note": "Just the pair scan is 12 comparisons for 4 intervals \u2014 and each real merge would force another full pass. The far-apart compares are wasted.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "comparisons",
+     12
+    ],
+    [
+     "pattern",
+     "~ n*n per merge"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    "1-3",
+    "2-6",
+    "8-10",
+    "15-18"
+   ],
+   "intro": "once sorted by start, the only thing that can overlap the run you're building is the very next interval.",
+   "note": "The waste is comparing intervals that are far apart. Sort by start and that vanishes: earlier-starting intervals are already handled.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "idea",
+     "sort by start"
+    ],
+    [
+     "then",
+     "one left-to-right sweep"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    "1-3",
+    "2-6",
+    "8-10",
+    "15-18"
+   ],
+   "code": "sort",
+   "line": 0,
+   "invariant": "starts only increase left to right.",
+   "note": "Sorted by start: ['1-3', '2-6', '8-10', '15-18']. Now a single sweep can decide extend-the-last vs start-new for each interval.",
+   "marks": {
+    "0": "active",
+    "1": "active",
+    "2": "active",
+    "3": "active"
+   },
+   "state": [
+    [
+     "order",
+     "by start"
+    ],
+    [
+     "sweep cost",
+     "O(n)"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    "1-3",
+    "2-6",
+    "8-10",
+    "15-18"
+   ],
+   "code": "sort",
+   "line": 1,
+   "intro": "the running interval grows to the right; a gap seals it and opens a new one.",
+   "invariant": "merged holds finished runs, and its last entry is still growing.",
+   "note": "Start the first run as 1-3 and read the rest one by one.",
+   "pointers": {
+    "read": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "merged so far",
+    "rows": [
+     [
+      "1-3",
+      "building"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "building",
+     "1-3"
+    ],
+    [
+     "output size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    "1-3",
+    "2-6",
+    "8-10",
+    "15-18"
+   ],
+   "code": "sort",
+   "line": 5,
+   "note": "2-6 starts at 2 <= 3 (current end) \u2014 they touch or overlap. Push the end to max(3, 6) = 6.",
+   "pointers": {
+    "read": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "merged so far",
+    "rows": [
+     [
+      "1-6",
+      "building"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "reading",
+     "2-6"
+    ],
+    [
+     "building",
+     "1-6"
+    ],
+    [
+     "output size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    "1-3",
+    "2-6",
+    "8-10",
+    "15-18"
+   ],
+   "code": "sort",
+   "line": 7,
+   "note": "8-10 starts at 8 > 6 \u2014 a gap. Seal 1-6 and open a new run from 8-10.",
+   "pointers": {
+    "read": 2
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "merged so far",
+    "rows": [
+     [
+      "1-6",
+      "building"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "reading",
+     "8-10"
+    ],
+    [
+     "sealed",
+     "1-6"
+    ],
+    [
+     "output size",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    "1-3",
+    "2-6",
+    "8-10",
+    "15-18"
+   ],
+   "code": "sort",
+   "line": 7,
+   "note": "15-18 starts at 15 > 10 \u2014 a gap. Seal 8-10 and open a new run from 15-18.",
+   "pointers": {
+    "read": 3
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "active"
+   },
+   "sidebar": {
+    "title": "merged so far",
+    "rows": [
+     [
+      "1-6",
+      "kept"
+     ],
+     [
+      "8-10",
+      "building"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "reading",
+     "15-18"
+    ],
+    [
+     "sealed",
+     "8-10"
+    ],
+    [
+     "output size",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "labels": [
+    "1-3",
+    "2-6",
+    "8-10",
+    "15-18"
+   ],
+   "code": "sort",
+   "line": 2,
+   "note": "One sweep, done. Merged = ['1-6', '8-10', '15-18'].",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good",
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "merged so far",
+    "rows": [
+     [
+      "1-6",
+      "kept"
+     ],
+     [
+      "8-10",
+      "kept"
+     ],
+     [
+      "15-18",
+      "building"
+     ]
+    ]
+   },
+   "banner": "Merged ['1-3', '2-6', '8-10', '15-18'] -> ['1-6', '8-10', '15-18']   (one O(n) sweep after the sort)",
+   "state": [
+    [
+     "result",
+     "['1-6', '8-10', '15-18']"
+    ],
+    [
+     "output size",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "1-10",
+    "2-3",
+    "4-5"
+   ],
+   "code": "sort",
+   "line": 1,
+   "intro": "max(end, ...) is why a fully-swallowed interval can't shrink the run.",
+   "invariant": "the run's end never moves backward.",
+   "note": "Edge case: ['1-10', '2-3', '4-5']. 2-3 and 4-5 sit entirely inside 1-10. Start the run as 1-10.",
+   "pointers": {
+    "read": 0
+   },
+   "marks": {
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "merged so far",
+    "rows": [
+     [
+      "1-10",
+      "building"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "building",
+     "1-10"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "1-10",
+    "2-3",
+    "4-5"
+   ],
+   "code": "sort",
+   "line": 5,
+   "note": "2-3 starts at 2 <= 10. max(10, 3) = 10 \u2014 the end holds at 10, the insider is swallowed.",
+   "pointers": {
+    "read": 1
+   },
+   "marks": {
+    "0": "good",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "merged so far",
+    "rows": [
+     [
+      "1-10",
+      "building"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "reading",
+     "2-3"
+    ],
+    [
+     "building",
+     "1-10"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "1-10",
+    "2-3",
+    "4-5"
+   ],
+   "code": "sort",
+   "line": 5,
+   "note": "4-5 starts at 4 <= 10. max(10, 5) = 10 \u2014 the end holds at 10, the insider is swallowed.",
+   "pointers": {
+    "read": 2
+   },
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "merged so far",
+    "rows": [
+     [
+      "1-10",
+      "building"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "reading",
+     "4-5"
+    ],
+    [
+     "building",
+     "1-10"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    0,
+    1,
+    2
+   ],
+   "labels": [
+    "1-10",
+    "2-3",
+    "4-5"
+   ],
+   "code": "sort",
+   "line": 5,
+   "note": "All three collapse into 1-10. Taking the max, not the last end, is what kept it correct.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "merged so far",
+    "rows": [
+     [
+      "1-10",
+      "building"
+     ]
+    ]
+   },
+   "banner": "['1-10', '2-3', '4-5'] -> ['1-10']   (swallowed insiders, one interval out)",
+   "state": [
+    [
+     "result",
+     "['1-10']"
+    ]
+   ]
+  }
+ ]
+}

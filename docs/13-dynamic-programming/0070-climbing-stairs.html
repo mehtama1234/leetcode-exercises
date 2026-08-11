@@ -78,7 +78,348 @@ ways(2) = 2</code></pre>
 <h2>Pitfalls</h2>
 <ul><li>The base cases differ from raw Fibonacci: here <code>ways(1) = 1</code> and <code>ways(2) = 2</code>. This is Fibonacci shifted by one index, not Fibonacci itself.</li><li>It&#x27;s easy to think you&#x27;re counting *sets* of moves. You&#x27;re counting *ordered* sequences — that&#x27;s why <code>1+2</code> and <code>2+1</code> both count.</li><li>The naive recursion times out for large <code>n</code> — don&#x27;t submit it.</li></ul>
 <h2>Transfer</h2>
-<p>Same recurrence and same rolling-variable trick as <a href="../0509-fibonacci-number/">Fibonacci / 509</a>. Once &quot;the last move was one of a few choices, sum over them&quot; clicks, it stretches: allow 3-step moves and you&#x27;d sum three terms. The same look-back idea, with a choice bolted on, drives <a href="../0198-house-robber/">House Robber / 198</a> and <a href="https://leetcode.com/problems/min-cost-climbing-stairs/">Min Cost Climbing Stairs / 746</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0070-climbing-stairs/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;70. Climbing Stairs — https://leetcode.com/problems/climbing-stairs/
+<p>Same recurrence and same rolling-variable trick as <a href="../0509-fibonacci-number/">Fibonacci / 509</a>. Once &quot;the last move was one of a few choices, sum over them&quot; clicks, it stretches: allow 3-step moves and you&#x27;d sum three terms. The same look-back idea, with a choice bolted on, drives <a href="../0198-house-robber/">House Robber / 198</a> and <a href="https://leetcode.com/problems/min-cost-climbing-stairs/">Min Cost Climbing Stairs / 746</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "grid",
+ "title": "Climbing Stairs - count each step once instead of re-branching",
+ "acts": [
+  "Naive: re-branch",
+  "The waste",
+  "Fill each once",
+  "Edge case: n=2"
+ ],
+ "code": {
+  "naive": [
+   "def climb(n):",
+   "    if n <= 2: return n",
+   "    return climb(n-1) + climb(n-2)"
+  ],
+  "fast": [
+   "prev, curr = 1, 2",
+   "for _ in range(3, n+1):",
+   "    prev, curr = curr, prev + curr",
+   "return curr"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "the two we add"
+  ],
+  [
+   "good",
+   "filled / answer"
+  ],
+  [
+   "bad",
+   "recomputed (waste)"
+  ]
+ ],
+ "rows": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "ways"
+   ],
+   "colLabels": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+   ],
+   "code": "naive",
+   "line": 0,
+   "intro": "how often the SAME ways(k) is recomputed as the branches split.",
+   "invariant": "ways(n) = ways(n-1) + ways(n-2): last move was a 1-step or a 2-step.",
+   "note": "Naive: to reach step 6 the last move came from step 5 (a 1-step) or step 4 (a 2-step). Each of those branches again.",
+   "marks": {
+    "0,5": "active"
+   },
+   "state": [
+    [
+     "want",
+     "ways(6)"
+    ],
+    [
+     "cost",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "naive",
+   "line": 2,
+   "note": "But ways(3) is asked while solving ways(5) and again while solving ways(4). The same subproblem is re-solved along many branches. That overlap is the waste.",
+   "marks": {
+    "0,2": "bad",
+    "0,1": "bad",
+    "0,0": "bad",
+    "0,5": "active"
+   },
+   "state": [
+    [
+     "ways(3)",
+     "recomputed"
+    ],
+    [
+     "cost",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "There are only 6 distinct subproblems, ways(1)..ways(6). Cache each once and the branching tree collapses into a straight line.",
+   "marks": {
+    "0,0": "dim",
+    "0,1": "dim",
+    "0,2": "dim",
+    "0,3": "dim",
+    "0,4": "dim",
+    "0,5": "dim"
+   },
+   "state": [
+    [
+     "distinct",
+     6
+    ],
+    [
+     "naive calls",
+     "exponential"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "rows": [
+    [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   ],
+   "rowLabels": [
+    "ways"
+   ],
+   "colLabels": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "each step filled ONCE from the two below it.",
+   "invariant": "dp[k] = distinct ways to reach step k, final when written.",
+   "note": "Base cases: 1 way to reach step 1, and 2 ways to reach step 2 (1+1 or 2).",
+   "set": {
+    "0,0": 1,
+    "0,1": 2
+   },
+   "marks": {
+    "0,0": "good",
+    "0,1": "good"
+   },
+   "state": [
+    [
+     "ways(1)",
+     1
+    ],
+    [
+     "ways(2)",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "ways(3) = ways(2) + ways(1) = 2 + 1 = 3.",
+   "set": {
+    "0,2": 3
+   },
+   "marks": {
+    "0,1": "active",
+    "0,0": "active",
+    "0,2": "good"
+   },
+   "state": [
+    [
+     "prev",
+     1
+    ],
+    [
+     "curr",
+     2
+    ],
+    [
+     "ways(3)",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "ways(4) = ways(3) + ways(2) = 3 + 2 = 5.",
+   "set": {
+    "0,3": 5
+   },
+   "marks": {
+    "0,2": "active",
+    "0,1": "active",
+    "0,3": "good"
+   },
+   "state": [
+    [
+     "prev",
+     2
+    ],
+    [
+     "curr",
+     3
+    ],
+    [
+     "ways(4)",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "ways(5) = ways(4) + ways(3) = 5 + 3 = 8.",
+   "set": {
+    "0,4": 8
+   },
+   "marks": {
+    "0,3": "active",
+    "0,2": "active",
+    "0,4": "good"
+   },
+   "state": [
+    [
+     "prev",
+     3
+    ],
+    [
+     "curr",
+     5
+    ],
+    [
+     "ways(5)",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 2,
+   "note": "ways(6) = ways(5) + ways(4) = 8 + 5 = 13.",
+   "set": {
+    "0,5": 13
+   },
+   "marks": {
+    "0,4": "active",
+    "0,3": "active",
+    "0,5": "good"
+   },
+   "state": [
+    [
+     "prev",
+     5
+    ],
+    [
+     "curr",
+     8
+    ],
+    [
+     "ways(6)",
+     13
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "Only the last two counts are ever needed at once, so the loop keeps just prev and curr. ways(6) = 13.",
+   "marks": {
+    "0,5": "good"
+   },
+   "state": [
+    [
+     "answer",
+     13
+    ]
+   ],
+   "banner": "ways(6) = 13  each step counted once"
+  },
+  {
+   "act": 3,
+   "rows": [
+    [
+     2
+    ]
+   ],
+   "rowLabels": [
+    "ways"
+   ],
+   "colLabels": [
+    "2"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "n <= 2 is a base case that returns immediately.",
+   "note": "Edge case: n = 2. Two ways to the top (1+1 or a single 2), returned directly with no loop.",
+   "marks": {
+    "0,0": "good"
+   },
+   "state": [
+    [
+     "n",
+     2
+    ],
+    [
+     "answer",
+     2
+    ]
+   ],
+   "banner": "n <= 2 -> return n"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/13-dynamic-programming/0070-climbing-stairs/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;70. Climbing Stairs — https://leetcode.com/problems/climbing-stairs/
 
 You climb a staircase of n steps, taking either 1 or 2 steps at a time. Count how
 many distinct sequences of moves reach the top.

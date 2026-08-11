@@ -1,0 +1,816 @@
+{
+ "player": "linear",
+ "title": "Maximum Product Subarray - one pass carrying max AND min",
+ "acts": [
+  "Brute: every subarray",
+  "The waste",
+  "Fast: rolling max/min",
+  "Edge: sign flip"
+ ],
+ "code": {
+  "brute": [
+   "best = nums[0]",
+   "for i in range(n):",
+   "    prod = 1",
+   "    for j in range(i, n):",
+   "        prod *= nums[j]",
+   "        best = max(best, prod)"
+  ],
+  "fast": [
+   "best = cur_max = cur_min = nums[0]",
+   "for x in nums[1:]:",
+   "    cands = (x, cur_max*x, cur_min*x)",
+   "    cur_max = max(cands)",
+   "    cur_min = min(cands)",
+   "    best = max(best, cur_max)"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current element"
+  ],
+  [
+   "good",
+   "the winning subarray"
+  ],
+  [
+   "bad",
+   "negative (sign flip)"
+  ],
+  [
+   "dim",
+   "scanned"
+  ]
+ ],
+ "cells": [
+  2,
+  3,
+  -2,
+  4
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    2,
+    3,
+    -2,
+    4
+   ],
+   "code": "brute",
+   "line": 0,
+   "intro": "j re-multiplies the whole tail for every start i \u2014 overlapping prefixes.",
+   "invariant": "best holds the largest product of any subarray seen so far.",
+   "note": "Brute force: for each start i, extend to each end j and keep a running product, tracking the best.",
+   "pointers": {
+    "i": 0,
+    "j": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "best",
+     2
+    ],
+    [
+     "multiplies",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "subarray [0..0] product = 2. best = 2.",
+   "pointers": {
+    "i": 0,
+    "j": 0
+   },
+   "window": [
+    0,
+    0
+   ],
+   "marks": {
+    "0": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     0
+    ],
+    [
+     "product",
+     2
+    ],
+    [
+     "best",
+     2
+    ],
+    [
+     "multiplies",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "subarray [0..1] product = 6. best = 6.",
+   "pointers": {
+    "i": 0,
+    "j": 1
+   },
+   "window": [
+    0,
+    1
+   ],
+   "marks": {
+    "0": "active",
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "product",
+     6
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "multiplies",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "subarray [0..2] product = -12. best = 6.",
+   "pointers": {
+    "i": 0,
+    "j": 2
+   },
+   "window": [
+    0,
+    2
+   ],
+   "marks": {
+    "0": "active",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "product",
+     -12
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "multiplies",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "subarray [0..3] product = -48. best = 6.",
+   "pointers": {
+    "i": 0,
+    "j": 3
+   },
+   "window": [
+    0,
+    3
+   ],
+   "marks": {
+    "0": "active",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     0
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "product",
+     -48
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "multiplies",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "subarray [1..1] product = 3. best = 6.",
+   "pointers": {
+    "i": 1,
+    "j": 1
+   },
+   "window": [
+    1,
+    1
+   ],
+   "marks": {
+    "1": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     1
+    ],
+    [
+     "product",
+     3
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "multiplies",
+     5
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "subarray [1..2] product = -6. best = 6.",
+   "pointers": {
+    "i": 1,
+    "j": 2
+   },
+   "window": [
+    1,
+    2
+   ],
+   "marks": {
+    "1": "active",
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "product",
+     -6
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "multiplies",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "subarray [1..3] product = -24. best = 6.",
+   "pointers": {
+    "i": 1,
+    "j": 3
+   },
+   "window": [
+    1,
+    3
+   ],
+   "marks": {
+    "1": "active",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     1
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "product",
+     -24
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "multiplies",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "subarray [2..2] product = -2. best = 6.",
+   "pointers": {
+    "i": 2,
+    "j": 2
+   },
+   "window": [
+    2,
+    2
+   ],
+   "marks": {
+    "2": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     2
+    ],
+    [
+     "product",
+     -2
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "multiplies",
+     8
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "subarray [2..3] product = -8. best = 6.",
+   "pointers": {
+    "i": 2,
+    "j": 3
+   },
+   "window": [
+    2,
+    3
+   ],
+   "marks": {
+    "2": "active",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     2
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "product",
+     -8
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "multiplies",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "subarray [3..3] product = 4. best = 6.",
+   "pointers": {
+    "i": 3,
+    "j": 3
+   },
+   "window": [
+    3,
+    3
+   ],
+   "marks": {
+    "3": "dim"
+   },
+   "state": [
+    [
+     "i",
+     3
+    ],
+    [
+     "j",
+     3
+    ],
+    [
+     "product",
+     4
+    ],
+    [
+     "best",
+     6
+    ],
+    [
+     "multiplies",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "brute",
+   "line": 5,
+   "note": "Answer 6, but it cost 10 multiplications on four numbers \u2014 every start re-multiplied the same prefix the previous start already did.",
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "window": [
+    0,
+    1
+   ],
+   "state": [
+    [
+     "answer",
+     6
+    ],
+    [
+     "multiplies",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "intro": "the multiply counter climbing is the repeated prefix work.",
+   "note": "n=4 cost 10 multiplies (~n*n/2). Every start re-walks the tail the previous start already walked. For n=1000 that is ~500,000.",
+   "marks": {
+    "0": "dim",
+    "1": "dim",
+    "2": "dim",
+    "3": "dim"
+   },
+   "state": [
+    [
+     "multiplies (brute)",
+     10
+    ],
+    [
+     "pattern",
+     "~ n*n / 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "note": "We want one pass. The catch: a negative flips sign, so the SMALLEST product so far can become the largest at the next negative. So we must carry both a running max and a running min.",
+   "marks": {
+    "2": "bad"
+   },
+   "state": [
+    [
+     "hazard",
+     "negatives flip sign"
+    ],
+    [
+     "carry",
+     "max AND min"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    2,
+    3,
+    -2,
+    4
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "one pass carrying both extremes; the min is there to catch a sign flip.",
+   "invariant": "cur_max / cur_min = best & worst product of a subarray ending here.",
+   "note": "Seed all three from nums[0] = 2.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "cur_max",
+     2
+    ],
+    [
+     "cur_min",
+     2
+    ],
+    [
+     "best",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "x = 3. candidates (3, 6, 6) -> cur_max 6, cur_min 3. best = 6.",
+   "pointers": {
+    "x": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "x",
+     3
+    ],
+    [
+     "cur_max",
+     6
+    ],
+    [
+     "cur_min",
+     3
+    ],
+    [
+     "best",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "x = -2. candidates (-2, -12, -6) -> cur_max -2, cur_min -12. best = 6.",
+   "pointers": {
+    "x": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "x",
+     -2
+    ],
+    [
+     "cur_max",
+     -2
+    ],
+    [
+     "cur_min",
+     -12
+    ],
+    [
+     "best",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "x = 4. candidates (4, -8, -48) -> cur_max 4, cur_min -48. best = 6.",
+   "pointers": {
+    "x": 3
+   },
+   "marks": {
+    "3": "active"
+   },
+   "state": [
+    [
+     "x",
+     4
+    ],
+    [
+     "cur_max",
+     4
+    ],
+    [
+     "cur_min",
+     -48
+    ],
+    [
+     "best",
+     6
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 5,
+   "note": "One pass, 4 steps, no re-multiplying. Answer 6.",
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "window": [
+    0,
+    1
+   ],
+   "state": [
+    [
+     "answer",
+     6
+    ],
+    [
+     "steps",
+     4
+    ],
+    [
+     "vs brute",
+     10
+    ]
+   ],
+   "banner": "Max product = 6  ([2, 3])  \u2014 4 steps vs 10 brute multiplies"
+  },
+  {
+   "act": 3,
+   "cells": [
+    -2,
+    3,
+    -4
+   ],
+   "labels": [
+    0,
+    1,
+    2
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "watch the running min turn into the answer when the second negative lands.",
+   "invariant": "the most-negative product is kept precisely so it can flip to largest.",
+   "note": "Edge case [-2, 3, -4]: two negatives. Seed all three from -2.",
+   "pointers": {
+    "x": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "state": [
+    [
+     "cur_max",
+     -2
+    ],
+    [
+     "cur_min",
+     -2
+    ],
+    [
+     "best",
+     -2
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "x = 3. candidates (3, -6, -6) -> cur_max 3, cur_min -6. best = 3.",
+   "pointers": {
+    "x": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "state": [
+    [
+     "x",
+     3
+    ],
+    [
+     "cur_max",
+     3
+    ],
+    [
+     "cur_min",
+     -6
+    ],
+    [
+     "best",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "x = -4. candidates (-4, -12, 24) -> cur_max 24, cur_min -12. best = 24.",
+   "pointers": {
+    "x": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "state": [
+    [
+     "x",
+     -4
+    ],
+    [
+     "cur_max",
+     24
+    ],
+    [
+     "cur_min",
+     -12
+    ],
+    [
+     "best",
+     24
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 5,
+   "note": "The kept min (-6) times the last -4 became +24 \u2014 that is why we track the min. Answer 24.",
+   "marks": {
+    "0": "good",
+    "1": "good",
+    "2": "good"
+   },
+   "window": [
+    0,
+    2
+   ],
+   "state": [
+    [
+     "answer",
+     24
+    ]
+   ],
+   "banner": "Two negatives -> 24  (the min flipped to max)"
+  }
+ ]
+}

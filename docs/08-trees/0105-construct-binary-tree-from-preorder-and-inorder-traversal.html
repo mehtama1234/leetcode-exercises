@@ -58,7 +58,2664 @@
 <h2>Pitfalls</h2>
 <ul><li>Building the <strong>right</strong> subtree before the left while sharing one preorder pointer — the roots come out in the wrong order.</li><li>Rescanning inorder for the root each time (about <code>n²</code>) instead of using the map.</li><li>Assumes all values are <strong>unique</strong> (LeetCode guarantees it); with duplicates the split point is ambiguous and this approach breaks.</li></ul>
 <h2>Transfer</h2>
-<p>Same idea, different pairing: <a href="https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/">Construct from Inorder and Postorder / 106</a> — postorder&#x27;s *last* element is the root, so consume it back-to-front and build the right child before the left. The general move (&quot;one readout names the root, the other splits the children&quot;) also underlies <a href="../0297-serialize-and-deserialize-binary-tree/">serialize/deserialize / 297</a>.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;105. Construct Binary Tree from Preorder and Inorder Traversal —
+<p>Same idea, different pairing: <a href="https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/">Construct from Inorder and Postorder / 106</a> — postorder&#x27;s *last* element is the root, so consume it back-to-front and build the right child before the left. The general move (&quot;one readout names the root, the other splits the children&quot;) also underlies <a href="../0297-serialize-and-deserialize-binary-tree/">serialize/deserialize / 297</a>.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "tree",
+ "title": "Construct from Preorder + Inorder - root from preorder, split by inorder, built live",
+ "acts": [
+  "The two facts",
+  "Build the tree",
+  "Edge: a left chain"
+ ],
+ "code": {
+  "build": [
+   "index = {val: i for i, val in enumerate(inorder)}",
+   "pre = iter(preorder)",
+   "def helper(lo, hi):",
+   "    if lo > hi: return None",
+   "    root_val = next(pre)      # preorder gives the root",
+   "    mid = index[root_val]     # split inorder at the root",
+   "    root.left  = helper(lo, mid - 1)   # left part",
+   "    root.right = helper(mid + 1, hi)   # right part",
+   "    return root"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current root"
+  ],
+  [
+   "good",
+   "subtree placed"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 3,
+   "val": 3,
+   "x": 74,
+   "y": 0
+  },
+  {
+   "id": 9,
+   "val": 9,
+   "x": 0,
+   "y": 82
+  },
+  {
+   "id": 20,
+   "val": 20,
+   "x": 222,
+   "y": 82
+  },
+  {
+   "id": 15,
+   "val": 15,
+   "x": 148,
+   "y": 164
+  },
+  {
+   "id": 7,
+   "val": 7,
+   "x": 296,
+   "y": 164
+  }
+ ],
+ "edges": [
+  [
+   3,
+   9
+  ],
+  [
+   3,
+   20
+  ],
+  [
+   20,
+   15
+  ],
+  [
+   20,
+   7
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "build",
+   "line": 4,
+   "intro": "preorder's front is always the current root; inorder splits the rest.",
+   "invariant": "the size of inorder's left part decides how much of preorder is left subtree.",
+   "note": "Two facts do all the work. Preorder visits the root first, so its front value is this subtree's root.",
+   "active": [
+    3
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "[3] 9 20 15 7"
+     ],
+     [
+      "inorder",
+      "<9> <3> <15> <20> <7>"
+     ],
+     [
+      "window",
+      "[0..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "preorder[0]",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "build",
+   "line": 5,
+   "note": "Inorder visits left, root, right. Once we know the root, its spot in inorder splits everything into the left subtree and the right subtree.",
+   "active": [
+    3
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "[3] 9 20 15 7"
+     ],
+     [
+      "inorder",
+      "<9> <3> <15> <20> <7>"
+     ],
+     [
+      "window",
+      "[0..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "inorder split",
+     "9 | 3 | 15 20 7"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "build",
+   "line": 2,
+   "intro": "the tree grows one node at a time as the recursion pulls roots off preorder.",
+   "invariant": "each root is placed before recursing into its (smaller) inorder halves.",
+   "note": "Build it. preorder=[3,9,20,15,7], inorder=[9,3,15,20,7].",
+   "active": [
+    3
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "[3] 9 20 15 7"
+     ],
+     [
+      "inorder",
+      "<9> <3> <15> <20> <7>"
+     ],
+     [
+      "window",
+      "[0..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "start",
+     "range [0..4]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "build",
+   "line": 4,
+   "note": "Preorder cursor -> 3: that's this subtree's root. Find it in inorder (index 1).",
+   "active": [
+    3
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "[3] 9 20 15 7"
+     ],
+     [
+      "inorder",
+      "<9> <3> <15> <20> <7>"
+     ],
+     [
+      "window",
+      "[0..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "root",
+     3
+    ],
+    [
+     "split at",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "build",
+   "line": 5,
+   "note": "Inorder splits at 3: left part = [0..0], right part = [2..4]. Build left first (preorder order).",
+   "active": [
+    3
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 [9] 20 15 7"
+     ],
+     [
+      "inorder",
+      "<9> <3> <15> <20> <7>"
+     ],
+     [
+      "window",
+      "[0..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     "[0..0]"
+    ],
+    [
+     "right",
+     "[2..4]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ]
+   ],
+   "code": "build",
+   "line": 4,
+   "note": "Preorder cursor -> 9: that's this subtree's root. Find it in inorder (index 0).",
+   "active": [
+    9
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 [9] 20 15 7"
+     ],
+     [
+      "inorder",
+      "<9> 3 15 20 7"
+     ],
+     [
+      "window",
+      "[0..0]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "root",
+     9
+    ],
+    [
+     "split at",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ]
+   ],
+   "code": "build",
+   "line": 5,
+   "note": "Inorder splits at 9: left part = [0..-1], right part = [1..0]. Build left first (preorder order).",
+   "active": [
+    9
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 [20] 15 7"
+     ],
+     [
+      "inorder",
+      "<9> 3 15 20 7"
+     ],
+     [
+      "window",
+      "[0..0]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     "[0..-1]"
+    ],
+    [
+     "right",
+     "[1..0]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ]
+   ],
+   "code": "build",
+   "line": 3,
+   "note": "Empty range [0..-1] -> no node here.",
+   "active": [],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 [20] 15 7"
+     ],
+     [
+      "inorder",
+      "9 3 15 20 7"
+     ],
+     [
+      "window",
+      "empty"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "range",
+     "empty"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ]
+   ],
+   "code": "build",
+   "line": 3,
+   "note": "Empty range [1..0] -> no node here.",
+   "active": [],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 [20] 15 7"
+     ],
+     [
+      "inorder",
+      "9 3 15 20 7"
+     ],
+     [
+      "window",
+      "empty"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "range",
+     "empty"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ]
+   ],
+   "code": "build",
+   "line": 8,
+   "note": "Both sides of 9 are built -> this subtree is done.",
+   "active": [
+    9
+   ],
+   "done": {
+    "9": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 [20] 15 7"
+     ],
+     [
+      "inorder",
+      "<9> 3 15 20 7"
+     ],
+     [
+      "window",
+      "[0..0]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "placed",
+     9
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ]
+   ],
+   "code": "build",
+   "line": 4,
+   "note": "Preorder cursor -> 20: that's this subtree's root. Find it in inorder (index 3).",
+   "active": [
+    20
+   ],
+   "done": {
+    "9": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 [20] 15 7"
+     ],
+     [
+      "inorder",
+      "9 3 <15> <20> <7>"
+     ],
+     [
+      "window",
+      "[2..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "root",
+     20
+    ],
+    [
+     "split at",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ]
+   ],
+   "code": "build",
+   "line": 5,
+   "note": "Inorder splits at 20: left part = [2..2], right part = [4..4]. Build left first (preorder order).",
+   "active": [
+    20
+   ],
+   "done": {
+    "9": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 [15] 7"
+     ],
+     [
+      "inorder",
+      "9 3 <15> <20> <7>"
+     ],
+     [
+      "window",
+      "[2..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     "[2..2]"
+    ],
+    [
+     "right",
+     "[4..4]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ]
+   ],
+   "code": "build",
+   "line": 4,
+   "note": "Preorder cursor -> 15: that's this subtree's root. Find it in inorder (index 2).",
+   "active": [
+    15
+   ],
+   "done": {
+    "9": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 [15] 7"
+     ],
+     [
+      "inorder",
+      "9 3 <15> 20 7"
+     ],
+     [
+      "window",
+      "[2..2]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "root",
+     15
+    ],
+    [
+     "split at",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ]
+   ],
+   "code": "build",
+   "line": 5,
+   "note": "Inorder splits at 15: left part = [2..1], right part = [3..2]. Build left first (preorder order).",
+   "active": [
+    15
+   ],
+   "done": {
+    "9": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 [7]"
+     ],
+     [
+      "inorder",
+      "9 3 <15> 20 7"
+     ],
+     [
+      "window",
+      "[2..2]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     "[2..1]"
+    ],
+    [
+     "right",
+     "[3..2]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ]
+   ],
+   "code": "build",
+   "line": 3,
+   "note": "Empty range [2..1] -> no node here.",
+   "active": [],
+   "done": {
+    "9": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 [7]"
+     ],
+     [
+      "inorder",
+      "9 3 15 20 7"
+     ],
+     [
+      "window",
+      "empty"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "range",
+     "empty"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ]
+   ],
+   "code": "build",
+   "line": 3,
+   "note": "Empty range [3..2] -> no node here.",
+   "active": [],
+   "done": {
+    "9": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 [7]"
+     ],
+     [
+      "inorder",
+      "9 3 15 20 7"
+     ],
+     [
+      "window",
+      "empty"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "range",
+     "empty"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ]
+   ],
+   "code": "build",
+   "line": 8,
+   "note": "Both sides of 15 are built -> this subtree is done.",
+   "active": [
+    15
+   ],
+   "done": {
+    "9": "ok",
+    "15": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 [7]"
+     ],
+     [
+      "inorder",
+      "9 3 <15> 20 7"
+     ],
+     [
+      "window",
+      "[2..2]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "placed",
+     15
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 7,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ],
+    [
+     20,
+     7
+    ]
+   ],
+   "code": "build",
+   "line": 4,
+   "note": "Preorder cursor -> 7: that's this subtree's root. Find it in inorder (index 4).",
+   "active": [
+    7
+   ],
+   "done": {
+    "9": "ok",
+    "15": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 [7]"
+     ],
+     [
+      "inorder",
+      "9 3 15 20 <7>"
+     ],
+     [
+      "window",
+      "[4..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "root",
+     7
+    ],
+    [
+     "split at",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 7,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ],
+    [
+     20,
+     7
+    ]
+   ],
+   "code": "build",
+   "line": 5,
+   "note": "Inorder splits at 7: left part = [4..3], right part = [5..4]. Build left first (preorder order).",
+   "active": [
+    7
+   ],
+   "done": {
+    "9": "ok",
+    "15": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 7"
+     ],
+     [
+      "inorder",
+      "9 3 15 20 <7>"
+     ],
+     [
+      "window",
+      "[4..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     "[4..3]"
+    ],
+    [
+     "right",
+     "[5..4]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 7,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ],
+    [
+     20,
+     7
+    ]
+   ],
+   "code": "build",
+   "line": 3,
+   "note": "Empty range [4..3] -> no node here.",
+   "active": [],
+   "done": {
+    "9": "ok",
+    "15": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 7"
+     ],
+     [
+      "inorder",
+      "9 3 15 20 7"
+     ],
+     [
+      "window",
+      "empty"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "range",
+     "empty"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 7,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ],
+    [
+     20,
+     7
+    ]
+   ],
+   "code": "build",
+   "line": 3,
+   "note": "Empty range [5..4] -> no node here.",
+   "active": [],
+   "done": {
+    "9": "ok",
+    "15": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 7"
+     ],
+     [
+      "inorder",
+      "9 3 15 20 7"
+     ],
+     [
+      "window",
+      "empty"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "range",
+     "empty"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 7,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ],
+    [
+     20,
+     7
+    ]
+   ],
+   "code": "build",
+   "line": 8,
+   "note": "Both sides of 7 are built -> this subtree is done.",
+   "active": [
+    7
+   ],
+   "done": {
+    "9": "ok",
+    "15": "ok",
+    "7": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 7"
+     ],
+     [
+      "inorder",
+      "9 3 15 20 <7>"
+     ],
+     [
+      "window",
+      "[4..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "placed",
+     7
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 7,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ],
+    [
+     20,
+     7
+    ]
+   ],
+   "code": "build",
+   "line": 8,
+   "note": "Both sides of 20 are built -> this subtree is done.",
+   "active": [
+    20
+   ],
+   "done": {
+    "9": "ok",
+    "15": "ok",
+    "7": "ok",
+    "20": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 7"
+     ],
+     [
+      "inorder",
+      "9 3 <15> <20> <7>"
+     ],
+     [
+      "window",
+      "[2..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "placed",
+     20
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 7,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ],
+    [
+     20,
+     7
+    ]
+   ],
+   "code": "build",
+   "line": 8,
+   "note": "Both sides of 3 are built -> this subtree is done.",
+   "active": [
+    3
+   ],
+   "done": {
+    "9": "ok",
+    "15": "ok",
+    "7": "ok",
+    "20": "ok",
+    "3": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "3 9 20 15 7"
+     ],
+     [
+      "inorder",
+      "<9> <3> <15> <20> <7>"
+     ],
+     [
+      "window",
+      "[0..4]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "placed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 3,
+     "val": 3,
+     "x": 74,
+     "y": 0
+    },
+    {
+     "id": 9,
+     "val": 9,
+     "x": 0,
+     "y": 82
+    },
+    {
+     "id": 20,
+     "val": 20,
+     "x": 222,
+     "y": 82
+    },
+    {
+     "id": 15,
+     "val": 15,
+     "x": 148,
+     "y": 164
+    },
+    {
+     "id": 7,
+     "val": 7,
+     "x": 296,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     20,
+     15
+    ],
+    [
+     20,
+     7
+    ]
+   ],
+   "code": "build",
+   "line": 8,
+   "note": "Preorder is used up and every inorder range is placed -> the unique tree is [3,9,20,null,null,15,7].",
+   "active": [],
+   "done": {
+    "9": "ok",
+    "15": "ok",
+    "7": "ok",
+    "20": "ok",
+    "3": "ok"
+   },
+   "state": [
+    [
+     "built",
+     "[3,9,20,_,_,15,7]"
+    ]
+   ],
+   "banner": "Reconstructed: [3,9,20,null,null,15,7]"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "build",
+   "line": 5,
+   "intro": "when inorder is fully reversed, every split has an empty right side.",
+   "invariant": "an empty right range means no right child \u2014 the tree only leans left.",
+   "note": "Edge: preorder=[1,2,3], inorder=[3,2,1]. Each root's inorder split has nothing on the right, so the tree is a left-leaning chain.",
+   "active": [
+    1
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "[1] 2 3"
+     ],
+     [
+      "inorder",
+      "<3> <2> <1>"
+     ],
+     [
+      "window",
+      "[0..2]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "shape",
+     "left chain"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "build",
+   "line": 4,
+   "note": "Preorder cursor -> 1: that's this subtree's root. Find it in inorder (index 2).",
+   "active": [
+    1
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "[1] 2 3"
+     ],
+     [
+      "inorder",
+      "<3> <2> <1>"
+     ],
+     [
+      "window",
+      "[0..2]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "root",
+     1
+    ],
+    [
+     "split at",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    }
+   ],
+   "edges": [],
+   "code": "build",
+   "line": 5,
+   "note": "Inorder splits at 1: left part = [0..1], right part = [3..2]. Build left first (preorder order).",
+   "active": [
+    1
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 [2] 3"
+     ],
+     [
+      "inorder",
+      "<3> <2> <1>"
+     ],
+     [
+      "window",
+      "[0..2]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     "[0..1]"
+    ],
+    [
+     "right",
+     "[3..2]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ]
+   ],
+   "code": "build",
+   "line": 4,
+   "note": "Preorder cursor -> 2: that's this subtree's root. Find it in inorder (index 1).",
+   "active": [
+    2
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 [2] 3"
+     ],
+     [
+      "inorder",
+      "<3> <2> 1"
+     ],
+     [
+      "window",
+      "[0..1]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "root",
+     2
+    ],
+    [
+     "split at",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ]
+   ],
+   "code": "build",
+   "line": 5,
+   "note": "Inorder splits at 2: left part = [0..0], right part = [2..1]. Build left first (preorder order).",
+   "active": [
+    2
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 2 [3]"
+     ],
+     [
+      "inorder",
+      "<3> <2> 1"
+     ],
+     [
+      "window",
+      "[0..1]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     "[0..0]"
+    ],
+    [
+     "right",
+     "[2..1]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "build",
+   "line": 4,
+   "note": "Preorder cursor -> 3: that's this subtree's root. Find it in inorder (index 0).",
+   "active": [
+    3
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 2 [3]"
+     ],
+     [
+      "inorder",
+      "<3> 2 1"
+     ],
+     [
+      "window",
+      "[0..0]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "root",
+     3
+    ],
+    [
+     "split at",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "build",
+   "line": 5,
+   "note": "Inorder splits at 3: left part = [0..-1], right part = [1..0]. Build left first (preorder order).",
+   "active": [
+    3
+   ],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 2 3"
+     ],
+     [
+      "inorder",
+      "<3> 2 1"
+     ],
+     [
+      "window",
+      "[0..0]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "left",
+     "[0..-1]"
+    ],
+    [
+     "right",
+     "[1..0]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "build",
+   "line": 3,
+   "note": "Empty range [0..-1] -> no node here.",
+   "active": [],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 2 3"
+     ],
+     [
+      "inorder",
+      "3 2 1"
+     ],
+     [
+      "window",
+      "empty"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "range",
+     "empty"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "build",
+   "line": 3,
+   "note": "Empty range [1..0] -> no node here.",
+   "active": [],
+   "done": {},
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 2 3"
+     ],
+     [
+      "inorder",
+      "3 2 1"
+     ],
+     [
+      "window",
+      "empty"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "range",
+     "empty"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "build",
+   "line": 8,
+   "note": "Both sides of 3 are built -> this subtree is done.",
+   "active": [
+    3
+   ],
+   "done": {
+    "3": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 2 3"
+     ],
+     [
+      "inorder",
+      "<3> 2 1"
+     ],
+     [
+      "window",
+      "[0..0]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "placed",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "build",
+   "line": 3,
+   "note": "Empty range [2..1] -> no node here.",
+   "active": [],
+   "done": {
+    "3": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 2 3"
+     ],
+     [
+      "inorder",
+      "3 2 1"
+     ],
+     [
+      "window",
+      "empty"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "range",
+     "empty"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "build",
+   "line": 8,
+   "note": "Both sides of 2 are built -> this subtree is done.",
+   "active": [
+    2
+   ],
+   "done": {
+    "3": "ok",
+    "2": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 2 3"
+     ],
+     [
+      "inorder",
+      "<3> <2> 1"
+     ],
+     [
+      "window",
+      "[0..1]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "placed",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "build",
+   "line": 3,
+   "note": "Empty range [3..2] -> no node here.",
+   "active": [],
+   "done": {
+    "3": "ok",
+    "2": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 2 3"
+     ],
+     [
+      "inorder",
+      "3 2 1"
+     ],
+     [
+      "window",
+      "empty"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "range",
+     "empty"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "build",
+   "line": 8,
+   "note": "Both sides of 1 are built -> this subtree is done.",
+   "active": [
+    1
+   ],
+   "done": {
+    "3": "ok",
+    "2": "ok",
+    "1": "ok"
+   },
+   "sidebar": {
+    "title": "arrays",
+    "rows": [
+     [
+      "preorder",
+      "1 2 3"
+     ],
+     [
+      "inorder",
+      "<3> <2> <1>"
+     ],
+     [
+      "window",
+      "[0..2]"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "placed",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 1,
+     "val": 1,
+     "x": 148,
+     "y": 0
+    },
+    {
+     "id": 2,
+     "val": 2,
+     "x": 74,
+     "y": 82
+    },
+    {
+     "id": 3,
+     "val": 3,
+     "x": 0,
+     "y": 164
+    }
+   ],
+   "edges": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "code": "build",
+   "line": 8,
+   "note": "Every right range came back empty -> [1,2,null,3], a left chain.",
+   "active": [],
+   "done": {
+    "3": "ok",
+    "2": "ok",
+    "1": "ok"
+   },
+   "state": [
+    [
+     "built",
+     "[1,2,null,3]"
+    ]
+   ],
+   "banner": "Reconstructed: [1,2,null,3]"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/08-trees/0105-construct-binary-tree-from-preorder-and-inorder-traversal/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;105. Construct Binary Tree from Preorder and Inorder Traversal —
 https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
 
 Rebuild the unique binary tree given its preorder and inorder value sequences.

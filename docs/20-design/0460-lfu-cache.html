@@ -60,7 +60,516 @@
 <h2>Pitfalls</h2>
 <ul><li>Getting <code>min_freq</code> maintenance wrong. It only changes in two places: set to 1 on any new insertion, and bumped by one when a touch empties the current min bucket. Rescanning for it defeats the purpose.</li><li>Forgetting that <strong>updating an existing key&#x27;s value is a use</strong> — it must bump the count, just like a <code>get</code>.</li><li>Not deleting a bucket when it empties, leaving stale empty structures that confuse the <code>min_freq</code> logic.</li><li>The <code>capacity == 0</code> case — the cache should store nothing and every <code>get</code> returns -1.</li><li>Wrong tie-break: evicting the newest instead of the oldest within the min bucket. Pop the front, not the back.</li></ul>
 <h2>Transfer</h2>
-<p>LFU is <a href="../0146-lru-cache/">LRU Cache / 146</a> with an extra frequency dimension — the same &quot;hash map for lookup + linked structure for ordered eviction&quot; skeleton, layered per count. The bucket-by-a-key idea also shows up in <a href="https://leetcode.com/problems/all-oone-data-structure/">All O`one Data Structure / 432</a>, where counts are bucketed to get fast min/max. When you need &quot;fixed-cost access to the extreme of a changing multiset,&quot; bucket by the key you rank on.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0460-lfu-cache/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;460. LFU Cache — https://leetcode.com/problems/lfu-cache/
+<p>LFU is <a href="../0146-lru-cache/">LRU Cache / 146</a> with an extra frequency dimension — the same &quot;hash map for lookup + linked structure for ordered eviction&quot; skeleton, layered per count. The bucket-by-a-key idea also shows up in <a href="https://leetcode.com/problems/all-oone-data-structure/">All O`one Data Structure / 432</a>, where counts are bucketed to get fast min/max. When you need &quot;fixed-cost access to the extreme of a changing multiset,&quot; bucket by the key you rank on.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "LFU Cache - bucket keys by use-count, evict the front of the min bucket",
+ "acts": [
+  "The rule: buckets + min_freq",
+  "A use bumps frequency + evict",
+  "Tie by recency + edge"
+ ],
+ "code": {
+  "ops": [
+   "# buckets: freq -> keys in recency order (oldest first)",
+   "def _touch(key):           # a use bumps frequency",
+   "    move key from bucket[f] to bucket[f+1]",
+   "    if bucket[f] emptied and f == min_freq: min_freq += 1",
+   "def put(key, value):",
+   "    if full: evict front of bucket[min_freq]  # LFU, then LRU",
+   "    new key -> freq 1, min_freq = 1"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "key being used"
+  ],
+  [
+   "good",
+   "live cache key"
+  ],
+  [
+   "bad",
+   "evicted"
+  ],
+  [
+   "dim",
+   "inactive"
+  ]
+ ],
+ "cells": [
+  1,
+  2
+ ],
+ "labels": [
+  "1:1",
+  "2:2"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    "1:1",
+    "2:2"
+   ],
+   "code": "ops",
+   "line": 0,
+   "intro": "every key sits in a bucket by how often it's been used; min_freq points at the eviction bucket, so we never scan for the least-frequent.",
+   "invariant": "within a bucket, order is recency: oldest at the front (evict-first).",
+   "note": "LFU groups keys by use-count into buckets. Each bucket keeps its keys in recency order. min_freq names the bucket to evict from.",
+   "marks": {
+    "0": "good",
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "buckets (oldest -> newest)",
+    "rows": [
+     [
+      "min_freq",
+      "1"
+     ],
+     [
+      "freq 1",
+      "1, 2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "capacity",
+     2
+    ],
+    [
+     "min_freq",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    "1:1",
+    "2:2"
+   ],
+   "code": "ops",
+   "line": 1,
+   "intro": "watch key 1 leave the freq-1 bucket and enter freq-2; min_freq rises.",
+   "invariant": "a get or a value-update both count as one use.",
+   "note": "Start: keys 1 and 2, both at freq 1. get(1) is a use \u2014 bump key 1 to freq 2.",
+   "marks": {
+    "0": "active",
+    "1": "good"
+   },
+   "pointers": {
+    "get": 0
+   },
+   "sidebar": {
+    "title": "buckets (oldest -> newest)",
+    "rows": [
+     [
+      "min_freq",
+      "1"
+     ],
+     [
+      "freq 1",
+      "1, 2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "get(1)",
+     "-> 1"
+    ],
+    [
+     "min_freq",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    "1:1",
+    "2:2"
+   ],
+   "code": "ops",
+   "line": 2,
+   "note": "Key 1 moves from bucket freq-1 to bucket freq-2. Bucket freq-1 now holds only key 2, so min_freq stays 1 (key 2 is still least frequent).",
+   "marks": {
+    "0": "good",
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "buckets (oldest -> newest)",
+    "rows": [
+     [
+      "min_freq",
+      "1"
+     ],
+     [
+      "freq 1",
+      "2"
+     ],
+     [
+      "freq 2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "returned",
+     1
+    ],
+    [
+     "freq(1)",
+     2
+    ],
+    [
+     "min_freq",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    "1:1",
+    "2:2"
+   ],
+   "code": "ops",
+   "line": 5,
+   "note": "put(3,3): cache is full. Evict from bucket min_freq=1. Its front (oldest) is key 2 \u2014 the least frequent, and among those the least recent.",
+   "marks": {
+    "1": "bad",
+    "0": "good"
+   },
+   "pointers": {
+    "evict": 1
+   },
+   "sidebar": {
+    "title": "buckets (oldest -> newest)",
+    "rows": [
+     [
+      "min_freq",
+      "1"
+     ],
+     [
+      "freq 1",
+      "2"
+     ],
+     [
+      "freq 2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "min_freq",
+     1
+    ],
+    [
+     "evict",
+     "key 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    1,
+    3
+   ],
+   "labels": [
+    "1:1",
+    "3:3"
+   ],
+   "code": "ops",
+   "line": 6,
+   "note": "Dropped key 2. New key 3 enters at freq 1, so min_freq resets to 1. Cache now holds 1 (freq 2) and 3 (freq 1).",
+   "marks": {
+    "1": "good",
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "buckets (oldest -> newest)",
+    "rows": [
+     [
+      "min_freq",
+      "1"
+     ],
+     [
+      "freq 1",
+      "3"
+     ],
+     [
+      "freq 2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     2
+    ],
+    [
+     "min_freq",
+     1
+    ],
+    [
+     "get(2)",
+     -1
+    ]
+   ],
+   "banner": "put(3,3) evicted key 2 (least frequently used)"
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    3
+   ],
+   "labels": [
+    "1:1",
+    "3:3"
+   ],
+   "code": "ops",
+   "line": 1,
+   "intro": "when counts tie, the older key in that bucket loses \u2014 that is the LRU tiebreak baked into bucket order.",
+   "invariant": "the front of a bucket is always the oldest key at that frequency.",
+   "note": "get(3) bumps key 3 to freq 2. Now both 1 and 3 are at freq 2 \u2014 a tie.",
+   "marks": {
+    "1": "active"
+   },
+   "pointers": {
+    "get": 1
+   },
+   "sidebar": {
+    "title": "buckets (oldest -> newest)",
+    "rows": [
+     [
+      "min_freq",
+      "1"
+     ],
+     [
+      "freq 1",
+      "3"
+     ],
+     [
+      "freq 2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "get(3)",
+     "-> 3"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    3
+   ],
+   "labels": [
+    "1:1",
+    "3:3"
+   ],
+   "code": "ops",
+   "line": 5,
+   "note": "put(4,4): full, min_freq is now 2 (both keys are freq 2). Evict the FRONT of bucket 2 \u2014 key 1 entered that bucket first, so it is the least recent.",
+   "marks": {
+    "0": "bad",
+    "1": "good"
+   },
+   "pointers": {
+    "evict": 0
+   },
+   "sidebar": {
+    "title": "buckets (oldest -> newest)",
+    "rows": [
+     [
+      "min_freq",
+      "2"
+     ],
+     [
+      "freq 2",
+      "1, 3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "min_freq",
+     2
+    ],
+    [
+     "tie",
+     "1 vs 3"
+    ],
+    [
+     "older",
+     "key 1"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    3,
+    4
+   ],
+   "labels": [
+    "3:3",
+    "4:4"
+   ],
+   "code": "ops",
+   "line": 6,
+   "note": "Evicted key 1 (the least recent among the freq-2 tie). Kept 3, added 4 at freq 1.",
+   "marks": {
+    "1": "good",
+    "0": "good"
+   },
+   "sidebar": {
+    "title": "buckets (oldest -> newest)",
+    "rows": [
+     [
+      "min_freq",
+      "1"
+     ],
+     [
+      "freq 1",
+      "4"
+     ],
+     [
+      "freq 2",
+      "3"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "evicted",
+     1
+    ],
+    [
+     "get(1)",
+     -1
+    ]
+   ],
+   "banner": "Tie at freq 2 broken by recency: evict key 1"
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    "1:10",
+    "2:20"
+   ],
+   "code": "ops",
+   "line": 4,
+   "note": "Edge: keys 1 and 2 both at freq 1. put(1,100) UPDATES key 1's value \u2014 and that update counts as a use.",
+   "marks": {
+    "0": "active",
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "buckets (oldest -> newest)",
+    "rows": [
+     [
+      "min_freq",
+      "1"
+     ],
+     [
+      "freq 1",
+      "1, 2"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "put(1,100)",
+     "update+use"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    1,
+    2
+   ],
+   "labels": [
+    "1:100",
+    "2:20"
+   ],
+   "code": "ops",
+   "line": 1,
+   "note": "Key 1 is now value 100 AND freq 2. So put(3,30) evicts key 2 (still freq 1), not the just-updated key 1.",
+   "marks": {
+    "0": "good",
+    "1": "bad"
+   },
+   "sidebar": {
+    "title": "buckets (oldest -> newest)",
+    "rows": [
+     [
+      "min_freq",
+      "1"
+     ],
+     [
+      "freq 1",
+      "2"
+     ],
+     [
+      "freq 2",
+      "1"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "freq(1)",
+     2
+    ],
+    [
+     "min_freq",
+     1
+    ],
+    [
+     "next evict",
+     "key 2"
+    ]
+   ],
+   "banner": "An update is a use: put(1,100) protects key 1 from eviction"
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/20-design/0460-lfu-cache/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;460. LFU Cache — https://leetcode.com/problems/lfu-cache/
 
 Fixed-size key-&gt;value cache. When full, evict the *least frequently used* key.
 Break ties by evicting the least recently used among the least frequent. Both

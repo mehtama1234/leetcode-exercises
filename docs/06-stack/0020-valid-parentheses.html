@@ -56,7 +56,846 @@
 <h2>Pitfalls</h2>
 <ul><li>Forgetting the <strong>final empty check</strong>: <code>&quot;(&quot;</code> reaches the end valid-so-far but has a leftover opener. An empty stack at the end is the real pass.</li><li>Popping an <strong>empty stack</strong>: a closer like <code>&quot;)&quot;</code> with nothing open must return false, not crash. Check for empty before popping.</li><li>Matching only by &quot;is it a closer?&quot; and not by <strong>kind</strong> — <code>&quot;(]&quot;</code> has a closer but the wrong opener on top.</li><li>Order vs. count: <code>([)]</code> has balanced counts of each type but crosses, so counting alone is not enough; the stack enforces nesting order.</li></ul>
 <h2>Transfer</h2>
-<p>The move — &quot;use a stack so the most recent open item is what you resolve first&quot; — drives a whole family: <a href="../../20-design/0155-min-stack/">Min Stack / 155</a>, *Generate Parentheses / 22* (the validity rule here becomes the pruning rule there), and any expression or nesting parser. Whenever the newest unfinished thing must finish before the older ones, reach for a stack.</p></article><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/06-stack/0020-valid-parentheses/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;20. Valid Parentheses — https://leetcode.com/problems/valid-parentheses/
+<p>The move — &quot;use a stack so the most recent open item is what you resolve first&quot; — drives a whole family: <a href="../../20-design/0155-min-stack/">Min Stack / 155</a>, *Generate Parentheses / 22* (the validity rule here becomes the pruning rule there), and any expression or nesting parser. Whenever the newest unfinished thing must finish before the older ones, reach for a stack.</p></article><section class="viz-section"><h2>Watch it run</h2><p class="viz-hint">Step through the algorithm one move at a time — this replays a trace emitted by the verified solution, so it matches the code exactly.</p><div class="viz"><script type="application/json" class="viz-data">{
+ "player": "linear",
+ "title": "Valid Parentheses \u2014 the last opener is the first to close",
+ "acts": [
+  "The rule: {[]}",
+  "Valid: ()[]{}",
+  "Edge: interleaved ([)]",
+  "Edge: leftover ("
+ ],
+ "code": {
+  "fast": [
+   "pairs = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}",
+   "for ch in s:",
+   "    if ch in pairs:            # closer",
+   "        if not stack or stack.pop() != pairs[ch]:",
+   "            return False",
+   "    else:                      # opener",
+   "        stack.append(ch)",
+   "return not stack"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "opener pushed / scanning"
+  ],
+  [
+   "good",
+   "a matched, popped pair"
+  ],
+  [
+   "bad",
+   "mismatch / leftover"
+  ]
+ ],
+ "cells": [
+  "{",
+  "[",
+  "]",
+  "}"
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "cells": [
+    "{",
+    "[",
+    "]",
+    "}"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "the bracket that must close next is always the most recent opener \u2014 that is a stack.",
+   "invariant": "the stack holds exactly the openers still waiting, newest on top.",
+   "note": "Push every opener. On a closer, it must match the top of the stack \u2014 the one thing allowed to close now.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "top",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "s",
+     "{[]}"
+    ],
+    [
+     "stack",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 6,
+   "note": "'{' at index 0 is an opener. Push it \u2014 it must be closed later.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "{"
+     ],
+     [
+      "top",
+      "{"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "opener",
+     "{"
+    ],
+    [
+     "stack depth",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 6,
+   "note": "'[' at index 1 is an opener. Push it \u2014 it must be closed later.",
+   "pointers": {
+    "ch": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "{"
+     ],
+     [
+      "1",
+      "["
+     ],
+     [
+      "top",
+      "["
+     ]
+    ]
+   },
+   "state": [
+    [
+     "opener",
+     "["
+    ],
+    [
+     "stack depth",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 3,
+   "note": "']' at index 2 closes the '[' on top. Pop it \u2014 matched pair.",
+   "pointers": {
+    "ch": 2
+   },
+   "marks": {
+    "2": "good"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "{"
+     ],
+     [
+      "top",
+      "{"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "closer",
+     "]"
+    ],
+    [
+     "popped",
+     "["
+    ],
+    [
+     "stack depth",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 3,
+   "note": "'}' at index 3 closes the '{' on top. Pop it \u2014 matched pair.",
+   "pointers": {
+    "ch": 3
+   },
+   "marks": {
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "top",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "closer",
+     "}"
+    ],
+    [
+     "popped",
+     "{"
+    ],
+    [
+     "stack depth",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "fast",
+   "line": 7,
+   "note": "Reached the end and the stack is empty \u2014 every opener was closed in order.",
+   "marks": {
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "top",
+      "(empty)"
+     ]
+    ]
+   },
+   "banner": "True \u2014 '{[]}' is balanced",
+   "state": [
+    [
+     "stack empty?",
+     "True"
+    ],
+    [
+     "answer",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "cells": [
+    "(",
+    ")",
+    "[",
+    "]",
+    "{",
+    "}"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "closers arrive right after their opener, so the stack stays shallow.",
+   "invariant": "a matched pair pops immediately, keeping only unresolved openers.",
+   "note": "A second valid case: three pairs side by side. Each closes the opener just pushed.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "top",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "s",
+     "()[]{}"
+    ],
+    [
+     "stack",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 6,
+   "note": "'(' at index 0 is an opener. Push it \u2014 it must be closed later.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "("
+     ],
+     [
+      "top",
+      "("
+     ]
+    ]
+   },
+   "state": [
+    [
+     "opener",
+     "("
+    ],
+    [
+     "stack depth",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 3,
+   "note": "')' at index 1 closes the '(' on top. Pop it \u2014 matched pair.",
+   "pointers": {
+    "ch": 1
+   },
+   "marks": {
+    "1": "good"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "top",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "closer",
+     ")"
+    ],
+    [
+     "popped",
+     "("
+    ],
+    [
+     "stack depth",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 6,
+   "note": "'[' at index 2 is an opener. Push it \u2014 it must be closed later.",
+   "pointers": {
+    "ch": 2
+   },
+   "marks": {
+    "2": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "["
+     ],
+     [
+      "top",
+      "["
+     ]
+    ]
+   },
+   "state": [
+    [
+     "opener",
+     "["
+    ],
+    [
+     "stack depth",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 3,
+   "note": "']' at index 3 closes the '[' on top. Pop it \u2014 matched pair.",
+   "pointers": {
+    "ch": 3
+   },
+   "marks": {
+    "3": "good"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "top",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "closer",
+     "]"
+    ],
+    [
+     "popped",
+     "["
+    ],
+    [
+     "stack depth",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 6,
+   "note": "'{' at index 4 is an opener. Push it \u2014 it must be closed later.",
+   "pointers": {
+    "ch": 4
+   },
+   "marks": {
+    "4": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "{"
+     ],
+     [
+      "top",
+      "{"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "opener",
+     "{"
+    ],
+    [
+     "stack depth",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 3,
+   "note": "'}' at index 5 closes the '{' on top. Pop it \u2014 matched pair.",
+   "pointers": {
+    "ch": 5
+   },
+   "marks": {
+    "5": "good"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "top",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "closer",
+     "}"
+    ],
+    [
+     "popped",
+     "{"
+    ],
+    [
+     "stack depth",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "fast",
+   "line": 7,
+   "note": "Reached the end and the stack is empty \u2014 every opener was closed in order.",
+   "marks": {
+    "5": "good"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "top",
+      "(empty)"
+     ]
+    ]
+   },
+   "banner": "True \u2014 '()[]{}' is balanced",
+   "state": [
+    [
+     "stack empty?",
+     "True"
+    ],
+    [
+     "answer",
+     "True"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "cells": [
+    "(",
+    "[",
+    ")",
+    "]"
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "'([)]' has balanced counts but the WRONG order \u2014 the stack catches it.",
+   "invariant": "the top opener must match before an outer one can close.",
+   "note": "Edge case: interleaved, not nested. The ')' arrives while '[' is still on top.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "top",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "s",
+     "([)]"
+    ],
+    [
+     "stack",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "'(' at index 0 is an opener. Push it \u2014 it must be closed later.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "("
+     ],
+     [
+      "top",
+      "("
+     ]
+    ]
+   },
+   "state": [
+    [
+     "opener",
+     "("
+    ],
+    [
+     "stack depth",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 6,
+   "note": "'[' at index 1 is an opener. Push it \u2014 it must be closed later.",
+   "pointers": {
+    "ch": 1
+   },
+   "marks": {
+    "1": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "("
+     ],
+     [
+      "1",
+      "["
+     ],
+     [
+      "top",
+      "["
+     ]
+    ]
+   },
+   "state": [
+    [
+     "opener",
+     "["
+    ],
+    [
+     "stack depth",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 3,
+   "note": "')' at index 2 needs '(' on top, but top is [. Mismatch.",
+   "pointers": {
+    "ch": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "("
+     ],
+     [
+      "1",
+      "["
+     ],
+     [
+      "top",
+      "["
+     ]
+    ]
+   },
+   "state": [
+    [
+     "closer",
+     ")"
+    ],
+    [
+     "needs",
+     "("
+    ],
+    [
+     "top",
+     "["
+    ],
+    [
+     "result",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "fast",
+   "line": 4,
+   "note": "A closer that does not match the most recent opener means the string is invalid.",
+   "pointers": {
+    "ch": 2
+   },
+   "marks": {
+    "2": "bad"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "("
+     ],
+     [
+      "1",
+      "["
+     ],
+     [
+      "top",
+      "["
+     ]
+    ]
+   },
+   "banner": "False \u2014 '([)]' is not balanced",
+   "state": [
+    [
+     "answer",
+     "False"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "cells": [
+    "("
+   ],
+   "code": "fast",
+   "line": 0,
+   "intro": "a lone opener never gets a closer \u2014 the final stack is non-empty.",
+   "invariant": "an opener stays on the stack until its matching closer arrives.",
+   "note": "Edge case: a single '(' with nothing to close it. The end-of-string check decides.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "top",
+      "(empty)"
+     ]
+    ]
+   },
+   "state": [
+    [
+     "s",
+     "("
+    ],
+    [
+     "stack",
+     "[]"
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 6,
+   "note": "'(' at index 0 is an opener. Push it \u2014 it must be closed later.",
+   "pointers": {
+    "ch": 0
+   },
+   "marks": {
+    "0": "active"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "("
+     ],
+     [
+      "top",
+      "("
+     ]
+    ]
+   },
+   "state": [
+    [
+     "opener",
+     "("
+    ],
+    [
+     "stack depth",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 3,
+   "code": "fast",
+   "line": 7,
+   "note": "Reached the end but 1 opener(s) are still waiting \u2014 never closed.",
+   "marks": {
+    "0": "bad"
+   },
+   "sidebar": {
+    "title": "stack (openers waiting)",
+    "rows": [
+     [
+      "0",
+      "("
+     ],
+     [
+      "top",
+      "("
+     ]
+    ]
+   },
+   "banner": "False \u2014 '(' has an unclosed opener",
+   "state": [
+    [
+     "stack empty?",
+     "False"
+    ],
+    [
+     "answer",
+     "False"
+    ]
+   ]
+  }
+ ]
+}</script></div></section><script src="../assets/viz.js"></script><section class="solution"><h2>Solution (Python)</h2><p class="srcnote">Self-testing — run <code>python3 solution.py</code>. <a href="https://github.com/mehtama1234/leetcode-exercises/blob/main/06-stack/0020-valid-parentheses/solution.py">view on GitHub</a></p><pre><code>&quot;&quot;&quot;20. Valid Parentheses — https://leetcode.com/problems/valid-parentheses/
 
 Given a string of only the brackets ()[]{}, decide if every opening bracket is
 closed by the matching kind, in the right order (properly nested).

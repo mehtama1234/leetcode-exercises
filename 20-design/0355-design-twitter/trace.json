@@ -1,0 +1,682 @@
+{
+ "player": "tree",
+ "title": "Design Twitter - a heap k-way merges each source's newest tweets",
+ "acts": [
+  "The rule: one candidate per source",
+  "Run the merge (newest first)",
+  "Edge: cap at 10 / unfollow"
+ ],
+ "code": {
+  "feed": [
+   "sources = following[user] | {user}",
+   "heap = []                       # max-heap by timestamp",
+   "for uid in sources:             # seed newest of each",
+   "    if tweets[uid]: push newest (-ts, tid, uid, idx)",
+   "while heap and len(feed) < 10:",
+   "    -ts, tid, uid, idx = heappop(heap)   # global newest",
+   "    feed.append(tid)",
+   "    if idx > 0: push tweets[uid][idx-1]  # next older"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "heap top (global newest)"
+  ],
+  [
+   "good",
+   "in the heap"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "seed",
+   "x": 300,
+   "y": 20
+  }
+ ],
+ "edges": [],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t10@3",
+     "x": 284.0,
+     "y": 20
+    },
+    {
+     "id": 1,
+     "val": "t21@2",
+     "x": 372.0,
+     "y": 20
+    },
+    {
+     "id": 2,
+     "val": "t30@1",
+     "x": 328.0,
+     "y": 104
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "code": "feed",
+   "line": 2,
+   "intro": "one candidate per source enters the heap \u2014 its NEWEST tweet. The heap's top is the global newest across everyone.",
+   "invariant": "the heap holds at most one tweet per source at any moment.",
+   "note": "A news feed merges each source's time-sorted tweets. Seed a max-heap with the newest tweet of the user and each followee. User 1 follows 2 and 3.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "sources",
+     "1, 2, 3"
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t10@3",
+     "x": 284.0,
+     "y": 20
+    },
+    {
+     "id": 1,
+     "val": "t21@2",
+     "x": 372.0,
+     "y": 20
+    },
+    {
+     "id": 2,
+     "val": "t30@1",
+     "x": 328.0,
+     "y": 104
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "code": "feed",
+   "line": 3,
+   "note": "Seeded: 1's newest t10@3, 2's newest t21@2, 3's newest t30@1. The heap keeps the largest timestamp on top \u2014 here t10@3 (time 3).",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "top",
+     "t10 (time 3)"
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t10@3",
+     "x": 284.0,
+     "y": 20
+    },
+    {
+     "id": 1,
+     "val": "t21@2",
+     "x": 372.0,
+     "y": 20
+    },
+    {
+     "id": 2,
+     "val": "t30@1",
+     "x": 328.0,
+     "y": 104
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "code": "feed",
+   "line": 4,
+   "intro": "each pop takes the global newest; then we push only THAT owner's next-older tweet \u2014 never everyone's whole history.",
+   "invariant": "feed is built strictly newest-first; we stop at 10 pulls.",
+   "note": "Pull the newest repeatedly. After popping a tweet, push that same user's next-older one, so the heap always has their best remaining candidate.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "feed",
+     "(empty)"
+    ],
+    [
+     "heap size",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t10@3",
+     "x": 284.0,
+     "y": 20
+    },
+    {
+     "id": 1,
+     "val": "t21@2",
+     "x": 372.0,
+     "y": 20
+    },
+    {
+     "id": 2,
+     "val": "t30@1",
+     "x": 328.0,
+     "y": 104
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "code": "feed",
+   "line": 5,
+   "note": "Top of heap is t10@3 (user 1, time 3) \u2014 the global newest. Pop it.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 10,
+    "1": 21,
+    "2": 30
+   },
+   "state": [
+    [
+     "feed",
+     "(empty)"
+    ],
+    [
+     "heap size",
+     3
+    ],
+    [
+     "pulled",
+     0
+    ],
+    [
+     "popping",
+     "t10"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t21@2",
+     "x": 284.0,
+     "y": 20
+    },
+    {
+     "id": 1,
+     "val": "t30@1",
+     "x": 372.0,
+     "y": 20
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "feed",
+   "line": 6,
+   "note": "Added t10 to the feed. User 1 has no older tweet, so nothing replaces it \u2014 that source is exhausted.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 21,
+    "1": 30
+   },
+   "state": [
+    [
+     "feed",
+     "10"
+    ],
+    [
+     "heap size",
+     2
+    ],
+    [
+     "pulled",
+     1
+    ],
+    [
+     "exhausted",
+     "user 1"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t21@2",
+     "x": 284.0,
+     "y": 20
+    },
+    {
+     "id": 1,
+     "val": "t30@1",
+     "x": 372.0,
+     "y": 20
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "feed",
+   "line": 5,
+   "note": "Top of heap is t21@2 (user 2, time 2) \u2014 the global newest. Pop it.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 21,
+    "1": 30
+   },
+   "state": [
+    [
+     "feed",
+     "10"
+    ],
+    [
+     "heap size",
+     2
+    ],
+    [
+     "pulled",
+     1
+    ],
+    [
+     "popping",
+     "t21"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t30@1",
+     "x": 284.0,
+     "y": 20
+    },
+    {
+     "id": 1,
+     "val": "t20@0",
+     "x": 372.0,
+     "y": 20
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "feed",
+   "line": 7,
+   "note": "Added t21 to the feed. User 2 has an older tweet t20@0 \u2014 push it as their new candidate.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 30,
+    "1": 20
+   },
+   "state": [
+    [
+     "feed",
+     "10 21"
+    ],
+    [
+     "heap size",
+     2
+    ],
+    [
+     "pulled",
+     2
+    ],
+    [
+     "pushed",
+     "t20 (user 2)"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t30@1",
+     "x": 284.0,
+     "y": 20
+    },
+    {
+     "id": 1,
+     "val": "t20@0",
+     "x": 372.0,
+     "y": 20
+    }
+   ],
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "code": "feed",
+   "line": 5,
+   "note": "Top of heap is t30@1 (user 3, time 1) \u2014 the global newest. Pop it.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 30,
+    "1": 20
+   },
+   "state": [
+    [
+     "feed",
+     "10 21"
+    ],
+    [
+     "heap size",
+     2
+    ],
+    [
+     "pulled",
+     2
+    ],
+    [
+     "popping",
+     "t30"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t20@0",
+     "x": 284.0,
+     "y": 20
+    }
+   ],
+   "edges": [],
+   "code": "feed",
+   "line": 6,
+   "note": "Added t30 to the feed. User 3 has no older tweet, so nothing replaces it \u2014 that source is exhausted.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 20
+   },
+   "state": [
+    [
+     "feed",
+     "10 21 30"
+    ],
+    [
+     "heap size",
+     1
+    ],
+    [
+     "pulled",
+     3
+    ],
+    [
+     "exhausted",
+     "user 3"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t20@0",
+     "x": 284.0,
+     "y": 20
+    }
+   ],
+   "edges": [],
+   "code": "feed",
+   "line": 5,
+   "note": "Top of heap is t20@0 (user 2, time 0) \u2014 the global newest. Pop it.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 20
+   },
+   "state": [
+    [
+     "feed",
+     "10 21 30"
+    ],
+    [
+     "heap size",
+     1
+    ],
+    [
+     "pulled",
+     3
+    ],
+    [
+     "popping",
+     "t20"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [],
+   "edges": [],
+   "code": "feed",
+   "line": 6,
+   "note": "Added t20 to the feed. User 2 has no older tweet, so nothing replaces it \u2014 that source is exhausted.",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "feed",
+     "10 21 30 20"
+    ],
+    [
+     "heap size",
+     0
+    ],
+    [
+     "pulled",
+     4
+    ],
+    [
+     "exhausted",
+     "user 2"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [],
+   "edges": [],
+   "code": "feed",
+   "line": 4,
+   "note": "Heap empty \u2014 every tweet merged. Feed newest-first: [10, 21, 30, 20]. Only the newest candidate per source was ever compared.",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "feed",
+     "10 21 30 20"
+    ],
+    [
+     "pulls",
+     4
+    ]
+   ],
+   "banner": "getNewsFeed(1) = [10, 21, 30, 20]  (newest first)"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t12@11",
+     "x": 284.0,
+     "y": 20
+    }
+   ],
+   "edges": [],
+   "code": "feed",
+   "line": 4,
+   "intro": "the while-loop guard len(feed) < 10 stops us early \u2014 we never touch tweet 11.",
+   "invariant": "at most 10 pops happen no matter how long a history is.",
+   "note": "Edge: user 9 posted 12 tweets (ids 1..12). Seed the newest, t12. We pull newest-first but stop after 10.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 12
+   },
+   "state": [
+    [
+     "tweets",
+     12
+    ],
+    [
+     "cap",
+     10
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t2",
+     "x": 300,
+     "y": 20
+    }
+   ],
+   "edges": [],
+   "code": "feed",
+   "line": 4,
+   "note": "Stopped at 10: feed = [12, 11, 10, 9, 8, 7, 6, 5, 4, 3]. Tweets 2 and 1 (the oldest two) are never pulled \u2014 the guard len(feed) < 10 saved that work.",
+   "active": [],
+   "done": {},
+   "state": [
+    [
+     "feed len",
+     10
+    ],
+    [
+     "skipped",
+     "t2, t1"
+    ]
+   ],
+   "banner": "Feed caps at 10: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3]"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "t5",
+     "x": 300,
+     "y": 20
+    }
+   ],
+   "edges": [],
+   "code": "feed",
+   "line": 0,
+   "note": "Unfollow just drops a followee from `sources`, so their tweets never enter the heap. Following yourself is a no-op, so a silent user gets an empty feed.",
+   "active": [
+    0
+   ],
+   "done": {
+    "0": 5
+   },
+   "state": [
+    [
+     "sources",
+     "self only"
+    ],
+    [
+     "unfollowed",
+     "user 2"
+    ]
+   ],
+   "banner": "unfollow -> that user's tweets never seed the heap"
+  }
+ ]
+}

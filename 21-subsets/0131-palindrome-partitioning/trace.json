@@ -1,0 +1,870 @@
+{
+ "player": "tree",
+ "title": "Palindrome Partitioning \u2014 cut only at palindromes, walked as a decision tree",
+ "acts": [
+  "The rule",
+  "Walk the decision tree",
+  "Edge case: all-equal string"
+ ],
+ "code": {
+  "backtrack": [
+   "def backtrack(start):",
+   "    if start == n:",
+   "        result.append(path[:])   # a full partition",
+   "        return",
+   "    for end in range(start, n):",
+   "        if is_palindrome(s, start, end):",
+   "            path.append(s[start:end+1])  # choose",
+   "            backtrack(end + 1)           # explore",
+   "            path.pop()                   # un-choose"
+  ]
+ },
+ "legend": [
+  [
+   "active",
+   "current path"
+  ],
+  [
+   "good",
+   "finished partition / valid cut"
+  ]
+ ],
+ "nodes": [
+  {
+   "id": 0,
+   "val": "start",
+   "x": 264,
+   "y": 0
+  },
+  {
+   "id": 1,
+   "val": "a",
+   "x": 132,
+   "y": 88
+  },
+  {
+   "id": 2,
+   "val": "a\u00b7a",
+   "x": 66,
+   "y": 176
+  },
+  {
+   "id": 3,
+   "val": "a\u00b7a\u00b7b",
+   "x": 0,
+   "y": 264
+  },
+  {
+   "id": 4,
+   "val": "\u2715ab",
+   "x": 198,
+   "y": 176
+  },
+  {
+   "id": 5,
+   "val": "aa",
+   "x": 396,
+   "y": 88
+  },
+  {
+   "id": 6,
+   "val": "aa\u00b7b",
+   "x": 330,
+   "y": 176
+  },
+  {
+   "id": 7,
+   "val": "\u2715aab",
+   "x": 462,
+   "y": 88
+  }
+ ],
+ "edges": [
+  [
+   2,
+   3
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   5,
+   6
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   7
+  ]
+ ],
+ "frames": [
+  {
+   "act": 0,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 264,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 132,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a\u00b7a",
+     "x": 66,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "a\u00b7a\u00b7b",
+     "x": 0,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "\u2715ab",
+     "x": 198,
+     "y": 176
+    },
+    {
+     "id": 5,
+     "val": "aa",
+     "x": 396,
+     "y": 88
+    },
+    {
+     "id": 6,
+     "val": "aa\u00b7b",
+     "x": 330,
+     "y": 176
+    },
+    {
+     "id": 7,
+     "val": "\u2715aab",
+     "x": 462,
+     "y": 88
+    }
+   ],
+   "edges": [
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     7
+    ]
+   ],
+   "code": "backtrack",
+   "line": 5,
+   "intro": "a cut is allowed only when the prefix it makes is itself a palindrome.",
+   "invariant": "depth = number of pieces cut; every piece on a path is a palindrome.",
+   "note": "The rule: at position start, try each end. Only cut where s[start..end] is a palindrome \u2014 any other prefix can never be part of a valid answer, so we don't recurse into it.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "string",
+     "aab"
+    ],
+    [
+     "allowed cut",
+     "palindrome only"
+    ]
+   ]
+  },
+  {
+   "act": 0,
+   "code": "backtrack",
+   "line": 1,
+   "note": "Reaching start == n means the whole string is cut into palindromes: record that partition. A \u2715 marks a cut we refused because the prefix was not a palindrome.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "leaf",
+     "start == n"
+    ],
+    [
+     "\u2715",
+     "pruned cut"
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 264,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 132,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a\u00b7a",
+     "x": 66,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "a\u00b7a\u00b7b",
+     "x": 0,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "\u2715ab",
+     "x": 198,
+     "y": 176
+    },
+    {
+     "id": 5,
+     "val": "aa",
+     "x": 396,
+     "y": 88
+    },
+    {
+     "id": 6,
+     "val": "aa\u00b7b",
+     "x": 330,
+     "y": 176
+    },
+    {
+     "id": 7,
+     "val": "\u2715aab",
+     "x": 462,
+     "y": 88
+    }
+   ],
+   "edges": [
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     7
+    ]
+   ],
+   "code": "backtrack",
+   "line": 0,
+   "intro": "the active path is the pieces cut so far; \u2715 nodes are refused cuts.",
+   "invariant": "a green leaf shows a full cutting where every piece is a palindrome.",
+   "note": "Run it on \"aab\". Watch the path try each cut; non-palindrome prefixes get pruned in place, and each time we reach the end we record the partition.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 0,
+   "note": "Start at position 0 with nothing cut yet.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "at position",
+     0
+    ],
+    [
+     "pieces",
+     "\u2014"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Prefix \"a\" is a palindrome -> cut it and recurse on the rest. Pieces so far: a.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "at position",
+     1
+    ],
+    [
+     "pieces",
+     "a"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Prefix \"a\" is a palindrome -> cut it and recurse on the rest. Pieces so far: a\u00b7a.",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "at position",
+     2
+    ],
+    [
+     "pieces",
+     "a\u00b7a"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "start == n -> the whole string is cut into palindromes: record a\u00b7a\u00b7b. (1 of 2 so far.)",
+   "active": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "done": {
+    "3": "a\u00b7a\u00b7b"
+   },
+   "state": [
+    [
+     "partition",
+     "a\u00b7a\u00b7b"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Prefix \"ab\" (from position 1) is not a palindrome -> refuse this cut, don't recurse.",
+   "active": [
+    0,
+    1,
+    4
+   ],
+   "done": {
+    "3": "a\u00b7a\u00b7b",
+    "4": "\u2715"
+   },
+   "state": [
+    [
+     "tried prefix",
+     "ab"
+    ],
+    [
+     "palindrome?",
+     "no -> \u2715"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 6,
+   "note": "Prefix \"aa\" is a palindrome -> cut it and recurse on the rest. Pieces so far: aa.",
+   "active": [
+    0,
+    5
+   ],
+   "done": {
+    "3": "a\u00b7a\u00b7b",
+    "4": "\u2715"
+   },
+   "state": [
+    [
+     "at position",
+     2
+    ],
+    [
+     "pieces",
+     "aa"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "start == n -> the whole string is cut into palindromes: record aa\u00b7b. (2 of 2 so far.)",
+   "active": [
+    0,
+    5,
+    6
+   ],
+   "done": {
+    "3": "a\u00b7a\u00b7b",
+    "4": "\u2715",
+    "6": "aa\u00b7b"
+   },
+   "state": [
+    [
+     "partition",
+     "aa\u00b7b"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 5,
+   "note": "Prefix \"aab\" (from position 0) is not a palindrome -> refuse this cut, don't recurse.",
+   "active": [
+    0,
+    7
+   ],
+   "done": {
+    "3": "a\u00b7a\u00b7b",
+    "4": "\u2715",
+    "6": "aa\u00b7b",
+    "7": "\u2715"
+   },
+   "state": [
+    [
+     "tried prefix",
+     "aab"
+    ],
+    [
+     "palindrome?",
+     "no -> \u2715"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 1,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Every branch explored: \"aab\" has exactly two palindrome partitions.",
+   "active": [],
+   "done": {
+    "3": "a\u00b7a\u00b7b",
+    "4": "\u2715",
+    "6": "aa\u00b7b",
+    "7": "\u2715"
+   },
+   "state": [
+    [
+     "partitions",
+     2
+    ]
+   ],
+   "banner": "aab -> [a\u00b7a\u00b7b, aa\u00b7b]  (the 'aab' prefix was pruned \u2014 not a palindrome)"
+  },
+  {
+   "act": 2,
+   "nodes": [
+    {
+     "id": 0,
+     "val": "start",
+     "x": 264,
+     "y": 0
+    },
+    {
+     "id": 1,
+     "val": "a",
+     "x": 132,
+     "y": 88
+    },
+    {
+     "id": 2,
+     "val": "a\u00b7a",
+     "x": 66,
+     "y": 176
+    },
+    {
+     "id": 3,
+     "val": "a\u00b7a\u00b7a",
+     "x": 0,
+     "y": 264
+    },
+    {
+     "id": 4,
+     "val": "a\u00b7aa",
+     "x": 198,
+     "y": 176
+    },
+    {
+     "id": 5,
+     "val": "aa",
+     "x": 396,
+     "y": 88
+    },
+    {
+     "id": 6,
+     "val": "aa\u00b7a",
+     "x": 330,
+     "y": 176
+    },
+    {
+     "id": 7,
+     "val": "aaa",
+     "x": 462,
+     "y": 88
+    }
+   ],
+   "edges": [
+    [
+     2,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     7
+    ]
+   ],
+   "code": "backtrack",
+   "line": 4,
+   "intro": "when every character is the same, every prefix is a palindrome \u2014 no \u2715.",
+   "invariant": "with no pruning, the count is the raw 2^(n-1) cuttings.",
+   "note": "Edge case: \"aaa\". Every substring of equal characters is a palindrome, so no cut is ever refused \u2014 the full tree survives.",
+   "active": [
+    0
+   ],
+   "done": {},
+   "state": [
+    [
+     "string",
+     "aaa"
+    ],
+    [
+     "pruned",
+     "none"
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "\"a\" is a palindrome -> cut and recurse. Pieces: a.",
+   "active": [
+    0,
+    1
+   ],
+   "done": {},
+   "state": [
+    [
+     "at position",
+     1
+    ],
+    [
+     "pieces",
+     "a"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "\"a\" is a palindrome -> cut and recurse. Pieces: a\u00b7a.",
+   "active": [
+    0,
+    1,
+    2
+   ],
+   "done": {},
+   "state": [
+    [
+     "at position",
+     2
+    ],
+    [
+     "pieces",
+     "a\u00b7a"
+    ],
+    [
+     "found",
+     0
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Record a\u00b7a\u00b7a. (1 of 4.)",
+   "active": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "done": {
+    "3": "a\u00b7a\u00b7a"
+   },
+   "state": [
+    [
+     "partition",
+     "a\u00b7a\u00b7a"
+    ],
+    [
+     "found",
+     1
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Record a\u00b7aa. (2 of 4.)",
+   "active": [
+    0,
+    1,
+    4
+   ],
+   "done": {
+    "3": "a\u00b7a\u00b7a",
+    "4": "a\u00b7aa"
+   },
+   "state": [
+    [
+     "partition",
+     "a\u00b7aa"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 6,
+   "note": "\"aa\" is a palindrome -> cut and recurse. Pieces: aa.",
+   "active": [
+    0,
+    5
+   ],
+   "done": {
+    "3": "a\u00b7a\u00b7a",
+    "4": "a\u00b7aa"
+   },
+   "state": [
+    [
+     "at position",
+     2
+    ],
+    [
+     "pieces",
+     "aa"
+    ],
+    [
+     "found",
+     2
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Record aa\u00b7a. (3 of 4.)",
+   "active": [
+    0,
+    5,
+    6
+   ],
+   "done": {
+    "3": "a\u00b7a\u00b7a",
+    "4": "a\u00b7aa",
+    "6": "aa\u00b7a"
+   },
+   "state": [
+    [
+     "partition",
+     "aa\u00b7a"
+    ],
+    [
+     "found",
+     3
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "Record aaa. (4 of 4.)",
+   "active": [
+    0,
+    7
+   ],
+   "done": {
+    "3": "a\u00b7a\u00b7a",
+    "4": "a\u00b7aa",
+    "6": "aa\u00b7a",
+    "7": "aaa"
+   },
+   "state": [
+    [
+     "partition",
+     "aaa"
+    ],
+    [
+     "found",
+     4
+    ]
+   ]
+  },
+  {
+   "act": 2,
+   "code": "backtrack",
+   "line": 2,
+   "note": "No cut was ever refused, so all 2^(3-1) = 4 cuttings are valid partitions.",
+   "active": [],
+   "done": {
+    "3": "a\u00b7a\u00b7a",
+    "4": "a\u00b7aa",
+    "6": "aa\u00b7a",
+    "7": "aaa"
+   },
+   "state": [
+    [
+     "partitions",
+     4
+    ]
+   ],
+   "banner": "aaa -> 4 partitions = 2^(n-1), nothing pruned"
+  }
+ ]
+}
