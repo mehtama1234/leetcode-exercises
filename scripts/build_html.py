@@ -291,6 +291,9 @@ pre.diagram{background:#fffdf8;color:#2b2620;border:1px solid #e0d6c4;
 .viz-sidebar td{padding:2px 6px;border-bottom:1px solid var(--line);
   font-family:"SFMono-Regular",Consolas,monospace}
 .viz-edge{stroke:#c9bca6;stroke-width:2}
+.viz-ll-edge{fill:none;stroke:var(--accent);stroke-width:2;marker-end:url(#none);
+  transition:d .3s ease}
+.viz-ll-null{fill:none;stroke:#c0562f;stroke-width:2}
 .viz-node{fill:#fffdf8;stroke:#d9cdb8;stroke-width:2;transition:fill .3s,stroke .3s}
 .viz-node.active{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3}
 .viz-node.resolved{fill:#dff0e4;stroke:#2f8f5b}

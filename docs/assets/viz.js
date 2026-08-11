@@ -156,6 +156,125 @@
     }};
   }
 
+  // ---------------- grid renderer: 2-D matrix / DP table ----------------
+  function GridRenderer(host) {
+    var GC = 46, GG = 6, GPAD = 26;
+    var stage = el("div", "viz-stage", host);
+    var svgWrap = el("div", "viz-svg-wrap", stage);
+    var svg = svgEl("svg"); svg.setAttribute("class", "viz-svg"); svgWrap.appendChild(svg);
+    var cellsG = svgEl("g"); svg.appendChild(cellsG);
+    var rail = el("div", "viz-rail", stage);
+    var stateEl = el("div", "viz-state", rail);
+    var key = "", rectEls = {}, textEls = {}, R = 0, C = 0;
+    function gx(c) { return GPAD + c * (GC + GG); }
+    function gy(r) { return GPAD + r * (GC + GG); }
+    function build(rows, rl, cl) {
+      var k = JSON.stringify([rows, rl || null, cl || null]); if (k === key) return;
+      key = k; R = rows.length; C = rows[0] ? rows[0].length : 0;
+      while (cellsG.firstChild) cellsG.removeChild(cellsG.firstChild);
+      rectEls = {}; textEls = {};
+      svg.setAttribute("viewBox", "0 0 " + (gx(C) + GPAD) + " " + (gy(R) + GPAD));
+      var i, j;
+      if (cl) for (j = 0; j < C; j++) { var ct = svgEl("text"); ct.setAttribute("x", gx(j) + GC / 2); ct.setAttribute("y", GPAD - 8); ct.setAttribute("text-anchor", "middle"); ct.setAttribute("class", "viz-cell-idx"); ct.textContent = cl[j]; cellsG.appendChild(ct); }
+      if (rl) for (i = 0; i < R; i++) { var rt = svgEl("text"); rt.setAttribute("x", GPAD - 9); rt.setAttribute("y", gy(i) + GC / 2 + 5); rt.setAttribute("text-anchor", "end"); rt.setAttribute("class", "viz-cell-idx"); rt.textContent = rl[i]; cellsG.appendChild(rt); }
+      for (i = 0; i < R; i++) for (j = 0; j < C; j++) {
+        var r = svgEl("rect"); r.setAttribute("x", gx(j)); r.setAttribute("y", gy(i));
+        r.setAttribute("width", GC); r.setAttribute("height", GC); r.setAttribute("rx", 6);
+        r.setAttribute("class", "viz-cell"); cellsG.appendChild(r);
+        var t = svgEl("text"); t.setAttribute("x", gx(j) + GC / 2); t.setAttribute("y", gy(i) + GC / 2 + 6);
+        t.setAttribute("text-anchor", "middle"); t.setAttribute("class", "viz-cell-val");
+        t.style.fontSize = "15px"; t.textContent = (rows[i][j] == null ? "" : rows[i][j]);
+        cellsG.appendChild(t);
+        rectEls[i + "," + j] = r; textEls[i + "," + j] = t;
+      }
+    }
+    return { render: function (f) {
+      if (f.rows) build(f.rows, f.rowLabels || null, f.colLabels || null);
+      if (f.set) Object.keys(f.set).forEach(function (k) { if (textEls[k]) textEls[k].textContent = f.set[k]; });
+      Object.keys(rectEls).forEach(function (k) { rectEls[k].setAttribute("class", "viz-cell"); });
+      var marks = f.marks || {};
+      Object.keys(marks).forEach(function (k) { if (rectEls[k]) rectEls[k].setAttribute("class", "viz-cell m-" + marks[k]); });
+      if (f.state && f.state.length) { stateEl.innerHTML = f.state.map(function (kv) { return '<div class="viz-state-row"><span>' + esc(kv[0]) + "</span><b>" + esc(kv[1]) + "</b></div>"; }).join(""); stateEl.style.display = "block"; }
+      else stateEl.style.display = "none";
+    }};
+  }
+
+  // ------------- linked-list renderer: nodes in a row + rewiring arrows -------------
+  function LinkedListRenderer(host) {
+    var NW = 46, NGAP = 40, NY = 60, NPAD = 20;
+    var stage = el("div", "viz-stage", host);
+    var svgWrap = el("div", "viz-svg-wrap", stage);
+    var svg = svgEl("svg"); svg.setAttribute("class", "viz-svg"); svgWrap.appendChild(svg);
+    var edgesG = svgEl("g"); svg.appendChild(edgesG);
+    var nodesG = svgEl("g"); svg.appendChild(nodesG);
+    var rail = el("div", "viz-rail", stage);
+    var stateEl = el("div", "viz-state", rail);
+    var key = "", rectEls = [], ptrs = {}, ptrOrder = {}, n = 0;
+    function nx(i) { return NPAD + i * (NW + NGAP); }
+    function build(vals) {
+      var k = JSON.stringify(vals); if (k === key) return;
+      key = k; n = vals.length;
+      while (nodesG.firstChild) nodesG.removeChild(nodesG.firstChild);
+      while (edgesG.firstChild) edgesG.removeChild(edgesG.firstChild);
+      ptrs = {}; ptrOrder = {}; rectEls = [];
+      svg.setAttribute("viewBox", "0 -40 " + (nx(n) + NPAD) + " 140");
+      for (var i = 0; i < n; i++) {
+        var r = svgEl("rect"); r.setAttribute("x", nx(i)); r.setAttribute("y", NY);
+        r.setAttribute("width", NW); r.setAttribute("height", NW); r.setAttribute("rx", 10);
+        r.setAttribute("class", "viz-node"); nodesG.appendChild(r);
+        var t = svgEl("text"); t.setAttribute("x", nx(i) + NW / 2); t.setAttribute("y", NY + NW / 2 + 6);
+        t.setAttribute("text-anchor", "middle"); t.setAttribute("class", "viz-node-val"); t.textContent = vals[i];
+        nodesG.appendChild(t); rectEls.push(r);
+      }
+    }
+    function ptr(name) {
+      if (ptrs[name]) return ptrs[name];
+      var slot = Object.keys(ptrOrder).length; ptrOrder[name] = slot;
+      var g = svgEl("g"); g.setAttribute("class", "viz-ptr");
+      var nm = svgEl("text"); nm.setAttribute("x", NW / 2); nm.setAttribute("y", -6 - slot * 13);
+      nm.setAttribute("text-anchor", "middle"); nm.setAttribute("class", "viz-ptr-name"); nm.textContent = name;
+      var tri = svgEl("path"); tri.setAttribute("d", "M " + (NW / 2 - 7) + " 0 L " + (NW / 2 + 7) + " 0 L " + (NW / 2) + " 11 Z");
+      tri.setAttribute("class", "viz-ptr-tri"); g.appendChild(nm); g.appendChild(tri);
+      g.setAttribute("transform", "translate(" + nx(0) + "," + (NY - 14) + ")"); nodesG.appendChild(g);
+      ptrs[name] = g; return g;
+    }
+    return { render: function (f) {
+      if (f.vals) build(f.vals);
+      while (edgesG.firstChild) edgesG.removeChild(edgesG.firstChild);
+      (f.edges || []).forEach(function (e) {
+        var a = e[0], b = e[1];
+        var x1 = nx(a) + NW, y1 = NY + NW / 2;
+        var path = svgEl("path");
+        if (b === null || b < 0) { // next = null: little stub
+          path.setAttribute("d", "M " + x1 + " " + y1 + " l 18 0");
+          path.setAttribute("class", "viz-ll-null");
+        } else {
+          var x2 = nx(b), fwd = b > a;
+          var mx = fwd ? (x1 + x2) / 2 : (x1 + x2) / 2;
+          var dip = fwd ? y1 - 4 : y1 + 30;
+          path.setAttribute("d", "M " + x1 + " " + y1 + " Q " + mx + " " + dip + " " + (x2) + " " + y1);
+          path.setAttribute("class", "viz-ll-edge");
+        }
+        edgesG.appendChild(path);
+      });
+      rectEls.forEach(function (r) { r.setAttribute("class", "viz-node"); });
+      var marks = f.marks || {};
+      Object.keys(marks).forEach(function (k) { var i = +k; if (rectEls[i]) rectEls[i].setAttribute("class", "viz-node m-" + marks[k]); });
+      var p = f.pointers || {}, seen = {};
+      Object.keys(p).forEach(function (name) { seen[name] = 1; var g = ptr(name); var idx = p[name]; if (idx === null || idx < 0) { g.style.opacity = 0; return; } g.style.opacity = 1; g.setAttribute("transform", "translate(" + nx(idx) + "," + (NY - 14) + ")"); });
+      Object.keys(ptrs).forEach(function (name) { if (!seen[name]) ptrs[name].style.opacity = 0; });
+      if (f.state && f.state.length) { stateEl.innerHTML = f.state.map(function (kv) { return '<div class="viz-state-row"><span>' + esc(kv[0]) + "</span><b>" + esc(kv[1]) + "</b></div>"; }).join(""); stateEl.style.display = "block"; }
+      else stateEl.style.display = "none";
+    }};
+  }
+
+  function makeRenderer(player, host) {
+    if (player === "tree") return TreeRenderer(host);
+    if (player === "grid") return GridRenderer(host);
+    if (player === "linkedlist") return LinkedListRenderer(host);
+    return LinearRenderer(host);
+  }
+
   function build(mount) {
     var dataEl = mount.querySelector("script.viz-data"); if (!dataEl) return;
     var trace; try { trace = JSON.parse(dataEl.textContent); } catch (e) { return; }
@@ -181,7 +300,7 @@
     var cols = el("div", "viz-cols", mount);
     var left = el("div", "viz-left", cols);
     var host = el("div", "viz-host", left);
-    var render = (trace.player === "tree") ? TreeRenderer(host) : LinearRenderer(host);
+    var render = makeRenderer(trace.player, host);
     var note = el("div", "viz-note", left);
     var banner = el("div", "viz-banner", left); banner.style.display = "none";
     var codeEl = el("pre", "viz-code", cols); codeEl.style.display = "none";
