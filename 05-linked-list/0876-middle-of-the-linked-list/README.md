@@ -50,7 +50,7 @@ walk halfway.
                                     ^ stop here, return 3
 ```
 
-Correct, and it touches about n nodes — but notice it walks the list essentially
+Correct, and it touches about n nodes, but notice it walks the list
 twice.
 
 ## Find the waste

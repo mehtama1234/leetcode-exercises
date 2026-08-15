@@ -116,7 +116,7 @@ Against the sorted-list version's `n log n` per add and `n` memory, we traded
   1st largest, not the kth.
 - **Forgetting to cap the size.** If you never pop, the heap becomes the whole
   stream and its top is the global minimum, not the kth largest.
-- **The initial list can be shorter than k.** The heap simply holds fewer than k
+- **The initial list can be shorter than k.** The heap holds fewer than k
   items until enough numbers arrive; the top still works, and the problem
   guarantees a valid kth largest exists whenever `add` is called.
 - **Kth largest is not kth distinct.** Don't dedupe; duplicates each occupy a

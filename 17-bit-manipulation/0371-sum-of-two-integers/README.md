@@ -10,6 +10,13 @@ Compute `a + b`, but you're not allowed to use `+` or `-`. So you have to rebuil
 addition out of bitwise operations — the same way a processor's adder does it in
 silicon. Inputs may be negative, treated as 32-bit signed integers.
 
+```diagram
+   example: 3 + 5
+   a = 011  (3)
+   b = 101  (5)
+   answer = 1000  (8)
+```
+
 ## Why this matters
 
 This rebuilds addition from **XOR (add without carrying) and AND-then-shift

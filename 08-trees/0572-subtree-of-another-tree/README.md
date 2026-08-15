@@ -29,7 +29,7 @@ The real job is *finding an exact structural copy of a small thing anywhere insi
 big thing.* It is built from two smaller jobs glued together: **search** (visit each
 node of the big tree as a candidate) and **exact match** (structural equality — the
 same check as problem 100). "Search × match" shows up constantly, which is why it is
-worth seeing clearly once.
+worth seeing with a small picture once.
 
 Compilers and lint tools hunt a syntax tree for a code pattern to flag or rewrite —
 find every `x + 0`, spot duplicated subexpressions. Diff and plagiarism tools locate

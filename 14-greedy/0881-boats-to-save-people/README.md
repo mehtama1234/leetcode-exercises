@@ -49,7 +49,7 @@ for each valid way to pair people (weight <= limit each pair):
 
 That is a matching problem over all subsets — exponential, hopeless for real input.
 It is correct, but it makes you ask: does the pairing really need a search, or is
-there one obviously-right way to pair?
+there one pairing that stays best after each choice?
 
 ## Find the waste
 

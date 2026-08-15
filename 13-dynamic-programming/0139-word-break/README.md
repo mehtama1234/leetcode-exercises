@@ -68,7 +68,7 @@ only `n + 1` start positions, so only `n + 1` real subproblems.
 Let `dp[i]` mean "**can `s[i:]` be broken into allowed words?**" Only `n + 1` of
 these exist. Fill from the end:
 
-- `dp[n] = True` — the empty tail is trivially broken (you used up the string).
+- `dp[n] = True` — the empty tail is already done (you used up the string).
 - Going backward: `dp[i] = True` if for some `j`, `s[i:j]` is a word **and**
   `dp[j]` is already True. The answer is `dp[0]`.
 

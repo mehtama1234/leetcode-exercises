@@ -2,6 +2,8 @@
 
 **Browse it as a site:** https://mehtama1234.github.io/leetcode-exercises/ (generated into [`docs/`](docs/); run `python3 scripts/build_html.py` to rebuild, or serve locally with `python3 -m http.server --directory docs`).
 
+Writing-quality review: [WRITING_QUALITY_REVIEW.md](WRITING_QUALITY_REVIEW.md).
+
 Every problem gets two things:
 
 1. **`solution.py`** — a clean, correct, self-testing implementation (runs its own LeetCode example cases as asserts via `python solution.py`).
