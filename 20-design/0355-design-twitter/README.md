@@ -91,7 +91,7 @@ followee's *next* tweet after popping their current one.
 Let `k` = number of followees, `f` = feed size (10 here).
 
 - **Feed:** seed the heap with up to `k` entries, then do `f` pop/push pairs, each
-  costing about `log k`. So roughly `k + f log k` — independent of how many tweets
+  costing about `log k`. So roughly `(k + f) log k` — independent of how many tweets
   exist in total.
 - **post / follow / unfollow:** a single step each.
 - **Space:** proportional to total tweets plus total follows for storage; the heap

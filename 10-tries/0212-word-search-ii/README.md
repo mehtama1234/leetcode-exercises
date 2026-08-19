@@ -45,7 +45,7 @@ the words that would have needed it.
 ## Start from the obvious
 
 We already know how to check whether *one* word is on the board — that's
-[Word Search / 79](../../11-backtracking/0079-word-search/): a DFS from every
+[Word Search / 79](../../09-backtracking/0079-word-search/): a DFS from every
 cell, marking cells visited so a path can't reuse them. So just do that for each
 word:
 
@@ -151,7 +151,7 @@ Let the board be `m × n` and let `L` be the length of the longest word.
 The reusable idea is **use a trie to search for many strings at once, and let
 "fell off the trie" be your pruning signal.** This turns "one search per word"
 into a single guided walk. The board-DFS backtracking is
-[Word Search / 79](../../11-backtracking/0079-word-search/); the trie half is
+[Word Search / 79](../../09-backtracking/0079-word-search/); the trie half is
 [208](../0208-implement-trie-prefix-tree/) and
 [211](../0211-design-add-and-search-words-data-structure/). Any time you're about
 to loop "for each pattern, search the whole space," ask whether a trie lets you

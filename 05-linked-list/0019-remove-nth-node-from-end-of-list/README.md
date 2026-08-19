@@ -94,7 +94,7 @@ node always exists — even when the target is the real head.
 
 ## Complexity
 
-- **Time: about n steps.** A single pass; the lead pointer crosses the list once.
+- **Time: about `length` steps.** A single pass; the lead pointer crosses the list once.
 - **Extra memory: fixed.** Two pointers plus the dummy.
 
 ## Pitfalls
